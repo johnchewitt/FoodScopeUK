@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/indicator.schema.json",
+  "title": "IndicatorRecord",
+  "description": "Serialised indicator envelope (ADR-09). Every displayed value travels with its provenance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "label",
+    "value",
+    "unit",
+    "provenance",
+    "sourceIds",
+    "referencePeriod",
+    "coverage",
+    "method",
+    "scope"
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "label": { "type": "string" },
+    "value": { "type": ["number", "string", "null"] },
+    "missingReason": {
+      "type": "string",
+      "enum": ["suppressed", "not_published", "not_applicable", "not_covered", "small_base"]
+    },
+    "unit": { "type": "string" },
+    "provenance": {
+      "type": "string",
+      "enum": ["measured", "official_estimate", "derived", "scenario", "illustrative"]
+    },
+    "sourceIds": { "type": "array", "items": { "type": "string", "pattern": "^S\\d{2}$" }, "minItems": 1 },
+    "referencePeriod": { "type": "string" },
+    "coverage": { "type": "string" },
+    "method": { "type": "string" },
+    "scope": { "type": "string", "enum": ["local", "national_context"] },
+    "comparabilityGroup": { "type": "string" },
+    "quality": { "type": "string" }
+  }
+}
