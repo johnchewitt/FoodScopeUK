@@ -1,0 +1,26 @@
+{
+  "id": "reference.world_country_points",
+  "title": "Country label points (Natural Earth 1:50m)",
+  "role": "reference",
+  "path": "reference/world-country-points.json",
+  "format": "json",
+  "schemaId": null,
+  "sha256": "d0dcccde19ac302e952ce0efc42daa460e642af638507fee582232ed7edd06fd",
+  "bytes": 24342,
+  "featureCount": 237,
+  "sourceIds": [
+    "S24"
+  ],
+  "referencePeriod": "Natural Earth v5.1.2",
+  "coverage": "World",
+  "provenance": "measured",
+  "licence": "Public domain (Natural Earth)",
+  "attribution": "Made with Natural Earth",
+  "expectedCadence": "static",
+  "retrieval": {
+    "method": "download (pinned URL and SHA-256)",
+    "source": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_admin_0_countries.geojson (sha256 3e458fc036ad0a66411f2c1e6cac49c5d7bfb81cb1123bc513b22511a2b7fdeb)",
+    "retrievedAt": "2026-10-23T00:00:00Z",
+    "notes": "Natural Earth's own label point (LABEL_X, LABEL_Y) per ISO_A2_EH code, rounded to 4 dp. Used as the symbolic start of import connections and for partners too small for 1:110m. Not a port or production location."
+  }
+}

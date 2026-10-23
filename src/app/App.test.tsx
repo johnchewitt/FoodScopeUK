@@ -113,7 +113,7 @@ describe("App shell", () => {
     renderApp();
     const insights = document.getElementById("insights-panel")!;
     expect(await within(insights).findByText("Country outlines")).toBeInTheDocument();
-    expect(within(insights).getByText(/Natural Earth v4.1.0, 1:110m, 177 countries/)).toBeInTheDocument();
+    expect(within(insights).getByText(/Natural Earth v5.1.2, 1:110m, 176 countries/)).toBeInTheDocument();
     expect(
       await screen.findByRole("button", { name: /Data freshness: No statistics loaded/ }),
     ).toBeInTheDocument();

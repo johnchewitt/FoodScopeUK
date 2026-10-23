@@ -59,7 +59,11 @@ describe("committed reference layer (real data)", () => {
   it("has no ring segment that jumps across the map", async () => {
     const url = resolve(process.cwd(), "public/data/reference/world-countries-110m.geojson");
     const fc = JSON.parse(await readFile(url, "utf8"));
-    expect(fc.features.length).toBe(177);
+    expect(fc.features.length).toBe(176);
+    expect(fc.features.filter((f) => f.properties.iso_a2 === null).map((f) => f.properties.name)).toEqual([
+      "N. Cyprus",
+      "Somaliland",
+    ]);
     for (const f of fc.features) expect(maxLongitudeStep(f.geometry), f.properties.name).toBeLessThan(180);
   });
 });
