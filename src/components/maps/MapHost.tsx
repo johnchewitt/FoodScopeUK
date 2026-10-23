@@ -9,6 +9,7 @@ import { ErrorState } from "@/components/states/ErrorState";
 import { MapController } from "@/map/MapController";
 import { BASEMAP_STATUS_ID, REFERENCE_DATASET_ID } from "@/map/layerIds";
 import { BasemapStatusController } from "@/map/layers/basemapStatus";
+import { OriginsLayersController } from "@/map/layers/origins";
 import { ReferenceOutlinesController } from "@/map/layers/referenceOutlines";
 import { GO_TO_TARGETS, type ViewLike } from "@/map/types";
 import { createBasemap } from "@/services/arcgis/basemap";
@@ -39,9 +40,17 @@ export default function MapHost() {
   const map = useMemo(() => new EsriMap(basemap ? { basemap } : {}), [basemap]);
   const referenceLayer = useMemo(() => new ReferenceOutlinesController(basemap !== null), [basemap]);
   const basemapWatcher = useMemo(() => new BasemapStatusController(basemap), [basemap]);
+  const originsLayers = useMemo(
+    () =>
+      new OriginsLayersController({
+        selectPartner: (key) => useAppStore.getState().selectPartner(key),
+        setHoverPartner: (hover) => useAppStore.getState().setHoverPartner(hover),
+      }),
+    [],
+  );
   const controller = useMemo(
-    () => new MapController(useAppStore, [referenceLayer, basemapWatcher]),
-    [referenceLayer, basemapWatcher],
+    () => new MapController(useAppStore, [referenceLayer, originsLayers, basemapWatcher]),
+    [referenceLayer, originsLayers, basemapWatcher],
   );
   const spatialReference = useMemo(() => SpatialReference.WebMercator, []);
   const background = useMemo(() => new ColorBackground({ color: NAVY }), []);
@@ -68,9 +77,11 @@ export default function MapHost() {
     }
     if (!manifest.data) return;
     const ds = findDataset(manifest.data, REFERENCE_DATASET_ID);
-    if (ds) referenceLayer.setSource(datasetUrl(ds));
-    else referenceLayer.setSource(null, "Country outlines are not listed in the data index");
-  }, [manifest.data, manifest.isError, referenceLayer]);
+    if (ds) {
+      referenceLayer.setSource(datasetUrl(ds));
+      originsLayers.setSource(datasetUrl(ds));
+    } else referenceLayer.setSource(null, "Country outlines are not listed in the data index");
+  }, [manifest.data, manifest.isError, referenceLayer, originsLayers]);
 
   // Loading state with a timeout so a stalled map becomes an actionable error.
   useEffect(() => {

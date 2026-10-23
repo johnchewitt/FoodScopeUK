@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { ModuleId } from "@/app/modules";
 import { type Breakpoint } from "@/map/layoutMetrics";
-import { DEFAULT_URL_STATE, type Overlay, type UrlState } from "./urlState";
+import { DEFAULT_URL_STATE, type Measure, type Overlay, type PeriodMode, type UrlState } from "./urlState";
 
 export type MapStatus = "idle" | "loading" | "ready" | "error";
 export type LayerStatus = "loading" | "ready" | "error";
@@ -30,11 +30,28 @@ export interface AppState extends UrlState {
   layerStatus: Record<string, { status: LayerStatus; message?: string }>;
   mapCommand: MapCommand | null;
 
+  /** Food Origins map view model (serialisable; written by the Origins feature, read by layer controllers). */
+  originsMap: OriginsMapModel | null;
+  /** Partner under the pointer on the map, with screen position for the tooltip (not in the URL). */
+  hoverPartner: HoverPartner | null;
+  /** Number of partners drawn as connections (FO-03, default 12). */
+  flowCount: number;
+
   // Actions
   setModule: (module: ModuleId) => void;
   setMonth: (month: number | null) => void;
   stepMonth: (delta: 1 | -1) => void;
   setLad: (lad: string | null) => void;
+  setCommodity: (commodity: string) => void;
+  setPeriod: (period: PeriodMode) => void;
+  setYear: (year: number | null) => void;
+  /** Sets year and month together (timeline in Food Origins). */
+  setYearMonth: (year: number, month: number) => void;
+  setMeasure: (measure: Measure) => void;
+  selectPartner: (partner: string | null) => void;
+  setOriginsMap: (model: OriginsMapModel | null) => void;
+  setHoverPartner: (hover: HoverPartner | null) => void;
+  setFlowCount: (n: number) => void;
   openOverlay: (overlay: Exclude<Overlay, "none">) => void;
   closeOverlay: () => void;
   hydrateFromUrl: (state: UrlState) => void;
@@ -52,6 +69,43 @@ export interface AppState extends UrlState {
   issueMapCommand: (command: MapCommandInput) => void;
 }
 
+/** Country under the pointer on the Food Origins map (key = partner key or ISO code). */
+export interface HoverPartner {
+  key: string;
+  name: string | null;
+  x: number;
+  y: number;
+}
+
+/** One partner on the Food Origins map (serialisable). */
+export interface OriginsMapPartner {
+  key: string;
+  name: string;
+  iso2: string | null;
+  geometry: "polygon" | "point" | "none";
+  point: [number, number] | null;
+  /** Share of recorded imports (0–1) by the selected measure. */
+  share: number;
+  shareClass: number;
+  /** Formatted value for tooltips, e.g. "12.3 kt". */
+  valueText: string;
+  /** Drawn as a connection to the UK (top-N). */
+  flow: boolean;
+  /** Line width in px (FO-03 linear scaling). */
+  flowWidth: number;
+}
+
+export interface OriginsMapModel {
+  commodityId: string;
+  periodLabel: string;
+  measure: Measure;
+  partners: OriginsMapPartner[];
+  /** Symbolic UK anchor (Natural Earth label point for the United Kingdom). Not a port. */
+  ukAnchor: [number, number];
+}
+
+export const FLOW_COUNT_DEFAULT = 12;
+
 const DOCKED: readonly Breakpoint[] = ["desktop", "laptop"];
 let commandSeq = 0;
 
@@ -68,6 +122,9 @@ export const initialState = {
   mapError: null,
   layerStatus: {},
   mapCommand: null,
+  originsMap: null,
+  hoverPartner: null,
+  flowCount: FLOW_COUNT_DEFAULT,
 };
 
 export const useAppStore = create<AppState>()((set, get) => ({
@@ -81,6 +138,16 @@ export const useAppStore = create<AppState>()((set, get) => ({
     set({ month: next });
   },
   setLad: (lad) => set({ lad }),
+  setCommodity: (commodity) =>
+    set((s) => (s.commodity === commodity ? {} : { commodity, partner: null, hoverPartner: null })),
+  setPeriod: (period) => set({ period }),
+  setYear: (year) => set({ year }),
+  setYearMonth: (year, month) => set({ year, month: Math.min(12, Math.max(1, Math.round(month))) }),
+  setMeasure: (measure) => set({ measure }),
+  selectPartner: (partner) => set((s) => ({ partner: s.partner === partner ? null : partner })),
+  setOriginsMap: (originsMap) => set({ originsMap }),
+  setHoverPartner: (hoverPartner) => set({ hoverPartner }),
+  setFlowCount: (n) => set({ flowCount: Math.min(25, Math.max(3, Math.round(n))) }),
   openOverlay: (overlay) => set({ overlay, mobileNavOpen: false }),
   closeOverlay: () => set({ overlay: "none" }),
   hydrateFromUrl: (state) => set({ ...state }),
@@ -145,7 +212,17 @@ export function selectReducedMotion(
 }
 
 export function selectUrlState(s: AppState): UrlState {
-  return { module: s.module, month: s.month, lad: s.lad, overlay: s.overlay };
+  return {
+    module: s.module,
+    month: s.month,
+    lad: s.lad,
+    overlay: s.overlay,
+    commodity: s.commodity,
+    period: s.period,
+    year: s.year,
+    measure: s.measure,
+    partner: s.partner,
+  };
 }
 
 /** Reset helper for tests. */
