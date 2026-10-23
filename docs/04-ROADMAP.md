@@ -14,7 +14,7 @@
 |---|---|---|---|---|
 | 0 | Planning baseline | — | — | This document pack ✅ |
 | **1** | **Application foundation** ✅ merged (PR #1) and deployed | R1 | 0, decisions D1–D2 | Branded shell, live dark map, empty module panels, CI + Pages deploy |
-| **2** | **Food Origins explorer + HMRC trade pipeline** ✅ built (branch `stage/2-origins-explorer`) | R1 | 1, gates G1, G2, G4 | Pick tomatoes, step Jan→Jul, watch partners, connections, cards and charts change — real HMRC data for five commodities |
+| **2** | **Food Origins explorer + HMRC trade pipeline** ✅ merged (PR #3) and deployed | R1 | 1, gates G1, G2, G4 | Pick tomatoes, step Jan→Jul, watch partners, connections, cards and charts change — real HMRC data for five commodities |
 | 3 | Data pipeline completion + Seasonal Supply | R1 | 2, gates G3, G5, G6 | Remaining 11 baskets; LAD, population, GEOLYTIX and Defra context in the snapshot; Seasonal timeline play, heatmap and year comparison |
 | 4 | Supermarket network | R1 | 3, G7 | Clustered stores, retailer/class filters, store search, per-10k choropleth |
 | 5 | Local Authority Profiles (Belfast, Manchester deep) | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
@@ -123,6 +123,7 @@ Status on 23 October 2026 (evidence in `docs/stage-reports/stage-1.md`):
 - [x] Tomatoes Jan vs Jul reproduces fixture-expected partner shares (Morocco 42.5 % → Netherlands 63.8 % of net mass, 2025).
 - [x] All metrics show provenance; E2E for commodity, month, partner and measure changes and for map ↔ table ↔ chart synchronisation.
 - [x] Animation decision recorded (ADR-0015).
+- [x] Deployed site shows the explorer over the Esri basemap, with moving markers on a real GPU and no console errors (merged 23 Oct 2026; deploy run 39987833601; live check in `docs/stage-reports/stage-2.md`).
 - [ ] Defra trade-code comparison (G3) — moved to Stage 3.
 
 ### 4.3 Moved to Stage 3

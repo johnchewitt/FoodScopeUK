@@ -16,7 +16,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 
 ## Current stage
 
-**Stage 2 — Food Origins explorer + HMRC trade pipeline: built on branch `stage/2-origins-explorer`, awaiting review and merge** (report: `docs/stage-reports/stage-2.md`). Stage 1 is merged and deployed. Stage 2 was re-scoped by John (roadmap §1, §4); next is Stage 3 — Data pipeline completion + Seasonal Supply; start it only when John asks. Update this line when a stage is merged.
+**Stage 2 — Food Origins explorer + HMRC trade pipeline: merged (PR #3, 23 Oct 2026) and deployed** (report: `docs/stage-reports/stage-2.md`). Stage 1 is merged and deployed. Stage 2 was re-scoped by John (roadmap §1, §4); next is Stage 3 — Data pipeline completion + Seasonal Supply; start it only when John asks. Update this line when a stage is merged.
 
 ## How to work
 
