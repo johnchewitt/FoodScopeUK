@@ -5,8 +5,8 @@
   "path": "snapshots/2026-10-23/trade/bananas.json",
   "format": "json",
   "schemaId": "trade-snapshot",
-  "sha256": "afe7cd048cc06bdba427f12b45828d2c18e0bb5efaaba9ba0f60d3affba0f4e9",
-  "bytes": 65369,
+  "sha256": "3c95b0830a268fabeea6c2a4d597b69a096de7dc204209799c5ca3b5fe9d0c39",
+  "bytes": 67288,
   "sourceIds": [
     "S01",
     "S24"

@@ -199,6 +199,9 @@ def build_basket(basket: Basket, rows: list[dict[str, Any]], commodities: list[d
     rejects: dict[str, int] = defaultdict(int)
     kept = 0
     seen_months: set[int] = set()
+    # Months in which each CN8 code has at least one kept import row (suppressed included).
+    code_months: dict[int, set[int]] = defaultdict(set)
+    code_kg: dict[int, list[int]] = defaultdict(lambda: [0] * 12)
     for r in rows:
         missing = [f for f in _REQUIRED_FIELDS if f not in r]
         if missing:
@@ -222,7 +225,10 @@ def build_basket(basket: Basket, rows: list[dict[str, Any]], commodities: list[d
         gbp = _as_int(r["SumValue"], "SumValue")
         level = int(r["SuppressionIndex"])
         seen_months.add(mid)
+        code_months[int(r["CommodityId"])].add(mid)
         kept += 1
+        if level == 0:
+            code_kg[int(r["CommodityId"])][mid % 100 - 1] += kg
         if level > 0:
             # Suppressed trade keeps its own bucket and is never redistributed (P12). Quantity is
             # published only at level 2; value is withheld only at level 1.
@@ -251,6 +257,8 @@ def build_basket(basket: Basket, rows: list[dict[str, Any]], commodities: list[d
                 "code": str(c["Cn8Code"]),
                 "commodityId": int(c["CommodityId"]),
                 "description": (c.get("Cn8LongDescription") or c.get("Hs6Description") or "").strip(),
+                **code_history(code_months.get(int(c["CommodityId"]), set()),
+                               code_kg.get(int(c["CommodityId"]), [0] * 12)),
             }
             for c in commodities
             if int(c["CommodityId"]) in allowed
@@ -279,7 +287,52 @@ def build_basket(basket: Basket, rows: list[dict[str, Any]], commodities: list[d
         "rows": out_rows,
         "suppressed": out_suppressed,
         "nilMonths": nil_months,
+        "codeChanges": code_changes(cn8, month_label(months[0]), month_label(months[-1])),
     }
+
+
+# ---------------------------------------------------------------------------------------------
+# Commodity-code history (Stage 3: explains nomenclature changes in seasonal views)
+# ---------------------------------------------------------------------------------------------
+
+
+def code_history(months_with_rows: set[int], kg_by_calendar_month: list[int]) -> dict[str, Any]:
+    """First and last month with recorded imports under one CN8 code, how many months had any,
+    which calendar months (1–12) ever had any, and unsuppressed net mass (kg) per calendar month
+    summed over the snapshot. Derived from the same kept rows as the snapshot totals; a code with
+    no rows in the snapshot range has null first/last months."""
+    ordered = sorted(months_with_rows)
+    return {
+        "firstMonth": month_label(ordered[0]) if ordered else None,
+        "lastMonth": month_label(ordered[-1]) if ordered else None,
+        "monthsRecorded": len(ordered),
+        "calendarMonths": sorted({m % 100 for m in ordered}),
+        "netMassKgByCalendarMonth": list(kg_by_calendar_month),
+    }
+
+
+def _shift_label(label: str, delta: int) -> str:
+    y, m = (int(p) for p in label.split("-"))
+    n = y * 12 + (m - 1) + delta
+    return f"{n // 12:04d}-{n % 12 + 1:02d}"
+
+
+def code_changes(cn8: list[dict[str, Any]], first: str, last: str) -> list[dict[str, Any]]:
+    """Months where the codes HMRC records under the basket change: at least one code has its last
+    recorded month just before `month` and at least one other code its first recorded month at
+    `month`, both strictly inside the snapshot range. Basket totals include every code, so they are
+    continuous across the change; this only explains it."""
+    starts: dict[str, list[str]] = defaultdict(list)
+    ends: dict[str, list[str]] = defaultdict(list)
+    for c in cn8:
+        if c["firstMonth"] and c["firstMonth"] > first:
+            starts[c["firstMonth"]].append(c["code"])
+        if c["lastMonth"] and c["lastMonth"] < last:
+            ends[_shift_label(c["lastMonth"], 1)].append(c["code"])
+    return [
+        {"month": month, "ended": sorted(ends[month]), "started": sorted(starts[month])}
+        for month in sorted(set(starts) & set(ends))
+    ]
 
 
 # ---------------------------------------------------------------------------------------------

@@ -268,3 +268,22 @@ def test_build_trade_fails_when_aggregation_and_raw_rows_disagree(env):
 def test_build_trade_rejects_unknown_country_ids(env):
     with pytest.raises(TradeBuildError, match="CountryId 4242"):
         run(env, FakeApi(aggregate=AGGREGATE + [agg(201904, 3, 4242, 99010010, 1, 1)]))
+
+
+def test_code_change_detection_rules() -> None:
+    """Synthetic codes: a replacement, a code that simply stops, and one that starts later."""
+    from foodscope_pipeline.trade import code_changes, code_history
+
+    a = {"code": "00000001", **code_history({202001, 202012}, [0] * 12)}  # ends Dec 2020
+    b = {"code": "00000002", **code_history({202101, 202103}, [0] * 12)}  # starts Jan 2021
+    c = {"code": "00000003", **code_history({202001, 202106}, [0] * 12)}  # ends Jun 2021, nothing starts
+    d = {"code": "00000004", **code_history({202003, 202112}, [0] * 12)}  # starts Mar 2020, nothing ends
+    e = {"code": "00000005", **code_history(set(), [0] * 12)}  # never recorded
+    assert e["firstMonth"] is None and e["monthsRecorded"] == 0 and e["calendarMonths"] == []
+    assert a["calendarMonths"] == [1, 12]
+    assert code_changes([a, b, c, d, e], "2020-01", "2021-12") == [
+        {"month": "2021-01", "ended": ["00000001"], "started": ["00000002"]}
+    ]
+    # A code first recorded in the snapshot's first month, or last recorded in its last month, is
+    # not a change (the snapshot boundary is not evidence of one).
+    assert code_changes([a, b], "2021-01", "2021-12") == []

@@ -39,7 +39,32 @@
             "properties": {
               "code": { "type": "string", "pattern": "^\\d{8}$" },
               "commodityId": { "type": "integer" },
-              "description": { "type": "string" }
+              "description": { "type": "string" },
+              "firstMonth": {
+                "description": "First month in the snapshot with recorded imports under this code (null: none).",
+                "oneOf": [{ "$ref": "#/definitions/Month" }, { "type": "null" }]
+              },
+              "lastMonth": {
+                "description": "Last month in the snapshot with recorded imports under this code (null: none).",
+                "oneOf": [{ "$ref": "#/definitions/Month" }, { "type": "null" }]
+              },
+              "monthsRecorded": {
+                "description": "Number of snapshot months with recorded imports under this code.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "calendarMonths": {
+                "description": "Calendar months (1–12) in which this code ever has recorded imports in the snapshot.",
+                "type": "array",
+                "items": { "type": "integer", "minimum": 1, "maximum": 12 }
+              },
+              "netMassKgByCalendarMonth": {
+                "description": "Unsuppressed recorded net mass (kg) under this code per calendar month (January first), summed over the snapshot.",
+                "type": "array",
+                "minItems": 12,
+                "maxItems": 12,
+                "items": { "type": "integer", "minimum": 0 }
+              }
             }
           }
         }
@@ -128,6 +153,20 @@
       "description": "Published months (indexes) with no recorded import rows for this basket.",
       "type": "array",
       "items": { "type": "integer", "minimum": 0 }
+    },
+    "codeChanges": {
+      "description": "Months where the CN8 codes recorded under the basket change: codes last recorded the month before (ended) and codes first recorded in that month (started). Totals include every code, so the series is continuous.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["month", "ended", "started"],
+        "properties": {
+          "month": { "$ref": "#/definitions/Month" },
+          "ended": { "type": "array", "items": { "type": "string", "pattern": "^\\d{8}$" }, "minItems": 1 },
+          "started": { "type": "array", "items": { "type": "string", "pattern": "^\\d{8}$" }, "minItems": 1 }
+        }
+      }
     }
   },
   "definitions": {

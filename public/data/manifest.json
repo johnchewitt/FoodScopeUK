@@ -63,8 +63,8 @@
       "path": "snapshots/2026-10-23/trade/bananas.json",
       "format": "json",
       "schemaId": "trade-snapshot",
-      "sha256": "afe7cd048cc06bdba427f12b45828d2c18e0bb5efaaba9ba0f60d3affba0f4e9",
-      "bytes": 65369,
+      "sha256": "3c95b0830a268fabeea6c2a4d597b69a096de7dc204209799c5ca3b5fe9d0c39",
+      "bytes": 67288,
       "sourceIds": [
         "S01",
         "S24"
@@ -114,8 +114,8 @@
       "path": "snapshots/2026-10-23/trade/potatoes.json",
       "format": "json",
       "schemaId": "trade-snapshot",
-      "sha256": "35275bff5ea78a0edd9c72e63eb9cd5a27f604d5dd27f0ae4c55f00ed68341a6",
-      "bytes": 30525,
+      "sha256": "294ae6477442b1447686c534d61e652d8d72696201dcf6a3cf3361f7768f0357",
+      "bytes": 31453,
       "sourceIds": [
         "S01",
         "S24"
@@ -140,8 +140,8 @@
       "path": "snapshots/2026-10-23/trade/strawberries.json",
       "format": "json",
       "schemaId": "trade-snapshot",
-      "sha256": "f8148c88d091c7cd525ebeddc252f2dc7c1bff169464aea81a8ad8bed439aec3",
-      "bytes": 30946,
+      "sha256": "5fe061d6a8d0877385e39ed1c1fd15e29a338d17b2439fc737be8ebfd60e7cdf",
+      "bytes": 31209,
       "sourceIds": [
         "S01",
         "S24"
@@ -166,8 +166,8 @@
       "path": "snapshots/2026-10-23/trade/tomatoes.json",
       "format": "json",
       "schemaId": "trade-snapshot",
-      "sha256": "23b8c56d1fe5b24dda09f926434387c4d52915985c9df634e5bf28f34c70c7db",
-      "bytes": 35230,
+      "sha256": "8519a5723ee5125b4862d29d1fede57a0c341623bd0fae5708dd902583ae6fc7",
+      "bytes": 36328,
       "sourceIds": [
         "S01",
         "S24"
@@ -192,8 +192,8 @@
       "path": "snapshots/2026-10-23/trade/wheat.json",
       "format": "json",
       "schemaId": "trade-snapshot",
-      "sha256": "d7423b43c3e187a2c7aecc09d0315f68fccba492284339c33e33e4fde171d130",
-      "bytes": 41450,
+      "sha256": "56bc6748865f0d76653942a375c00fc9a240147cc70d161f9d09e81dfaa520b4",
+      "bytes": 43423,
       "sourceIds": [
         "S01",
         "S24"

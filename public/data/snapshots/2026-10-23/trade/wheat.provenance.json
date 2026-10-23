@@ -5,8 +5,8 @@
   "path": "snapshots/2026-10-23/trade/wheat.json",
   "format": "json",
   "schemaId": "trade-snapshot",
-  "sha256": "d7423b43c3e187a2c7aecc09d0315f68fccba492284339c33e33e4fde171d130",
-  "bytes": 41450,
+  "sha256": "56bc6748865f0d76653942a375c00fc9a240147cc70d161f9d09e81dfaa520b4",
+  "bytes": 43423,
   "sourceIds": [
     "S01",
     "S24"
