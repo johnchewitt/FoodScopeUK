@@ -16,7 +16,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 
 ## Current stage
 
-**Stage 1 — Application foundation: built on branch `stage/1-foundation`, awaiting review and merge** (report: `docs/stage-reports/stage-1.md`). Next is Stage 2 — Data pipeline v1; do not start it until Stage 1 is merged. Update this line when a stage is merged.
+**Stage 1 — Application foundation: merged to `main` (PR #1, 23 Oct 2026) and deployed to GitHub Pages**; post-merge basemap fix on `fix/basemap-key-race` (report: `docs/stage-reports/stage-1.md`). Next is Stage 2 — Data pipeline v1; start it only when John asks. Update this line when a stage is merged.
 
 ## How to work
 
@@ -55,6 +55,8 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 - Events in JSX: `onarcgisViewReadyChange`, `onarcgisReady`, etc. Get the view from the element after view-ready.
 - Import core modules granularly from `@arcgis/core/...` (ESM). Check the 5.1 API reference at developers.arcgis.com before using an API you have not used in this repo; if documentation and the installed package's `.d.ts` disagree, trust the package typings and note it.
 - `<arcgis-map>` is mounted **once** (`src/components/maps/MapHost.tsx`) and never re-mounted on module change. `MapHost` is lazy-loaded (`React.lazy`) so the SDK chunk does not block the shell; it is the only module that registers `arcgis-map`.
+- **API key**: registered once at startup as `esriConfig.apiKeys.basemapStyles` with `esriConfig.request.useIdentity = false` (`src/services/arcgis/requestPolicy.ts`, ADR-0011). Do not rely on `BasemapStyle.apiKey` alone: SDK 5.1 copies it onto the basemap layers after they are created, so the view can request the style without it and visitors get an ArcGIS sign-in prompt. Never set the global `esriConfig.apiKey`.
+- A view becomes ready even when its basemap fails; basemap health is reported separately (`BasemapStatusController`, `data-basemap-status` on `.map-host`).
 - **Without a basemap the view has no tiling scheme**: keep the Web Mercator `constraints.lods` that `MapHost` passes, or the view never becomes ready (ADR-0004).
 - Asset hosting (ADR-0014): production uses the Esri CDN; `VITE_ARCGIS_ASSETS=local` copies ArcGIS/Calcite assets into the build for offline/sandboxed runs. `src/app/bootstrapAssets.ts` must stay the first import in `main.tsx`.
 - Component tests never load the SDK: `MapHost` is mocked with `vi.mock`, and Calcite elements are registered only in `src/app/registerComponents.ts` (imported by `main.tsx`). Keep UI modules free of `@arcgis/core` imports (shared ids live in `src/map/layerIds.ts`).

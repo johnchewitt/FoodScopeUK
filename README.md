@@ -74,5 +74,5 @@ Code licence: to be confirmed by ConsultingWhere. Data shown in this build: Natu
 ## Known limitations (Stage 1)
 
 - No statistical data yet — KPI cards, charts and module controls show what they will contain and when.
-- The Esri basemap and CDN build were not exercised in the development sandbox (no network route to Esri); they are covered by the post-deploy smoke test.
+- The Esri basemap cannot be reached from the development sandbox; the post-deploy smoke test checks that it loads on the live site (and fails if it does not, or if a sign-in prompt appears).
 - The initial JavaScript bundle (184 kB gzip) is above the 350 kB-uncompressed budget in the architecture; reduction is in `docs/backlog.md`.

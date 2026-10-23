@@ -5,7 +5,7 @@
 | **Branch** | `stage/1-foundation` |
 | **Date** | 23 October 2026 |
 | **Scope** | Roadmap §3. No data features; no Stage 2 work. |
-| **Result** | All local checks pass. GitHub Actions CI passed on PR #1 ([run 39947394759](https://github.com/johnchewitt/FoodScopeUK/actions/runs/39947394759)): both jobs, every step including E2E. GitHub Pages deployment not yet run. |
+| **Result** | All local checks pass. GitHub Actions CI passed on PR #1 ([run 39947394759](https://github.com/johnchewitt/FoodScopeUK/actions/runs/39947394759)): both jobs, every step including E2E. Merged 23 Oct 2026; GitHub Pages deploy succeeded, but the post-deploy smoke test failed on the Esri basemap — see [Post-merge: first deploy](#post-merge-first-deploy). |
 
 ## What was built
 
@@ -77,8 +77,8 @@ Screenshots: [desktop 1920](stage-1/desktop-1920.png) · [laptop 1366](stage-1/l
 
 ## Not verified, and why
 
-- **GitHub Pages deploy** — runs on merge to `main`; needs Settings → Pages → Source = GitHub Actions (not changed by Claude). CI itself has passed on GitHub (Node 24, Playwright Chromium, Python 3.12).
-- **Esri basemap and CDN asset mode in a browser** — the sandbox cannot reach `js.arcgis.com` or the Basemap styles service, and no API key is available. The CDN build compiles and points at `js.arcgis.com/5.1.27/…`; the post-deploy smoke test will exercise it.
+- ~~**GitHub Pages deploy**~~ — verified after merge: Pages source is GitHub Actions and the deploy job succeeded (see below).
+- **Esri basemap and CDN asset mode in a browser** — the CDN build loads on the live site (all SDK and Calcite assets from `js.arcgis.com`). The Esri basemap did not load on the first deploy; see below.
 - **Contrast of glass panels over the Esri basemap** — only checked over the offline outline map.
 - **Real-GPU rendering and performance** — tests used software WebGL; load-time budgets (PF-01) not measured.
 - **Safari and Firefox** — only Chromium tested.
@@ -96,3 +96,45 @@ Screenshots: [desktop 1920](stage-1/desktop-1920.png) · [laptop 1366](stage-1/l
 1. Pages source: switch to GitHub Actions now (you or Claude, with your OK)?
 2. ArcGIS key: Location Platform account or ArcGIS Online with a custom role?
 3. Brand: is a ConsultingWhere logo available for the header and PDFs, or stay text-only?
+
+## Post-merge: first deploy
+
+Checked on 23 Oct 2026 in a desktop browser against https://johnchewitt.github.io/FoodScopeUK/ after John merged PR #1, set the Pages source and added the `ARCGIS_API_KEY` secret.
+
+| Check | Result |
+|---|---|
+| Pages source = GitHub Actions | Correct — `configure-pages` and `deploy-pages` succeeded (deploy run 39957396146) |
+| `ARCGIS_API_KEY` secret reaches the build | Correct — build notice "ArcGIS API key present — Esri dark grey basemap enabled" |
+| Key accepted by the Basemap styles service | Yes — the style for `arcgis/dark-gray` returned HTTP 200 with the key attached, from the live origin |
+| Esri basemap on the live site | **Failed** — the dark grey style request went out without the key (401); the SDK then showed an ArcGIS Online username/password dialog and the map stalled or loaded without the basemap |
+| Post-deploy smoke test | **Failed** (console 401 error) |
+| Insights panel | Wrongly reported the basemap as working, because it keyed off view-ready |
+| First load | One transient HTTP 503 from GitHub Pages for the lazy map chunk; a reload fixed it |
+
+**Cause.** Stage 1 attached the key only to `BasemapStyle.apiKey`. In SDK 5.1.27 that key is copied onto the basemap's layers after they are created, and the view can start loading a layer first. Timing-dependent: it did not occur in the sandbox, it did occur on the live site.
+
+**Fix (branch `fix/basemap-key-race`, ADR-0011 amended).**
+- The key is registered as `esriConfig.apiKeys.basemapStyles`, which the SDK adds only to token-less requests to the Esri basemap hosts.
+- `esriConfig.request.useIdentity = false`, so the site never prompts visitors to sign in.
+- `BasemapStatusController` reports whether the basemap really loaded; the Insights panel and `data-basemap-status` use it. If the basemap fails, the country outlines switch to the offline style.
+- The smoke test now requires `data-basemap-status="ready"` when a key is configured and fails on any sign-in prompt.
+- Unrelated flaky E2E (`evidence and help dialogs…`): Escape pressed before focus reached a deep-linked dialog was ignored (3 of 6 runs failed on `main` in the sandbox). Escape now closes any open dialog.
+
+**Verification (sandbox, synthetic responses, not committed).** A Playwright script served obviously synthetic Esri responses (refused key / refused layer / slow web map) to a local-asset build with a synthetic key:
+
+| | Before (main) | After (fix) |
+|---|---|---|
+| Request from a layer created without a key | sent **without** token; SDK then started IdentityManager server identification | sent **with** token |
+| Basemap refused | Insights said "authorised by the site's API key" | Insights warning; `data-basemap-status="error"`; outlines in offline style |
+| Sign-in prompt | n/a in sandbox (identification blocked); shown on live site | never (IdentityManager not invoked) |
+
+| Command (fix branch) | Result |
+|---|---|
+| `npm run typecheck` / `lint` / `check:banned` / `format` | 0 errors |
+| `npm test` | 130 passed (13 files) |
+| `VITE_ARCGIS_ASSETS=local npm run build` + `npm run e2e` | 19 passed |
+| Dialog E2E repeated 6× | 6 passed (3 of 6 failed on `main`) |
+| `npm run build` (CDN) · `uv run pytest` | Success · 12 passed |
+
+Not verified until the fix is deployed: the Esri basemap drawing on the live site with the real key. The post-deploy smoke test checks this.
+
