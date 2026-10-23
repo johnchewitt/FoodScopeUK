@@ -6,7 +6,7 @@
 > - Seasonal Supply plays through January–December and has a partner-by-month heatmap, monthly trend, year-on-year change and month-against-month comparison.
 > - Other modules still show what they will contain and when.
 >
-> See `docs/stage-reports/stage-3.md`.
+> See `docs/stage-reports/stage-3.md`, and `docs/reviews/2026-10-23-review.md` for the review after Stage 3 (map framing, legend-true colours, comparability cautions, faster figures, KPI cards never hidden).
 >
 > Site: https://johnchewitt.github.io/FoodScopeUK/
 

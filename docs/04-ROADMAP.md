@@ -278,3 +278,4 @@ Rules of engagement:
 | 2026-10-23 | Heatmap change view uses five classes (two per side): three per side failed the colour-vision check on the dark panel | ADR-0017, stage 3 report |
 | 2026-10-23 | Commodity-code history added to the trade snapshot (additive, offline from the committed raw cache) | S01, §5.1 |
 | 2026-10-23 | UK seasonal production not shown for the five baskets: no verified monthly series (S06–S08 cover meat and milk; S09/S10 annual, unverified) | SS-07, S05–S10 |
+| 2026-10-23 | Post-Stage 3 review (John's request): trade views framed on the data; one opaque share ramp for map, legend and heatmap; series-break and current-price cautions in Food Origins; data before the map on first load; KPI cards never hidden | ADR-0018, ADR-0019, `docs/reviews/2026-10-23-review.md` |

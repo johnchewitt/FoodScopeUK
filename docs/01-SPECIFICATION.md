@@ -103,7 +103,7 @@ The brief asks for a complete, tested first release over an extensive unfinished
 | Map | full-bleed behind floating panels; **≥ 60 % of the viewport width unobstructed between the side panels at 1920 × 1080 with both open** | | | full screen |
 | Right insights panel | 340 px, collapsible | 320 px | overlay | bottom sheet |
 | Bottom timeline | 72 px, spans map width | | | compact stepper |
-| Floating KPI cards | top of the map area, max 4 visible | max 3 | max 2 | swipeable row |
+| Floating KPI cards | top of the map area, one row; all cards fit at 1920 px | as many as fit; the row scrolls sideways (fade, snap, keyboard) — **no card is ever hidden** (review 23 Oct 2026) | same | swipeable row |
 
 ### 4.2 Requirements
 

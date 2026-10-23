@@ -21,3 +21,5 @@ MADR-style records. Status values: Proposed · Accepted · Superseded. Summaries
 | [0015](0015-flow-animation.md) | Moving markers on a canvas overlay, not CIM symbol animations | Accepted (Stage 2) |
 | [0016](0016-hmrc-ingest-on-actions.md) | HMRC ingest runs on GitHub Actions; raw responses are committed | Accepted (Stage 2) |
 | [0017](0017-seasonal-transitions-and-fixed-scales.md) | Seasonal Supply: eased widths only, fixed scales, nothing interpolated | Accepted (Stage 3) |
+| [0018](0018-map-framing-on-the-data.md) | Map framing on the UK and the drawn connections | Accepted (post-Stage 3 review) |
+| [0019](0019-one-share-ramp-and-data-first-startup.md) | One opaque share ramp; hover by highlight; figures before the map | Accepted (post-Stage 3 review) |
