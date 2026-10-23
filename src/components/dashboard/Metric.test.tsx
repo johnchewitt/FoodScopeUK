@@ -101,4 +101,20 @@ describe("<KpiCard>", () => {
     expect(screen.getByText("12.3 kt")).toBeInTheDocument();
     expect(screen.getByText("2025-07, UK")).toBeInTheDocument();
   });
+
+  it("marks a comparability caution with an accessible amber marker (P11)", () => {
+    const caution = "Comparison crosses the HMRC series break in Jan 2022.";
+    const { rerender } = render(
+      <KpiCard label="Synthetic" state="ready" indicator={synthetic} detail="+1 % vs A" caution={caution} />,
+    );
+    const card = screen.getByRole("article", { name: "Synthetic" });
+    expect(card).toHaveAttribute("data-caution", "true");
+    expect(screen.getByRole("img", { name: `Caution: ${caution}` })).toHaveAttribute("title", caution);
+    rerender(<KpiCard label="Synthetic" state="ready" indicator={synthetic} caution={null} />);
+    expect(card).not.toHaveAttribute("data-caution");
+    expect(screen.queryByRole("img", { name: /Caution/ })).not.toBeInTheDocument();
+    // Never on a card without a value.
+    rerender(<KpiCard label="Synthetic" state="loading" caution={caution} />);
+    expect(screen.queryByRole("img", { name: /Caution/ })).not.toBeInTheDocument();
+  });
 });

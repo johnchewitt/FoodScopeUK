@@ -46,6 +46,25 @@ describe("Seasonal model: real HMRC snapshot 2026-10-23", () => {
     expect(c.partners.find((p) => p.key === "MA")!.a).toBeCloseTo(0.4252, 4);
   });
 
+  it("P11: the change card is marked when the same-month comparison crosses a series break", () => {
+    const jan22 = build({ year: 2022, month: 1 });
+    expect(jan22.kpis.changeLabel).toBe("Change vs Jan 2021");
+    expect(jan22.kpis.changeCaution).toContain("series break in Jan 2022");
+    expect(jan22.kpis.changeDetail).toMatch(/ · series break$/);
+    const jul25 = build();
+    expect(jul25.kpis.changeCaution).toBeNull();
+    expect(jul25.kpis.changeDetail).not.toMatch(/series break/);
+    // 2023 compared with 2020 crosses both breaks.
+    const mar23 = build({ year: 2023, month: 3, compareYear: 2020 });
+    expect(mar23.kpis.changeCaution).toContain("series breaks in Jan 2021");
+  });
+
+  it("value comparisons carry the current-prices note; net mass does not", () => {
+    expect(build({ measure: "value" }).notices.map((n) => n.id)).toContain("current-prices");
+    expect(build({ measure: "value" }).kpis.change.method).toMatch(/not adjusted for inflation/);
+    expect(build().notices.map((n) => n.id)).not.toContain("current-prices");
+  });
+
   it("KPIs for July 2025 are provenance-complete and match the month", () => {
     const m = build();
     expect(m.available).toBe(true);

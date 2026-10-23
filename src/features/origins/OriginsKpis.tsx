@@ -30,7 +30,13 @@ export function OriginsKpis() {
   const k = model.kpis;
   return (
     <>
-      <KpiCard label="Recorded imports" state="ready" indicator={k.imports} detail={k.importsDetail} />
+      <KpiCard
+        label="Recorded imports"
+        state="ready"
+        indicator={k.imports}
+        detail={k.importsDetail}
+        caution={k.comparisonCaution}
+      />
       <KpiCard
         label="Recorded import partners"
         state="ready"
@@ -43,6 +49,7 @@ export function OriginsKpis() {
         state="ready"
         indicator={k.concentration}
         detail={k.concentrationDetail}
+        caution={k.comparisonCaution}
       />
     </>
   );

@@ -714,6 +714,25 @@
   border-color: rgb(232 183 107 / 0.4);
   color: var(--fs-amber);
 }
+/* Comparability caution in tables and stat grids (P11) */
+.caution-tag {
+  margin-left: 6px;
+  padding: 0 5px;
+  border: 1px solid rgb(232 183 107 / 0.4);
+  border-radius: 4px;
+  font-size: var(--fs-text-xs);
+  color: var(--fs-amber);
+  white-space: nowrap;
+}
+.caution-mark {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: var(--fs-amber);
+  vertical-align: 2px;
+}
 .chip--green {
   border-color: rgb(161 235 131 / 0.4);
   color: var(--fs-green);
@@ -1486,9 +1505,22 @@
   justify-content: space-between;
   gap: 6px;
 }
+.kpi-card__label-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .kpi-card__badge {
   flex: none;
   display: inline-flex;
+  margin-left: auto;
+}
+/* Comparability caution (P11): amber marker; the sentence is its accessible name and tooltip. */
+.kpi-card__caution {
+  flex: none;
+  display: inline-flex;
+  color: var(--fs-amber);
+  cursor: help;
 }
 
 /* Map legend and tooltip */

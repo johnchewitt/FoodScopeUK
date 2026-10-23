@@ -33,7 +33,13 @@ export function SeasonalKpis() {
         indicator={k.imports}
         detail={k.importsDetail}
       />
-      <KpiCard label={k.changeLabel} state="ready" indicator={k.change} detail={k.changeDetail} />
+      <KpiCard
+        label={k.changeLabel}
+        state="ready"
+        indicator={k.change}
+        detail={k.changeDetail}
+        caution={k.changeCaution}
+      />
       <KpiCard label="Top recorded partner" state="ready" indicator={k.top} detail={k.topDetail} />
       <KpiCard label="Monthly concentration (HHI)" state="ready" indicator={k.hhi} detail={k.hhiDetail} />
     </>

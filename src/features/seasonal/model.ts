@@ -44,12 +44,16 @@ import {
 } from "@/analysis/seasonal";
 import {
   addMonths,
+  comparisonBreaks,
   concentrationRatio,
+  CURRENT_PRICES_NOTE,
   effectivePartners,
   formatMonth,
   formatMonthRange,
+  inSentence,
   monthKey,
   parseMonthKey,
+  seriesBreakCaution,
   type MonthKey,
 } from "@/analysis/trade";
 import { domesticProduction, type DomesticProductionStatus } from "@/content/domesticProduction";
@@ -115,6 +119,8 @@ export interface SeasonalKpis {
   change: Indicator<number>;
   changeLabel: string;
   changeDetail: string;
+  /** The month-on-same-month comparison crosses an HMRC series break (P11); null when not. */
+  changeCaution: string | null;
   top: Indicator<number>;
   topDetail: string;
   hhi: Indicator<number>;
@@ -459,7 +465,7 @@ export function buildSeasonalModel(
     "change",
     "derived",
     compKey ? `${monthLabel} vs ${formatMonth(compKey)}` : monthLabel,
-    `Relative change in recorded ${word}: (${monthLabel} − same month of the comparison year) ÷ same month of the comparison year.`,
+    `Relative change in recorded ${word}: (${monthLabel} − same month of the comparison year) ÷ same month of the comparison year.${measure === "value" ? " Current prices: not adjusted for inflation." : ""}`,
     available && compKey ? "not_applicable" : missing,
   );
   const changeDetail = !available
@@ -469,6 +475,9 @@ export function buildSeasonalModel(
       : compTotal === null
         ? `${formatMonth(compKey)} has no figures`
         : `${formatMonth(compKey)}: ${formatMeasure(compTotal, measure)}`;
+  const changeBreaks = available && compKey && changeValue !== null ? comparisonBreaks(compKey, key) : [];
+  const changeCaution = seriesBreakCaution(changeBreaks);
+  const changeDetailText = changeBreaks.length ? `${changeDetail} · series break` : changeDetail;
 
   const topShare = current?.shares[0] ?? null;
   const top = ind(
@@ -561,12 +570,15 @@ export function buildSeasonalModel(
   if (compareYearNote && sel.compareYear !== null && compareYear !== sel.compareYear)
     notices.push({ id: "compare-year", tone: "warn", text: compareYearNote });
 
+  if (measure === "value" && compareYear !== null)
+    notices.push({ id: "current-prices", tone: "info", text: CURRENT_PRICES_NOTE.replace(/\.$/, "") });
+
   const comp = comparability(snapshot, year, compareYear);
   for (const b of comp.seriesBreaks)
     notices.push({
       id: `break-${b.month}`,
       tone: "warn",
-      text: `Comparison crosses a series break in ${formatMonth(b.month)} (${b.label.toLowerCase()}): differences between ${compareYear} and ${year} may partly reflect how the data was collected`,
+      text: `Comparison crosses a series break in ${formatMonth(b.month)} (${inSentence(b.label)}): differences between ${compareYear} and ${year} may partly reflect how the data was collected`,
     });
   for (const c of comp.codeChanges) {
     const ended = c.ended.map((x) => x.code).join(", ");
@@ -624,7 +636,8 @@ export function buildSeasonalModel(
       importsDetail,
       change,
       changeLabel,
-      changeDetail,
+      changeDetail: changeDetailText,
+      changeCaution,
       top,
       topDetail,
       hhi: hhiInd,

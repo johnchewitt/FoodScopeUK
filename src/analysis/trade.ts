@@ -437,6 +437,36 @@ export function seriesBreaksWithin(start: MonthKey, end: MonthKey): typeof SERIE
   return SERIES_BREAKS.filter((b) => monthDiff(start, b.month) > 0 && monthDiff(b.month, end) >= 0);
 }
 
+/**
+ * Series breaks that affect a comparison between two periods (P11): every break after the first
+ * month of the comparison period and up to the last month of the current period. Such a break
+ * means part of the difference may come from how HMRC collected the data, not from trade.
+ * Empty when there is no comparison.
+ */
+export function comparisonBreaks(
+  comparisonStart: MonthKey | null,
+  currentEnd: MonthKey | null,
+): typeof SERIES_BREAKS {
+  if (!comparisonStart || !currentEnd) return [];
+  return seriesBreaksWithin(comparisonStart, currentEnd);
+}
+
+/** A label inside a sentence: first letter lower-cased unless it starts an acronym ("EU", "GB"). */
+export function inSentence(label: string): string {
+  return /^[A-Z][A-Z]/.test(label) ? label : label.charAt(0).toLowerCase() + label.slice(1);
+}
+
+/** Visible caution for a comparison that crosses series breaks; null when there is none. */
+export function seriesBreakCaution(breaks: typeof SERIES_BREAKS): string | null {
+  if (breaks.length === 0) return null;
+  const list = breaks.map((b) => `${formatMonth(b.month)} (${inSentence(b.label)})`).join(" and ");
+  return `Comparison crosses the HMRC series break${breaks.length > 1 ? "s" : ""} in ${list}: part of the difference may reflect how the data was collected.`;
+}
+
+/** Value (£) comparisons are in current prices: HMRC statistical values are not inflation adjusted. */
+export const CURRENT_PRICES_NOTE =
+  "Values are HMRC statistical values (CIF) in current prices, not adjusted for inflation: a change in £ includes price changes as well as changes in quantity.";
+
 export function isProvisional(month: MonthKey, provisionalFrom: MonthKey | null): boolean {
   return provisionalFrom !== null && monthDiff(provisionalFrom, month) >= 0;
 }

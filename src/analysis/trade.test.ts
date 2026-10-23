@@ -6,7 +6,9 @@ import {
   addMonths,
   aggregatePeriod,
   anchorMonth,
+  comparisonBreaks,
   concentrationRatio,
+  inSentence,
   effectivePartners,
   flowWidths,
   formatMonthRange,
@@ -19,6 +21,7 @@ import {
   partnerShares,
   relativeChange,
   resolvePeriod,
+  seriesBreakCaution,
   seriesBreaksWithin,
   shareChanges,
   shareClass,
@@ -273,6 +276,31 @@ describe("monthly series, breaks and provisional months", () => {
     expect(seriesBreaksWithin("2019-01", "2026-08").map((b) => b.month)).toEqual(["2021-01", "2022-01"]);
     expect(seriesBreaksWithin("2021-01", "2021-12")).toEqual([]);
     expect(seriesBreaksWithin("2021-06", "2022-01").map((b) => b.month)).toEqual(["2022-01"]);
+  });
+
+  it("finds the breaks a year-on-year comparison crosses (P11)", () => {
+    const months = (from: string | null, to: string | null) => comparisonBreaks(from, to).map((b) => b.month);
+    // Calendar year 2022 vs 2021: the comparison starts Jan 2021 (after the EU-exit break).
+    expect(months("2021-01", "2022-12")).toEqual(["2022-01"]);
+    // 2021 vs 2020 crosses the EU-exit break only.
+    expect(months("2020-01", "2021-12")).toEqual(["2021-01"]);
+    // Rolling 12 months to Aug 2022 vs the 12 months before (Sep 2020 – Aug 2021): both.
+    expect(months("2020-09", "2022-08")).toEqual(["2021-01", "2022-01"]);
+    // Jan 2022 vs Jan 2021; Aug 2026 vs Aug 2025; no comparison.
+    expect(months("2021-01", "2022-01")).toEqual(["2022-01"]);
+    expect(months("2025-08", "2026-08")).toEqual([]);
+    expect(months(null, "2026-08")).toEqual([]);
+  });
+
+  it("words the series-break caution, and nothing when there is no break", () => {
+    expect(seriesBreakCaution([])).toBeNull();
+    const one = seriesBreakCaution(comparisonBreaks("2021-01", "2022-12"))!;
+    expect(one).toContain("series break in Jan 2022 (GB imports from the EU from customs declarations)");
+    expect(inSentence("Provisional data")).toBe("provisional data");
+    expect(one).toContain("may reflect how the data was collected");
+    const two = seriesBreakCaution(comparisonBreaks("2020-09", "2022-08"))!;
+    expect(two).toContain("series breaks in Jan 2021");
+    expect(two).toContain(" and Jan 2022");
   });
 
   it("flags provisional months", () => {
