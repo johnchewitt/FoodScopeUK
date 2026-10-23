@@ -79,7 +79,15 @@ export function useKeyboardShortcuts(): void {
       const target = e.target as HTMLElement | null;
       if (target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return;
       const s = useAppStore.getState();
-      if (s.overlay !== "none") return;
+      if (s.overlay !== "none") {
+        // Escape closes an open dialog even before focus has moved into it (e.g. a dialog
+        // opened from a deep link on page load).
+        if (e.key === "Escape") {
+          s.closeOverlay();
+          e.preventDefault();
+        }
+        return;
+      }
       switch (e.key) {
         case "[":
           s.toggleFilterPanel();
