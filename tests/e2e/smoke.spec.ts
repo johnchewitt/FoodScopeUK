@@ -103,11 +103,13 @@ test.describe("Stage 1 shell", () => {
     await waitForMap(page);
     const map = page.locator("arcgis-map");
     const zoom = () => map.evaluate((el: HTMLArcgisMapElement) => el.view.zoom);
-    const before = await zoom();
-    await page.getByRole("button", { name: "Show the United Kingdom" }).click();
-    await expect.poll(zoom, { timeout: 10_000 }).toBeGreaterThan(before + 2);
     await page.getByRole("button", { name: "Show the world" }).click();
-    await expect.poll(zoom, { timeout: 10_000 }).toBeLessThan(before + 1);
+    await expect.poll(zoom, { timeout: 10_000 }).toBeLessThan(2.6);
+    const world = await zoom();
+    await page.getByRole("button", { name: "Show the United Kingdom" }).click();
+    await expect.poll(zoom, { timeout: 10_000 }).toBeGreaterThan(world + 2);
+    await page.getByRole("button", { name: "Show the world" }).click();
+    await expect.poll(zoom, { timeout: 10_000 }).toBeLessThan(world + 1);
   });
 
   test("evidence and help dialogs open from the URL and close", async ({ page }) => {

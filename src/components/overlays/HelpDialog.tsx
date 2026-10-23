@@ -7,6 +7,7 @@ const SHORTCUTS: [string, string][] = [
   ["Home End", "First or last month of the year (timeline)"],
   ["PgUp PgDn", "Next or previous year (Seasonal Supply timeline)"],
   ["Space", "Play or pause the months (Seasonal Supply timeline)"],
+  ["F", "Fit the map to the UK and its recorded import partners (Food Origins, Seasonal Supply)"],
   ["?", "Open this help"],
   ["Esc", "Close a dialog"],
 ];

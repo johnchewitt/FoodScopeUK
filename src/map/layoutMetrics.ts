@@ -13,6 +13,8 @@ export const TIMELINE_H = 64;
 /** Seasonal Supply's timeline also carries month bars and playback controls. */
 export const TIMELINE_H_SEASONAL = 88;
 export const ATTRIBUTION_H = 22;
+/** Map legend card width (app.css `.map-legend`); open by default on desktop only. */
+export const LEGEND_W = 236;
 
 export const PANEL_WIDTHS: Record<Breakpoint, { filter: number; insights: number }> = {
   desktop: { filter: 312, insights: 340 },
@@ -74,4 +76,16 @@ export function computeViewPadding({
 
 export function paddingEquals(a: ViewPadding | null | undefined, b: ViewPadding): boolean {
   return !!a && a.top === b.top && a.right === b.right && a.bottom === b.bottom && a.left === b.left;
+}
+
+/**
+ * Padding used when framing data (not the view's own padding): on desktop the legend card, open
+ * by default, sits at the bottom left of the map, where partners south and west of the UK are
+ * drawn, so framing keeps clear of its column as well as of the panels.
+ */
+export function framingPadding(padding: ViewPadding, breakpoint: Breakpoint): ViewPadding {
+  // Read each side explicitly: MapView's padding is an Accessor whose sides are prototype getters,
+  // so spreading it would copy nothing.
+  const { top, right, bottom, left } = padding;
+  return { top, right, bottom, left: breakpoint === "desktop" ? left + LEGEND_W + GAP : left };
 }

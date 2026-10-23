@@ -1,10 +1,11 @@
-import { Globe, Map as MapIcon, Minus, Plus } from "lucide-react";
-import { useAppStore } from "@/state/store";
+import { Focus, Globe, Map as MapIcon, Minus, Plus } from "lucide-react";
+import { canFramePartners, useAppStore } from "@/state/store";
 
 /** Bespoke map controls (map components' widget-style UI is not used; ADR-02). */
 export function MapControls() {
   const issue = useAppStore((s) => s.issueMapCommand);
   const ready = useAppStore((s) => s.mapStatus === "ready");
+  const canFrame = useAppStore(canFramePartners);
   if (!ready) return null;
   return (
     <div
@@ -30,6 +31,17 @@ export function MapControls() {
         <Minus size={17} aria-hidden="true" />
       </button>
       <span className="map-ctl-sep" aria-hidden="true" />
+      {canFrame && (
+        <button
+          type="button"
+          className="map-ctl"
+          onClick={() => issue({ type: "goTo", target: "partners" })}
+          aria-label="Fit the map to the UK and its recorded import partners"
+          title="Fit to recorded partners (F)"
+        >
+          <Focus size={17} aria-hidden="true" />
+        </button>
+      )}
       <button
         type="button"
         className="map-ctl"

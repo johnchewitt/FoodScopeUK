@@ -1,20 +1,37 @@
 import type { StoreApi, UseBoundStore } from "zustand";
+import { fitBBox } from "@/analysis/frame";
 import { selectReducedMotion, type AppState, type MapCommand } from "@/state/store";
 import { getModule } from "@/app/modules";
-import { computeViewPadding, paddingEquals, TIMELINE_H, TIMELINE_H_SEASONAL } from "./layoutMetrics";
+import {
+  computeViewPadding,
+  framingPadding,
+  paddingEquals,
+  TIMELINE_H,
+  TIMELINE_H_SEASONAL,
+} from "./layoutMetrics";
 import { FLIGHT_DURATION_MS, GO_TO_TARGETS, type LayerController, type ViewLike } from "./types";
 
 type Store = UseBoundStore<StoreApi<AppState>>;
+
+/** Modules whose map frames the recorded partners (Food Origins, Seasonal Supply). */
+const FRAMED_MODULES: readonly string[] = ["origins", "seasonal"];
 
 /**
  * Owns the bridge between React state and the ArcGIS view (ADR-03):
  * store → view (padding, camera commands, layer updates); never the other way round
  * except via typed store actions (status reports).
+ *
+ * Framing: when a trade view first draws a commodity (or the commodity changes), the camera fits
+ * the UK and its drawn connections into the area left free by the panels. It never moves on a
+ * month, year or measure change, so it does not fight a user who has panned or zoomed; "Fit to
+ * recorded partners" re-applies the frame on request.
  */
 export class MapController {
   private view: ViewLike | null = null;
   private unsubscribe: (() => void) | null = null;
   private lastCommandId: number | null = null;
+  private lastFrameKey: string | null = null;
+  private framedOnce = false;
   private readonly store: Store;
   private readonly layers: LayerController[];
 
@@ -62,32 +79,67 @@ export class MapController {
 
     if (state.mapCommand && state.mapCommand.id !== this.lastCommandId) {
       this.lastCommandId = state.mapCommand.id;
-      this.run(state.mapCommand, selectReducedMotion(state));
+      this.run(state.mapCommand, selectReducedMotion(state), state);
+    }
+
+    const frame = FRAMED_MODULES.includes(state.module) ? (state.originsMap?.frame ?? null) : null;
+    if (!FRAMED_MODULES.includes(state.module)) this.lastFrameKey = null;
+    // The first frame replaces the default world view instantly; later ones fly (unless reduced).
+    if (
+      frame &&
+      frame.key !== this.lastFrameKey &&
+      this.fit(frame.bbox, !this.framedOnce || selectReducedMotion(state), state)
+    ) {
+      this.lastFrameKey = frame.key;
+      this.framedOnce = true;
     }
 
     for (const layer of this.layers) layer.update?.(state);
   }
 
-  private run(command: MapCommand, reducedMotion: boolean): void {
+  private run(command: MapCommand, reducedMotion: boolean, state: AppState): void {
     const view = this.view;
     if (!view) return;
+    if (command.type === "goTo" && command.target === "partners") {
+      const frame = FRAMED_MODULES.includes(state.module) ? state.originsMap?.frame : null;
+      if (frame) this.fit(frame.bbox, reducedMotion, state);
+      return;
+    }
     const options = reducedMotion ? { animate: false } : { animate: true, duration: FLIGHT_DURATION_MS };
     let target: unknown;
-    if (command.type === "goTo") target = GO_TO_TARGETS[command.target];
+    if (command.type === "goTo")
+      target = command.target === "partners" ? null : GO_TO_TARGETS[command.target];
     else target = { zoom: Math.round(view.zoom) + (command.direction === "in" ? 1 : -1) };
-    view
-      .goTo(target, command.type === "zoom" && !reducedMotion ? { animate: true, duration: 300 } : options)
-      .catch((err: unknown) => {
-        // Interrupted navigation (a newer goTo) is expected; anything else is reported.
-        if (err instanceof Error && err.name === "AbortError") return;
-        if (
-          typeof err === "object" &&
-          err &&
-          "name" in err &&
-          (err as { name: string }).name === "view:goto-interrupted"
-        )
-          return;
-        console.warn("Map navigation failed", err);
-      });
+    if (!target) return;
+    this.goTo(target, command.type === "zoom" && !reducedMotion ? { animate: true, duration: 300 } : options);
+  }
+
+  /** Fits a [west, south, east, north] box into the unpadded part of the view; false if it cannot yet. */
+  private fit(bbox: [number, number, number, number], instant: boolean, state: AppState): boolean {
+    const view = this.view;
+    if (!view || !view.width || !view.height) return false;
+    const target = fitBBox(bbox, {
+      width: view.width,
+      height: view.height,
+      padding: view.padding,
+      framePadding: framingPadding(view.padding, state.breakpoint),
+    });
+    this.goTo(target, instant ? { animate: false } : { animate: true, duration: FLIGHT_DURATION_MS });
+    return true;
+  }
+
+  private goTo(target: unknown, options: { animate?: boolean; duration?: number }): void {
+    this.view?.goTo(target, options).catch((err: unknown) => {
+      // Interrupted navigation (a newer goTo) is expected; anything else is reported.
+      if (err instanceof Error && err.name === "AbortError") return;
+      if (
+        typeof err === "object" &&
+        err &&
+        "name" in err &&
+        (err as { name: string }).name === "view:goto-interrupted"
+      )
+        return;
+      console.warn("Map navigation failed", err);
+    });
   }
 }

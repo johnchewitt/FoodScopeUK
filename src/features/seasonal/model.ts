@@ -57,7 +57,7 @@ import {
   type MonthKey,
 } from "@/analysis/trade";
 import { domesticProduction, type DomesticProductionStatus } from "@/content/domesticProduction";
-import { buildOriginsModel, formatMeasure, type OriginsModel } from "@/features/origins/model";
+import { buildOriginsModel, formatMeasure, frameFor, type OriginsModel } from "@/features/origins/model";
 import type { OriginsMapModel } from "@/state/store";
 import type { HeatmapMode, Measure } from "@/state/urlState";
 import type { Indicator } from "@/types/indicator";
@@ -597,9 +597,17 @@ export function buildSeasonalModel(
       text: `Code ${c.code} (HMRC: “${c.description}”) holds ${formatShare(c.coverage)} of its recorded net mass in ${monthRunsText(c.months)} and ${formatShare(c.shareOfBasket)} of the basket since ${formatMonth(range.first)}. The basket includes every code, so its monthly totals do not switch with the code`,
     });
 
+  // The map frames the year's leading partners, so it stays still while the months play.
+  const meta = new Map(snapshot.partners.map((p) => [p.key, p]));
+  const yearStarts = topPartnersForYear(matrix, Number.MAX_SAFE_INTEGER)
+    .keys.map((k) => meta.get(k))
+    .filter((p) => p !== undefined && p.key !== "GB" && p.geometry !== "none" && p.point !== null)
+    .slice(0, Math.max(0, sel.flowCount))
+    .map((p) => p!.point!);
+  const frame = frameFor(snapshot.commodity.id, yearStarts, ukAnchor);
   const map: OriginsMapModel = current
-    ? current.map
-    : { commodityId: snapshot.commodity.id, periodLabel: monthLabel, measure, partners: [], ukAnchor };
+    ? { ...current.map, frame }
+    : { commodityId: snapshot.commodity.id, periodLabel: monthLabel, measure, partners: [], ukAnchor, frame };
 
   return {
     commodity: snapshot.commodity,

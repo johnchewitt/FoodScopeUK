@@ -4,6 +4,7 @@
  * Every on-screen number is either an Indicator (KPI cards) or a table cell derived here from the
  * same snapshot, so the map, cards, charts and table always agree (FO-02, FO-05, FO-06).
  */
+import { connectionsBBox, UK_EXTENT_110M, unionBBox } from "@/analysis/frame";
 import { formatGbp, formatHhi, formatShare, formatTonnes } from "@/analysis/format";
 import {
   addMonths,
@@ -186,6 +187,19 @@ function ind(
     scope: "national_context",
     ...(value === null ? { missingReason: missing ?? "not_published" } : {}),
   };
+}
+
+/**
+ * The map frame for a commodity: the whole UK and the drawn connections (fitted when the commodity
+ * changes). Null when nothing is drawn.
+ */
+export function frameFor(
+  commodityId: string,
+  starts: [number, number][],
+  ukAnchor: [number, number],
+): OriginsMapModel["frame"] {
+  const bbox = connectionsBBox(starts, ukAnchor);
+  return bbox ? { key: commodityId, bbox: unionBBox(bbox, UK_EXTENT_110M) } : null;
 }
 
 export function buildOriginsModel(
@@ -430,6 +444,11 @@ export function buildOriginsModel(
       measure,
       partners: mapPartners,
       ukAnchor,
+      frame: frameFor(
+        snapshot.commodity.id,
+        mapPartners.filter((p) => p.flow && p.point).map((p) => p.point!),
+        ukAnchor,
+      ),
     },
   };
 }

@@ -13,11 +13,12 @@ import {
 export type MapStatus = "idle" | "loading" | "ready" | "error";
 export type LayerStatus = "loading" | "ready" | "error";
 
-export type MapCommand =
-  | { id: number; type: "goTo"; target: "world" | "uk" }
-  | { id: number; type: "zoom"; direction: "in" | "out" };
+export type GoToTarget = "world" | "uk" | "partners";
 
-type MapCommandInput = { type: "goTo"; target: "world" | "uk" } | { type: "zoom"; direction: "in" | "out" };
+export type MapCommand =
+  { id: number; type: "goTo"; target: GoToTarget } | { id: number; type: "zoom"; direction: "in" | "out" };
+
+type MapCommandInput = { type: "goTo"; target: GoToTarget } | { type: "zoom"; direction: "in" | "out" };
 
 export interface AppState extends UrlState {
   // Layout
@@ -120,6 +121,17 @@ export interface OriginsMapModel {
   partners: OriginsMapPartner[];
   /** Symbolic UK anchor (Natural Earth label point for the United Kingdom). Not a port. */
   ukAnchor: [number, number];
+  /**
+   * Where the map frames the data: the box around the UK and the connections drawn for the
+   * commodity ([west, south, east, north], degrees). The map fits it when `key` changes (a new
+   * commodity or the first view), and on request; never on a month or year change.
+   */
+  frame: { key: string; bbox: [number, number, number, number] } | null;
+}
+
+/** True when the map can frame the recorded partners (a trade view with drawn connections). */
+export function canFramePartners(s: Pick<AppState, "module" | "originsMap">): boolean {
+  return (s.module === "origins" || s.module === "seasonal") && Boolean(s.originsMap?.frame);
 }
 
 export const FLOW_COUNT_DEFAULT = 12;

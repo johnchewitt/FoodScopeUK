@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { breakpointForWidth } from "@/map/layoutMetrics";
-import { selectUrlState, useAppStore } from "./store";
+import { canFramePartners, selectUrlState, useAppStore } from "./store";
 import { historyModeFor, parseUrlState, serializeUrlState } from "./urlState";
 
 /** Mirrors navigation state to the query string and back (ADR-13). */
@@ -97,6 +97,11 @@ export function useKeyboardShortcuts(): void {
           break;
         case "?":
           s.openOverlay("help");
+          break;
+        case "f":
+        case "F":
+          if (!canFramePartners(s)) return;
+          s.issueMapCommand({ type: "goTo", target: "partners" });
           break;
         default:
           return;
