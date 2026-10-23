@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { resetAppStore, selectReducedMotion, useAppStore } from "./store";
+import { resetAppStore, selectReducedMotion, selectUrlState, useAppStore } from "./store";
 
 const s = () => useAppStore.getState();
 
@@ -98,5 +98,45 @@ describe("reduced motion", () => {
     s().setSystemPrefersReducedMotion(false);
     s().setMotionPreference("reduced");
     expect(selectReducedMotion(s())).toBe(true);
+  });
+});
+
+describe("Seasonal playback (SS-03)", () => {
+  it("stops when the user changes month, year, commodity, measure, comparison or module", () => {
+    const stops: [string, () => void][] = [
+      ["setMonth", () => s().setMonth(3)],
+      ["setYearMonth", () => s().setYearMonth(2025, 4)],
+      ["setYear", () => s().setYear(2024)],
+      ["setCommodity", () => s().setCommodity("bananas")],
+      ["setMeasure", () => s().setMeasure("value")],
+      ["setCompareYear", () => s().setCompareYear(2022)],
+      ["setCompareMonth", () => s().setCompareMonth(7)],
+      ["setModule", () => s().setModule("origins")],
+      ["hydrateFromUrl", () => s().hydrateFromUrl({ ...selectUrlState(s()) })],
+    ];
+    for (const [name, act] of stops) {
+      s().setPlaying(true);
+      act();
+      expect(s().playing, name).toBe(false);
+    }
+  });
+
+  it("keeps playing while it advances, and when a partner is followed or the heatmap changes", () => {
+    s().setPlaying(true);
+    s().playbackStep(2025, 2);
+    expect(s()).toMatchObject({ playing: true, year: 2025, month: 2 });
+    s().selectPartner("MA");
+    s().setHeatmap("amount");
+    expect(s().playing).toBe(true);
+  });
+
+  it("defaults to 1× (1.2 s per month) and clamps comparison months", () => {
+    expect(s().playSpeed).toBe(1);
+    s().setPlaySpeed(2);
+    expect(s().playSpeed).toBe(2);
+    s().setCompareMonth(14);
+    expect(s().compareMonth).toBe(12);
+    s().setCompareMonth(null);
+    expect(s().compareMonth).toBeNull();
   });
 });
