@@ -1,12 +1,21 @@
 [
   {
+    "id": "S01",
+    "title": "Overseas Trade Statistics API (uktradeinfo)",
+    "publisher": "HM Revenue & Customs",
+    "url": "https://www.uktradeinfo.com/api-documentation/",
+    "licence": "Open Government Licence v3.0",
+    "status": "verified",
+    "notes": "Monthly UK imports by CN8 commodity and recorded partner. Partner = country of dispatch, which may differ from where goods were grown. Imports valued CIF (statistical value; Intrastat EU trade uses invoice value). Net mass in kg; about a third of Intrastat goods need no weight declaration and are estimated. Provisional for up to 18 months after publication. Series breaks: EU exit (Jan 2021) and customs-based GB–EU import collection (Jan 2022)."
+  },
+  {
     "id": "S24",
-    "title": "Natural Earth Admin 0 countries (1:110m), via world-atlas",
-    "publisher": "Natural Earth (packaged by the world-atlas project)",
-    "url": "https://www.naturalearthdata.com/downloads/110m-cultural-vectors/",
-    "licence": "Public domain (Natural Earth); world-atlas packaging ISC",
-    "status": "partly_verified",
-    "notes": "Version 4.1.0 confirmed from the world-atlas 2.0.2 README. Used only as reference outlines. The 1:50m edition with ISO codes for the Food Origins map is verified in Stage 2."
+    "title": "Natural Earth Admin 0 countries (1:110m outlines, 1:50m label points)",
+    "publisher": "Natural Earth",
+    "url": "https://www.naturalearthdata.com/downloads/",
+    "licence": "Public domain (Natural Earth)",
+    "status": "verified",
+    "notes": "v5.1.2 GeoJSON from the Natural Earth repository (tag v5.1.2), pinned by SHA-256. ISO_A2_EH is the join key to HMRC CountryCodeAlpha (gate G4). Label points are Natural Earth's own LABEL_X/LABEL_Y, used as the symbolic start of import connections. Reference geometry only; boundaries are not an endorsement."
   },
   {
     "id": "S25",
@@ -14,7 +23,7 @@
     "publisher": "Esri",
     "url": "https://developers.arcgis.com/rest/basemap-styles/",
     "licence": "Esri terms of use; attribution rendered by the SDK",
-    "status": "to_verify",
-    "notes": "Used only when an ArcGIS API key is configured (Actions secret ARCGIS_API_KEY). Not reachable from the build sandbox, so untested there."
+    "status": "verified",
+    "notes": "Dark grey style (arcgis/dark-gray), used when an ArcGIS API key is configured (Actions secret ARCGIS_API_KEY). Loads on the live site (post-deploy smoke test, 23 Oct 2026); not reachable from the build sandbox."
   }
 ]

@@ -1,8 +1,9 @@
 """Build and validate public/data/manifest.json (architecture §6.1 'publish').
 
-Stage 1: the manifest lists the static reference layer(s) described by `*.provenance.json`
-sidecars under public/data/reference/, plus the catalogue entries for the sources in use.
-No statistical snapshot exists yet, so `snapshotId` is null.
+The manifest lists every dataset described by a `*.provenance.json` sidecar — reference layers
+under public/data/reference/ and statistical datasets under public/data/snapshots/<id>/ — plus
+the catalogue entries for the sources they cite. `snapshotId` is the newest snapshot directory
+(YYYY-MM-DD), or null when none has been published.
 """
 
 from __future__ import annotations
@@ -33,10 +34,25 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def load_reference_datasets(data_dir: Path) -> list[dict[str, Any]]:
+def latest_snapshot_id(data_dir: Path) -> str | None:
+    root = data_dir / "snapshots"
+    if not root.is_dir():
+        return None
+    ids = sorted(p.name for p in root.iterdir() if p.is_dir() and len(p.name) == 10 and p.name[4] == "-")
+    return ids[-1] if ids else None
+
+
+def _sidecars(data_dir: Path, snapshot_id: str | None) -> list[Path]:
+    found = sorted((data_dir / "reference").glob("*.provenance.json"))
+    if snapshot_id:
+        found += sorted((data_dir / "snapshots" / snapshot_id).rglob("*.provenance.json"))
+    return found
+
+
+def load_reference_datasets(data_dir: Path, snapshot_id: str | None = None) -> list[dict[str, Any]]:
     """Read provenance sidecars and verify each referenced file's checksum and size."""
     datasets: list[dict[str, Any]] = []
-    for sidecar in sorted((data_dir / "reference").glob("*.provenance.json")):
+    for sidecar in _sidecars(data_dir, snapshot_id):
         record = json.loads(sidecar.read_text(encoding="utf-8"))
         target = data_dir / record["path"]
         if not target.is_file():
@@ -56,7 +72,10 @@ def build_manifest(data_dir: Path, catalogue: list[dict[str, Any]], snapshot_id:
     `generatedAt` is the latest dataset retrieval time (not the wall clock) so that re-running
     the step on unchanged inputs produces byte-identical output.
     """
-    datasets = load_reference_datasets(data_dir)
+    datasets = load_reference_datasets(data_dir, snapshot_id)
+    ids = [d["id"] for d in datasets]
+    if len(set(ids)) != len(ids):
+        raise ManifestError(f"duplicate dataset ids: {sorted(i for i in ids if ids.count(i) > 1)}")
     used_sources = {sid for d in datasets for sid in d["sourceIds"]}
     missing = used_sources - {c["id"] for c in catalogue}
     if missing:
@@ -79,7 +98,7 @@ def validate_manifest(manifest: dict[str, Any], schema_path: Path = SCHEMA_PATH)
 
 def publish(data_dir: Path = DATA_DIR, catalogue_path: Path = CATALOGUE_PATH) -> Path:
     catalogue = json.loads(catalogue_path.read_text(encoding="utf-8"))
-    manifest = build_manifest(data_dir, catalogue)
+    manifest = build_manifest(data_dir, catalogue, latest_snapshot_id(data_dir))
     validate_manifest(manifest)
     out = data_dir / "manifest.json"
     out.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

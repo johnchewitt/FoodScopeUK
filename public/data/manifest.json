@@ -11,35 +11,70 @@
       "path": "reference/world-countries-110m.geojson",
       "format": "geojson",
       "schemaId": null,
-      "sha256": "928455649f3c1e3be46f7f28cf4030dde1c97a248773e638d9944da784cb4e0f",
-      "bytes": 194282,
-      "featureCount": 177,
+      "sha256": "98a5f0c19147c8f5eda69c06553753d51c12efd54345620f0299237443582421",
+      "bytes": 189232,
+      "featureCount": 176,
       "sourceIds": [
         "S24"
       ],
-      "referencePeriod": "Natural Earth v4.1.0",
+      "referencePeriod": "Natural Earth v5.1.2",
       "coverage": "World",
       "provenance": "measured",
-      "licence": "Public domain (Natural Earth); world-atlas packaging ISC",
+      "licence": "Public domain (Natural Earth)",
       "attribution": "Made with Natural Earth",
       "expectedCadence": "static",
       "retrieval": {
-        "method": "npm package",
-        "source": "world-atlas@2.0.2 countries-110m.json",
+        "method": "download (pinned URL and SHA-256)",
+        "source": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_110m_admin_0_countries.geojson (sha256 6866c877d39cba9c357620878839b336d569f8c662d3cfab4cb1dbe2d39c977f)",
         "retrievedAt": "2026-10-23T00:00:00Z",
-        "notes": "Converted with topojson-client; rings crossing the antimeridian split at ±180°; coordinates rounded to 3 dp; features sorted by name."
+        "notes": "Properties NAME, NAME_LONG, ISO_A2_EH, ISO_N3_EH kept (-99 → null); Antarctica omitted; rings crossing the antimeridian split at ±180°; coordinates rounded to 3 dp; features sorted by name."
+      }
+    },
+    {
+      "id": "reference.world_country_points",
+      "title": "Country label points (Natural Earth 1:50m)",
+      "role": "reference",
+      "path": "reference/world-country-points.json",
+      "format": "json",
+      "schemaId": null,
+      "sha256": "d0dcccde19ac302e952ce0efc42daa460e642af638507fee582232ed7edd06fd",
+      "bytes": 24342,
+      "featureCount": 237,
+      "sourceIds": [
+        "S24"
+      ],
+      "referencePeriod": "Natural Earth v5.1.2",
+      "coverage": "World",
+      "provenance": "measured",
+      "licence": "Public domain (Natural Earth)",
+      "attribution": "Made with Natural Earth",
+      "expectedCadence": "static",
+      "retrieval": {
+        "method": "download (pinned URL and SHA-256)",
+        "source": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_admin_0_countries.geojson (sha256 3e458fc036ad0a66411f2c1e6cac49c5d7bfb81cb1123bc513b22511a2b7fdeb)",
+        "retrievedAt": "2026-10-23T00:00:00Z",
+        "notes": "Natural Earth's own label point (LABEL_X, LABEL_Y) per ISO_A2_EH code, rounded to 4 dp. Used as the symbolic start of import connections and for partners too small for 1:110m. Not a port or production location."
       }
     }
   ],
   "catalogue": [
     {
+      "id": "S01",
+      "title": "Overseas Trade Statistics API (uktradeinfo)",
+      "publisher": "HM Revenue & Customs",
+      "url": "https://www.uktradeinfo.com/api-documentation/",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Monthly UK imports by CN8 commodity and recorded partner. Partner = country of dispatch, which may differ from where goods were grown. Imports valued CIF (statistical value; Intrastat EU trade uses invoice value). Net mass in kg; about a third of Intrastat goods need no weight declaration and are estimated. Provisional for up to 18 months after publication. Series breaks: EU exit (Jan 2021) and customs-based GB–EU import collection (Jan 2022)."
+    },
+    {
       "id": "S24",
-      "title": "Natural Earth Admin 0 countries (1:110m), via world-atlas",
-      "publisher": "Natural Earth (packaged by the world-atlas project)",
-      "url": "https://www.naturalearthdata.com/downloads/110m-cultural-vectors/",
-      "licence": "Public domain (Natural Earth); world-atlas packaging ISC",
-      "status": "partly_verified",
-      "notes": "Version 4.1.0 confirmed from the world-atlas 2.0.2 README. Used only as reference outlines. The 1:50m edition with ISO codes for the Food Origins map is verified in Stage 2."
+      "title": "Natural Earth Admin 0 countries (1:110m outlines, 1:50m label points)",
+      "publisher": "Natural Earth",
+      "url": "https://www.naturalearthdata.com/downloads/",
+      "licence": "Public domain (Natural Earth)",
+      "status": "verified",
+      "notes": "v5.1.2 GeoJSON from the Natural Earth repository (tag v5.1.2), pinned by SHA-256. ISO_A2_EH is the join key to HMRC CountryCodeAlpha (gate G4). Label points are Natural Earth's own LABEL_X/LABEL_Y, used as the symbolic start of import connections. Reference geometry only; boundaries are not an endorsement."
     },
     {
       "id": "S25",
@@ -47,8 +82,8 @@
       "publisher": "Esri",
       "url": "https://developers.arcgis.com/rest/basemap-styles/",
       "licence": "Esri terms of use; attribution rendered by the SDK",
-      "status": "to_verify",
-      "notes": "Used only when an ArcGIS API key is configured (Actions secret ARCGIS_API_KEY). Not reachable from the build sandbox, so untested there."
+      "status": "verified",
+      "notes": "Dark grey style (arcgis/dark-gray), used when an ArcGIS API key is configured (Actions secret ARCGIS_API_KEY). Loads on the live site (post-deploy smoke test, 23 Oct 2026); not reachable from the build sandbox."
     }
   ]
 }
