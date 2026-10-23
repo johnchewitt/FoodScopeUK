@@ -376,11 +376,13 @@ export function shareClass(share: number): number {
 }
 
 /**
- * Flow line widths (FO-03): linear in value between `minPx` and `maxPx`, scaled to the largest
- * value shown. Zero or negative values get `minPx`.
+ * Flow line widths (FO-03): linear in value between `minPx` and `maxPx`. By default the largest
+ * value shown gets `maxPx` (Food Origins: one period at a time). With `scaleMax` (Seasonal Supply)
+ * the scale is fixed, so the same width means the same amount in every month and year; values
+ * above it are clamped. Zero or negative values get `minPx`.
  */
-export function flowWidths(values: readonly number[], minPx = 1.5, maxPx = 12): number[] {
-  const max = Math.max(0, ...values);
+export function flowWidths(values: readonly number[], minPx = 1.5, maxPx = 12, scaleMax?: number): number[] {
+  const max = scaleMax !== undefined && scaleMax > 0 ? scaleMax : Math.max(0, ...values);
   if (max <= 0) return values.map(() => minPx);
   return values.map((v) => (v <= 0 ? minPx : minPx + ((maxPx - minPx) * Math.min(v, max)) / max));
 }

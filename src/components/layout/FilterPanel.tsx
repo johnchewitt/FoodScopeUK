@@ -2,6 +2,7 @@ import { Globe, Map as MapIcon, PanelLeftClose } from "lucide-react";
 import { getModule } from "@/app/modules";
 import { EmptyState } from "@/components/states/EmptyState";
 import { OriginsControls } from "@/features/origins/OriginsControls";
+import { SeasonalControlsLazy } from "@/features/seasonal/lazy";
 import { selectReducedMotion, useAppStore } from "@/state/store";
 
 /** Collapsible left panel: module controls (from Stage 3 onward) and map display settings. */
@@ -39,6 +40,8 @@ export function FilterPanel() {
       <div className="panel__body scroll-area">
         {module === "origins" ? (
           <OriginsControls />
+        ) : module === "seasonal" ? (
+          <SeasonalControlsLazy />
         ) : (
           <section className="panel-section" aria-labelledby="controls-heading">
             <h3 id="controls-heading" className="panel-section__title">

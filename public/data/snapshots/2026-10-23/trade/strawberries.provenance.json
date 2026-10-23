@@ -5,8 +5,8 @@
   "path": "snapshots/2026-10-23/trade/strawberries.json",
   "format": "json",
   "schemaId": "trade-snapshot",
-  "sha256": "f8148c88d091c7cd525ebeddc252f2dc7c1bff169464aea81a8ad8bed439aec3",
-  "bytes": 30946,
+  "sha256": "5fe061d6a8d0877385e39ed1c1fd15e29a338d17b2439fc737be8ebfd60e7cdf",
+  "bytes": 31209,
   "sourceIds": [
     "S01",
     "S24"

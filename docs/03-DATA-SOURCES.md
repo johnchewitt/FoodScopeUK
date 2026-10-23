@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | 03 — Verified data catalogue and manifest |
-| **Version** | 0.2 — 23 October 2026 (Stage 2: HMRC trade verified and ingested) |
+| **Version** | 0.3 — 23 October 2026 (Stage 3: commodity-code history derived; UK seasonal production status recorded) |
 | **Verification date** | 23 October 2026 (all "Verified" statements refer to checks made on this date) |
 | **Machine-readable form** | Generated into `public/data/snapshots/<date>/catalogue.json` by the pipeline from Stage 2 |
 
@@ -100,6 +100,24 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | Potatoes | 0701 — fresh or chilled, incl. seed (excl. frozen/processed) | 07011000, 07019010, 07019050, 07019090 |
 | Wheat | 1001 — wheat and meslin, incl. durum and seed | 10011000, 10011100, 10011900, 10019010, 10019091, 10019099, 10019110, 10019120, 10019190, 10019900 |
 
+**Commodity-code history (Stage 3).** The offline build also writes, for every CN8 code in a basket:
+- `firstMonth` and `lastMonth` (first and last month with recorded import rows);
+- `monthsRecorded`;
+- `calendarMonths` (calendar months that ever have rows);
+- `netMassKgByCalendarMonth` (unsuppressed net mass summed by calendar month).
+
+It also writes basket-level `codeChanges`: months where one code's records end and another's begin, strictly inside the snapshot. All of this is derived from the same committed `/OTS` aggregate responses as the totals, which are unchanged (fingerprint and reconciliation tests in `pipeline/tests/test_trade_snapshot.py`). Facts in the 23 Oct 2026 snapshot:
+
+| Basket | Code history |
+|---|---|
+| Tomatoes | `07020000` ("Tomatoes, fresh or chilled"; /Commodity gives no CN8 long description, so the HS6 text is used) recorded Jan 2019 – Dec 2024; `07020010`, `07020091` and `07020099` (HMRC: whole tomatoes under 47 mm; tomatoes in trusses, 47 mm and over; other tomatoes) recorded from Jan 2025 |
+| Bananas | `08039010` (fresh bananas) recorded Jan 2019 – Dec 2023; `08039011` (Plátano de Canarias) and `08039019` (other fresh bananas) from Jan 2024. `08030011`, `08030019` and `08030090` have no records since Jan 2019 |
+| Potatoes | `07019050` (HMRC: "new potatoes from 1 January to 30 June") holds 99.6 % of its net mass in January–June (small amounts in Jul 2024, Jul 2025 and Dec 2024) and 10.8 % of the basket. HMRC's description of `07019090` excludes those new potatoes, so code-level series switch with the season; the basket includes both, so its totals do not |
+| Wheat | `10011000`, `10019010`, `10019091` and `10019099` have no records since Jan 2019; other codes are recorded with gaps (seed codes) |
+| Strawberries | One code (`08101000`), recorded every month |
+
+The wording says when a code is *recorded*: the API gives no validity dates, so the app does not claim when a code was introduced.
+
 **Ingestion (Stage 2).** `pipeline/foodscope_pipeline/sources/hmrc_ots.py` (online) fetches `/Commodity`, `/Country`, one `$apply` aggregate per basket from Jan 2019, the raw rows for one reconciliation month per basket, and probes the latest and next month — 15 requests on 23 Oct 2026. Every response is stored byte-for-byte in `pipeline/raw/hmrc/<snapshot>/` with URL, timestamp and SHA-256. `trade.py` (offline) builds `public/data/snapshots/<snapshot>/trade/<basket>.json` and fails if the reconciliation does not match. It runs in GitHub Actions (`refresh-trade-data.yml`), never in the browser.
 
 **Interpretation caveats (verified)**
@@ -164,6 +182,13 @@ Annual official statistics; 2025 edition published 11 December 2025. The next di
 | S08 | Milk utilisation by dairies | monthly; latest edition to confirm | Milk products context |
 
 Publisher: Defra (gov.uk statistics collections). Licence OGL v3.0. **To verify**: dataset file formats and column names; unit definitions (dressed carcase weight etc.).
+
+**Stage 3 (Seasonal Supply).** None of S06–S08 covers the five baskets in the app (tomatoes, strawberries, bananas, potatoes, wheat). Seasonal Supply therefore shows **no UK production** (SS-07). Its "UK production" and "Combined" options are disabled, with this explanation:
+- tomatoes, strawberries and potatoes point to S09;
+- wheat points to S10;
+- bananas: the inventory lists no source.
+
+Imports are never used to estimate domestic production.
 
 ### S09 / S10 — Annual production 🔴
 
@@ -386,3 +411,13 @@ Not verified on this date (and therefore not to be coded against yet): CORS on t
 
 Still not verified: Defra trade codes for the baskets (G3, S05); HMRC port allocation (S28); CORS on the HMRC API (not needed).
 
+### Stage 3 additions (23 October 2026)
+
+| Check | Method | Result |
+|---|---|---|
+| Code history vs raw responses | pytest: months with rows and net mass per code recomputed from the committed `/OTS` aggregates | Exact for every code in the five baskets; per-code net mass sums to the basket total |
+| Stage 2 figures unchanged | SHA-256 fingerprints of months, partners, rows, suppressed, nil months, flows, units and CN8 list, computed from the PR #3 files | Identical for all five baskets after the rebuild |
+| Code changes | Pipeline rule (a code's last month immediately before another's first month, both inside the range) and Python cross-check | Tomatoes Jan 2025; bananas Jan 2024; none for strawberries, potatoes or wheat |
+| Seasonal reference values | Independent Python over the snapshot (stage 3 report) | Match the app's model, charts and E2E (e.g. tomatoes Jul 2025 33,168.836 t, +2.15 % vs Jul 2024; Jan 2025 HHI 2,736) |
+
+Still not verified: monthly UK production for the five baskets (none identified, SS-07); S09/S10 annual files; Defra trade codes (G3).

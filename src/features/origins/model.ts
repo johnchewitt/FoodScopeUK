@@ -40,6 +40,13 @@ export interface OriginsSelection {
   measure: Measure;
   partner: string | null;
   flowCount: number;
+  /**
+   * Fixed connection-width scale: the value drawn at 12 px (Seasonal Supply, SS-02). Default:
+   * the period's largest connection (Food Origins compares partners within one period).
+   */
+  flowScaleMax?: number;
+  /** Months back to the comparison period (default 12: the same period a year earlier). */
+  comparisonShift?: number;
 }
 
 export interface PartnerRow {
@@ -187,7 +194,7 @@ export function buildOriginsModel(
   const shares = partnerShares(agg.partners, measure);
 
   // Comparison: the same available months one year earlier, only if all are in the snapshot.
-  const compMonths = period.available.map((m) => addMonths(m, -12));
+  const compMonths = period.available.map((m) => addMonths(m, -(sel.comparisonShift ?? 12)));
   const comparisonAvailable =
     compMonths.length > 0 &&
     compMonths.every((m) => monthDiff(range.first, m) >= 0 && monthDiff(m, range.last) >= 0);
@@ -231,7 +238,12 @@ export function buildOriginsModel(
     return p && p.geometry !== "none" && s.key !== "GB";
   });
   const flows = flowCandidates.slice(0, Math.max(0, sel.flowCount));
-  const widths = flowWidths(flows.map((f) => f.value));
+  const widths = flowWidths(
+    flows.map((f) => f.value),
+    1.5,
+    12,
+    sel.flowScaleMax,
+  );
   const flowWidth = new Map(flows.map((f, i) => [f.key, widths[i]!]));
 
   const rows: PartnerRow[] = shares.map((s) => {

@@ -77,3 +77,79 @@ def test_every_partner_is_crosswalked_or_explicitly_unmapped() -> None:
                 assert (p["point"] is None) == (p["geometry"] == "none")
             else:
                 assert p["key"].startswith("hmrc-") and p["geometry"] == "none"
+
+
+# ---------------------------------------------------------------------------------------------
+# Stage 3: commodity-code history added without changing any Stage 2 figure
+# ---------------------------------------------------------------------------------------------
+
+# SHA-256 of the Stage 2 content (months, partners, rows, suppressed, nil months, flows, units and
+# the commodity definition with its CN8 codes), computed from the files merged in PR #3 before the
+# code history was added. If any figure changed, these fail.
+STAGE2_FINGERPRINTS = {
+    "tomatoes": "07e29686f81e678df0d9b5c8b46cd8a79d2b27d6072532115ec9d15ff278928a",
+    "strawberries": "c1865a76fa8621cf316fa0634e601acc0456a06ceaa0284d6e6568a9a8503b66",
+    "bananas": "71b00e3e34c323ffc3ab6389b9f46d87006f7909931482006db462b9f555b495",
+    "potatoes": "f48fc05c0ce67d4a30b47b079cfac4b3b446e5c754a570bf02dfa36cc0466cbc",
+    "wheat": "5b8ac48cf45db35d72d83728b2a03ba2b6c9a262eab4d67ed0987122d44c76eb",
+}
+
+
+def _stage2_fingerprint(snap: dict) -> str:
+    import hashlib
+
+    core = {k: snap[k] for k in ["months", "partners", "rows", "suppressed", "nilMonths", "flows", "units"]}
+    c = snap["commodity"]
+    core["commodity"] = {k: c[k] for k in ["id", "label", "definition", "hsScope"]}
+    core["commodity"]["cn8"] = [{k: x[k] for k in ["code", "commodityId", "description"]} for x in c["cn8"]]
+    body = json.dumps(core, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(body.encode()).hexdigest()
+
+
+@pytest.mark.parametrize("basket", sorted(STAGE2_FINGERPRINTS))
+def test_stage2_figures_unchanged(rebuilt: tuple[Path, Path], basket: str) -> None:
+    data_dir, _ = rebuilt
+    snap = json.loads((data_dir / "snapshots" / SNAPSHOT / "trade" / f"{basket}.json").read_text())
+    assert _stage2_fingerprint(snap) == STAGE2_FINGERPRINTS[basket]
+
+
+def _snap(basket: str) -> dict:
+    return json.loads((DATA_DIR / "snapshots" / SNAPSHOT / "trade" / f"{basket}.json").read_text())
+
+
+def test_code_changes_found_in_the_real_data() -> None:
+    # Tomatoes: one code until Dec 2024, three from Jan 2025 (HMRC /OTS records, retrieved 23 Oct 2026).
+    assert _snap("tomatoes")["codeChanges"] == [
+        {"month": "2025-01", "ended": ["07020000"], "started": ["07020010", "07020091", "07020099"]}
+    ]
+    # Bananas: fresh bananas split from Jan 2024 (Plátano de Canarias recorded separately).
+    assert _snap("bananas")["codeChanges"] == [
+        {"month": "2024-01", "ended": ["08039010"], "started": ["08039011", "08039019"]}
+    ]
+    for basket in ("strawberries", "potatoes", "wheat"):
+        assert _snap(basket)["codeChanges"] == [], basket
+
+
+def test_code_history_matches_the_rows() -> None:
+    cache = RawCache(RAW_HMRC / SNAPSHOT)
+    for basket in BASKETS:
+        snap = _snap(basket.id)
+        raw = [r for r in cache.items(f"ots-aggregate-{basket.id}") if int(r["FlowTypeId"]) in (1, 3)]
+        total_kg = sum(int(r["SumNetMass"]) for r in raw if int(r["SuppressionIndex"]) == 0)
+        assert sum(sum(c["netMassKgByCalendarMonth"]) for c in snap["commodity"]["cn8"]) == total_kg
+        for c in snap["commodity"]["cn8"]:
+            months = sorted({int(r["MonthId"]) for r in raw if int(r["CommodityId"]) == c["commodityId"]})
+            assert c["monthsRecorded"] == len(months)
+            if months:
+                assert c["firstMonth"] == f"{months[0] // 100}-{months[0] % 100:02d}"
+                assert c["lastMonth"] == f"{months[-1] // 100}-{months[-1] % 100:02d}"
+            else:
+                assert c["firstMonth"] is None and c["lastMonth"] is None
+
+
+def test_new_potatoes_code_is_seasonal() -> None:
+    code = next(c for c in _snap("potatoes")["commodity"]["cn8"] if c["code"] == "07019050")
+    assert "1 January to 30 June" in code["description"]
+    kg = code["netMassKgByCalendarMonth"]
+    assert sum(kg[:6]) / sum(kg) > 0.995  # recorded almost entirely January–June
+    assert code["calendarMonths"] == [1, 2, 3, 4, 5, 6, 7, 12]

@@ -5,8 +5,8 @@
   "path": "snapshots/2026-10-23/trade/tomatoes.json",
   "format": "json",
   "schemaId": "trade-snapshot",
-  "sha256": "23b8c56d1fe5b24dda09f926434387c4d52915985c9df634e5bf28f34c70c7db",
-  "bytes": 35230,
+  "sha256": "8519a5723ee5125b4862d29d1fede57a0c341623bd0fae5708dd902583ae6fc7",
+  "bytes": 36328,
   "sourceIds": [
     "S01",
     "S24"

@@ -8,6 +8,9 @@ export const PERIOD_MODES = ["rolling12", "month", "year"] as const;
 export type PeriodMode = (typeof PERIOD_MODES)[number];
 export type Measure = "mass" | "value";
 export const DEFAULT_COMMODITY = "tomatoes";
+/** Seasonal heatmap colour (SS-04/SS-05): share of the month, amount, or change vs the comparison year. */
+export const HEATMAP_MODES = ["share", "amount", "change"] as const;
+export type HeatmapMode = (typeof HEATMAP_MODES)[number];
 
 /** State mirrored in the query string (ADR-13, SH-04). */
 export interface UrlState {
@@ -23,6 +26,10 @@ export interface UrlState {
   measure: Measure;
   /** Selected recorded import partner key (ISO alpha-2, or hmrc-<id> for non-country categories). */
   partner: string | null;
+  /** Seasonal Supply (SS-01, SS-05): comparison year (null = the year before), comparison month (null = off), heatmap colour. */
+  compareYear: number | null;
+  compareMonth: number | null;
+  heatmap: HeatmapMode;
 }
 
 export const DEFAULT_URL_STATE: UrlState = {
@@ -35,6 +42,9 @@ export const DEFAULT_URL_STATE: UrlState = {
   year: null,
   measure: "mass",
   partner: null,
+  compareYear: null,
+  compareMonth: null,
+  heatmap: "share",
 };
 
 const PERIOD_PARAM: Record<PeriodMode, string> = { rolling12: "r12", month: "m", year: "y" };
@@ -60,9 +70,14 @@ export function parseUrlState(search: string): UrlState {
   const y = params.get("y");
   const ms = params.get("ms");
   const p = params.get("p");
+  const cy = params.get("cy");
+  const cm = params.get("cm");
+  const hm = params.get("hm");
 
   const monthNum = mo !== null && /^\d{1,2}$/.test(mo) ? Number(mo) : NaN;
   const yearNum = y !== null && /^\d{4}$/.test(y) ? Number(y) : NaN;
+  const compareYearNum = cy !== null && /^\d{4}$/.test(cy) ? Number(cy) : NaN;
+  const compareMonthNum = cm !== null && /^\d{1,2}$/.test(cm) ? Number(cm) : NaN;
   const period = (Object.keys(PERIOD_PARAM) as PeriodMode[]).find((k) => PERIOD_PARAM[k] === pm);
 
   return {
@@ -75,6 +90,15 @@ export function parseUrlState(search: string): UrlState {
     year: Number.isInteger(yearNum) && yearNum >= 1990 && yearNum <= 2100 ? yearNum : null,
     measure: ms === "value" ? "value" : "mass",
     partner: p && PARTNER_KEY.test(p) ? p : null,
+    compareYear:
+      Number.isInteger(compareYearNum) && compareYearNum >= 1990 && compareYearNum <= 2100
+        ? compareYearNum
+        : null,
+    compareMonth:
+      Number.isInteger(compareMonthNum) && compareMonthNum >= 1 && compareMonthNum <= 12
+        ? compareMonthNum
+        : null,
+    heatmap: (HEATMAP_MODES as readonly string[]).includes(hm ?? "") ? (hm as HeatmapMode) : "share",
   };
 }
 
@@ -88,6 +112,9 @@ export function serializeUrlState(state: UrlState): string {
   if (state.month !== null) params.set("mo", String(state.month));
   if (state.measure !== DEFAULT_URL_STATE.measure) params.set("ms", state.measure);
   if (state.partner !== null) params.set("p", state.partner);
+  if (state.compareYear !== null) params.set("cy", String(state.compareYear));
+  if (state.compareMonth !== null) params.set("cm", String(state.compareMonth));
+  if (state.heatmap !== DEFAULT_URL_STATE.heatmap) params.set("hm", state.heatmap);
   if (state.lad !== null) params.set("lad", state.lad);
   if (state.overlay !== "none") params.set("view", state.overlay);
   const qs = params.toString();

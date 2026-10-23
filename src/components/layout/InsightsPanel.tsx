@@ -7,6 +7,7 @@ import { PartialNotice } from "@/components/states/Notice";
 import { SkeletonLines } from "@/components/states/Skeleton";
 import { principlesById } from "@/content/principles";
 import { OriginsInsights } from "@/features/origins/OriginsInsights";
+import { SeasonalInsightsLazy } from "@/features/seasonal/lazy";
 import { BASEMAP_STATUS_ID, REFERENCE_DATASET_ID, REFERENCE_LAYER_ID } from "@/map/layerIds";
 import { basemapMode, readArcgisEnv } from "@/services/arcgis/env";
 import { describeDataError } from "@/services/data/errors";
@@ -76,6 +77,10 @@ export function InsightsPanel() {
           <ErrorBoundary region="Food Origins insights">
             <OriginsInsights />
           </ErrorBoundary>
+        ) : module === "seasonal" ? (
+          <ErrorBoundary region="Seasonal Supply insights">
+            <SeasonalInsightsLazy />
+          </ErrorBoundary>
         ) : (
           <section className="panel-section" aria-labelledby="about-heading">
             <h3 id="about-heading" className="panel-section__title">
@@ -102,7 +107,7 @@ export function InsightsPanel() {
                 <StatusItem
                   tone="ok"
                   title={`Trade snapshot ${manifest.data.snapshotId}`}
-                  detail={`HMRC Overseas Trade Statistics for ${tradeDatasets.length} commodities, ${tradeDatasets[0]?.referencePeriod ?? ""}. Used by Food Origins.`}
+                  detail={`HMRC Overseas Trade Statistics for ${tradeDatasets.length} commodities, ${tradeDatasets[0]?.referencePeriod ?? ""}. Used by Food Origins and Seasonal Supply.`}
                 />
               ) : (
                 <StatusItem
@@ -168,7 +173,7 @@ export function InsightsPanel() {
           )}
         </section>
 
-        {module !== "origins" && (
+        {module !== "origins" && module !== "seasonal" && (
           <section className="panel-section">
             <ChartFrame
               title="Trend"

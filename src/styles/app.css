@@ -1634,3 +1634,517 @@
   padding-left: 18px;
   color: color-mix(in oklab, var(--fs-text) 80%, var(--fs-text-muted));
 }
+
+/* ───────────────────────── Seasonal Supply (Stage 3) ───────────────────────── */
+.stage[data-module="seasonal"] {
+  --fs-timeline-h: var(--fs-timeline-h-seasonal);
+}
+
+/* Timeline: play, speed, year, January–December track with real monthly bars */
+.season-tl {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    "controls year track"
+    "controls year status";
+  align-items: center;
+  column-gap: 14px;
+  row-gap: 2px;
+  max-width: 960px;
+  padding: 8px 16px 6px;
+}
+.season-tl__controls {
+  grid-area: controls;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+.season-play {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--fs-line-strong);
+  border-radius: 50%;
+  background: var(--fs-cyan-soft);
+  color: var(--fs-cyan);
+  cursor: pointer;
+  transition:
+    background var(--fs-dur-fast) var(--fs-ease),
+    box-shadow var(--fs-dur-fast) var(--fs-ease);
+}
+.season-play:hover {
+  box-shadow: 0 0 18px -4px var(--fs-cyan-glow);
+}
+.season-play[aria-pressed="true"] {
+  background: var(--fs-cyan);
+  color: var(--fs-navy);
+}
+.season-play[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.season-speed {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius-pill);
+}
+.season-speed button {
+  min-width: 24px;
+  padding: 1px 5px;
+  border: 0;
+  border-radius: var(--fs-radius-pill);
+  background: transparent;
+  font-size: 10px;
+  line-height: 16px;
+  color: var(--fs-text-muted);
+  cursor: pointer;
+}
+.season-speed button:hover {
+  color: var(--fs-text);
+}
+.season-speed button[aria-checked="true"] {
+  background: var(--fs-cyan-soft);
+  color: var(--fs-cyan);
+}
+.season-tl__year {
+  grid-area: year;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.season-tl__year .tool-btn[aria-disabled="true"] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.season-tl__year-label {
+  min-width: 3.1em;
+  font-family: var(--fs-font-mono);
+  font-size: var(--fs-text-lg);
+  font-weight: 500;
+  text-align: center;
+  color: var(--fs-text);
+}
+.season-tl__track {
+  grid-area: track;
+  position: relative;
+  height: 56px;
+  touch-action: none;
+  cursor: pointer;
+  user-select: none;
+}
+.season-tl__cols {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 3px;
+}
+.season-tl__col {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 16px;
+  justify-items: center;
+  align-items: end;
+  padding-top: 4px;
+  border-radius: 6px;
+  transition: background var(--fs-dur-fast) var(--fs-ease);
+}
+.season-tl__col:hover {
+  background: var(--fs-surface-hover);
+}
+.season-tl__bar {
+  align-self: end;
+  width: 58%;
+  border-radius: 3px 3px 1px 1px;
+  background: color-mix(in oklab, var(--fs-cyan) 42%, transparent);
+  transition:
+    height var(--fs-dur) var(--fs-ease),
+    background var(--fs-dur-fast) var(--fs-ease);
+}
+.season-tl__label {
+  font-size: 10px;
+  line-height: 16px;
+  color: var(--fs-text-muted);
+}
+.season-tl__label-short {
+  display: none;
+}
+.season-tl__col[data-selected="true"] {
+  background: var(--fs-cyan-soft);
+  box-shadow: inset 0 0 0 1px var(--fs-line-strong);
+}
+.season-tl__col[data-selected="true"] .season-tl__bar {
+  background: var(--fs-cyan);
+  box-shadow: 0 0 12px -2px var(--fs-cyan-glow);
+}
+.season-tl__col[data-selected="true"] .season-tl__label {
+  font-weight: 600;
+  color: var(--fs-cyan);
+}
+.season-tl__col[data-compare="true"] {
+  outline: 1px dashed var(--fs-text);
+  outline-offset: -1px;
+}
+.season-tl__col[data-state="not_yet_published"],
+.season-tl__col[data-state="before_snapshot"] {
+  background-image: var(--fs-hatch);
+}
+.season-tl__col[data-state="not_yet_published"] .season-tl__label,
+.season-tl__col[data-state="before_snapshot"] .season-tl__label {
+  opacity: 0.6;
+}
+.season-tl__col[data-provisional="true"]::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--fs-amber);
+  opacity: 0.75;
+}
+/* The range input is the keyboard slider; pointer input is handled by the track. */
+.season-tl__range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.season-tl__track:has(.season-tl__range:focus-visible) .season-tl__col[data-selected="true"] {
+  box-shadow: var(--fs-glow-focus);
+}
+.season-tl__status {
+  grid-area: status;
+  overflow: hidden;
+  font-size: var(--fs-text-xs);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--fs-text-muted);
+}
+.season-tl__status[data-unavailable="true"] {
+  color: var(--fs-amber);
+}
+
+/* Map banner for a month without figures */
+.map-banner {
+  position: absolute;
+  z-index: 12;
+  top: calc(var(--fs-gap) + var(--fs-kpi-h) + 20px);
+  left: var(--content-left);
+  right: var(--content-right);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: fit-content;
+  max-width: min(460px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 10px 14px;
+  border-radius: var(--fs-radius-md);
+  font-size: var(--fs-text-sm);
+  line-height: 1.45;
+  color: var(--fs-text-muted);
+}
+.map-banner svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--fs-amber);
+}
+.map-banner strong {
+  font-weight: 500;
+  color: var(--fs-text);
+}
+
+/* Heatmap (SS-04/SS-05): a real table with fixed classes */
+.heatmap {
+  position: relative;
+}
+.heatmap__modes {
+  margin-bottom: 4px;
+}
+.heatmap__modes button[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.heatmap__table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: separate;
+  border-spacing: 2px;
+  table-layout: fixed;
+  font-size: 11px;
+}
+.heatmap__corner,
+.heatmap__table th[scope="row"] {
+  width: 92px;
+}
+.heatmap__table th {
+  padding: 0;
+  font-weight: 400;
+  text-align: left;
+}
+.heatmap__name {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  padding: 0 4px 0 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  white-space: nowrap;
+  text-align: left;
+  text-overflow: ellipsis;
+  color: var(--fs-text);
+  cursor: pointer;
+}
+.heatmap__name:hover {
+  color: var(--fs-cyan);
+}
+.heatmap__name[aria-pressed="true"] {
+  color: var(--fs-green);
+}
+.heatmap__name--others {
+  color: var(--fs-text-muted);
+  cursor: default;
+}
+.heatmap__table tr[data-kind="selected"] th .heatmap__name::after {
+  content: " · selected";
+  color: var(--fs-text-muted);
+}
+.heatmap__month {
+  width: 100%;
+  padding: 2px 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  font: inherit;
+  font-size: 10px;
+  color: var(--fs-text-muted);
+  cursor: pointer;
+}
+.heatmap__month:hover {
+  color: var(--fs-text);
+}
+.heatmap__table th[data-selected="true"] .heatmap__month {
+  font-weight: 600;
+  background: var(--fs-cyan-soft);
+  color: var(--fs-cyan);
+}
+.heatmap__table th[data-compare="true"] .heatmap__month {
+  outline: 1px dashed var(--fs-text);
+  outline-offset: -1px;
+}
+.heatmap__cell {
+  position: relative;
+  height: 18px;
+  padding: 0;
+  border-radius: 3px;
+  text-align: center;
+  cursor: pointer;
+}
+.heatmap__cell[data-selected="true"] {
+  outline: 1.5px solid var(--fs-text);
+  outline-offset: -1px;
+}
+.heatmap__table tr[data-selected="true"] .heatmap__cell {
+  box-shadow: inset 0 2px 0 0 var(--fs-green);
+}
+.heatmap__sign {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 18px;
+  color: var(--fs-navy);
+  opacity: 0.8;
+}
+.heatmap__tip {
+  position: absolute;
+  z-index: 5;
+  max-width: 240px;
+  padding: 6px 8px;
+  border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius-sm);
+  background: var(--fs-glass-deep);
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text);
+  transform: translate(-50%, calc(-100% - 6px));
+  pointer-events: none;
+}
+.heatmap__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11px;
+  color: var(--fs-text-muted);
+}
+.heatmap__legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.heatmap__swatch {
+  display: inline-block;
+  width: 14px;
+  height: 10px;
+  border-radius: 2px;
+}
+.heatmap__cell[data-kind="seq"][data-class="0"],
+.heatmap__swatch[data-kind="seq"][data-class="0"] {
+  background: var(--fs-seq-0);
+}
+.heatmap__cell[data-kind="seq"][data-class="1"],
+.heatmap__swatch[data-kind="seq"][data-class="1"] {
+  background: var(--fs-seq-1);
+}
+.heatmap__cell[data-kind="seq"][data-class="2"],
+.heatmap__swatch[data-kind="seq"][data-class="2"] {
+  background: var(--fs-seq-2);
+}
+.heatmap__cell[data-kind="seq"][data-class="3"],
+.heatmap__swatch[data-kind="seq"][data-class="3"] {
+  background: var(--fs-seq-3);
+}
+.heatmap__cell[data-kind="seq"][data-class="4"],
+.heatmap__swatch[data-kind="seq"][data-class="4"] {
+  background: var(--fs-seq-4);
+}
+.heatmap__cell[data-kind="seq"][data-class="5"],
+.heatmap__swatch[data-kind="seq"][data-class="5"] {
+  background: var(--fs-seq-5);
+}
+.heatmap__cell[data-kind="div"][data-class="0"],
+.heatmap__swatch[data-kind="div"][data-class="0"] {
+  background: var(--fs-div-0);
+}
+.heatmap__cell[data-kind="div"][data-class="1"],
+.heatmap__swatch[data-kind="div"][data-class="1"] {
+  background: var(--fs-div-1);
+}
+.heatmap__cell[data-kind="div"][data-class="2"],
+.heatmap__swatch[data-kind="div"][data-class="2"] {
+  background: var(--fs-div-2);
+}
+.heatmap__cell[data-kind="div"][data-class="3"],
+.heatmap__swatch[data-kind="div"][data-class="3"] {
+  background: var(--fs-div-3);
+}
+.heatmap__cell[data-kind="div"][data-class="4"],
+.heatmap__swatch[data-kind="div"][data-class="4"] {
+  background: var(--fs-div-4);
+}
+.heatmap__cell[data-kind="none"],
+.heatmap__swatch[data-kind="none"] {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--fs-line);
+}
+.heatmap__cell[data-kind="gap"],
+.heatmap__cell[data-kind="nocompare"],
+.heatmap__swatch[data-kind="gap"] {
+  background: var(--fs-hatch);
+  box-shadow: inset 0 0 0 1px rgb(142 173 174 / 0.18);
+}
+
+/* Chart keys, stats and notes */
+.series-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--fs-text-muted);
+}
+.series-key__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.series-key__line {
+  width: 14px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--fs-cyan);
+}
+.series-key__line[data-series="compare"] {
+  background: var(--fs-compare);
+}
+.series-key__rule {
+  width: 1px;
+  height: 10px;
+  background: var(--fs-text);
+  opacity: 0.55;
+}
+.stat-grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.stat-grid--3 dd {
+  font-size: var(--fs-text-sm);
+}
+.panel-section__subtitle {
+  margin: 14px 0 6px;
+  font-size: var(--fs-text-xs);
+  font-weight: 600;
+  color: var(--fs-text);
+}
+.notes-list li[data-tone="warn"] {
+  color: var(--fs-amber);
+}
+.example-btn {
+  margin-top: 12px;
+  text-align: left;
+  line-height: 1.4;
+}
+.month-compare .data-table {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 767px) {
+  .season-tl {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "controls year"
+      "controls track";
+    column-gap: 10px;
+    padding: 6px 10px;
+  }
+  .season-play {
+    width: 38px;
+    height: 38px;
+  }
+  .season-tl__year {
+    justify-content: space-between;
+  }
+  .season-tl__year .tool-btn {
+    width: 26px;
+    height: 22px;
+  }
+  .season-tl__year-label {
+    font-size: var(--fs-text-sm);
+  }
+  .season-tl__track {
+    height: 44px;
+  }
+  .season-tl__label-long {
+    display: none;
+  }
+  .season-tl__label-short {
+    display: inline;
+  }
+  .season-tl__status {
+    display: none;
+  }
+  .map-banner {
+    top: calc(var(--fs-gap) + var(--fs-kpi-h) + 12px);
+    font-size: var(--fs-text-xs);
+  }
+}
+.selected-partner .chart-frame {
+  margin-top: 16px;
+}

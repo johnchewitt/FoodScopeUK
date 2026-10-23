@@ -21,11 +21,83 @@ export interface TradeSnapshot {
         code: string;
         commodityId: number;
         description: string;
+        /**
+         * First month in the snapshot with recorded imports under this code (null: none).
+         */
+        firstMonth?: Month | null;
+        /**
+         * Last month in the snapshot with recorded imports under this code (null: none).
+         */
+        lastMonth?: Month | null;
+        /**
+         * Number of snapshot months with recorded imports under this code.
+         */
+        monthsRecorded?: number;
+        /**
+         * Calendar months (1–12) in which this code ever has recorded imports in the snapshot.
+         */
+        calendarMonths?: number[];
+        /**
+         * Unsuppressed recorded net mass (kg) under this code per calendar month (January first), summed over the snapshot.
+         *
+         * @minItems 12
+         * @maxItems 12
+         */
+        netMassKgByCalendarMonth?: [
+          number,
+          number,
+          number,
+          number,
+          number,
+          number,
+          number,
+          number,
+          number,
+          number,
+          number,
+          number
+        ];
       },
       ...{
         code: string;
         commodityId: number;
         description: string;
+        /**
+         * First month in the snapshot with recorded imports under this code (null: none).
+         */
+        firstMonth?: Month | null;
+        /**
+         * Last month in the snapshot with recorded imports under this code (null: none).
+         */
+        lastMonth?: Month | null;
+        /**
+         * Number of snapshot months with recorded imports under this code.
+         */
+        monthsRecorded?: number;
+        /**
+         * Calendar months (1–12) in which this code ever has recorded imports in the snapshot.
+         */
+        calendarMonths?: number[];
+        /**
+         * Unsuppressed recorded net mass (kg) under this code per calendar month (January first), summed over the snapshot.
+         *
+         * @minItems 12
+         * @maxItems 12
+         */
+        netMassKgByCalendarMonth?: [
+          number,
+          number,
+          number,
+          number,
+          number,
+          number,
+          number,
+          number,
+          number,
+          number,
+          number,
+          number
+        ];
       }[]
     ];
   };
@@ -82,4 +154,18 @@ export interface TradeSnapshot {
    * Published months (indexes) with no recorded import rows for this basket.
    */
   nilMonths: number[];
+  /**
+   * Months where the CN8 codes recorded under the basket change: codes last recorded the month before (ended) and codes first recorded in that month (started). Totals include every code, so the series is continuous.
+   */
+  codeChanges?: {
+    month: Month;
+    /**
+     * @minItems 1
+     */
+    ended: [string, ...string[]];
+    /**
+     * @minItems 1
+     */
+    started: [string, ...string[]];
+  }[];
 }

@@ -18,6 +18,7 @@ import {
 import { selectReducedMotion, useAppStore } from "@/state/store";
 import { MapLoading } from "@/components/maps/MapLoading";
 import { OriginsLegend, OriginsMapSync, OriginsTooltip } from "@/features/origins/OriginsMapExtras";
+import { SeasonalMapExtrasLazy } from "@/features/seasonal/lazy";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 // The ArcGIS SDK is large; loading it lazily lets the shell paint first (PF-04).
@@ -49,6 +50,7 @@ export function App() {
         data-filter={filterOpen ? "open" : "closed"}
         data-insights={insightsOpen ? "open" : "closed"}
         data-bp={breakpoint}
+        data-module={module}
       >
         <ErrorBoundary region="Map">
           <Suspense fallback={<MapLoading />}>
@@ -71,6 +73,11 @@ export function App() {
             <OriginsMapSync />
             <OriginsLegend />
             <OriginsTooltip />
+          </ErrorBoundary>
+        )}
+        {module === "seasonal" && (
+          <ErrorBoundary region="Map legend">
+            <SeasonalMapExtrasLazy />
           </ErrorBoundary>
         )}
         <ErrorBoundary region="Timeline">

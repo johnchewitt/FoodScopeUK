@@ -148,6 +148,16 @@ The brief asks for a complete, tested first release over an extensive unfinished
 - **SS-07** Toggle **Imports | Domestic production | Combined context**. Domestic production shows only where Defra publishes a monthly series (meat and milk families; see §S06–S08). For commodities without monthly production data the toggle explains why and shows the annual figure instead. Combined context places the two series on separate, labelled axes; it never divides one by the other (brief §6).
 - **SS-08** Natural-language example answered by the UI state: "How does the UK's tomato supply change between January and July?" → tomatoes, months 1 and 7, comparison view.
 
+**Stage 3 status (23 Oct 2026):** built for the five Stage 2 baskets (`docs/stage-reports/stage-3.md`; ADR-0017).
+- SS-01: year, comparison year (default: the year before) and a comparison month.
+- SS-02: widths ease ≤ 320 ms; nothing else is interpolated; fixed width scale across months and years.
+- SS-03: ½×, 1× and 2× speed; Space, Page Up and Page Down on the slider.
+- SS-04: share or amount view, with fixed classes the same for every year and commodity.
+- SS-05: as a difference view in percentage points, with five fixed classes. Side-by-side years come from the year selector (identical classes), not two heatmaps in one panel.
+- SS-06: monthly HHI line.
+- SS-07: "Imports" only. "UK production" and "Combined" are shown as unavailable, with the reason: no verified monthly series for these baskets, and S09/S10 annual figures are not yet verified, so no annual figure is shown either.
+- SS-08: an example button sets tomatoes, January and July of the latest complete year.
+
 ### 5.3 UK Supermarket Network (SM) — Release 1
 
 **Data**: GEOLYTIX Grocery/Supermarket Retail Points (§S11), configurable to a hosted ArcGIS FeatureLayer.
@@ -311,7 +321,7 @@ Baskets map the 16 commodities to HMRC commodity codes. The table below is the *
 - Effective number of partners: `N_eff = 10,000 / HHI`. *Derived.*
 - Concentration ratios: CR1, CR3 (sum of top 1/3 shares). *Derived.*
 - Year-on-year share change: `Δs_p = s_p(m, y) − s_p(m, y−1)` in percentage points. *Derived.*
-- Seasonality: monthly HHI; peak-month share of annual mass; coefficient of variation of monthly mass. *Derived.*
+- Seasonality: monthly HHI; peak-month share of annual mass; coefficient of variation of monthly mass (population standard deviation ÷ mean of the 12 monthly totals). Annual measures need all 12 months published; otherwise they are not shown. Year-on-year totals for a partial year compare only months published in both years. *Derived.*
 
 ### 6.3 Retail provision indicators
 

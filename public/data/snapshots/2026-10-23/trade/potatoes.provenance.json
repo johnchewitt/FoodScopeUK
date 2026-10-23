@@ -5,8 +5,8 @@
   "path": "snapshots/2026-10-23/trade/potatoes.json",
   "format": "json",
   "schemaId": "trade-snapshot",
-  "sha256": "35275bff5ea78a0edd9c72e63eb9cd5a27f604d5dd27f0ae4c55f00ed68341a6",
-  "bytes": 30525,
+  "sha256": "294ae6477442b1447686c534d61e652d8d72696201dcf6a3cf3361f7768f0357",
+  "bytes": 31453,
   "sourceIds": [
     "S01",
     "S24"

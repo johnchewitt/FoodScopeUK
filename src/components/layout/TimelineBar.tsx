@@ -4,6 +4,7 @@ import { getModule } from "@/app/modules";
 import { MONTHS_LONG, MONTHS_SHORT } from "@/analysis/format";
 import { addMonths, monthDiff, monthKey, parseMonthKey } from "@/analysis/trade";
 import { useOrigins } from "@/features/origins/useOrigins";
+import { SeasonalTimelineLazy } from "@/features/seasonal/lazy";
 import { useAppStore } from "@/state/store";
 
 function PlayButton({ note }: { note: string }) {
@@ -73,7 +74,7 @@ function OriginsTimeline() {
   return (
     <section className="timeline" aria-label="Timeline">
       <div className="timeline__bar glass">
-        <PlayButton note="play arrives with Seasonal Supply in build stage 3" />
+        <PlayButton note="play through the months in Seasonal Supply" />
         <button
           type="button"
           className="tool-btn timeline__step"
@@ -130,7 +131,8 @@ function OriginsTimeline() {
 }
 
 /**
- * Bottom timeline. Food Origins drives its period from it (Stage 2); other modules keep the
+ * Bottom timeline. Food Origins drives its period from it (Stage 2) and Seasonal Supply plays
+ * through the year (Stage 3); other modules keep the
  * Stage 1 preview (month selection is real navigation state, mirrored to the URL).
  */
 export function TimelineBar() {
@@ -141,6 +143,7 @@ export function TimelineBar() {
   const mod = getModule(module);
   if (!mod.usesTimeline) return null;
   if (module === "origins") return <OriginsTimeline />;
+  if (module === "seasonal") return <SeasonalTimelineLazy />;
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowRight") stepMonth(1);

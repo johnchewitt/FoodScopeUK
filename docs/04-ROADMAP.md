@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | 04 — Staged delivery plan |
-| **Version** | 0.2 — 23 October 2026 (Stage 2 re-scoped to the Food Origins explorer at John's instruction) |
+| **Version** | 0.3 — 23 October 2026 (Stage 3 re-scoped to the Seasonal Supply Explorer at John's instruction) |
 | **Approach** | Small, demonstrable stages. Each stage ends with working software, passing checks and a short stage report. No stage starts while its verification gates are open. |
 
 ---
@@ -14,9 +14,9 @@
 |---|---|---|---|---|
 | 0 | Planning baseline | — | — | This document pack ✅ |
 | **1** | **Application foundation** ✅ merged (PR #1) and deployed | R1 | 0, decisions D1–D2 | Branded shell, live dark map, empty module panels, CI + Pages deploy |
-| **2** | **Food Origins explorer + HMRC trade pipeline** ✅ built (branch `stage/2-origins-explorer`) | R1 | 1, gates G1, G2, G4 | Pick tomatoes, step Jan→Jul, watch partners, connections, cards and charts change — real HMRC data for five commodities |
-| 3 | Data pipeline completion + Seasonal Supply | R1 | 2, gates G3, G5, G6 | Remaining 11 baskets; LAD, population, GEOLYTIX and Defra context in the snapshot; Seasonal timeline play, heatmap and year comparison |
-| 4 | Supermarket network | R1 | 3, G7 | Clustered stores, retailer/class filters, store search, per-10k choropleth |
+| **2** | **Food Origins explorer + HMRC trade pipeline** ✅ merged (PR #3) and deployed | R1 | 1, gates G1, G2, G4 | Pick tomatoes, step Jan→Jul, watch partners, connections, cards and charts change — real HMRC data for five commodities |
+| **3** | **Seasonal Supply Explorer** ✅ built (branch `stage/3-seasonal-supply`) | R1 | 2 | Play tomatoes January → December 2025; compare January with July; partner-by-month heatmap; year-on-year change — the same real HMRC data as Food Origins |
+| 4 | Supermarket network | R1 | 3, G7, and the LAD/GEOLYTIX ingest moved out of Stage 3 (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth |
 | 5 | Local Authority Profiles (Belfast, Manchester deep) | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
 | 6 | Scenario Lab (import disruption, store closure) | R1 | 3, 5 | Spanish tomato preset; close a store and see the access change |
 | 7 | Consulting Insights + PDF export | R1 | 5, 6, D3, D7 | One-click profile PDF that matches the screen |
@@ -24,9 +24,11 @@
 | 9 | Release 2 | R2 | 8 | National access layers, Risk Explorer, Scenarios B/C, Ask FOODSCOPE, 3D globe |
 | 10 | Release 3 | R3 | 9 | Network travel times, secure LLM assistant, AGOL publishing |
 
-Stages 3 and 4 can overlap once Stage 3's GEOLYTIX and LAD ingest is merged.
+The data-pipeline items moved out of Stage 3 (§5.3) are still to be scheduled; Stage 4 cannot start without its LAD and GEOLYTIX parts.
 
-**Re-scope (23 Oct 2026).** John defined Stage 2 as "the global food origins explorer" with real HMRC data for tomatoes, strawberries, bananas, potatoes and wheat. Stage 2 therefore combines the HMRC part of the former "Data pipeline v1" with the core of the former Food Origins slice. Everything else from those two stages moves to Stage 3 (table above; §5).
+**Re-scope (23 Oct 2026).** John defined Stage 2 as "the global food origins explorer" with real HMRC data for tomatoes, strawberries, bananas, potatoes and wheat. Stage 2 therefore combines the HMRC part of the former "Data pipeline v1" with the core of the former Food Origins slice. Everything else from those two stages moved to Stage 3 (table above; §5).
+
+**Re-scope (23 Oct 2026, Stage 3).** John defined Stage 3 as "the Seasonal Supply Explorer" using "the existing real HMRC monthly import dataset and commodity model". Stage 3 is therefore Seasonal Supply only, for the five Stage 2 baskets. The data-pipeline items that had moved to Stage 3 (other baskets, LAD, GEOLYTIX, Defra context, FO-08/FO-09, scheduled refresh) are listed in §5.3 for John to schedule.
 
 ---
 
@@ -38,12 +40,12 @@ Each gate must be cleared (evidence recorded in `docs/stage-reports/`) before th
 |---|---|---|---|
 | G1 ✅ | Does HMRC `$apply=groupby/aggregate` work on `/OTS` for our filters, within limits? | Live test in pipeline; compare with paged raw aggregation for one month | 2 — **cleared 23 Oct 2026**: exact match for five basket-months |
 | G2 ✅ | What is the API `Value` basis and HMRC revision policy? | HMRC methodology pages | 2 — **cleared**: CIF statistical value (Intrastat invoice value); provisional for up to 18 months |
-| G3 🟡 | Are commodity baskets aligned with Defra trade codes? | Compare spec §6.1 with Defra trade codes ODS (S05) and `/Commodity` | 2 — **partly**: five baskets verified against `/Commodity`; Defra ODS comparison moves to Stage 3 |
+| G3 🟡 | Are commodity baskets aligned with Defra trade codes? | Compare spec §6.1 with Defra trade codes ODS (S05) and `/Commodity` | 2 — **partly**: five baskets verified against `/Commodity`; Defra ODS comparison moved out of Stage 3, to schedule (§5.3) |
 | G4 ✅ | HMRC `CountryCodeAlpha` ↔ Natural Earth crosswalk complete? | Generate crosswalk; list unmapped codes | 2 — **cleared**: all partners crosswalked; Gibraltar has no geometry at 1:110m/1:50m |
-| G5 | ONS/OS attribution wording for boundaries | ONS metadata | 3 |
-| G6 | UKFSR 2024 ODS table IDs for Short Straits figures | Download Theme 3 ODS | 3 (context file) |
-| G7 | GEOLYTIX current schema, store-class values, **NI coverage**, `bng_*` for NI | Download latest file; inspect `size_band`/`fascia` values; count `BT` postcodes | Clear in Stage 3; blocks 4 |
-| G8 | **PPFI v2.1 NI coverage** and column names | Download HASP LSOA CSV | Clear in Stage 3 (early warning for Belfast); blocks 5 |
+| G5 | ONS/OS attribution wording for boundaries | ONS metadata | LAD ingest (§5.3) |
+| G6 | UKFSR 2024 ODS table IDs for Short Straits figures | Download Theme 3 ODS | Defra context file (§5.3) |
+| G7 | GEOLYTIX current schema, store-class values, **NI coverage**, `bng_*` for NI | Download latest file; inspect `size_band`/`fascia` values; count `BT` postcodes | Clear with the GEOLYTIX ingest (§5.3); blocks 4 |
+| G8 | **PPFI v2.1 NI coverage** and column names | Download HASP LSOA CSV | Clear before Stage 5 (early warning for Belfast); blocks 5 |
 | G9 | NISRA DZ2021 CRS, licence, centroids; DZ2021↔SOA2011 lookup | NISRA downloads | 5 |
 | G10 | Census car availability tables (E&W TS045?; NI table ID) | Nomis / NISRA | 5 |
 | G11 | ONS LSOA 2021 boundaries + population-weighted centroids service | ONS Open Geography Portal | 5 |
@@ -123,17 +125,63 @@ Status on 23 October 2026 (evidence in `docs/stage-reports/stage-1.md`):
 - [x] Tomatoes Jan vs Jul reproduces fixture-expected partner shares (Morocco 42.5 % → Netherlands 63.8 % of net mass, 2025).
 - [x] All metrics show provenance; E2E for commodity, month, partner and measure changes and for map ↔ table ↔ chart synchronisation.
 - [x] Animation decision recorded (ADR-0015).
-- [ ] Defra trade-code comparison (G3) — moved to Stage 3.
+- [x] Deployed site shows the explorer over the Esri basemap, with moving markers on a real GPU and no console errors (merged 23 Oct 2026; deploy run 39987833601; live check in `docs/stage-reports/stage-2.md`).
+- [ ] Defra trade-code comparison (G3) — moved to Stage 3, then out of it to be scheduled (§5.3).
 
-### 4.3 Moved to Stage 3
+### 4.3 Moved to Stage 3 (later moved out again, §5.3)
 
 FO-08 supplier pattern changes; FO-09 UK production context; the 11 remaining baskets; commodity search for 16 items; LAD boundaries and population; GEOLYTIX snapshot; Defra context file; catalogue generated from this inventory; scheduled refresh PRs.
 
-## 5. Stage 3 — Data pipeline completion + Seasonal Supply
+## 5. Stage 3 — Seasonal Supply Explorer
 
-Deliverables: remaining 11 baskets (gate G3 against Defra trade codes first); LAD boundaries (national, generalised) + LAD population; GEOLYTIX snapshot (raw, validated, trimmed; G7); Defra context file (UKFSR, pocketbook CSVs; G6); `catalogue.json` generated from this inventory; scheduled `refresh-trade-data` runs opening PRs; FO-08 and FO-09; Seasonal Supply — timeline with play (SS-01..03), heatmap and year comparison with fixed breaks (SS-04..06).
+**Goal** (John, 23 Oct 2026): the Seasonal Supply Explorer on the existing HMRC monthly import data and commodity model:
+- a January–December timeline with selectable year, play/pause, playback speed and month comparison;
+- moving the slider updates country symbology, import-flow thickness, quantities, KPIs and charts from genuine records;
+- a seasonal supplier-country heatmap, monthly import trend and year-on-year comparison;
+- smooth, performance-conscious transitions with statistically accurate map values;
+- explicit handling of missing months, partial data, commodity-code changes and unverified seasonal domestic production;
+- existing design and functionality maintained.
 
-Exit: snapshot extended without changing Stage 2 figures (regression test against the 2026-10-23 snapshot); play animation respects reduced motion; heatmap values reconcile with the trade snapshot.
+Evidence: `docs/stage-reports/stage-3.md`.
+
+### 5.1 Deliverables
+
+1. **Code history in the trade snapshot (pipeline, offline):** for each CN8 code, the first and last recorded month, the number of months recorded, the calendar months present and net mass by calendar month, plus basket-level `codeChanges`. Derived from the committed raw HMRC responses; schema fields are additive and optional; Stage 2 figures unchanged (fingerprint tests).
+2. **Analysis** (`src/analysis/seasonal.ts`, `transition.ts`):
+   - month states (published, nil, not yet published, before the snapshot) and year matrices;
+   - monthly shares and HHI, year-on-year by month and like-for-like totals;
+   - seasonality (peak and lowest month share, coefficient of variation; complete years only);
+   - fixed heatmap classes, the fixed width scale, code changes and seasonal codes, comparability across series breaks;
+   - width transitions.
+3. **View model** (`src/features/seasonal/model.ts`): the selected month built with the Food Origins model; KPIs as `Indicator`s, heatmap rows, trend, year-on-year, HHI, month comparison and notices.
+4. **UI:**
+   - timeline: slider with real monthly bars, play/pause, ½×/1×/2× speed, year stepping, comparison-month marker, keyboard and pointer;
+   - controls: commodity, year, comparison year and month, the SS-08 example, measure, supply view (UK production and combined shown as not available), connections;
+   - four KPI cards;
+   - insights: month comparison, selected partner by month, heatmap (share / amount / change), monthly trend with seasonality, year-on-year, monthly HHI, partner table, data handling and the commodity-code list;
+   - map: legend with the fixed scale, tooltip, banner for months without figures.
+5. **Map:** trade layers shown for Food Origins and Seasonal Supply; connection widths ease ≤ 320 ms between months (instant under reduced motion), ending exactly at the model values (ADR-0017).
+6. **Shell:** Seasonal is lazy-loaded; taller timeline (88 px) in the layout metrics; Evidence caveats and Help shortcuts updated.
+
+### 5.2 Exit criteria
+
+- [x] Snapshot extended without changing Stage 2 figures: five fingerprint tests against the files merged in PR #3, plus the byte-identical offline rebuild.
+- [x] Heatmap values reconcile with the trade snapshot: view-model tests on real data (e.g. Morocco, Jan 2025: 14,056.585 t, 42.5 %, −2.27 pp vs Jan 2024), with expected values computed independently in Python.
+- [x] Slider, keyboard and playback update map symbology, connection widths, KPIs and charts to fixture-expected figures (E2E, read from the ArcGIS view).
+- [x] Play animation respects reduced motion: no width transition and no moving markers (E2E); playback never starts by itself and stops at any user change.
+- [x] Missing months, partial years, comparison across series breaks, commodity-code changes and UK production are each stated on screen (unit, component and E2E tests).
+- [x] Fixed classes for every year; colours validated for lightness order, contrast and colour-vision separation (stage report).
+- [x] Mobile (390 × 844): no horizontal scroll, timeline and bottom sheets usable (E2E with touch).
+- [ ] Transitions and playback checked on a real GPU (deployed site) — after merge.
+
+### 5.3 Moved out of Stage 3 (to schedule with John)
+
+- Remaining 11 baskets, after the Defra trade-code comparison (gate G3, B10), and commodity search (B11).
+- LAD boundaries (national, generalised) and LAD population (G5); GEOLYTIX snapshot (G7). Stage 4 needs both.
+- Defra context file (UKFSR, pocketbook CSVs; G6); `catalogue.json` generated from the inventory.
+- FO-08 supplier pattern changes; FO-09 UK production context (needs S09/S10 verified).
+- Scheduled `refresh-trade-data` runs opening PRs (B14).
+- Domestic production overlays (SS-07) remain Release 2, and only for commodities with a verified monthly Defra series (S06–S08: meat, poultry, milk).
 
 ## 6. Stage 4 — Supermarket network
 
@@ -225,3 +273,8 @@ Rules of engagement:
 | 2026-10-23 | HMRC ingest runs on GitHub Actions; raw responses committed for offline rebuilds | ADR-0016 |
 | 2026-10-23 | Connections are symbolic curves in map space; moving markers on a canvas overlay (SDK CIM animations did not render) | ADR-0005, ADR-0015 |
 | 2026-10-23 | Natural Earth v5.1.2 replaces world-atlas 4.1.0 (ISO alpha-2 codes, label points) | S24 |
+| 2026-10-23 | Stage 3 re-scoped to the Seasonal Supply Explorer for the five Stage 2 baskets (John's instruction); data-pipeline items listed for scheduling | §1, §5.3 |
+| 2026-10-23 | Seasonal map: only connection widths ease between months (≤ 320 ms); fixed width scale and fixed heatmap classes across months and years; missing months never estimated | ADR-0017 |
+| 2026-10-23 | Heatmap change view uses five classes (two per side): three per side failed the colour-vision check on the dark panel | ADR-0017, stage 3 report |
+| 2026-10-23 | Commodity-code history added to the trade snapshot (additive, offline from the committed raw cache) | S01, §5.1 |
+| 2026-10-23 | UK seasonal production not shown for the five baskets: no verified monthly series (S06–S08 cover meat and milk; S09/S10 annual, unverified) | SS-07, S05–S10 |

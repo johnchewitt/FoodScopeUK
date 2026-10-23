@@ -123,3 +123,41 @@ describe("isGssCode", () => {
       expect(isGssCode(code)).toBe(true);
   });
 });
+
+describe("Seasonal Supply URL state (SS-01, SS-05, SS-08)", () => {
+  it("reads comparison year, comparison month and heatmap colour", () => {
+    expect(parseUrlState("?m=seasonal&y=2025&mo=1&cm=7&cy=2023&hm=change")).toEqual({
+      ...DEFAULT_URL_STATE,
+      module: "seasonal",
+      year: 2025,
+      month: 1,
+      compareMonth: 7,
+      compareYear: 2023,
+      heatmap: "change",
+    });
+  });
+
+  it.each([
+    ["?cm=13", "compareMonth", null],
+    ["?cm=0", "compareMonth", null],
+    ["?cy=20x5", "compareYear", null],
+    ["?hm=rainbow", "heatmap", "share"],
+  ])("%s falls back for %s", (qs, key, expected) => {
+    expect(parseUrlState(qs)[key as keyof ReturnType<typeof parseUrlState>]).toBe(expected);
+  });
+
+  it("round-trips and omits defaults", () => {
+    const state = {
+      ...DEFAULT_URL_STATE,
+      module: "seasonal" as const,
+      year: 2025,
+      month: 1,
+      compareMonth: 7,
+      heatmap: "amount" as const,
+    };
+    const qs = serializeUrlState(state);
+    expect(qs).toBe("?m=seasonal&y=2025&mo=1&cm=7&hm=amount");
+    expect(parseUrlState(qs)).toEqual(state);
+    expect(historyModeFor(DEFAULT_URL_STATE, { ...DEFAULT_URL_STATE, compareMonth: 7 })).toBe("replace");
+  });
+});

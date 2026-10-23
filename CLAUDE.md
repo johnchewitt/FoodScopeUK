@@ -16,7 +16,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 
 ## Current stage
 
-**Stage 2 — Food Origins explorer + HMRC trade pipeline: built on branch `stage/2-origins-explorer`, awaiting review and merge** (report: `docs/stage-reports/stage-2.md`). Stage 1 is merged and deployed. Stage 2 was re-scoped by John (roadmap §1, §4); next is Stage 3 — Data pipeline completion + Seasonal Supply; start it only when John asks. Update this line when a stage is merged.
+**Stage 3 — Seasonal Supply Explorer: built on branch `stage/3-seasonal-supply`, awaiting review and merge** (report: `docs/stage-reports/stage-3.md`). Stages 1 and 2 are merged and deployed. Stage 3 was re-scoped by John to Seasonal Supply only (roadmap §1, §5); the data-pipeline items moved out of it (roadmap §5.3) are still to be scheduled. Do not start Stage 4 until John asks. Update this line when a stage is merged.
 
 ## How to work
 
@@ -58,7 +58,9 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 - **API key**: registered once at startup as `esriConfig.apiKeys.basemapStyles` with `esriConfig.request.useIdentity = false` (`src/services/arcgis/requestPolicy.ts`, ADR-0011). Do not rely on `BasemapStyle.apiKey` alone: SDK 5.1 copies it onto the basemap layers after they are created, so the view can request the style without it and visitors get an ArcGIS sign-in prompt. Never set the global `esriConfig.apiKey`.
 - A view becomes ready even when its basemap fails; basemap health is reported separately (`BasemapStatusController`, `data-basemap-status` on `.map-host`).
 - **CIM symbol animations do not render in our view** (any `animations` entry, including `CIMSymbolAnimationMoveAlongLine`, makes the whole symbol disappear — ADR-0015). Flow motion is drawn by `src/map/layers/flowParticles.ts` on a canvas overlay; keep the static lines as ordinary graphics.
-- Food Origins map state reaches the map only through `state.originsMap` (built by `buildOriginsModel`); do not compute shares in `src/map/`.
+- Food Origins and Seasonal Supply map state reaches the map only through `state.originsMap` (built by `buildOriginsModel`; Seasonal builds its selected month with it); do not compute shares in `src/map/`.
+- Seasonal transitions (ADR-0017): only connection widths ease, ≤ 320 ms, via `src/analysis/transition.ts`, ending at the exact model widths. Never interpolate numbers, classes or missing months. Reduced motion means no transition. Seasonal uses a fixed width scale (largest monthly partner value in the snapshot) and fixed heatmap classes (`src/analysis/seasonal.ts`).
+- `src/features/seasonal/` is lazy-loaded through `lazy.tsx`. The shell imports only those wrappers, never the Seasonal components directly.
 - **Without a basemap the view has no tiling scheme**: keep the Web Mercator `constraints.lods` that `MapHost` passes, or the view never becomes ready (ADR-0004).
 - Asset hosting (ADR-0014): production uses the Esri CDN; `VITE_ARCGIS_ASSETS=local` copies ArcGIS/Calcite assets into the build for offline/sandboxed runs. `src/app/bootstrapAssets.ts` must stay the first import in `main.tsx`.
 - Component tests never load the SDK: `MapHost` is mocked with `vi.mock`, and Calcite elements are registered only in `src/app/registerComponents.ts` (imported by `main.tsx`). Keep UI modules free of `@arcgis/core` imports (shared ids live in `src/map/layerIds.ts`).

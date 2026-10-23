@@ -1,7 +1,14 @@
 import { create } from "zustand";
 import type { ModuleId } from "@/app/modules";
 import { type Breakpoint } from "@/map/layoutMetrics";
-import { DEFAULT_URL_STATE, type Measure, type Overlay, type PeriodMode, type UrlState } from "./urlState";
+import {
+  DEFAULT_URL_STATE,
+  type HeatmapMode,
+  type Measure,
+  type Overlay,
+  type PeriodMode,
+  type UrlState,
+} from "./urlState";
 
 export type MapStatus = "idle" | "loading" | "ready" | "error";
 export type LayerStatus = "loading" | "ready" | "error";
@@ -37,6 +44,10 @@ export interface AppState extends UrlState {
   /** Number of partners drawn as connections (FO-03, default 12). */
   flowCount: number;
 
+  /** Seasonal Supply playback (SS-03). Not in the URL: a shared link never starts playing. */
+  playing: boolean;
+  playSpeed: PlaySpeed;
+
   // Actions
   setModule: (module: ModuleId) => void;
   setMonth: (month: number | null) => void;
@@ -52,6 +63,13 @@ export interface AppState extends UrlState {
   setOriginsMap: (model: OriginsMapModel | null) => void;
   setHoverPartner: (hover: HoverPartner | null) => void;
   setFlowCount: (n: number) => void;
+  setCompareYear: (year: number | null) => void;
+  setCompareMonth: (month: number | null) => void;
+  setHeatmap: (mode: HeatmapMode) => void;
+  setPlaying: (playing: boolean) => void;
+  setPlaySpeed: (speed: PlaySpeed) => void;
+  /** Advances playback to a month without stopping it (every other month setter stops playback). */
+  playbackStep: (year: number, month: number) => void;
   openOverlay: (overlay: Exclude<Overlay, "none">) => void;
   closeOverlay: () => void;
   hydrateFromUrl: (state: UrlState) => void;
@@ -106,6 +124,11 @@ export interface OriginsMapModel {
 
 export const FLOW_COUNT_DEFAULT = 12;
 
+/** Playback speeds (SS-03): 1× = 1.2 s per month. */
+export const PLAY_SPEEDS = [0.5, 1, 2] as const;
+export type PlaySpeed = (typeof PLAY_SPEEDS)[number];
+export const PLAY_MONTH_MS = 1200;
+
 const DOCKED: readonly Breakpoint[] = ["desktop", "laptop"];
 let commandSeq = 0;
 
@@ -125,32 +148,49 @@ export const initialState = {
   originsMap: null,
   hoverPartner: null,
   flowCount: FLOW_COUNT_DEFAULT,
+  playing: false,
+  playSpeed: 1 as PlaySpeed,
 };
 
 export const useAppStore = create<AppState>()((set, get) => ({
   ...initialState,
 
-  setModule: (module) => set({ module, mobileNavOpen: false }),
-  setMonth: (month) => set({ month: month === null ? null : Math.min(12, Math.max(1, Math.round(month))) }),
+  // Changing what is shown (module, time, commodity, measure, comparison) stops playback (SS-03).
+  setModule: (module) => set({ module, mobileNavOpen: false, playing: false }),
+  setMonth: (month) =>
+    set({ month: month === null ? null : Math.min(12, Math.max(1, Math.round(month))), playing: false }),
   stepMonth: (delta) => {
     const current = get().month ?? (delta === 1 ? 0 : 13);
     const next = ((current - 1 + delta + 12) % 12) + 1;
-    set({ month: next });
+    set({ month: next, playing: false });
   },
   setLad: (lad) => set({ lad }),
   setCommodity: (commodity) =>
-    set((s) => (s.commodity === commodity ? {} : { commodity, partner: null, hoverPartner: null })),
-  setPeriod: (period) => set({ period }),
-  setYear: (year) => set({ year }),
-  setYearMonth: (year, month) => set({ year, month: Math.min(12, Math.max(1, Math.round(month))) }),
-  setMeasure: (measure) => set({ measure }),
+    set((s) =>
+      s.commodity === commodity ? {} : { commodity, partner: null, hoverPartner: null, playing: false },
+    ),
+  setPeriod: (period) => set({ period, playing: false }),
+  setYear: (year) => set({ year, playing: false }),
+  setYearMonth: (year, month) =>
+    set({ year, month: Math.min(12, Math.max(1, Math.round(month))), playing: false }),
+  setMeasure: (measure) => set({ measure, playing: false }),
   selectPartner: (partner) => set((s) => ({ partner: s.partner === partner ? null : partner })),
   setOriginsMap: (originsMap) => set({ originsMap }),
   setHoverPartner: (hoverPartner) => set({ hoverPartner }),
   setFlowCount: (n) => set({ flowCount: Math.min(25, Math.max(3, Math.round(n))) }),
+  setCompareYear: (compareYear) => set({ compareYear, playing: false }),
+  setCompareMonth: (compareMonth) =>
+    set({
+      compareMonth: compareMonth === null ? null : Math.min(12, Math.max(1, Math.round(compareMonth))),
+      playing: false,
+    }),
+  setHeatmap: (heatmap) => set({ heatmap }),
+  setPlaying: (playing) => set({ playing }),
+  setPlaySpeed: (playSpeed) => set({ playSpeed }),
+  playbackStep: (year, month) => set({ year, month: Math.min(12, Math.max(1, Math.round(month))) }),
   openOverlay: (overlay) => set({ overlay, mobileNavOpen: false }),
   closeOverlay: () => set({ overlay: "none" }),
-  hydrateFromUrl: (state) => set({ ...state }),
+  hydrateFromUrl: (state) => set({ ...state, playing: false }),
 
   setBreakpoint: (bp) => {
     const { layoutInitialised, breakpoint } = get();
@@ -222,6 +262,9 @@ export function selectUrlState(s: AppState): UrlState {
     year: s.year,
     measure: s.measure,
     partner: s.partner,
+    compareYear: s.compareYear,
+    compareMonth: s.compareMonth,
+    heatmap: s.heatmap,
   };
 }
 

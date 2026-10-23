@@ -165,7 +165,9 @@ describe("App shell", () => {
     expect(window.location.search).toBe("?view=evidence");
     expect(await screen.findByText("World country outlines (Natural Earth 1:110m)")).toBeInTheDocument();
     expect(screen.getByText("Recorded UK imports: tomatoes (HS 0702)")).toBeInTheDocument();
-    expect(screen.getByText("Reading the trade figures (Food Origins)")).toBeInTheDocument();
+    expect(
+      screen.getByText("Reading the trade figures (Food Origins and Seasonal Supply)"),
+    ).toBeInTheDocument();
     expect(screen.queryByText("No statistics have been published yet")).not.toBeInTheDocument();
   });
 

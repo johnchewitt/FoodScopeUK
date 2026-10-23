@@ -20,3 +20,4 @@ MADR-style records. Status values: Proposed · Accepted · Superseded. Summaries
 | [0014](0014-sdk-asset-hosting.md) | ArcGIS/Calcite assets: Esri CDN in production, local copy for tests | Accepted (Stage 1) |
 | [0015](0015-flow-animation.md) | Moving markers on a canvas overlay, not CIM symbol animations | Accepted (Stage 2) |
 | [0016](0016-hmrc-ingest-on-actions.md) | HMRC ingest runs on GitHub Actions; raw responses are committed | Accepted (Stage 2) |
+| [0017](0017-seasonal-transitions-and-fixed-scales.md) | Seasonal Supply: eased widths only, fixed scales, nothing interpolated | Accepted (Stage 3) |

@@ -7,6 +7,7 @@ import {
   PANEL_WIDTHS,
   RAIL_W,
   TIMELINE_H,
+  TIMELINE_H_SEASONAL,
   breakpointForWidth,
   computeViewPadding,
   paddingEquals,
@@ -66,6 +67,17 @@ describe("computeViewPadding", () => {
     expect(p.left).toBe(0);
   });
 
+  it("reserves the taller Seasonal Supply timeline", () => {
+    const p = computeViewPadding({
+      breakpoint: "desktop",
+      filterPanelOpen: true,
+      insightsOpen: true,
+      timelineVisible: true,
+      timelineHeight: TIMELINE_H_SEASONAL,
+    });
+    expect(p.bottom).toBe(22 + 12 + 88 + 12);
+  });
+
   it("compares paddings by value", () => {
     const a = { top: 1, right: 2, bottom: 3, left: 4 };
     expect(paddingEquals(a, { ...a })).toBe(true);
@@ -84,6 +96,7 @@ describe("CSS tokens stay in sync with layout metrics", () => {
     expect(px("fs-rail-w")).toBe(RAIL_W);
     expect(px("fs-kpi-h")).toBe(KPI_H);
     expect(px("fs-timeline-h")).toBe(TIMELINE_H);
+    expect(px("fs-timeline-h-seasonal")).toBe(TIMELINE_H_SEASONAL);
     expect(px("fs-attribution-h")).toBe(ATTRIBUTION_H);
     expect(px("fs-filter-w")).toBe(PANEL_WIDTHS.desktop.filter);
     expect(px("fs-insights-w")).toBe(PANEL_WIDTHS.desktop.insights);

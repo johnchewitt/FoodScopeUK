@@ -6,7 +6,7 @@
 | **Date** | 23 October 2026 |
 | **Scope** | John's Stage 2 brief: the global food origins explorer with real HMRC data for tomatoes, strawberries, bananas, potatoes and wheat. This merges the HMRC part of the former "Data pipeline v1" with the core of the former Food Origins slice; everything else moves to Stage 3 (roadmap §1, §4). Stage 3 not started. |
 | **Data** | Snapshot **2026-10-23**: monthly recorded UK imports, **January 2019 – August 2026**, from the HMRC Overseas Trade Statistics API, ingested on GitHub Actions ([run 39969667036](https://github.com/johnchewitt/FoodScopeUK/actions/runs/39969667036), 15 API requests) |
-| **Result** | All local checks pass (below). GitHub Actions CI passed on PR #3 ([run 39982578050](https://github.com/johnchewitt/FoodScopeUK/actions/runs/39982578050)): both jobs, including the 29 E2E tests. The deployed-site checks wait for the merge. |
+| **Result** | All local checks pass (below). GitHub Actions CI passed on PR #3 ([run 39982578050](https://github.com/johnchewitt/FoodScopeUK/actions/runs/39982578050)): both jobs, including the 29 E2E tests. Merged 23 Oct 2026 and deployed ([run 39987833601](https://github.com/johnchewitt/FoodScopeUK/actions/runs/39987833601)); live-site check below. |
 
 ## What was built
 
@@ -91,12 +91,20 @@ Screenshots (offline outline map; the live site adds the Esri basemap):
 
 Key reconciled figure: tomatoes, January 2025, all partners. The API aggregate and the 117 raw rows both give 33,060,038 kg and £57,382,707. Tomato shares shift with the season: Morocco leads in January 2025 (42.5 %); the Netherlands leads in July 2025 (63.8 %).
 
+## Deployed-site check (after merge, 23 Oct 2026)
+
+| Check | Result |
+|---|---|
+| `Deploy to GitHub Pages` ([run 39987833601](https://github.com/johnchewitt/FoodScopeUK/actions/runs/39987833601)) | Build, deploy and post-deploy smoke test passed. The smoke test runs the shell test against the live URL: map ready, Esri basemap ready, no sign-in prompt, no console errors |
+| John's desktop browser, fresh tab, `https://johnchewitt.github.io/FoodScopeUK/` (877 × 1191 CSS px, device pixel ratio 2) | `data-map-state` ready, `data-basemap-status` ready. Both Esri `arcgis/dark-gray` layers (base, labels) loaded with layer views. No sign-in prompt. The only console message is Calcite's version notice |
+| Default view figures | 391.1 kt, £679.5m, 25 partners (effective 3.3), Netherlands 43.8 % (top 3: 84.5 %), HHI 2,990 (2,970 a year earlier): the same as E2E |
+| "±0.0 % vs previous 12 months" on recorded imports | Correct: 391,081 t against 390,983 t (+0.025 %), recomputed from the snapshot. Value rose 7.3 % (£679.5m against £633.2m) |
+| Connections and shading | 13 connection graphics (12 + UK point); 25 partners shaded over the basemap |
+| Moving markers (FO-04) on a real GPU | Canvas overlay: 12 markers at world scale, 27 at zoom 4 over Europe. Two frames 300 ms apart: 4,473 changed pixels against 2,253 lit ones, so every marker had moved. Markers sit on their lines ([screenshot](stage-2/live-tomatoes-europe-esri.jpg)) |
+
 ## Not verified, and why
 
-- **Moving markers and partner shading over the Esri basemap on a real GPU:**
-  - The canvas overlay is tested in headless Chromium (markers drawn, moving between frames, stopped under reduced motion).
-  - On John's desktop browser (Intel UHD 630) I confirmed that SDK CIM animations do not render (ADR-0015 spike). The new overlay itself can only be seen there after deploy.
-  - Colour contrast of the share classes over the dark grey basemap is in the same position (B3).
+- **Colour contrast of the share classes over the dark grey basemap (B3):** checked by eye on the live site, not measured. The top classes (Morocco, the Netherlands) stand out. Adjacent lower classes are close in tone at a glance; the legend and tooltip carry the exact class.
 - **Defra trade-code alignment (G3):** baskets are verified against HMRC `/Commodity` only; the Defra ODS comparison is in Stage 3 (B10).
 - **Firefox and Safari:** only Chromium was tested.
 - **Performance budgets (PF-01 – PF-03):** not measured with throttling. Interaction updates are synchronous over at most about 2,600 rows per basket. The initial JS bundle remains above budget (B1).
@@ -117,6 +125,6 @@ Key reconciled figure: tomatoes, January 2025, all partners. The API aggregate a
 
 ## Open questions
 
-1. Merge and deploy: once merged, the live site will show the explorer over the Esri basemap. I can then check the moving markers and colour contrast in your browser.
+1. ~~Merge and deploy~~: merged and deployed on 23 October 2026; live check above.
 2. Should the trade refresh run automatically after each HMRC release (next: 12 November 2026), opening a PR for you to merge?
 3. Which 11 commodities come next, and in what order, once the Defra trade codes are checked?

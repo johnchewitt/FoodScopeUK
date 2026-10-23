@@ -4,6 +4,9 @@ const SHORTCUTS: [string, string][] = [
   ["[", "Show or hide the controls panel"],
   ["]", "Show or hide the insights panel"],
   ["← →", "Previous or next month (when the timeline has focus)"],
+  ["Home End", "First or last month of the year (timeline)"],
+  ["PgUp PgDn", "Next or previous year (Seasonal Supply timeline)"],
+  ["Space", "Play or pause the months (Seasonal Supply timeline)"],
   ["?", "Open this help"],
   ["Esc", "Close a dialog"],
 ];
@@ -48,9 +51,9 @@ export function HelpDialog() {
           <section>
             <h3>What this build contains</h3>
             <p>
-              This is the application foundation: navigation, layout, the map and the evidence framework. It
-              does not yet load trade, retail or population statistics, so no figures are shown. Each panel
-              says which build stage adds its data.
+              Food Origins and Seasonal Supply show recorded UK imports from HMRC for tomatoes, strawberries,
+              bananas, potatoes and wheat (monthly from January 2019). The other views do not load statistics
+              yet: each panel says which build stage adds its data, and no placeholder figures are shown.
             </p>
           </section>
         </div>
