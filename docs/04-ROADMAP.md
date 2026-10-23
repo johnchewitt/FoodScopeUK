@@ -13,7 +13,7 @@
 | Stage | Name | Release | Depends on | Demo at end of stage |
 |---|---|---|---|---|
 | 0 | Planning baseline | — | — | This document pack ✅ |
-| **1** | **Application foundation** | R1 | 0, decisions D1–D2 | Branded shell, live dark map, empty module panels, CI + Pages deploy |
+| **1** | **Application foundation** ✅ built (branch `stage/1-foundation`, awaiting merge) | R1 | 0, decisions D1–D2 | Branded shell, live dark map, empty module panels, CI + Pages deploy |
 | 2 | Data pipeline v1 | R1 | 1, gates G1–G6 | Dated snapshot with manifest; Evidence page lists real sources |
 | 3 | Food Origins + Seasonal vertical slice | R1 | 2 | Pick tomatoes, step Jan→Jul, watch partners and flows change |
 | 4 | Supermarket network | R1 | 2, G7 | Clustered stores, retailer/class filters, store search, per-10k choropleth |
@@ -80,13 +80,15 @@ Each gate must be cleared (evidence recorded in `docs/stage-reports/`) before th
 
 ### 3.3 Exit criteria
 
-- [ ] `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, `npm run e2e` all pass locally and in CI.
-- [ ] Deployed Pages URL loads the shell and the map at the correct base path; deep link `?m=profiles&lad=N09000003` restores state.
-- [ ] Map ≥ 60 % visible at 1920×1080 with panels open; layouts checked at 1366, 1024, 390 widths (screenshots in stage report).
-- [ ] Rendered-panel contrast check passes (AA); keyboard navigation through top bar, sidebar and timeline works.
-- [ ] No ArcGIS widget imports; no `@arcgis/map-components-react`; no `__esri` types (lint rule or CI grep).
-- [ ] No secrets in repo (CI secret scan); `config.json` validated by schema.
-- [ ] Stage report lists what was verified and anything not verified.
+Status on 23 October 2026 (evidence in `docs/stage-reports/stage-1.md`):
+
+- [x] `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, `npm run e2e` pass locally (sandbox). *CI result pending the first pull-request run.*
+- [ ] Deployed Pages URL loads the shell and map at the correct base path — *pending: Pages source must be set to GitHub Actions and the branch merged.* Deep link `?m=profiles&mo=7&lad=N09000003` restores state ✅ (E2E).
+- [x] ≥ 60 % of viewport width unobstructed between side panels at 1920×1080; layouts checked at 1920, 1366, 1024, 820, 390 (screenshots in the stage report).
+- [x] Automated accessibility check (axe) has no serious/critical violations; keyboard operation of navigation, panels and timeline tested. *Contrast of glass panels over the live Esri basemap not yet checked (no key in the sandbox).*
+- [x] No ArcGIS widget imports; no `@arcgis/map-components-react`; no `__esri` types (ESLint rule + `check:banned` in CI).
+- [x] No secrets in repo; `config.json` validated by schema (unknown keys such as `apiKey` are rejected). *A dedicated secret-scanning step is not yet in CI (backlog).*
+- [x] Stage report lists what was verified and what was not.
 
 ### 3.4 Risks
 
@@ -194,3 +196,7 @@ Rules of engagement:
 | 2026-10-23 | "Lamb" labelled as sheep and goat meat (HS limitation) | Spec §6.1 |
 | 2026-10-23 | Repository `johnchewitt/FoodScopeUK`; base path `/FoodScopeUK/` (D1) | Architecture §8 |
 | 2026-10-23 | ArcGIS API key injected at build from Actions secret, never committed | ADR-11 |
+| 2026-10-23 | Module navigation moved to a left rail; collapsible controls panel beside it (John's Stage 1 brief) | Spec SH-02 |
+| 2026-10-23 | Breakpoints: tablet 768–1279 (overlay panels), laptop 1280–1439; desktop panels 312/340 px to meet the 60 % map-width target | Spec §4.1 |
+| 2026-10-23 | ArcGIS assets from the Esri CDN in production; local copy for tests/offline | ADR-14 |
+| 2026-10-23 | Offline reference map: Natural Earth 1:110m outlines (S24) when no API key is configured | ADR-11, S24 |

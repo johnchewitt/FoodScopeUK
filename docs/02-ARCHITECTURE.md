@@ -68,6 +68,7 @@ Versions checked on the npm registry on **23 October 2026**. The lockfile pins e
 |---|---|---|---|
 | Mapping core | `@arcgis/core` | **5.1.27** (`~5.1.27`) | ESM only. 5.1 released June 2026; minor releases have no breaking changes (Esri). 5.2 is in `rc`. |
 | Map components | `@arcgis/map-components` | **5.1.27** (`~5.1.27`) | Peer deps: `@arcgis/core ^5.1.0`, `@esri/calcite-components ^5.1.1`. Ships React JSX typings at `@arcgis/map-components/types/react`. |
+| Common components | `@arcgis/common-components` | 5.1.27 | Transitive dependency of map components; declared directly so its asset path can be set in local-asset mode (ADR-0014). |
 | Design system | `@esri/calcite-components` | **5.1.2** (`~5.1.2`) | Esri's version matrix pairs SDK 5.1 with Calcite 5.1; npm `latest` is 5.2.0, so **pin to 5.1.x** to stay aligned. |
 | UI framework | `react`, `react-dom` | 19.3.1 (`^19.3.0`) | React 19 supports custom elements natively. |
 | Build | `vite` | 8.3.5 (`^8.3.0`) | |
@@ -85,7 +86,9 @@ Versions checked on the npm registry on **23 October 2026**. The lockfile pins e
 | Unit tests | `vitest` | 5.0.x | jsdom for components; pure node for analysis. |
 | Component tests | `@testing-library/react` | 16.3.x | |
 | E2E | `@playwright/test` | 1.64.x | Chromium with software WebGL in CI. |
-| Fonts | `@fontsource/ibm-plex-sans`, `@fontsource/ibm-plex-mono` | 5.x | Self-hosted. |
+| Fonts | `@fontsource/ibm-plex-sans`, `@fontsource/ibm-plex-mono` | 5.3.0 | Self-hosted. |
+| Build helpers | `vite-plugin-static-copy` 4.1.1, `prettier` 3.9, `@axe-core/playwright` 4.14 | dev | Local asset copy, formatting, accessibility checks. |
+| Reference geometry | `world-atlas` 2.0.2 + `topojson-client` 3.1.0 | dev | Natural Earth 4.1.0 1:110m outlines converted by `scripts/build-reference-layers.mjs` (S24). |
 | Pipeline | Python 3.12, `uv`, `geopandas`, `shapely` 2, `pyproj`, `duckdb`, `httpx`, `pydantic`, `jsonschema` | pinned in `pipeline/uv.lock` | Network routing libraries (`osmnx`, `r5py`) added only in Release 3. |
 
 ### 2.1 ArcGIS 5.x facts that shape the code (verified)
@@ -98,6 +101,8 @@ Versions checked on the npm registry on **23 October 2026**. The lockfile pins e
 - Event props in JSX use the lowercase-prefixed custom event form, e.g. `onarcgisViewReadyChange`, `onarcgisReady` (confirmed in the package's React typings).
 - 5.1 adds `CIMSymbolAnimationMoveAlongLine` (beta) for animating markers along lines — candidate for flow animation (ADR-05).
 - 2D feature layers support clustering via feature reduction; client-side `GeoJSONLayer`/`FeatureLayer` sources are sufficient for ~20k points.
+- *Verified in Stage 1*: a `MapView` whose map has no basemap never becomes ready unless `constraints.lods` is set (Esri's `MapViewConstraints` docs say so); `MapHost` supplies Web Mercator LODs from `TileInfo.create()`.
+- *Verified in Stage 1*: runtime assets default to `js.arcgis.com/5.1.27/…` and `js.arcgis.com/calcite-components/5.1.2/`; each package exposes `setAssetPath` (core: `esriConfig.assetsPath`) for self-hosting (ADR-0014).
 
 ---
 
@@ -118,8 +123,9 @@ Versions checked on the npm registry on **23 October 2026**. The lockfile pins e
 | **ADR-11** | Auth: referrer-restricted ArcGIS Location Platform API key for basemaps, **never committed**: injected at build time from the GitHub Actions secret `ARCGIS_API_KEY` (local dev: git-ignored `.env.local`); hosted layers public or via user OAuth sign-in; publishing credentials only in CI secrets | Brief §3, §15. The key is visible in the deployed bundle by design (client apps must send it), so referrer restriction and minimal privileges are the real controls; keeping it out of git avoids leaking it in history and eases rotation | Keys expire after at most one year — rotation runbook in `docs/setup/arcgis-api-key.md`; local dev uses `localhost` referrers |
 | **ADR-12** | Release 1 uses straight-line proximity only; network times are pre-computed in the pipeline in Release 3 (no bulk client-side routing with an embedded key) | Accessibility honesty (P7), cost control | UI must label proximity measures clearly |
 | **ADR-13** | Query-string state, no path routing | GitHub Pages has no rewrites; deep links needed for demos | `?m=origins&c=tomatoes&y=2025&mo=7` style URLs |
+| **ADR-14** | SDK assets from the Esri CDN in production; `VITE_ARCGIS_ASSETS=local` copies them into the build for tests/offline | Esri recommends the CDN; self-hosting adds ~130 MB; sandboxes cannot reach the CDN | Two build modes; CI E2E uses local mode, post-deploy smoke test covers CDN mode |
 
-Full ADR texts live in `docs/adr/` from Stage 1 onward (one file per decision, MADR format).
+Full ADR texts live in `docs/adr/` (one file per decision, MADR format; index in `docs/adr/README.md`).
 
 ---
 
@@ -267,7 +273,7 @@ flowchart TB
   Actions --> Store
 ```
 
-- `MapHost` renders `<arcgis-map>` once, never re-mounts on module change, and hands the view to `MapController` on `arcgisViewReadyChange`.
+- `MapHost` (lazy-loaded) renders `<arcgis-map>` once, never re-mounts on module change, and hands the view to `MapController` on `arcgisViewReadyChange`. It owns the loading overlay, a 30-second timeout error, a WebGL2 check and `arcgisViewReadyError` handling.
 - Each layer controller implements `activate(view)`, `update(state, data)`, `deactivate()` and owns its layer IDs. Controllers are idempotent: `update` with the same inputs makes no changes (cheap equality check), which prevents feedback loops.
 - Layer z-order (bottom→top): basemap · small-area choropleth · LAD boundaries · country choropleth · flows · stores · scenario overlays · selection highlight.
 - Camera choreography lives in `services/arcgis/goTo.ts` (global extent, UK extent, LAD extent with padding for open panels); durations come from motion settings.
@@ -353,8 +359,8 @@ public/data/
 
 ## 8. CI/CD and hosting
 
-- **ci.yml** (PR + main): `npm ci` → typecheck → lint → unit/component tests → build → Playwright against `vite preview`; pipeline: `uv sync` → `pytest`.
-- **deploy-pages.yml** (main): build with `BASE_PATH` from repository settings → upload artifact → `actions/deploy-pages`. Post-deploy smoke test hits the live URL.
+- **ci.yml** (PR + main): `npm ci` → banned-import check → Prettier → generated types up to date → typecheck → lint → unit/component tests → build with local ArcGIS assets → Playwright (Chromium, SwiftShader WebGL) against `vite preview`; pipeline job: `uv sync --locked` → `pytest`.
+- **deploy-pages.yml** (main): build in CDN mode with `BASE_PATH=/FoodScopeUK/` and the `ARCGIS_API_KEY` secret → upload artifact → `actions/deploy-pages` → Playwright smoke test against the live URL (`PLAYWRIGHT_BASE_URL`).
 - **Repository and URL**: `github.com/johnchewitt/FoodScopeUK` → `https://johnchewitt.github.io/FoodScopeUK/`.
 - **Base path**: `vite.config.ts` reads `BASE_PATH` (default `/FoodScopeUK/`, matching the repository name's casing; `/` for a custom domain). All runtime fetches use `import.meta.env.BASE_URL`. Stage 1 smoke test also loads the lower-case URL variant to confirm assets resolve.
 - **Pages source**: repository Settings → Pages → Source = "GitHub Actions" (set once in Stage 1).
@@ -384,3 +390,5 @@ public/data/
 | Commodity switch (cached) | < 300 ms to updated map + KPIs |
 
 Measured in CI with bundle-size reporting; regressions over 10 % fail the build after Stage 8.
+
+**Stage 1 measurement (production build)**: initial JS `index` chunk 605.8 kB (183.7 kB gzip) — over the 350 kB budget, mainly React, Calcite (dialog, panel, switch, loader) and Ajv; the ArcGIS `MapHost` chunk (1.15 MB, 275 kB gzip) loads lazily. Reduction is tracked in `docs/backlog.md`.

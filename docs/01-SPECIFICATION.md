@@ -95,19 +95,20 @@ The brief asks for a complete, tested first release over an extensive unfinished
 
 ### 4.1 Layout regions
 
-| Region | Desktop (≥ 1440 px) | Laptop (1024–1439) | Tablet (768–1023) | Mobile (< 768) |
+| Region | Desktop (≥ 1440 px) | Laptop (1280–1439) | Tablet (768–1279) | Mobile (< 768) |
 |---|---|---|---|---|
-| Top bar | 56 px; brand left, modules centre, utilities right | modules collapse to icons + labels on hover | module menu | brand + menu |
-| Left control sidebar | 320 px, collapsible to 56 px rail | 296 px | slide-over | bottom sheet |
-| Map | remaining area; **≥ 60 % of viewport visible at 1920 × 1080 with all panels open** | | | full screen |
-| Right insights panel | 360 px, collapsible | overlay | slide-over | bottom sheet tab |
+| Top bar | 56 px; brand left, current module and its question centre, utilities right | question hidden | tool labels hidden | brand, menu, help, controls and insights buttons |
+| Left navigation rail | 76 px, icon + short label per module | same | same | drawer from the menu button |
+| Collapsible controls panel | 312 px | 288 px | overlay (one panel at a time) | bottom sheet |
+| Map | full-bleed behind floating panels; **≥ 60 % of the viewport width unobstructed between the side panels at 1920 × 1080 with both open** | | | full screen |
+| Right insights panel | 340 px, collapsible | 320 px | overlay | bottom sheet |
 | Bottom timeline | 72 px, spans map width | | | compact stepper |
-| Floating KPI cards | top-left of map area, max 4 visible | max 3 | max 2 | swipeable row |
+| Floating KPI cards | top of the map area, max 4 visible | max 3 | max 2 | swipeable row |
 
 ### 4.2 Requirements
 
 - **SH-01** Top bar shows "FOODSCOPE UK", subtitle "Food Security & Supply Chain Intelligence" and a subtle "Powered by ConsultingWhere" attribution.
-- **SH-02** Module navigation: Food Origins · Seasonal Supply · UK Food Access · Supply Chain Risks · Local Authority Profiles · Scenario Lab · Consulting Insights. Modules not in the current release show a "Coming in Release N" state rather than being hidden, so demos can describe the full vision honestly.
+- **SH-02** Module navigation in a left-hand rail (changed from top-centre at John's Stage 1 instruction): Food Origins · Seasonal Supply · UK Food Access · Supply Chain Risks · Local Authority Profiles · Scenario Lab · Consulting Insights. Modules not yet built show what they will contain and when ("Added in build stage N" / "Planned for Release N") rather than being hidden, so demos can describe the full vision honestly.
 - **SH-03** Utilities: Search (places, authorities, commodities, stores), Help, Export, **Data freshness indicator** (latest reference period per source family, colour-coded by age against expected cadence), 2D/3D toggle (disabled with tooltip until Release 2).
 - **SH-04** Application state is reflected in the URL query string (module, commodity, year, month, LAD codes, filters, scenario parameters) so any view can be bookmarked or shared and so demos are reproducible.
 - **SH-05** Every panel implements five data states: loading (skeleton), empty, error (with retry and plain-English cause), partial (some sources failed — say which) and stale (data older than expected cadence).
