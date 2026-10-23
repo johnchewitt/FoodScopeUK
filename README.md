@@ -2,7 +2,11 @@
 
 **Food Security & Supply Chain Intelligence** — a map-centred demonstrator showing where the UK's recorded food imports come from, how sourcing changes through the year, where supermarket provision and food-access vulnerability sit, and how exposed the system is to plausible disruptions. Built for ConsultingWhere with React 19, TypeScript, Vite and the ArcGIS Maps SDK for JavaScript 5.1.
 
-> **Status:** Stage 2 — the **Food Origins explorer** with real HMRC Overseas Trade Statistics for tomatoes, strawberries, bananas, potatoes and wheat (monthly, January 2019 – August 2026; snapshot 2026-10-23). Other modules still show what they will contain and when. See `docs/stage-reports/stage-2.md`.
+> **Status:** Stage 3 — the **Food Origins explorer** (Stage 2) and the **Seasonal Supply Explorer** (Stage 3), with real HMRC Overseas Trade Statistics for tomatoes, strawberries, bananas, potatoes and wheat (monthly, January 2019 – August 2026; snapshot 2026-10-23).
+> - Seasonal Supply plays through January–December and has a partner-by-month heatmap, monthly trend, year-on-year change and month-against-month comparison.
+> - Other modules still show what they will contain and when.
+>
+> See `docs/stage-reports/stage-3.md`.
 >
 > Site: https://johnchewitt.github.io/FoodScopeUK/
 
@@ -77,9 +81,11 @@ GitHub Pages via `.github/workflows/deploy-pages.yml` on every push to `main`:
 
 Code licence: to be confirmed by ConsultingWhere. Data shown in this build: Natural Earth (public domain; "Made with Natural Earth"); Esri basemap when a key is configured (attribution rendered by the map). Full source terms: `docs/03-DATA-SOURCES.md`.
 
-## Known limitations (Stage 2)
+## Known limitations (Stage 3)
 
-- Food Origins covers five of the 16 planned commodities; the others, Seasonal Supply and the remaining modules follow in later stages.
+- Food Origins and Seasonal Supply cover five of the 16 planned commodities; the others and the remaining modules follow in later stages.
+- Seasonal Supply shows imports only. No verified monthly UK production series exists for these five commodities, so none is shown and none is estimated from imports.
+- Months HMRC has not yet published (September–December 2026 in this snapshot) are shown as missing, never estimated.
 - Recorded import partner = HMRC's country of dispatch, not where food was grown. Connections on the map are symbolic, not shipping routes.
 - The Esri basemap and the HMRC API cannot be reached from the development sandbox; the post-deploy smoke test checks the basemap on the live site, and HMRC data is fetched by GitHub Actions.
 - The initial JavaScript bundle (184 kB gzip) is above the 350 kB-uncompressed budget in the architecture; reduction is in `docs/backlog.md`.
