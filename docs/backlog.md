@@ -12,3 +12,4 @@ Ideas and follow-ups that are outside the current stage's scope. Move an item in
 | B6 | `eslint-plugin-jsx-a11y` for static accessibility linting | Stage 1 | 2 |
 | B7 | Bundle-size report in CI with a regression threshold | Architecture §10 | 8 |
 | B8 | Decide the code licence for the repository | README | ConsultingWhere |
+| B9 | Recover from a failed lazy map chunk (seen once: transient GitHub Pages 503 on first load). `React.lazy` caches the rejected import, so "Try again" cannot recover; retry the import once and offer Reload | Stage 1 post-merge check | 3 |

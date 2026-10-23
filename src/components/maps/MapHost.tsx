@@ -7,7 +7,8 @@ import ColorBackground from "@arcgis/core/webmap/background/ColorBackground";
 import { useEffect, useMemo } from "react";
 import { ErrorState } from "@/components/states/ErrorState";
 import { MapController } from "@/map/MapController";
-import { REFERENCE_DATASET_ID } from "@/map/layerIds";
+import { BASEMAP_STATUS_ID, REFERENCE_DATASET_ID } from "@/map/layerIds";
+import { BasemapStatusController } from "@/map/layers/basemapStatus";
 import { ReferenceOutlinesController } from "@/map/layers/referenceOutlines";
 import { GO_TO_TARGETS, type ViewLike } from "@/map/types";
 import { createBasemap } from "@/services/arcgis/basemap";
@@ -28,6 +29,7 @@ export default function MapHost() {
   const status = useAppStore((s) => s.mapStatus);
   const error = useAppStore((s) => s.mapError);
   const setMapStatus = useAppStore((s) => s.setMapStatus);
+  const basemapStatus = useAppStore((s) => s.layerStatus[BASEMAP_STATUS_ID]?.status);
   const reducedMotion = useAppStore(selectReducedMotion);
   const manifest = useManifest();
 
@@ -36,7 +38,11 @@ export default function MapHost() {
   const basemap = useMemo(() => createBasemap(env.apiKey), [env.apiKey]);
   const map = useMemo(() => new EsriMap(basemap ? { basemap } : {}), [basemap]);
   const referenceLayer = useMemo(() => new ReferenceOutlinesController(basemap !== null), [basemap]);
-  const controller = useMemo(() => new MapController(useAppStore, [referenceLayer]), [referenceLayer]);
+  const basemapWatcher = useMemo(() => new BasemapStatusController(basemap), [basemap]);
+  const controller = useMemo(
+    () => new MapController(useAppStore, [referenceLayer, basemapWatcher]),
+    [referenceLayer, basemapWatcher],
+  );
   const spatialReference = useMemo(() => SpatialReference.WebMercator, []);
   const background = useMemo(() => new ColorBackground({ color: NAVY }), []);
   // Without a basemap the view has no tiling scheme, so zoom levels must be supplied explicitly
@@ -98,7 +104,12 @@ export default function MapHost() {
   };
 
   return (
-    <div className="map-host" data-map-state={status} data-basemap={basemap ? "esri" : "offline"}>
+    <div
+      className="map-host"
+      data-map-state={status}
+      data-basemap={basemap ? "esri" : "offline"}
+      data-basemap-status={basemap ? (basemapStatus ?? "loading") : "none"}
+    >
       {webgl && (
         <arcgis-map
           map={map}

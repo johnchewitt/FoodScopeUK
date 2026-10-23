@@ -1,3 +1,5 @@
 /** Layer ids shared by map controllers and UI (kept SDK-free so UI modules stay light). */
 export const REFERENCE_LAYER_ID = "reference-outlines";
 export const REFERENCE_DATASET_ID = "reference.world_countries_110m";
+/** Status entry for the Esri basemap (not a layer the app creates; see BasemapStatusController). */
+export const BASEMAP_STATUS_ID = "basemap";

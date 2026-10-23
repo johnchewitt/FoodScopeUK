@@ -100,6 +100,15 @@ describe("App shell", () => {
     expect(document.getElementById("insights-panel")).toHaveAttribute("data-open", "false");
   });
 
+  it("closes a dialog opened from a deep link with Escape, before focus moves into it", async () => {
+    window.history.replaceState(null, "", "/FoodScopeUK/?view=evidence");
+    renderApp();
+    expect(useAppStore.getState().overlay).toBe("evidence");
+    await userEvent.keyboard("{Escape}");
+    expect(useAppStore.getState().overlay).toBe("none");
+    expect(window.location.search).toBe("");
+  });
+
   it("shows data status from the real manifest", async () => {
     renderApp();
     const insights = document.getElementById("insights-panel")!;

@@ -364,7 +364,7 @@ public/data/
 - **Repository and URL**: `github.com/johnchewitt/FoodScopeUK` → `https://johnchewitt.github.io/FoodScopeUK/`.
 - **Base path**: `vite.config.ts` reads `BASE_PATH` (default `/FoodScopeUK/`, matching the repository name's casing; `/` for a custom domain). All runtime fetches use `import.meta.env.BASE_URL`. Stage 1 smoke test also loads the lower-case URL variant to confirm assets resolve.
 - **Pages source**: repository Settings → Pages → Source = "GitHub Actions" (set once in Stage 1).
-- **API key injection**: `deploy-pages.yml` passes `secrets.ARCGIS_API_KEY` to the build as `VITE_ARCGIS_API_KEY`; if the secret is absent the app runs with the key-free fallback map and logs a console warning.
+- **API key injection**: `deploy-pages.yml` passes `secrets.ARCGIS_API_KEY` to the build as `VITE_ARCGIS_API_KEY`; if the secret is absent the app runs with the key-free fallback map and logs a console warning. At startup the key is registered as `esriConfig.apiKeys.basemapStyles` (sent only to the Esri basemap hosts) and `esriConfig.request.useIdentity` is turned off, so a refused key shows as a failed basemap, never a sign-in dialog (ADR-11, amended after the first deploy).
 - **Caching**: snapshot paths are immutable (dated), so browsers can cache them; `manifest.json` and `config.json` are small and always revalidated.
 
 ---
