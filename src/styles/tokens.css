@@ -1,0 +1,87 @@
+/* FOODSCOPE UK design tokens (spec §7.1). Components use these variables only. */
+:root {
+  /* Brand palette — fixed by the brief */
+  --fs-navy: #071923;
+  --fs-emerald: #063d3b;
+  --fs-teal: #0a444a;
+  --fs-cyan: #49ead8;
+  --fs-green: #a1eb83;
+  --fs-amber: #e8b76b;
+  --fs-text: #edf7f5;
+  --fs-text-muted: #8eadae;
+
+  /* Derived tints (all built from the palette above) */
+  --fs-navy-deep: color-mix(in oklab, var(--fs-navy) 82%, black);
+  --fs-cyan-soft: rgb(73 234 216 / 0.14);
+  --fs-cyan-glow: rgb(73 234 216 / 0.38);
+  --fs-green-soft: rgb(161 235 131 / 0.16);
+  --fs-amber-soft: rgb(232 183 107 / 0.16);
+  --fs-line: rgb(73 234 216 / 0.16);
+  --fs-line-strong: rgb(73 234 216 / 0.4);
+  --fs-surface-hover: rgb(73 234 216 / 0.08);
+
+  /* Glass surfaces (spec §7.3) */
+  --fs-glass: color-mix(in oklab, var(--fs-emerald) 76%, transparent);
+  --fs-glass-deep: color-mix(in oklab, var(--fs-navy) 86%, transparent);
+  --fs-glass-blur: blur(14px) saturate(120%);
+  --fs-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.65), 0 2px 0 0 rgb(255 255 255 / 0.02) inset;
+  --fs-glow-focus: 0 0 0 1px var(--fs-cyan), 0 0 18px -2px var(--fs-cyan-glow);
+
+  /* Type */
+  --fs-font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fs-font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --fs-text-xs: 0.75rem; /* 12 */
+  --fs-text-sm: 0.8125rem; /* 13 */
+  --fs-text-md: 0.875rem; /* 14 */
+  --fs-text-lg: 1rem; /* 16 */
+  --fs-text-xl: 1.25rem; /* 20 */
+  --fs-text-2xl: 1.625rem; /* 26 */
+  --fs-leading: 1.5;
+
+  /* Shape */
+  --fs-radius-sm: 8px;
+  --fs-radius-md: 12px;
+  --fs-radius-lg: 16px;
+  --fs-radius-pill: 999px;
+
+  /* Layout metrics — keep in sync with src/map/layoutMetrics.ts */
+  --fs-header-h: 56px;
+  --fs-gap: 12px;
+  --fs-rail-w: 76px;
+  --fs-filter-w: 312px;
+  --fs-insights-w: 340px;
+  --fs-kpi-h: 92px;
+  --fs-timeline-h: 64px;
+  --fs-attribution-h: 22px;
+
+  /* Motion */
+  --fs-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --fs-dur-fast: 150ms;
+  --fs-dur: 240ms;
+}
+
+@media (max-width: 1439px) {
+  :root {
+    --fs-filter-w: 288px;
+    --fs-insights-w: 320px;
+  }
+}
+
+@media (max-width: 1279px) {
+  :root {
+    --fs-filter-w: 320px;
+    --fs-insights-w: 340px;
+  }
+}
+
+/* Reduced motion: OS preference or in-app setting (AX-04) */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --fs-dur-fast: 0ms;
+    --fs-dur: 0ms;
+  }
+}
+[data-motion="reduced"] {
+  --fs-dur-fast: 0ms;
+  --fs-dur: 0ms;
+}
