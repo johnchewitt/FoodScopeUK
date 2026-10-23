@@ -99,7 +99,7 @@ Versions checked on the npm registry on **23 October 2026**. The lockfile pins e
 - Component registration: `import "@arcgis/map-components/components/arcgis-map";` (package exports `./components/*`).
 - JSX typing: add `/// <reference types="@arcgis/map-components/types/react" />` to `src/vite-env.d.ts`.
 - Event props in JSX use the lowercase-prefixed custom event form, e.g. `onarcgisViewReadyChange`, `onarcgisReady` (confirmed in the package's React typings).
-- 5.1 adds `CIMSymbolAnimationMoveAlongLine` (beta) for animating markers along lines — candidate for flow animation (ADR-05).
+- 5.1 adds `CIMSymbolAnimationMoveAlongLine` (beta) for animating markers along lines. In the Stage 2 spike no CIM symbol animation rendered in our view (headless SwiftShader and an Intel GPU), so flow motion is drawn on a canvas overlay (ADR-15).
 - 2D feature layers support clustering via feature reduction; client-side `GeoJSONLayer`/`FeatureLayer` sources are sufficient for ~20k points.
 - *Verified in Stage 1*: a `MapView` whose map has no basemap never becomes ready unless `constraints.lods` is set (Esri's `MapViewConstraints` docs say so); `MapHost` supplies Web Mercator LODs from `TileInfo.create()`.
 - *Verified in Stage 1*: runtime assets default to `js.arcgis.com/5.1.27/…` and `js.arcgis.com/calcite-components/5.1.2/`; each package exposes `setAssetPath` (core: `esriConfig.assetsPath`) for self-hosting (ADR-0014).
@@ -114,7 +114,9 @@ Versions checked on the npm registry on **23 October 2026**. The lockfile pins e
 | **ADR-02** | ArcGIS map components used directly in React 19; no widgets; no React wrapper | Brief §3; 5.0 deprecations | Need a small typed bridge for view access and events |
 | **ADR-03** | **One-way sync**: Zustand store is the source of truth; map controllers subscribe and mutate ArcGIS layers; ArcGIS events dispatch store actions | Brief step 8 (keep map and React state synchronised) | No ArcGIS objects in React state; controllers are testable in isolation |
 | **ADR-04** | Single 2D `MapView` in Web Mercator for all modules; `<arcgis-scene>` globe added in Release 2 for Food Origins only | Smooth global→local flights, one basemap | Quantities never encoded by country area; equal-area exports deferred |
-| **ADR-05** | Flows as client-side polyline graphics: great-circle arcs (geodetic densify) from partner representative point to a UK anchor; width linear in net mass with clamps; animation via CIM symbol animation, spike in Stage 3 with static fallback | Honest, performant, reduced-motion friendly | Arcs are symbolic (P4); anchor is a single UK point, not ports |
+| **ADR-05** | Flows as client-side polyline graphics: symbolic quadratic curves in Web Mercator (deliberately not great-circle routes) from each partner's Natural Earth label point to one UK point; width linear in the measure (1.5–12 px) | Honest, performant, reduced-motion friendly | Arcs are symbolic (P4); anchor is a single UK point, not ports |
+| **ADR-15** | Flow motion on a 2D canvas overlay synced with `view.toScreen`, stopped under reduced motion; static lines stay ArcGIS graphics | SDK 5.1 CIM animations did not render in our view (Stage 2 spike) | If the overlay fails only the motion is lost |
+| **ADR-16** | HMRC ingest on GitHub Actions (`refresh-trade-data.yml`); raw responses committed in `pipeline/raw/hmrc/<snapshot>/`; offline rebuild and reconciliation | Sandbox cannot reach HMRC; browser must not; reproducible audit trail | ~0.2 MB per snapshot in git |
 | **ADR-06** | **JSON Schema is the canonical data contract** (`/schemas`); pipeline validates with `jsonschema`/pydantic, app generates TS types and validates at load with ajv | Two languages, one contract | Schema changes are versioned and tested on both sides |
 | **ADR-07** | Python pipeline for data; TypeScript for the app | GeoPandas/DuckDB/pyproj are the right tools for boundaries, reprojection and spatial joins | Two toolchains; CI runs both |
 | **ADR-08** | Data access through adapters: `StaticSnapshotAdapter` (default), `ArcGISFeatureLayerAdapter` (URL from `config.json`); future `ProxyAdapter` | Brief §7 and §15 configurability | Feature code never knows where data came from |
@@ -231,6 +233,7 @@ interface AppState {
 ```
 
 - Only serialisable values live in the store. ArcGIS objects (view, layers, graphics) live in controllers.
+- **As built (Stage 2):** a flat store (`src/state/store.ts`). URL state (`src/state/urlState.ts`) is `module`, `month`, `lad`, `overlay` and, for Food Origins, `commodity` (`c`), `period` (`pm` = `r12` | `m` | `y`), `year` (`y`), `measure` (`ms`) and `partner` (`p`). Non-URL state includes `originsMap` — a serialisable map view model (partners with share class, label point, connection width) that the Origins feature writes and the map controller reads — `hoverPartner` and `flowCount`.
 - A URL-sync middleware mirrors `ui.module`, `selection`, `filters` and `scenario` to the query string (ADR-13) with debounce, and hydrates them on load.
 - Derived data (partner shares, KPIs) is computed with memoised selectors over TanStack Query results — never stored.
 
@@ -278,11 +281,13 @@ flowchart TB
 - Layer z-order (bottom→top): basemap · small-area choropleth · LAD boundaries · country choropleth · flows · stores · scenario overlays · selection highlight.
 - Camera choreography lives in `services/arcgis/goTo.ts` (global extent, UK extent, LAD extent with padding for open panels); durations come from motion settings.
 - Map clicks call `hitTest` and dispatch typed actions (`selectCountry`, `selectLad`, `selectStore`).
+- **As built (Stage 2):** `OriginsLayersController` (`src/map/layers/origins.ts`) owns the partner shading (a `GeoJSONLayer` of the Natural Earth outlines whose `UniqueValueRenderer` is rebuilt from `originsMap`), small-partner points and the connection graphics, plus `FlowParticles` (canvas overlay for motion, ADR-15). Its `update(state)` compares a signature of the model, selection, hover and motion, so unchanged state draws nothing. Clicks and pointer moves go through `hitTest` to `selectPartner` / `setHoverPartner`. Layer order: reference outlines · partner shading · connections · partner points · motion overlay.
 
 ### 5.4 Data access
 
 - `manifest.json` lists the current snapshot ID and, per dataset, path, schema ID, checksum, source IDs and reference period.
-- `useDataset(id)` (TanStack Query) → adapter → fetch → ajv validate → typed result. Validation failure surfaces as an error state naming the dataset.
+- `useDataset(id)` (TanStack Query) → adapter → fetch → ajv validate → typed result. Validation failure surfaces as an error state naming the dataset. `useValidatedDataset(id, validator)` does the validation inside the query (Stage 2: trade index, trade snapshots, country points).
+- Food Origins: `useOrigins()` loads the trade index, the selected basket and the country points and memoises `buildOriginsModel()` (`src/features/origins/model.ts`), the single source for the KPI cards, charts, table, timeline and map model.
 - Adapters per ADR-08. The `ArcGISFeatureLayerAdapter` reads layer URLs and field mappings from `config.json`, so a ConsultingWhere-published copy of a dataset can replace the static snapshot without code changes, provided its fields map to the same schema.
 
 ### 5.5 Error handling
@@ -303,14 +308,18 @@ flowchart TB
 
 | Stage | Responsibility | Output |
 |---|---|---|
-| `ingest` | Download each source with provenance (URL, query, retrieval time, HTTP status, checksum, licence). HMRC client throttles to ≤ 50 req/min and follows `@odata.nextLink`. | `pipeline/cache/raw/<source>/<date>/…` (git-ignored) |
+| `ingest` | Download each source with provenance (URL, query, retrieval time, HTTP status, checksum, licence). HMRC client throttles to ≤ 50 req/min and follows `@odata.nextLink`. | HMRC (Stage 2): `pipeline/raw/hmrc/<snapshot>/` (**committed**, ADR-16); other sources `pipeline/cache/raw/<source>/<date>/…` (git-ignored) |
 | `validate` | Schema and value checks (types, ranges, codes), CRS assertions, geometry validity, duplicate keys; accounting log of rows in/out. | `…/staged/*.parquet` + accounting report |
 | `derive` | Commodity aggregation, partner monthly tables, country crosswalk, point-in-polygon store→LAD/small area, nearest-store distances, LAD indicators | `…/derived/*.parquet` |
 | `publish` | Write compact JSON/GeoJSON per schema, deterministic ordering, gzip-friendly; write `manifest.json`; generalise geometries for the web | `public/data/snapshots/<date>/…` |
 
 Every stage is idempotent and re-runnable from cached raw inputs. Each run writes an accounting report (rows/features in → out per step, rejects with reasons) to `docs/stage-reports/data-runs/`.
 
-### 6.2 Snapshot layout (proposed)
+**As built (Stage 2):** `uv run foodscope-pipeline ingest-hmrc --snapshot <date>` (online; GitHub Actions only) → `build-trade --snapshot <date>` (offline: crosswalk, aggregation, reconciliation, schema validation, provenance sidecars, accounting in `pipeline/reports/`) → `publish` (manifest from every sidecar under `reference/` and the newest `snapshots/<date>/`).
+
+### 6.2 Snapshot layout (proposed; Stage 2 parts built)
+
+Built in Stage 2: `snapshots/2026-10-23/trade/index.json` (baskets, schema `trade-index`) and `trade/<basket>.json` (schema `trade-snapshot`: commodity with CN8 list, flows, month range and provisional start, partners with crosswalk and label point, rows `[monthIndex, partnerIndex, kg, £]`, suppressed rows, nil months), each with a `*.provenance.json` sidecar; geometry lives under `reference/` (`world-countries-110m.geojson`, `world-country-points.json`). The country crosswalk is embedded per basket rather than in a separate `countries.json`.
 
 ```text
 public/data/
@@ -339,6 +348,7 @@ public/data/
 ### 6.4 Scheduling
 
 - `refresh-data.yml` runs monthly a few days after HMRC's OTS release (exact schedule set once the release calendar is checked) and quarterly for GEOLYTIX; it opens a pull request with the new snapshot and a diff summary (rows, totals per commodity, changed reference periods). A human merges — data never auto-deploys.
+- **As built (Stage 2):** `refresh-trade-data.yml` (manual run → `data-refresh/<date>` branch and PR; push to `data-refresh/**` → commits back to that branch). No schedule yet (Stage 3); HMRC's next release is 12 Nov 2026.
 
 ---
 

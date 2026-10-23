@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/country-points.schema.json",
+  "title": "CountryPoints",
+  "description": "Natural Earth label point per ISO alpha-2 code (public/data/reference/world-country-points.json, S24).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source", "points"],
+  "properties": {
+    "source": { "type": "string" },
+    "points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["iso_a2", "name", "name_long", "lon", "lat", "in110m"],
+        "properties": {
+          "iso_a2": { "type": "string", "pattern": "^[A-Z]{2}$" },
+          "name": { "type": "string" },
+          "name_long": { "type": "string" },
+          "lon": { "type": "number", "minimum": -180, "maximum": 180 },
+          "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+          "in110m": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

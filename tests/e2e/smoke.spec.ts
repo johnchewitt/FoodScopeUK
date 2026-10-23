@@ -112,8 +112,9 @@ test.describe("Stage 1 shell", () => {
 
   test("evidence and help dialogs open from the URL and close", async ({ page }) => {
     await page.goto("./?view=evidence");
-    await expect(page.getByText("No statistics have been published yet")).toBeVisible();
+    await expect(page.getByText(/Statistical snapshot 2026-10-23/)).toBeVisible();
     await expect(page.getByRole("cell", { name: /World country outlines/ })).toBeVisible();
+    await expect(page.getByRole("cell", { name: /Recorded UK imports: tomatoes/ })).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page).toHaveURL(/FoodScopeUK\/$/);
     await page.keyboard.press("?");
@@ -122,6 +123,9 @@ test.describe("Stage 1 shell", () => {
 
   test("timeline month selection is keyboard operable", async ({ page }) => {
     await page.goto("./");
+    await expect(page.locator(".kpi-card").first()).toHaveAttribute("data-state", "ready", {
+      timeout: 30_000,
+    });
     await page.getByRole("button", { name: "Mar", exact: true }).click();
     await expect(page).toHaveURL(/mo=3/);
     await page.keyboard.press("ArrowRight");
@@ -132,10 +136,10 @@ test.describe("Stage 1 shell", () => {
     await expect(page).toHaveURL(/mo=4/);
   });
 
-  test("no KPI card shows a number (no data loaded in Stage 1)", async ({ page }) => {
-    await page.goto("./");
+  test("modules without data show no numbers on KPI cards", async ({ page }) => {
+    await page.goto("./?m=scenarios");
     const cards = page.locator(".kpi-card");
-    await expect(cards).toHaveCount(4);
+    await expect(cards).toHaveCount(3);
     for (const text of await cards.allInnerTexts()) {
       expect(text).toContain("No data loaded");
       expect(text.replace(/stage \d+/i, "")).not.toMatch(/\d/);

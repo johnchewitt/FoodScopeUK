@@ -10,7 +10,22 @@ export interface ViewLike {
   zoom: number;
   goTo(target: unknown, options?: { animate?: boolean; duration?: number }): Promise<unknown>;
   whenLayerView(layer: unknown): Promise<unknown>;
-  map: { add(layer: unknown): void; remove(layer: unknown): void } | null | undefined;
+  map: { add(layer: unknown, index?: number): void; remove(layer: unknown): void } | null | undefined;
+  /** MapView event registration (click, pointer-move, pointer-leave). Absent in unit-test fakes. */
+  on?(name: string, handler: (event: ViewPointerEvent) => void): { remove(): void };
+  /** MapView hit test. Absent in unit-test fakes. */
+  hitTest?(event: ViewPointerEvent, options?: { include?: unknown[] }): Promise<{ results: HitResult[] }>;
+}
+
+export interface ViewPointerEvent {
+  x: number;
+  y: number;
+  stopPropagation?(): void;
+}
+
+export interface HitResult {
+  type: string;
+  graphic?: { attributes?: Record<string, unknown> | null; layer?: unknown } | null;
 }
 
 /** Layer controllers own their layers end to end (ADR-03). */

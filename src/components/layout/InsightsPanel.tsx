@@ -6,10 +6,12 @@ import { EmptyState } from "@/components/states/EmptyState";
 import { PartialNotice } from "@/components/states/Notice";
 import { SkeletonLines } from "@/components/states/Skeleton";
 import { principlesById } from "@/content/principles";
+import { OriginsInsights } from "@/features/origins/OriginsInsights";
 import { BASEMAP_STATUS_ID, REFERENCE_DATASET_ID, REFERENCE_LAYER_ID } from "@/map/layerIds";
 import { basemapMode, readArcgisEnv } from "@/services/arcgis/env";
 import { describeDataError } from "@/services/data/errors";
 import { findDataset, useAppConfig, useManifest } from "@/services/data/queries";
+import { ErrorBoundary } from "@/app/ErrorBoundary";
 import { useAppStore } from "@/state/store";
 
 const KEY_GUIDE_URL = "https://github.com/johnchewitt/FoodScopeUK/blob/main/docs/setup/arcgis-api-key.md";
@@ -43,6 +45,8 @@ export function InsightsPanel() {
   const mod = getModule(module);
   const mode = basemapMode(readArcgisEnv().apiKey);
   const reference = findDataset(manifest.data, REFERENCE_DATASET_ID);
+  const statistical = manifest.data?.datasets.filter((d) => d.role === "statistical") ?? [];
+  const tradeDatasets = statistical.filter((d) => d.id.startsWith("trade.") && d.id !== "trade.index");
 
   const failed: string[] = [];
   if (config.isError) failed.push("app configuration (defaults used)");
@@ -68,16 +72,22 @@ export function InsightsPanel() {
       </div>
 
       <div className="panel__body scroll-area">
-        <section className="panel-section" aria-labelledby="about-heading">
-          <h3 id="about-heading" className="panel-section__title">
-            What this view will show
-          </h3>
-          <p>{mod.summary}</p>
-          <p>
-            {mod.release > 1 ? `Planned for Release ${mod.release}` : `Built in stage ${mod.buildStage}`}.
-            Requirements <code>{mod.requirementIds}</code>.
-          </p>
-        </section>
+        {module === "origins" ? (
+          <ErrorBoundary region="Food Origins insights">
+            <OriginsInsights />
+          </ErrorBoundary>
+        ) : (
+          <section className="panel-section" aria-labelledby="about-heading">
+            <h3 id="about-heading" className="panel-section__title">
+              What this view will show
+            </h3>
+            <p>{mod.summary}</p>
+            <p>
+              {mod.release > 1 ? `Planned for Release ${mod.release}` : `Built in stage ${mod.buildStage}`}.
+              Requirements <code>{mod.requirementIds}</code>.
+            </p>
+          </section>
+        )}
 
         <section className="panel-section" aria-labelledby="status-heading">
           <h3 id="status-heading" className="panel-section__title">
@@ -88,11 +98,19 @@ export function InsightsPanel() {
             <SkeletonLines label="Loading data status" />
           ) : (
             <ul className="status-list" style={{ marginTop: failed.length ? 12 : 0 }}>
-              <StatusItem
-                tone="pending"
-                title="No statistics loaded"
-                detail="Trade, retail and population data arrive from build stage 2 onward. Nothing on screen is a statistic yet."
-              />
+              {manifest.data?.snapshotId && tradeDatasets.length > 0 ? (
+                <StatusItem
+                  tone="ok"
+                  title={`Trade snapshot ${manifest.data.snapshotId}`}
+                  detail={`HMRC Overseas Trade Statistics for ${tradeDatasets.length} commodities, ${tradeDatasets[0]?.referencePeriod ?? ""}. Used by Food Origins.`}
+                />
+              ) : (
+                <StatusItem
+                  tone="pending"
+                  title="No statistics loaded"
+                  detail="Trade, retail and population data arrive from build stage 2 onward. Nothing on screen is a statistic yet."
+                />
+              )}
               {manifest.isError ? (
                 <StatusItem
                   tone="warn"
@@ -112,7 +130,7 @@ export function InsightsPanel() {
                   detail={
                     referenceLayer?.status === "error"
                       ? `Failed to draw: ${referenceLayer.message ?? "unknown error"}`
-                      : `${reference.referencePeriod}, 1:110m, ${reference.featureCount ?? "?"} countries. Reference geometry only.`
+                      : `${reference.referencePeriod}, 1:110m, ${reference.featureCount ?? "?"} countries and territories. Reference geometry only.`
                   }
                 />
               ) : null}
@@ -150,18 +168,20 @@ export function InsightsPanel() {
           )}
         </section>
 
-        <section className="panel-section">
-          <ChartFrame
-            title="Trend"
-            option={null}
-            emptyTitle="No chart yet"
-            emptyBody={
-              mod.release > 1
-                ? `Charts for this module are planned for Release ${mod.release}.`
-                : `Charts are drawn from real data once it is added in build stage ${mod.buildStage}.`
-            }
-          />
-        </section>
+        {module !== "origins" && (
+          <section className="panel-section">
+            <ChartFrame
+              title="Trend"
+              option={null}
+              emptyTitle="No chart yet"
+              emptyBody={
+                mod.release > 1
+                  ? `Charts for this module are planned for Release ${mod.release}.`
+                  : `Charts are drawn from real data once it is added in build stage ${mod.buildStage}.`
+              }
+            />
+          </section>
+        )}
 
         <section className="panel-section" aria-labelledby="principles-heading">
           <h3 id="principles-heading" className="panel-section__title">

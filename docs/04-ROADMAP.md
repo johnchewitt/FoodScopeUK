@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | 04 — Staged delivery plan |
-| **Version** | 0.1 — 23 October 2026 |
+| **Version** | 0.2 — 23 October 2026 (Stage 2 re-scoped to the Food Origins explorer at John's instruction) |
 | **Approach** | Small, demonstrable stages. Each stage ends with working software, passing checks and a short stage report. No stage starts while its verification gates are open. |
 
 ---
@@ -13,10 +13,10 @@
 | Stage | Name | Release | Depends on | Demo at end of stage |
 |---|---|---|---|---|
 | 0 | Planning baseline | — | — | This document pack ✅ |
-| **1** | **Application foundation** ✅ built (branch `stage/1-foundation`, awaiting merge) | R1 | 0, decisions D1–D2 | Branded shell, live dark map, empty module panels, CI + Pages deploy |
-| 2 | Data pipeline v1 | R1 | 1, gates G1–G6 | Dated snapshot with manifest; Evidence page lists real sources |
-| 3 | Food Origins + Seasonal vertical slice | R1 | 2 | Pick tomatoes, step Jan→Jul, watch partners and flows change |
-| 4 | Supermarket network | R1 | 2, G7 | Clustered stores, retailer/class filters, store search, per-10k choropleth |
+| **1** | **Application foundation** ✅ merged (PR #1) and deployed | R1 | 0, decisions D1–D2 | Branded shell, live dark map, empty module panels, CI + Pages deploy |
+| **2** | **Food Origins explorer + HMRC trade pipeline** ✅ built (branch `stage/2-origins-explorer`) | R1 | 1, gates G1, G2, G4 | Pick tomatoes, step Jan→Jul, watch partners, connections, cards and charts change — real HMRC data for five commodities |
+| 3 | Data pipeline completion + Seasonal Supply | R1 | 2, gates G3, G5, G6 | Remaining 11 baskets; LAD, population, GEOLYTIX and Defra context in the snapshot; Seasonal timeline play, heatmap and year comparison |
+| 4 | Supermarket network | R1 | 3, G7 | Clustered stores, retailer/class filters, store search, per-10k choropleth |
 | 5 | Local Authority Profiles (Belfast, Manchester deep) | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
 | 6 | Scenario Lab (import disruption, store closure) | R1 | 3, 5 | Spanish tomato preset; close a store and see the access change |
 | 7 | Consulting Insights + PDF export | R1 | 5, 6, D3, D7 | One-click profile PDF that matches the screen |
@@ -24,7 +24,9 @@
 | 9 | Release 2 | R2 | 8 | National access layers, Risk Explorer, Scenarios B/C, Ask FOODSCOPE, 3D globe |
 | 10 | Release 3 | R3 | 9 | Network travel times, secure LLM assistant, AGOL publishing |
 
-Stages 3 and 4 can run in parallel once Stage 2 is merged.
+Stages 3 and 4 can overlap once Stage 3's GEOLYTIX and LAD ingest is merged.
+
+**Re-scope (23 Oct 2026).** John defined Stage 2 as "the global food origins explorer" with real HMRC data for tomatoes, strawberries, bananas, potatoes and wheat. Stage 2 therefore combines the HMRC part of the former "Data pipeline v1" with the core of the former Food Origins slice. Everything else from those two stages moves to Stage 3 (table above; §5).
 
 ---
 
@@ -34,14 +36,14 @@ Each gate must be cleared (evidence recorded in `docs/stage-reports/`) before th
 
 | Gate | Question | How to clear | Blocks |
 |---|---|---|---|
-| G1 | Does HMRC `$apply=groupby/aggregate` work on `/OTS` for our filters, within limits? | Live test in pipeline; compare with paged raw aggregation for one month | 2 |
-| G2 | What is the API `Value` basis and HMRC revision policy? | HMRC methodology pages | 2 (labels) |
-| G3 | Are commodity baskets aligned with Defra trade codes? | Compare spec §6.1 with Defra trade codes ODS (S05) and `/Commodity` | 2 |
-| G4 | HMRC `CountryCodeAlpha` ↔ Natural Earth crosswalk complete? | Generate crosswalk; list unmapped codes | 2 |
-| G5 | ONS/OS attribution wording for boundaries | ONS metadata | 2 |
-| G6 | UKFSR 2024 ODS table IDs for Short Straits figures | Download Theme 3 ODS | 2 (context file) |
-| G7 | GEOLYTIX current schema, store-class values, **NI coverage**, `bng_*` for NI | Download latest file; inspect `size_band`/`fascia` values; count `BT` postcodes | Clear in Stage 2; blocks 4 |
-| G8 | **PPFI v2.1 NI coverage** and column names | Download HASP LSOA CSV | Clear in Stage 2 (early warning for Belfast); blocks 5 |
+| G1 ✅ | Does HMRC `$apply=groupby/aggregate` work on `/OTS` for our filters, within limits? | Live test in pipeline; compare with paged raw aggregation for one month | 2 — **cleared 23 Oct 2026**: exact match for five basket-months |
+| G2 ✅ | What is the API `Value` basis and HMRC revision policy? | HMRC methodology pages | 2 — **cleared**: CIF statistical value (Intrastat invoice value); provisional for up to 18 months |
+| G3 🟡 | Are commodity baskets aligned with Defra trade codes? | Compare spec §6.1 with Defra trade codes ODS (S05) and `/Commodity` | 2 — **partly**: five baskets verified against `/Commodity`; Defra ODS comparison moves to Stage 3 |
+| G4 ✅ | HMRC `CountryCodeAlpha` ↔ Natural Earth crosswalk complete? | Generate crosswalk; list unmapped codes | 2 — **cleared**: all partners crosswalked; Gibraltar has no geometry at 1:110m/1:50m |
+| G5 | ONS/OS attribution wording for boundaries | ONS metadata | 3 |
+| G6 | UKFSR 2024 ODS table IDs for Short Straits figures | Download Theme 3 ODS | 3 (context file) |
+| G7 | GEOLYTIX current schema, store-class values, **NI coverage**, `bng_*` for NI | Download latest file; inspect `size_band`/`fascia` values; count `BT` postcodes | Clear in Stage 3; blocks 4 |
+| G8 | **PPFI v2.1 NI coverage** and column names | Download HASP LSOA CSV | Clear in Stage 3 (early warning for Belfast); blocks 5 |
 | G9 | NISRA DZ2021 CRS, licence, centroids; DZ2021↔SOA2011 lookup | NISRA downloads | 5 |
 | G10 | Census car availability tables (E&W TS045?; NI table ID) | Nomis / NISRA | 5 |
 | G11 | ONS LSOA 2021 boundaries + population-weighted centroids service | ONS Open Geography Portal | 5 |
@@ -83,7 +85,7 @@ Each gate must be cleared (evidence recorded in `docs/stage-reports/`) before th
 Status on 23 October 2026 (evidence in `docs/stage-reports/stage-1.md`):
 
 - [x] `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, `npm run e2e` pass locally and in GitHub Actions CI (PR #1).
-- [ ] Deployed Pages URL loads the shell and map at the correct base path — *pending: Pages source must be set to GitHub Actions and the branch merged.* Deep link `?m=profiles&mo=7&lad=N09000003` restores state ✅ (E2E).
+- [x] Deployed Pages URL loads the shell and map at the correct base path (merged 23 Oct 2026; post-deploy smoke test passes after the basemap key fix, PR #2). Deep link `?m=profiles&mo=7&lad=N09000003` restores state ✅ (E2E).
 - [x] ≥ 60 % of viewport width unobstructed between side panels at 1920×1080; layouts checked at 1920, 1366, 1024, 820, 390 (screenshots in the stage report).
 - [x] Automated accessibility check (axe) has no serious/critical violations; keyboard operation of navigation, panels and timeline tested. *Contrast of glass panels over the live Esri basemap not yet checked (no key in the sandbox).*
 - [x] No ArcGIS widget imports; no `@arcgis/map-components-react`; no `__esri` types (ESLint rule + `check:banned` in CI).
@@ -101,19 +103,37 @@ Status on 23 October 2026 (evidence in `docs/stage-reports/stage-1.md`):
 
 ---
 
-## 4. Stage 2 — Data pipeline v1
+## 4. Stage 2 — Food Origins explorer + HMRC trade pipeline
 
-**Goal**: real, validated, versioned data for Release 1 features.
+**Goal** (John, 23 Oct 2026): the global food origins explorer — verified HMRC API and commodity codes for tomatoes, strawberries, bananas, potatoes and wheat; genuine monthly recorded import volumes and values by partner and month; a reproducible ingestion and caching process; commodity selector, interactive country highlighting, weighted animated connections to the UK, KPI cards and interactive charts, all synchronised; trading partner distinguished from agricultural origin; unavailable observations labelled. Evidence: `docs/stage-reports/stage-2.md`.
 
-Deliverables: HMRC ingest for 16 baskets, Jan 2019 → latest (gates G1–G4); countries crosswalk + Natural Earth geometries; LAD boundaries (national, generalised) + LAD population; GEOLYTIX snapshot (raw, validated, trimmed) — class mapping waits for G7 but ingest can proceed; Defra context file (UKFSR, pocketbook CSVs); `catalogue.json` generated from this inventory; accounting reports; `refresh-data.yml` opening PRs; reconciliation tests (pipeline total vs direct API query for at least three commodity-months).
+### 4.1 Deliverables
 
-Exit: snapshot validates against schemas in both pytest and Vitest; Evidence page shows real catalogue entries; reconciliation tests pass; rerun produces byte-identical output from cached raw data.
+1. **HMRC ingestion** (`pipeline/foodscope_pipeline/sources/hmrc_ots.py`): query builders, ≤ 50 requests/minute, retries, `@odata.nextLink` paging, raw responses cached byte-for-byte with URL, timestamp and SHA-256 (`pipeline/raw/hmrc/<snapshot>/`).
+2. **Offline build** (`trade.py`): month × partner series per basket, HMRC ↔ Natural Earth crosswalk, suppressed and non-country trade kept apart, nil months, provisional window, row accounting, reconciliation against raw rows (build fails on mismatch); schemas `trade-snapshot`, `trade-index`; manifest lists the snapshot.
+3. **`refresh-trade-data.yml`**: runs the ingest on GitHub Actions (the sandbox cannot reach HMRC; the browser must not), commits to a `data-refresh/**` branch; manual runs open a PR.
+4. **Reference geometry**: Natural Earth v5.1.2 outlines with ISO codes and 1:50m label points.
+5. **Analysis** (`src/analysis/trade.ts`, `arcs.ts`): periods, aggregation, shares, HHI, effective partners, CR3, YoY, top-N, share classes, flow widths, series breaks, symbolic arcs, particle motion.
+6. **Explorer UI**: commodity selector (FO-01), partner shading (FO-02), weighted connections (FO-03) with moving markers (FO-04), KPI cards (FO-05), partner table (FO-06), period controls and timeline (FO-07), caveat chip (FO-10), series-break markers (FO-11), share and trend charts, selected-partner card, legend, tooltip, Evidence caveats.
 
-## 5. Stage 3 — Food Origins + Seasonal vertical slice
+### 4.2 Exit criteria
 
-Deliverables: commodity selector (FO-01); partner choropleth (FO-02); flows with width scaling and Stage-3 animation spike (CIM `MoveAlongLine` beta vs pulse markers vs static) with reduced-motion off-switch (FO-03/04); KPI cards and partner table (FO-05/06); period controls (FO-07); supplier-change card (FO-08); caveat chip (FO-10); series-break markers (FO-11); timeline with play (SS-01..03); heatmap and year comparison with fixed breaks (SS-04..06).
+- [x] Snapshot validates against schemas in pytest and Vitest; Evidence page shows the real datasets and caveats.
+- [x] Reconciliation tests pass (five basket-months, exact); rerun from cached raw data is byte-identical.
+- [x] Tomatoes Jan vs Jul reproduces fixture-expected partner shares (Morocco 42.5 % → Netherlands 63.8 % of net mass, 2025).
+- [x] All metrics show provenance; E2E for commodity, month, partner and measure changes and for map ↔ table ↔ chart synchronisation.
+- [x] Animation decision recorded (ADR-0015).
+- [ ] Defra trade-code comparison (G3) — moved to Stage 3.
 
-Exit: tomatoes Jan vs Jul reproduces fixture-expected partner shares; all metrics show provenance; E2E for commodity and month changes; animation spike decision recorded as ADR.
+### 4.3 Moved to Stage 3
+
+FO-08 supplier pattern changes; FO-09 UK production context; the 11 remaining baskets; commodity search for 16 items; LAD boundaries and population; GEOLYTIX snapshot; Defra context file; catalogue generated from this inventory; scheduled refresh PRs.
+
+## 5. Stage 3 — Data pipeline completion + Seasonal Supply
+
+Deliverables: remaining 11 baskets (gate G3 against Defra trade codes first); LAD boundaries (national, generalised) + LAD population; GEOLYTIX snapshot (raw, validated, trimmed; G7); Defra context file (UKFSR, pocketbook CSVs; G6); `catalogue.json` generated from this inventory; scheduled `refresh-trade-data` runs opening PRs; FO-08 and FO-09; Seasonal Supply — timeline with play (SS-01..03), heatmap and year comparison with fixed breaks (SS-04..06).
+
+Exit: snapshot extended without changing Stage 2 figures (regression test against the 2026-10-23 snapshot); play animation respects reduced motion; heatmap values reconcile with the trade snapshot.
 
 ## 6. Stage 4 — Supermarket network
 
@@ -200,3 +220,8 @@ Rules of engagement:
 | 2026-10-23 | Breakpoints: tablet 768–1279 (overlay panels), laptop 1280–1439; desktop panels 312/340 px to meet the 60 % map-width target | Spec §4.1 |
 | 2026-10-23 | ArcGIS assets from the Esri CDN in production; local copy for tests/offline | ADR-14 |
 | 2026-10-23 | Offline reference map: Natural Earth 1:110m outlines (S24) when no API key is configured | ADR-11, S24 |
+| 2026-10-23 | Basemap key registered as `apiKeys.basemapStyles`; visitors never prompted to sign in | ADR-11 (amended), PR #2 |
+| 2026-10-23 | Stage 2 re-scoped to the Food Origins explorer for five commodities (John's instruction); the rest of "Data pipeline v1" moves to Stage 3 | §1, §4 |
+| 2026-10-23 | HMRC ingest runs on GitHub Actions; raw responses committed for offline rebuilds | ADR-0016 |
+| 2026-10-23 | Connections are symbolic curves in map space; moving markers on a canvas overlay (SDK CIM animations did not render) | ADR-0005, ADR-0015 |
+| 2026-10-23 | Natural Earth v5.1.2 replaces world-atlas 4.1.0 (ISO alpha-2 codes, label points) | S24 |

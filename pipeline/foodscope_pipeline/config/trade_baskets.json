@@ -1,0 +1,45 @@
+{
+  "notes": "Commodity baskets for the Food Origins explorer (spec §6.1). Each basket is the set of CN8 codes that HMRC's /Commodity endpoint lists under the given HS headings, including codes no longer in use, so the series is continuous across nomenclature changes. Verified against /Commodity on 23 Oct 2026 (docs/03-DATA-SOURCES.md, S01).",
+  "baskets": [
+    {
+      "id": "tomatoes",
+      "label": "Tomatoes",
+      "definition": "Tomatoes, fresh or chilled (HS 0702). Excludes processed tomatoes.",
+      "hsScope": "HS 0702",
+      "hs4": ["0702"],
+      "hs6": []
+    },
+    {
+      "id": "strawberries",
+      "label": "Strawberries",
+      "definition": "Fresh strawberries (HS 0810 10). Excludes frozen strawberries.",
+      "hsScope": "HS 0810 10",
+      "hs4": [],
+      "hs6": ["081010"]
+    },
+    {
+      "id": "bananas",
+      "label": "Bananas",
+      "definition": "Bananas including plantains, fresh or dried (HS 0803).",
+      "hsScope": "HS 0803",
+      "hs4": ["0803"],
+      "hs6": []
+    },
+    {
+      "id": "potatoes",
+      "label": "Potatoes",
+      "definition": "Potatoes, fresh or chilled, including seed potatoes (HS 0701). Excludes frozen and processed potatoes.",
+      "hsScope": "HS 0701",
+      "hs4": ["0701"],
+      "hs6": []
+    },
+    {
+      "id": "wheat",
+      "label": "Wheat",
+      "definition": "Wheat and meslin, including durum wheat and seed for sowing (HS 1001). Excludes flour.",
+      "hsScope": "HS 1001",
+      "hs4": ["1001"],
+      "hs6": []
+    }
+  ]
+}

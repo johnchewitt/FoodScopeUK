@@ -1,0 +1,38 @@
+[
+  {
+    "step": "country list",
+    "rows_in": 263,
+    "rows_out": 263,
+    "rejects": {}
+  },
+  {
+    "step": "tomatoes: aggregate rows \u2192 kept",
+    "rows_in": 1667,
+    "rows_out": 1667,
+    "rejects": {}
+  },
+  {
+    "step": "strawberries: aggregate rows \u2192 kept",
+    "rows_in": 1139,
+    "rows_out": 1139,
+    "rejects": {}
+  },
+  {
+    "step": "bananas: aggregate rows \u2192 kept",
+    "rows_in": 4055,
+    "rows_out": 4055,
+    "rejects": {}
+  },
+  {
+    "step": "potatoes: aggregate rows \u2192 kept",
+    "rows_in": 1937,
+    "rows_out": 1937,
+    "rejects": {}
+  },
+  {
+    "step": "wheat: aggregate rows \u2192 kept",
+    "rows_in": 2098,
+    "rows_out": 2098,
+    "rejects": {}
+  }
+]

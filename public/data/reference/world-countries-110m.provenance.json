@@ -5,22 +5,22 @@
   "path": "reference/world-countries-110m.geojson",
   "format": "geojson",
   "schemaId": null,
-  "sha256": "928455649f3c1e3be46f7f28cf4030dde1c97a248773e638d9944da784cb4e0f",
-  "bytes": 194282,
-  "featureCount": 177,
+  "sha256": "98a5f0c19147c8f5eda69c06553753d51c12efd54345620f0299237443582421",
+  "bytes": 189232,
+  "featureCount": 176,
   "sourceIds": [
     "S24"
   ],
-  "referencePeriod": "Natural Earth v4.1.0",
+  "referencePeriod": "Natural Earth v5.1.2",
   "coverage": "World",
   "provenance": "measured",
-  "licence": "Public domain (Natural Earth); world-atlas packaging ISC",
+  "licence": "Public domain (Natural Earth)",
   "attribution": "Made with Natural Earth",
   "expectedCadence": "static",
   "retrieval": {
-    "method": "npm package",
-    "source": "world-atlas@2.0.2 countries-110m.json",
+    "method": "download (pinned URL and SHA-256)",
+    "source": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_110m_admin_0_countries.geojson (sha256 6866c877d39cba9c357620878839b336d569f8c662d3cfab4cb1dbe2d39c977f)",
     "retrievedAt": "2026-10-23T00:00:00Z",
-    "notes": "Converted with topojson-client; rings crossing the antimeridian split at ±180°; coordinates rounded to 3 dp; features sorted by name."
+    "notes": "Properties NAME, NAME_LONG, ISO_A2_EH, ISO_N3_EH kept (-99 → null); Antarctica omitted; rings crossing the antimeridian split at ±180°; coordinates rounded to 3 dp; features sorted by name."
   }
 }

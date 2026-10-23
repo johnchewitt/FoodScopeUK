@@ -1,0 +1,88 @@
+{
+  "snapshotId": "2026-10-23",
+  "gate": "G1",
+  "description": "HMRC $apply groupby/aggregate totals compared with sums of unaggregated /OTS rows for the same month, keyed by country \u00d7 flow \u00d7 CN8 \u00d7 suppression index.",
+  "checks": [
+    {
+      "basket": "tomatoes",
+      "month": "2025-01",
+      "rawRows": 117,
+      "aggregateGroups": 37,
+      "netMassKg": {
+        "aggregate": 33060038,
+        "raw": 33060038
+      },
+      "valueGbp": {
+        "aggregate": 57382707,
+        "raw": 57382707
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "strawberries",
+      "month": "2024-06",
+      "rawRows": 21,
+      "aggregateGroups": 10,
+      "netMassKg": {
+        "aggregate": 783958,
+        "raw": 783958
+      },
+      "valueGbp": {
+        "aggregate": 3750393,
+        "raw": 3750393
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "bananas",
+      "month": "2024-07",
+      "rawRows": 72,
+      "aggregateGroups": 49,
+      "netMassKg": {
+        "aggregate": 86847066,
+        "raw": 86847066
+      },
+      "valueGbp": {
+        "aggregate": 55199501,
+        "raw": 55199501
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "potatoes",
+      "month": "2025-03",
+      "rawRows": 64,
+      "aggregateGroups": 24,
+      "netMassKg": {
+        "aggregate": 12151055,
+        "raw": 12151055
+      },
+      "valueGbp": {
+        "aggregate": 6766500,
+        "raw": 6766500
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "wheat",
+      "month": "2023-11",
+      "rawRows": 36,
+      "aggregateGroups": 21,
+      "netMassKg": {
+        "aggregate": 172816930,
+        "raw": 172816930
+      },
+      "valueGbp": {
+        "aggregate": 43804216,
+        "raw": 43804216
+      },
+      "mismatches": [],
+      "match": true
+    }
+  ],
+  "allMatch": true
+}

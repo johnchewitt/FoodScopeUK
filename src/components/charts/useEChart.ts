@@ -22,6 +22,8 @@ export async function loadECharts(): Promise<typeof EChartsCore> {
     components.VisualMapComponent,
     components.DatasetComponent,
     components.AriaComponent,
+    components.MarkLineComponent,
+    components.MarkAreaComponent,
     renderers.SVGRenderer,
     renderers.CanvasRenderer,
   ]);
@@ -34,13 +36,28 @@ export interface UseEChartResult {
   error: string | null;
 }
 
+/** Chart event parameters used by FOODSCOPE (subset of ECharts' ECElementEvent). */
+export interface ChartEventParams {
+  name?: string;
+  value?: unknown;
+  dataIndex?: number;
+  seriesName?: string;
+  data?: unknown;
+}
+export type ChartEventHandlers = Partial<Record<"click", (params: ChartEventParams) => void>>;
+
 /** Initialises a chart when `option` is non-null; updates without recreating; disposes on unmount. */
 export function useEChart(
   option: EChartsCoreOption | null,
-  opts: { reducedMotion?: boolean } = {},
+  opts: { reducedMotion?: boolean; onEvents?: ChartEventHandlers } = {},
 ): UseEChartResult {
   const ref = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<EChartsType | null>(null);
+  // Handlers are read through a ref so a new callback never re-initialises the chart.
+  const handlersRef = useRef<ChartEventHandlers | undefined>(opts.onEvents);
+  useEffect(() => {
+    handlersRef.current = opts.onEvents;
+  });
   const [status, setStatus] = useState<UseEChartResult["status"]>("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -64,6 +81,7 @@ export function useEChart(
         if (cancelled) return;
         const chart = echarts.init(el, undefined, { renderer: "svg" });
         chartRef.current = chart;
+        chart.on("click", (params) => handlersRef.current?.click?.(params as ChartEventParams));
         apply(chart);
         setStatus("ready");
       })

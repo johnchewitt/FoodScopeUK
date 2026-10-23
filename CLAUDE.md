@@ -16,7 +16,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 
 ## Current stage
 
-**Stage 1 — Application foundation: merged to `main` (PR #1, 23 Oct 2026) and deployed to GitHub Pages**; post-merge basemap fix on `fix/basemap-key-race` (report: `docs/stage-reports/stage-1.md`). Next is Stage 2 — Data pipeline v1; start it only when John asks. Update this line when a stage is merged.
+**Stage 2 — Food Origins explorer + HMRC trade pipeline: built on branch `stage/2-origins-explorer`, awaiting review and merge** (report: `docs/stage-reports/stage-2.md`). Stage 1 is merged and deployed. Stage 2 was re-scoped by John (roadmap §1, §4); next is Stage 3 — Data pipeline completion + Seasonal Supply; start it only when John asks. Update this line when a stage is merged.
 
 ## How to work
 
@@ -57,6 +57,8 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 - `<arcgis-map>` is mounted **once** (`src/components/maps/MapHost.tsx`) and never re-mounted on module change. `MapHost` is lazy-loaded (`React.lazy`) so the SDK chunk does not block the shell; it is the only module that registers `arcgis-map`.
 - **API key**: registered once at startup as `esriConfig.apiKeys.basemapStyles` with `esriConfig.request.useIdentity = false` (`src/services/arcgis/requestPolicy.ts`, ADR-0011). Do not rely on `BasemapStyle.apiKey` alone: SDK 5.1 copies it onto the basemap layers after they are created, so the view can request the style without it and visitors get an ArcGIS sign-in prompt. Never set the global `esriConfig.apiKey`.
 - A view becomes ready even when its basemap fails; basemap health is reported separately (`BasemapStatusController`, `data-basemap-status` on `.map-host`).
+- **CIM symbol animations do not render in our view** (any `animations` entry, including `CIMSymbolAnimationMoveAlongLine`, makes the whole symbol disappear — ADR-0015). Flow motion is drawn by `src/map/layers/flowParticles.ts` on a canvas overlay; keep the static lines as ordinary graphics.
+- Food Origins map state reaches the map only through `state.originsMap` (built by `buildOriginsModel`); do not compute shares in `src/map/`.
 - **Without a basemap the view has no tiling scheme**: keep the Web Mercator `constraints.lods` that `MapHost` passes, or the view never becomes ready (ADR-0004).
 - Asset hosting (ADR-0014): production uses the Esri CDN; `VITE_ARCGIS_ASSETS=local` copies ArcGIS/Calcite assets into the build for offline/sandboxed runs. `src/app/bootstrapAssets.ts` must stay the first import in `main.tsx`.
 - Component tests never load the SDK: `MapHost` is mocked with `vi.mock`, and Calcite elements are registered only in `src/app/registerComponents.ts` (imported by `main.tsx`). Keep UI modules free of `@arcgis/core` imports (shared ids live in `src/map/layerIds.ts`).
@@ -85,6 +87,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 - Log rows in/out at every step; write rejects with reasons; deterministic sort before writing; reruns must be idempotent.
 - HMRC API: ≤ 50 requests/minute, follow `@odata.nextLink`, cache raw responses, keep suppressed rows separate.
 - Outputs go to `public/data/snapshots/<date>/` with `manifest.json`; data refreshes arrive by pull request, never direct to `main`.
+- HMRC (S01): the sandbox cannot reach `api.uktradeinfo.com`. Run the online step through `.github/workflows/refresh-trade-data.yml` (push a `data-refresh/<date>` branch or run it manually); raw responses are committed in `pipeline/raw/hmrc/<snapshot>/` and everything after ingest runs offline from them (ADR-0016). Never hand-edit raw responses or snapshot files.
 
 ## Commands
 
@@ -102,14 +105,16 @@ npm run build              # typecheck + production build (BASE_PATH, VITE_ARCGI
 npm run preview            # serve dist/ at http://localhost:4173/FoodScopeUK/
 npm run e2e                # playwright against `vite preview` of an existing build
 npm run gen:types          # schemas/*.json -> src/types/generated (commit the output)
-npm run build:reference    # rebuild Natural Earth reference outlines + provenance sidecar
+npm run build:reference    # rebuild Natural Earth v5.1.2 outlines + label points (pinned SHA-256) + sidecars
 
 # E2E without internet access to the Esri CDN (e.g. a sandbox):
 VITE_ARCGIS_ASSETS=local npm run build
 PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome npm run e2e   # only if Playwright's browser is not installed
 
-cd pipeline && uv sync && uv run pytest              # pipeline tests
+cd pipeline && uv sync && uv run pytest              # pipeline tests (incl. offline rebuild of the committed HMRC snapshot)
 cd pipeline && uv run foodscope-pipeline publish     # rebuild public/data/manifest.json
+cd pipeline && uv run foodscope-pipeline build-trade --snapshot 2026-10-23   # offline: raw HMRC cache -> trade snapshot
+cd pipeline && uv run foodscope-pipeline ingest-hmrc --snapshot <date>       # ONLINE: only on GitHub Actions (refresh-trade-data.yml)
 ```
 
 ## Definition of done (every task)

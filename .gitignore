@@ -22,3 +22,6 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Reference-layer downloads (pinned by SHA-256 in the build script)
+scripts/.cache/

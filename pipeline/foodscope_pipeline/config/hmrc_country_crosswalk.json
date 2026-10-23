@@ -1,0 +1,24 @@
+{
+  "notes": "HMRC /Country codes are HMRC's own (CountryCodeNumeric is not ISO 3166 numeric). The crosswalk joins CountryCodeAlpha to Natural Earth ISO_A2_EH, with the overrides below. Checked against the /Country response of 23 Oct 2026 (gate G4).",
+  "alphaOverrides": {
+    "XS": { "iso2": "RS", "reason": "HMRC codes Serbia as XS; ISO 3166 and Natural Earth use RS" }
+  },
+  "nonGeographicCountryIds": {
+    "802": "Australian Oceania (not specified)",
+    "810": "US Oceania (not specified)",
+    "890": "Polar regions (not specified)",
+    "951": "Stores and provisions (EU)",
+    "952": "Stores and provisions",
+    "958": "Low-value trade (non-EU)",
+    "959": "Estimates",
+    "962": "Low-value trade (EU)",
+    "977": "Confidential country",
+    "1001": "Other Asia and Oceania (not specified)",
+    "1002": "Other Eastern Europe (not specified)",
+    "1003": "Other Latin America and the Caribbean (not specified)",
+    "1004": "Other Middle East and North Africa (not specified)",
+    "1005": "Other North America (not specified)",
+    "1006": "Other Sub-Saharan Africa (not specified)",
+    "1007": "Other Western Europe (not specified)"
+  }
+}
