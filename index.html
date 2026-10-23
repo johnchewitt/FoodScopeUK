@@ -9,6 +9,8 @@
       content="FOODSCOPE UK — food security and supply chain intelligence. A ConsultingWhere geospatial demonstrator."
     />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <!-- The data index is needed before anything else is shown: fetch it while the app code loads. -->
+    <link rel="preload" href="./data/manifest.json" as="fetch" crossorigin="anonymous" />
     <title>FOODSCOPE UK · Food Security &amp; Supply Chain Intelligence</title>
   </head>
   <body>

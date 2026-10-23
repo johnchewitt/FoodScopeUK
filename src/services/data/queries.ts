@@ -40,14 +40,21 @@ export async function loadManifest(signal?: AbortSignal): Promise<DataManifest> 
 }
 
 /** Static snapshots never change for a given deploy (ADR-01). */
-const STATIC = { staleTime: Infinity, gcTime: Infinity, retry: 1 } as const;
+export const STATIC = { staleTime: Infinity, gcTime: Infinity, retry: 1 } as const;
 
 export function useAppConfig(): UseQueryResult<AppConfig, Error> {
   return useQuery({ queryKey: ["config"], queryFn: ({ signal }) => loadConfig(signal), ...STATIC });
 }
 
+/** Query options for the data index, shared by `useManifest` and the startup prefetch. */
+export const manifestQuery = {
+  queryKey: ["manifest"] as const,
+  queryFn: ({ signal }: { signal?: AbortSignal }) => loadManifest(signal),
+  ...STATIC,
+};
+
 export function useManifest(): UseQueryResult<DataManifest, Error> {
-  return useQuery({ queryKey: ["manifest"], queryFn: ({ signal }) => loadManifest(signal), ...STATIC });
+  return useQuery(manifestQuery);
 }
 
 export function findDataset(manifest: DataManifest | undefined, id: string): Dataset | undefined {

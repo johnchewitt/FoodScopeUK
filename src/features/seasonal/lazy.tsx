@@ -1,12 +1,12 @@
 import { lazy, Suspense } from "react";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { SkeletonLines } from "@/components/states/Skeleton";
+import { loadSeasonal as load } from "./load";
 
 /**
  * Seasonal Supply is loaded only when the module is opened, so its code (model, charts, heatmap,
  * timeline) does not add to the shell's initial bundle (PF budgets, backlog B1).
  */
-const load = () => import("./entry");
 const Controls = lazy(() => load().then((m) => ({ default: m.SeasonalControls })));
 const Insights = lazy(() => load().then((m) => ({ default: m.SeasonalInsights })));
 const Kpis = lazy(() => load().then((m) => ({ default: m.SeasonalKpis })));
