@@ -2,9 +2,9 @@
 
 **Food Security & Supply Chain Intelligence** — a map-centred demonstrator showing where the UK's recorded food imports come from, how sourcing changes through the year, where supermarket provision and food-access vulnerability sit, and how exposed the system is to plausible disruptions. Built for ConsultingWhere with React 19, TypeScript, Vite and the ArcGIS Maps SDK for JavaScript 5.1.
 
-> **Status:** Stage 1 (application foundation) built — navigation, layout, the ArcGIS map, the evidence framework, the data manifest and CI. **No statistics are loaded yet**; each panel says which build stage adds its data. See `docs/stage-reports/stage-1.md`.
+> **Status:** Stage 2 — the **Food Origins explorer** with real HMRC Overseas Trade Statistics for tomatoes, strawberries, bananas, potatoes and wheat (monthly, January 2019 – August 2026; snapshot 2026-10-23). Other modules still show what they will contain and when. See `docs/stage-reports/stage-2.md`.
 >
-> Site (after the first deploy): https://johnchewitt.github.io/FoodScopeUK/
+> Site: https://johnchewitt.github.io/FoodScopeUK/
 
 ## Quick start
 
@@ -43,7 +43,13 @@ uv run pytest
 uv run foodscope-pipeline publish   # rebuilds and validates public/data/manifest.json
 ```
 
-Stage 1 publishes one reference dataset (Natural Earth 1:110m country outlines). Official statistics (HMRC trade, GEOLYTIX retail points, ONS/NISRA geography and population…) are added from Stage 2 through dated, checksummed snapshots.
+The snapshot holds Natural Earth v5.1.2 reference geometry and the HMRC trade baskets. Refreshing trade data:
+
+1. Push a branch named `data-refresh/<YYYY-MM-DD>` (or run **Refresh trade data (HMRC)** in the Actions tab).
+2. The workflow calls the HMRC API (≤ 50 requests/minute), commits the raw responses to `pipeline/raw/hmrc/<date>/`, rebuilds the snapshot offline, reconciles the aggregation against raw rows, republishes the manifest and runs the pipeline tests.
+3. Review and merge the pull request. Data never goes straight to `main`.
+
+To rebuild an existing snapshot offline: `uv run foodscope-pipeline build-trade --snapshot 2026-10-23`.
 
 ## Deployment
 
@@ -71,8 +77,9 @@ GitHub Pages via `.github/workflows/deploy-pages.yml` on every push to `main`:
 
 Code licence: to be confirmed by ConsultingWhere. Data shown in this build: Natural Earth (public domain; "Made with Natural Earth"); Esri basemap when a key is configured (attribution rendered by the map). Full source terms: `docs/03-DATA-SOURCES.md`.
 
-## Known limitations (Stage 1)
+## Known limitations (Stage 2)
 
-- No statistical data yet — KPI cards, charts and module controls show what they will contain and when.
-- The Esri basemap cannot be reached from the development sandbox; the post-deploy smoke test checks that it loads on the live site (and fails if it does not, or if a sign-in prompt appears).
+- Food Origins covers five of the 16 planned commodities; the others, Seasonal Supply and the remaining modules follow in later stages.
+- Recorded import partner = HMRC's country of dispatch, not where food was grown. Connections on the map are symbolic, not shipping routes.
+- The Esri basemap and the HMRC API cannot be reached from the development sandbox; the post-deploy smoke test checks the basemap on the live site, and HMRC data is fetched by GitHub Actions.
 - The initial JavaScript bundle (184 kB gzip) is above the 350 kB-uncompressed budget in the architecture; reduction is in `docs/backlog.md`.

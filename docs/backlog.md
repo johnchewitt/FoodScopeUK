@@ -13,3 +13,11 @@ Ideas and follow-ups that are outside the current stage's scope. Move an item in
 | B7 | Bundle-size report in CI with a regression threshold | Architecture §10 | 8 |
 | B8 | Decide the code licence for the repository | README | ConsultingWhere |
 | B9 | Recover from a failed lazy map chunk (seen once: transient GitHub Pages 503 on first load). `React.lazy` caches the rejected import, so "Try again" cannot recover; retry the import once and offer Reload | Stage 1 post-merge check | 3 |
+| B10 | Defra trade-code comparison for the Food Origins baskets (gate G3, S05 ODS) before adding the other 11 | Stage 2 | 3 |
+| B11 | Commodity search and grouping once there are 16 baskets (FO-01) | Stage 2 | 3 |
+| B12 | "Fit to partners" map control: zoom to the selected commodity's recorded partners (short European connections bunch at world scale) | Stage 2 screenshots | 3 |
+| B13 | Retry SDK CIM symbol animations on a newer 5.x patch; if they render, replace the canvas overlay (ADR-0015) | Stage 2 spike | 8 |
+| B14 | Schedule `refresh-trade-data.yml` a few days after each HMRC release (next: 12 Nov 2026) and add a diff summary to the PR | Stage 2 | 3 |
+| B15 | Prune superseded raw HMRC caches (keep latest and production snapshot) | ADR-0016 | 8 |
+| B16 | Partner table: sortable columns and CSV export of the shown period | Stage 2 | 7 |
+

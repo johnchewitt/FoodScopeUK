@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | 03 — Verified data catalogue and manifest |
-| **Version** | 0.1 — 23 October 2026 |
+| **Version** | 0.2 — 23 October 2026 (Stage 2: HMRC trade verified and ingested) |
 | **Verification date** | 23 October 2026 (all "Verified" statements refer to checks made on this date) |
 | **Machine-readable form** | Generated into `public/data/snapshots/<date>/catalogue.json` by the pipeline from Stage 2 |
 
@@ -51,8 +51,8 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S21 | Rural–urban classifications | ONS / Scottish Gov / NISRA | 🟡 | Profiles, Access | R1 |
 | S22 | Journey time statistics | DfT | 🔴 (England only) | Access context | R2 |
 | S23 | Port freight annual statistics 2025 | DfT | 🟡 | Risks, Scenario B | R2 |
-| S24 | Natural Earth Admin 0 countries | Natural Earth | 🟡 (1:110m in use as reference outlines) | Map reference layer; Origins map | R1 |
-| S25 | Basemap styles service | Esri (ArcGIS Location Platform) | 🔴 key needed | Map | R1 |
+| S24 | Natural Earth Admin 0 countries (v5.1.2) | Natural Earth | ✅ (1:110m outlines, 1:50m label points, ISO crosswalk) | Map reference layer; Origins map | R1 |
+| S25 | Basemap styles service | Esri (ArcGIS Location Platform) | ✅ (live site, API key) | Map | R1 |
 | S26 | ArcGIS Living Atlas items | Esri and contributors | 🔴 per item | Optional reference layers | R2 |
 | S27 | Consumer price inflation — food (CPIH) | ONS (via Defra pocketbook CSV) | 🟡 | National context | R1 |
 | S28 | HMRC port reference and port-level OTS detail | HMRC | 🟡 | Risks, Scenario B | R2 |
@@ -67,33 +67,49 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 |---|---|
 | Official title | uktradeinfo API (Overseas Trade Statistics) |
 | Publisher | HM Revenue & Customs |
-| Documentation | https://www.uktradeinfo.com/api-documentation |
-| Service URL | `https://api.uktradeinfo.com` — OData; JSON default, CSV via `$format=csv` (with limitations) |
+| Documentation | https://www.uktradeinfo.com/api-documentation/ (OData; Swagger at `/swagger/ui/index`) |
+| Service URL | `https://api.uktradeinfo.com` — OData; JSON default |
 | Licence | Open Government Licence v3.0 (© Crown copyright), per API documentation page |
-| Access | Open, no authorisation header |
-| Limits | **60 requests per minute per user**; responses capped at **40,000 items** with `@odata.nextLink` paging (or `$skip`/`$top`) |
-| Refresh | Monthly |
-| Latest period | Records for **August 2026** (`MonthId` 202608) returned on 23 Oct 2026 |
-| Coverage | UK imports/exports by commodity, partner country and port |
-| Endpoints used | `/OTS`, `/Commodity`, `/Country`, `/Port`, `/FlowType` (others available: `/Date`, `/Region`, `/RTS`, `/SITC`, `/Trader`, `/Import`, `/Export`, `/Trade`, `/TradeType`) |
-| Verified OTS fields | `MonthId`, `FlowTypeId`, `SuppressionIndex`, `CommodityId`, `CommoditySitcId`, `CountryId`, `PortId`, `Value`, `NetMass`, `SuppUnit` |
-| Verified Commodity fields | `CommodityId`, `Cn8Code`, `Hs2Code`, `Hs4Code`, `Hs6Code`, `Hs2Description`, `Hs4Description`, `Hs6Description`, `SitcCommodityCode`, `Cn8LongDescription` (e.g. `Hs4Code` "0702" → tomatoes; CN8 `07020010` ↔ `CommodityId` 7020010) |
-| Verified Country fields | `CountryId`, `CountryCodeNumeric`, `RegionId`, `CountryName`, `CountryCodeAlpha` (e.g. FR, NL, DE), `Area1`–`Area5`, `Area1a`–`Area5a` (e.g. "European Union") |
+| Access | Open, no authorisation header. **Not reachable from the build sandbox** (proxy denies the host); reachable from GitHub Actions runners and from a desktop browser |
+| Limits | **60 requests per minute** (the pipeline uses ≤ 50); responses capped at **40,000 items**, paging via `@odata.nextLink`; "aggregations and filtering are still made across the whole dataset before the limit is applied" |
+| Refresh | Monthly. August 2026 data published 15 Oct 2026; September 2026 due 12 Nov 2026 (HMRC release calendar, methodology notes) |
+| Latest period | **August 2026** (`MonthId` 202608) — confirmed on 23 Oct 2026 by the pipeline: August has records, September (202609) has none |
+| Endpoints used | `/OTS`, `/Commodity`, `/Country` |
+| Verified OTS fields | `MonthId`, `FlowTypeId`, `SuppressionIndex`, `CommodityId`, `CountryId`, `PortId`, `Value`, `NetMass` (also `CommoditySitcId`, `SuppUnit`, not used) |
+| Verified Commodity fields | `CommodityId`, `Cn8Code`, `Hs2Code`, `Hs4Code`, `Hs6Code`, `Hs2Description`, `Hs4Description`, `Hs6Description`, `SitcCommodityCode`, `Cn8LongDescription`. `/Commodity` lists **current and discontinued** CN8 codes under each heading (e.g. tomatoes `07020000` and `07020010/91/99`), so baskets filtered by HS heading are continuous across nomenclature changes |
+| Verified Country fields | `CountryId`, `CountryCodeNumeric`, `CountryName`, `CountryCodeAlpha`, `Area1a`. **`CountryCodeNumeric` is HMRC's own code, not ISO 3166 numeric** (France = `001`). `CountryCodeAlpha` is ISO alpha-2 except HMRC-specific codes (Serbia `XS`, Kosovo `XK`, Ceuta `XC`, Melilla `XL`, Serbia-Montenegro `CS`, UAE emirates `DH`/`DU`/`HA`, regional aggregates `XO`/`XA`/`XR`); two `CountryId`s share `US`; non-country categories (stores and provisions `QR`/`QS`, low-value trade `ZY`/`QV`, estimates `QV`, confidential `977` and "Other …" `1001`–`1007`) have their own ids, some with no alpha code |
 | Flow types | 1 = EU imports, 2 = EU exports, 3 = Non-EU imports, 4 = Non-EU exports (OTS) |
-| Query options | `$select`, `$expand`, `$filter`, `$top`, `$skip`, `$apply` (`groupby`, `aggregate`), `$count`, `$format`. `$orderby` returned a client error in testing — do not rely on it. |
-| Grain | One row per month × flow × CN8 commodity × country × port × suppression index → must be aggregated |
-| Processing | Pipeline: for each commodity basket, query CN8 codes by month range with `$apply=groupby((MonthId,FlowTypeId,CountryId),aggregate(NetMass with sum as …, Value with sum as …))` where supported (verify in Stage 2; fall back to paged raw rows); store raw responses; aggregate to month × partner; separate suppressed rows (`SuppressionIndex` > 0) into their own bucket |
-| CORS | **Not verified.** Not needed under ADR-01. |
+| Units | `NetMass` kilograms; `Value` pounds sterling |
+| Valuation (gate G2 ✅) | Imports on a **cost, insurance and freight (CIF)** basis — the UN-recommended statistical value; EU trade collected through Intrastat uses **invoice value** (HMRC OTS methodology and quality report, updated 9 Dec 2025) |
+| Net mass quality | About a third of Intrastat goods need no weight declaration and are estimated; customs records with missing mass get an estimate from Eurostat commodity factors (same report; HMRC policies and methodologies page) |
+| Revisions (gate G2 ✅) | "Published data is provisional for up to 18 months after it is published" (uktradeinfo suppressions and revisions page). The app marks months first published within 18 months of retrieval as **provisional** (from Mar 2025 in the 23 Oct 2026 snapshot; estimated with a ~6-week publication lag) |
+| Low-value trade | Individual consignments ≤ £873 are aggregated under commodity `99500000`, so they never appear in the food baskets |
+| Query options | `$filter`, `$select`, `$expand`, `$top`, `$skip`, `$apply` (`filter(…)/groupby((…),aggregate(… with sum as …, $count as …))`), `$count`, `$format`. `$orderby` is not documented and returned a client error in planning — not used |
+| `$apply` aggregation (gate G1 ✅) | Verified 23 Oct 2026: `groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex))` with `NetMass`/`Value` sums matches the sum of unaggregated `/OTS` rows exactly for five basket-months (tomatoes Jan 2025: 117 rows, 33,060,038 kg, £57,382,707; strawberries Jun 2024; bananas Jul 2024; potatoes Mar 2025; wheat Nov 2023) — `pipeline/reports/hmrc-reconciliation-2026-10-23.json` |
+| Grain | One row per month × flow × CN8 commodity × country × port × suppression index; the pipeline aggregates server-side to month × flow × country × CN8 × suppression |
+| Suppression | `SuppressionIndex` 0 = not suppressed; 1–5 per the API documentation (1 complete; 2 countries and ports; 3 countries, ports and total quantity; 4 quantity for countries and ports; 5 quantity for countries, ports and total). Present elsewhere in OTS (levels 2 and 3 in Jan–Mar 2025), **but no rows with `SuppressionIndex` > 0 exist for the five Food Origins baskets since Jan 2019** (pipeline check). Suppressed rows would be kept in their own bucket with quantity `null` where withheld |
+| CORS | Not verified. Not needed: the browser never calls the API (ADR-01) |
+
+**Food Origins baskets (gate G3, partly cleared).** Verified against `/Commodity` on 23 Oct 2026. The Defra trade-code comparison (S05 ODS) is still to do; the definitions below follow HMRC's HS headings and are shown in the UI.
+
+| Basket | HS scope | CN8 codes in the snapshot (current and discontinued) |
+|---|---|---|
+| Tomatoes | 0702 — fresh or chilled | 07020000, 07020010, 07020091, 07020099 |
+| Strawberries | 0810 10 — fresh | 08101000 |
+| Bananas | 0803 — incl. plantains, fresh or dried | 08030011, 08030019, 08030090, 08031010, 08031090, 08039010, 08039011, 08039019, 08039090 |
+| Potatoes | 0701 — fresh or chilled, incl. seed (excl. frozen/processed) | 07011000, 07019010, 07019050, 07019090 |
+| Wheat | 1001 — wheat and meslin, incl. durum and seed | 10011000, 10011100, 10011900, 10019010, 10019091, 10019099, 10019110, 10019120, 10019190, 10019900 |
+
+**Ingestion (Stage 2).** `pipeline/foodscope_pipeline/sources/hmrc_ots.py` (online) fetches `/Commodity`, `/Country`, one `$apply` aggregate per basket from Jan 2019, the raw rows for one reconciliation month per basket, and probes the latest and next month — 15 requests on 23 Oct 2026. Every response is stored byte-for-byte in `pipeline/raw/hmrc/<snapshot>/` with URL, timestamp and SHA-256. `trade.py` (offline) builds `public/data/snapshots/<snapshot>/trade/<basket>.json` and fails if the reconciliation does not match. It runs in GitHub Actions (`refresh-trade-data.yml`), never in the browser.
 
 **Interpretation caveats (verified)**
 
-- **Partner country = country of dispatch.** HMRC's bulk data dictionary defines the import country field as the country of dispatch — the country of the last commercial transaction — which may not be the country of origin or manufacture. HMRC states its headline import data has historically been published on a dispatch basis.
-- **Netherlands effect.** HMRC's 2024 origin-vs-dispatch comparison (S02) shows the Netherlands with about £19.7bn of imports by origin but about £46.5bn by dispatch, the largest gap of any partner. Expect Netherlands to appear as a major "partner" for produce it re-exports.
-- **Series breaks.** GB–EU import data has come from customs declarations since January 2022; before that, EU trade was collected through Intrastat. Combined with the 2021 EU exit, trends spanning 2021–2022 need break markers (spec FO-11).
-- **Northern Ireland.** NI–EU goods trade is still reported through Intrastat; HMRC notes that country of origin is not required on Intrastat.
-- **Suppression.** `SuppressionIndex` indicates confidentiality suppression (in the bulk dictionary: level 1 complete; level 2 countries and ports; level 3 countries, ports and total trade). The API documentation describes levels 1–5. Suppressed quantities must be shown as their own category, never redistributed.
-- **Valuation.** The bulk data dictionary describes import statistical value on a cost-insurance-freight basis; confirm the API `Value` basis in Stage 2 before labelling.
-- **Revisions.** Recent months are revised; snapshots record retrieval date and the app labels the latest 3 months "provisional — subject to revision" (confirm HMRC revision policy in Stage 2).
+- **Partner country = country of dispatch.** HMRC: "For goods entering the UK, country data is based on the country of dispatch … the country the goods were exported from to come to the UK", which may differ from the country of origin or manufacture (uktradeinfo policies and methodologies page; bulk data dictionary).
+- **Netherlands effect.** HMRC's 2024 origin-vs-dispatch comparison (S02) shows the Netherlands with about £19.7bn of imports by origin but about £46.5bn by dispatch, the largest gap of any partner. In the snapshot the Netherlands is the largest recorded partner for tomatoes (43.8 % of net mass, 12 months to Aug 2026), and Ireland appears as a recorded banana partner.
+- **Series breaks.** GB imports from the EU have been compiled from customs declarations since 1 January 2022; Intrastat still applies to Northern Ireland–EU movements; imports from the EU were not affected in 2021 (August 2026 methodology notes). Trends spanning January 2021 and January 2022 carry break markers (FO-11).
+- **Northern Ireland.** NI–EU goods trade is still reported through Intrastat; country of origin is not required on Intrastat.
+- **Suppression.** Suppressed quantities are shown as their own category, never redistributed (P12).
+- **Odd partners.** Very small recorded partners (e.g. Nauru for tomatoes) are shown as recorded; they are not filtered.
 
 ### S02 — UK import trade in goods by country of origin and country of dispatch, 2024 ✅ (context)
 
@@ -257,11 +273,16 @@ Release 2 (national access layers).
 - NRS (Scotland) and NISRA (NI) mid-year estimates: vintages and LAD/small-area availability to confirm.
 - Rule: per-capita indicators use the latest year available **for all nations being compared**; where vintages differ, the comparability warning appears.
 
-### S24 — Country geometries 🟡
+### S24 — Country geometries ✅
 
-**In use since Stage 1 (reference outlines only):** Natural Earth **v4.1.0** Admin 0 countries at **1:110m**, from the `world-atlas` npm package **2.0.2** (ISC packaging; Natural Earth data is public domain). Converted by `scripts/build-reference-layers.mjs`: 177 features, coordinates rounded to 3 dp, rings that jumped across the antimeridian (Russia, Fiji, Antarctica) split at ±180° so they do not draw lines across the map. Output `public/data/reference/world-countries-110m.geojson` with a provenance sidecar; checksum verified by the pipeline's `publish` step. Properties: `name`, `iso_n3` (ISO numeric, not alpha-2). Antarctica is hidden on the map by a display filter.
+**Since Stage 2:** Natural Earth **v5.1.2** Admin 0 countries (public domain), GeoJSON from the Natural Earth repository (`github.com/nvkelso/natural-earth-vector`, tag `v5.1.2`), downloaded by `scripts/build-reference-layers.mjs` and pinned by SHA-256 (1:110m `6866c877…`, 1:50m `3e458fc0…`). Replaces the Stage 1 world-atlas 4.1.0 packaging.
 
-**Still to verify for Stage 3:** Natural Earth Admin 0 (public domain), 1:50m, with ISO alpha-2 codes, version recorded in catalogue. Representative points computed in pipeline (pole of inaccessibility or Natural Earth label points). Crosswalk HMRC `CountryCodeAlpha` → ISO 3166-1 alpha-2 → Natural Earth `ISO_A2`/`ISO_A2_EH`; HMRC non-country codes (e.g. stores and provisions, unspecified) are listed explicitly in `trade/countries.json` and mapped to "not mappable".
+| Output | Content |
+|---|---|
+| `reference/world-countries-110m.geojson` | 176 outlines (Antarctica omitted — never displayed and its ring closes along ±180°), properties `name` (`NAME`), `name_long` (`NAME_LONG`), `iso_a2` (`ISO_A2_EH`), `iso_n3` (`ISO_N3_EH`); `-99` → null (N. Cyprus, Somaliland); coordinates 3 dp |
+| `reference/world-country-points.json` | 237 points: Natural Earth's own label point (`LABEL_X`, `LABEL_Y`) per `ISO_A2_EH` at 1:50m, flagged `in110m`; 63 are not in the 1:110m outlines (e.g. Malta, Singapore, Mauritius, Hong Kong) and are drawn as points. Where two features share a code (Australia), the one with `ADM0_A3 = ISO_A3_EH` wins |
+
+**HMRC crosswalk (gate G4 ✅).** `CountryCodeAlpha` → `ISO_A2_EH`, with `XS` → `RS` (Serbia) and the non-country HMRC ids listed in `pipeline/foodscope_pipeline/config/hmrc_country_crosswalk.json`. Result for the 23 Oct 2026 snapshot: every partner of the five baskets is crosswalked; only **Gibraltar** (strawberries) has no Natural Earth geometry at these scales and is listed in the table as "not drawn on the map"; Nauru, Macao, Barbados, Dominica, Guam, Saint Lucia, Mauritius, Maldives, Singapore, Malta, Hong Kong and Liechtenstein are drawn as points. Label points are the symbolic start of import connections — not ports or production areas.
 
 ---
 
@@ -275,9 +296,9 @@ Published 29 July 2026 (accredited official statistics); data tables as a 39.9 M
 
 ## 8. Platform and reference services
 
-### S25 — Esri basemap styles 🔴
+### S25 — Esri basemap styles ✅
 
-Requires an ArcGIS Location Platform (or ArcGIS Online) API key restricted by HTTP referrer (decision D2). Attribution is rendered automatically by the map component; do not hide it.
+ArcGIS dark grey style (`arcgis/dark-gray`) through the Basemap styles service, authorised by a referrer-restricted API key (decision D2) registered as `esriConfig.apiKeys.basemapStyles` (ADR-0011). Verified on the live site on 23 Oct 2026: style and tiles load, post-deploy smoke test requires `data-basemap-status="ready"`. Not reachable from the build sandbox. Attribution is rendered automatically by the map component; do not hide it.
 
 ### S26 — ArcGIS Living Atlas 🔴
 
@@ -347,3 +368,21 @@ Defra pocketbook CSV of CPIH food and non-alcoholic beverages since 2020 (S05) f
 | ArcGIS services from the build sandbox | `curl` (one attempt each) | `js.arcgis.com`, `services1.arcgis.com`, `basemapstyles-api.arcgis.com` unreachable from the sandbox — so the Esri basemap (S25) and CDN mode were not exercised there |
 
 Not verified on this date (and therefore not to be coded against yet): CORS on the HMRC API; GEOLYTIX current schema and NI coverage; PPFI v2.1 column names and NI coverage; Census car-availability table IDs for NI and Scotland; LSOA 2021 centroid service; NISRA CRS; Natural Earth version; DfT table contents; SIMD 2026 status; Defra annual production files.
+
+### Stage 2 additions (23 October 2026)
+
+| Check | Method | Result |
+|---|---|---|
+| HMRC API documentation | Read documentation page | 60 req/min, 40,000-item pages with `@odata.nextLink`, `$apply` supported, suppression levels 1–5, flow types, OGL v3.0 |
+| `/Commodity` for the five baskets | Live query (desktop browser) and pipeline | 28 CN8 codes (current and discontinued) under HS 0701, 0702, 0803, 1001 and HS6 081010 |
+| `/Country` | Live query and pipeline | 263 ids; `CountryCodeNumeric` is HMRC's own code; special and non-country codes listed above |
+| `$apply` groupby/aggregate (G1) | Pipeline reconciliation against raw `/OTS` rows, five basket-months | Exact match on every country × flow × CN8 × suppression key |
+| Suppression in the baskets | Aggregate query with `SuppressionIndex gt 0`; pipeline | None since Jan 2019 (suppression exists elsewhere in OTS) |
+| Latest month | Pipeline probes | 202608 present, 202609 absent |
+| Valuation, revisions, dispatch basis (G2) | HMRC methodology and quality report; uktradeinfo methodology and revisions pages; Aug 2026 methodology notes | CIF statistical value (Intrastat: invoice value); provisional for up to 18 months; country of dispatch; customs-based GB–EU imports from Jan 2022 |
+| Natural Earth v5.1.2 | Downloaded from the repository tag; SHA-256 pinned | ISO_A2_EH / LABEL_X / LABEL_Y present at 1:110m and 1:50m |
+| HMRC ↔ Natural Earth crosswalk (G4) | Pipeline + tests | All partners crosswalked; Gibraltar without geometry |
+| Ingest route | `curl` from the sandbox; GitHub Actions run 39969667036 | Sandbox blocked by proxy; Actions run succeeded (15 requests, 80 s) |
+
+Still not verified: Defra trade codes for the baskets (G3, S05); HMRC port allocation (S28); CORS on the HMRC API (not needed).
+

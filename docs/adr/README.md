@@ -8,7 +8,7 @@ MADR-style records. Status values: Proposed · Accepted · Superseded. Summaries
 | [0002](0002-map-components-in-react-19.md) | ArcGIS map components directly in React 19; no widgets, no React wrapper | Accepted (Stage 1) |
 | [0003](0003-one-way-state-to-map-sync.md) | One-way sync: Zustand store → map controllers | Accepted (Stage 1) |
 | [0004](0004-single-2d-web-mercator-view.md) | Single 2D Web Mercator view; 3D globe later | Accepted (Stage 1) |
-| [0005](0005-symbolic-flow-arcs.md) | Flows as symbolic great-circle arcs | Proposed (spike in Stage 3) |
+| [0005](0005-symbolic-flow-arcs.md) | Flows as symbolic curves to a single UK point | Accepted (Stage 2) |
 | [0006](0006-json-schema-contracts.md) | JSON Schema as the canonical data contract | Accepted (Stage 1) |
 | [0007](0007-python-pipeline.md) | Python pipeline, TypeScript app | Accepted (Stage 1) |
 | [0008](0008-data-adapters.md) | Data access through adapters | Accepted (Stage 1, static adapter only) |
@@ -18,3 +18,5 @@ MADR-style records. Status values: Proposed · Accepted · Superseded. Summaries
 | [0012](0012-straight-line-first.md) | Straight-line proximity first; network times pre-computed later | Accepted |
 | [0013](0013-query-string-state.md) | Query-string state, no path routing | Accepted (Stage 1) |
 | [0014](0014-sdk-asset-hosting.md) | ArcGIS/Calcite assets: Esri CDN in production, local copy for tests | Accepted (Stage 1) |
+| [0015](0015-flow-animation.md) | Moving markers on a canvas overlay, not CIM symbol animations | Accepted (Stage 2) |
+| [0016](0016-hmrc-ingest-on-actions.md) | HMRC ingest runs on GitHub Actions; raw responses are committed | Accepted (Stage 2) |

@@ -1386,10 +1386,11 @@
 }
 .partner-table {
   table-layout: auto;
+  font-size: 11px;
 }
 .partner-table th,
 .partner-table td {
-  padding: 5px 4px;
+  padding: 5px 3px;
 }
 .partner-table tbody th {
   font-weight: 400;
@@ -1404,10 +1405,10 @@
 .row-btn {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   width: 100%;
   min-height: 28px;
-  padding: 5px 6px;
+  padding: 5px 3px;
   border: 0;
   background: transparent;
   font: inherit;
