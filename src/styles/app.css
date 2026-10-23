@@ -506,7 +506,10 @@
   color: var(--fs-text-muted);
 }
 
-/* KPI cards */
+/* KPI cards. No card is ever hidden: when they do not fit, the row scrolls sideways, with a fade
+   on the side that has more (data-overflow-* from KpiStrip) and keyboard scrolling when focused.
+   Padding (offset by negative margins) keeps the cards' shadows from being clipped by the
+   scroll container; the strip itself never takes pointer events on docked layouts. */
 .kpi-strip {
   position: absolute;
   z-index: 10;
@@ -515,15 +518,42 @@
   right: var(--content-right);
   display: flex;
   gap: 10px;
+  padding: 0 16px 36px;
+  margin: 0 -16px;
+  scroll-padding-inline: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
   pointer-events: none;
   transition:
     left var(--fs-dur) var(--fs-ease),
     right var(--fs-dur) var(--fs-ease);
 }
+.kpi-strip::-webkit-scrollbar {
+  display: none;
+}
+.kpi-strip[data-overflow-end="true"] {
+  mask-image: linear-gradient(to right, #000 calc(100% - 64px), transparent);
+}
+.kpi-strip[data-overflow-start="true"] {
+  mask-image: linear-gradient(to right, transparent, #000 64px);
+}
+.kpi-strip[data-overflow-start="true"][data-overflow-end="true"] {
+  mask-image: linear-gradient(to right, transparent, #000 64px, #000 calc(100% - 64px), transparent);
+}
+.kpi-strip:focus-visible {
+  outline: none;
+}
+.kpi-strip:focus-visible .kpi-card {
+  box-shadow: var(--fs-glow-focus);
+}
 .kpi-card {
   flex: 1 1 0;
-  min-width: 168px;
+  min-width: 176px;
   max-width: 260px;
+  scroll-snap-align: start;
   height: var(--fs-kpi-h);
   overflow: hidden;
   padding: 12px 14px;
@@ -1023,9 +1053,6 @@
 
 /* ───────────────────────── Responsive ───────────────────────── */
 @media (max-width: 1439px) {
-  .kpi-card:nth-child(n + 4) {
-    display: none;
-  }
   .brand__by {
     display: none;
   }
@@ -1050,9 +1077,6 @@
   }
   .topbar {
     gap: 12px;
-  }
-  .kpi-card:nth-child(n + 3) {
-    display: none;
   }
 }
 
@@ -1124,14 +1148,11 @@
     transform: translateY(24px);
   }
   .kpi-strip {
-    overflow-x: auto;
-    scrollbar-width: none;
+    padding-bottom: 12px;
     pointer-events: auto;
   }
-  .kpi-card,
-  .kpi-card:nth-child(n + 3) {
-    display: block;
-    flex: 0 0 168px;
+  .kpi-card {
+    flex: 0 0 176px;
   }
   .timeline__status {
     display: none;
