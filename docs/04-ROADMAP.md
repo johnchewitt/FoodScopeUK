@@ -82,7 +82,7 @@ Each gate must be cleared (evidence recorded in `docs/stage-reports/`) before th
 
 Status on 23 October 2026 (evidence in `docs/stage-reports/stage-1.md`):
 
-- [x] `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, `npm run e2e` pass locally (sandbox). *CI result pending the first pull-request run.*
+- [x] `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, `npm run e2e` pass locally and in GitHub Actions CI (PR #1).
 - [ ] Deployed Pages URL loads the shell and map at the correct base path — *pending: Pages source must be set to GitHub Actions and the branch merged.* Deep link `?m=profiles&mo=7&lad=N09000003` restores state ✅ (E2E).
 - [x] ≥ 60 % of viewport width unobstructed between side panels at 1920×1080; layouts checked at 1920, 1366, 1024, 820, 390 (screenshots in the stage report).
 - [x] Automated accessibility check (axe) has no serious/critical violations; keyboard operation of navigation, panels and timeline tested. *Contrast of glass panels over the live Esri basemap not yet checked (no key in the sandbox).*

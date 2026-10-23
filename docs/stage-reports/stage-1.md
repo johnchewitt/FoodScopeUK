@@ -5,7 +5,7 @@
 | **Branch** | `stage/1-foundation` |
 | **Date** | 23 October 2026 |
 | **Scope** | Roadmap §3. No data features; no Stage 2 work. |
-| **Result** | All local checks pass. CI and GitHub Pages deployment not yet run (see "Not verified"). |
+| **Result** | All local checks pass. GitHub Actions CI passed on PR #1 ([run 39947394759](https://github.com/johnchewitt/FoodScopeUK/actions/runs/39947394759)): both jobs, every step including E2E. GitHub Pages deployment not yet run. |
 
 ## What was built
 
@@ -77,7 +77,7 @@ Screenshots: [desktop 1920](stage-1/desktop-1920.png) · [laptop 1366](stage-1/l
 
 ## Not verified, and why
 
-- **GitHub Actions CI and Pages deploy** — workflows written but not yet run; they run when this branch is pushed and the pull request is opened. Pages also needs Settings → Pages → Source = GitHub Actions (not changed by Claude).
+- **GitHub Pages deploy** — runs on merge to `main`; needs Settings → Pages → Source = GitHub Actions (not changed by Claude). CI itself has passed on GitHub (Node 24, Playwright Chromium, Python 3.12).
 - **Esri basemap and CDN asset mode in a browser** — the sandbox cannot reach `js.arcgis.com` or the Basemap styles service, and no API key is available. The CDN build compiles and points at `js.arcgis.com/5.1.27/…`; the post-deploy smoke test will exercise it.
 - **Contrast of glass panels over the Esri basemap** — only checked over the offline outline map.
 - **Real-GPU rendering and performance** — tests used software WebGL; load-time budgets (PF-01) not measured.
