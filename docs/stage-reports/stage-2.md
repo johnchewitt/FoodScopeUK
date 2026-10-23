@@ -6,7 +6,7 @@
 | **Date** | 23 October 2026 |
 | **Scope** | John's Stage 2 brief: the global food origins explorer with real HMRC data for tomatoes, strawberries, bananas, potatoes and wheat. This merges the HMRC part of the former "Data pipeline v1" with the core of the former Food Origins slice; everything else moves to Stage 3 (roadmap §1, §4). Stage 3 not started. |
 | **Data** | Snapshot **2026-10-23**: monthly recorded UK imports, **January 2019 – August 2026**, from the HMRC Overseas Trade Statistics API, ingested on GitHub Actions ([run 39969667036](https://github.com/johnchewitt/FoodScopeUK/actions/runs/39969667036), 15 API requests) |
-| **Result** | All local checks pass (below). The deployed-site checks wait for the merge. |
+| **Result** | All local checks pass (below). GitHub Actions CI passed on PR #3 ([run 39982578050](https://github.com/johnchewitt/FoodScopeUK/actions/runs/39982578050)): both jobs, including the 29 E2E tests. The deployed-site checks wait for the merge. |
 
 ## What was built
 
