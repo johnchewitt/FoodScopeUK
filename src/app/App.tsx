@@ -17,6 +17,7 @@ import {
 } from "@/state/hooks";
 import { selectReducedMotion, useAppStore } from "@/state/store";
 import { MapLoading } from "@/components/maps/MapLoading";
+import { OriginsLegend, OriginsMapSync, OriginsTooltip } from "@/features/origins/OriginsMapExtras";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 // The ArcGIS SDK is large; loading it lazily lets the shell paint first (PF-04).
@@ -35,6 +36,7 @@ export function App() {
   const breakpoint = useAppStore((s) => s.breakpoint);
   const mobileNavOpen = useAppStore((s) => s.mobileNavOpen);
   const closeMobileNav = useAppStore((s) => s.toggleMobileNav);
+  const module = useAppStore((s) => s.module);
 
   return (
     <div className="app" data-motion={reduced ? "reduced" : "full"}>
@@ -64,6 +66,13 @@ export function App() {
           <KpiStrip />
         </ErrorBoundary>
         <MapControls />
+        {module === "origins" && (
+          <ErrorBoundary region="Map legend">
+            <OriginsMapSync />
+            <OriginsLegend />
+            <OriginsTooltip />
+          </ErrorBoundary>
+        )}
         <ErrorBoundary region="Timeline">
           <TimelineBar />
         </ErrorBoundary>

@@ -48,3 +48,55 @@ export function symbolicArc(from: LonLat, to: LonLat, segments = 48, bend = 0.18
   out[n] = [...to];
   return out;
 }
+
+/** Cumulative segment lengths (map units) of a path given in Web Mercator. */
+export function cumulativeLengths(path: readonly [number, number][]): number[] {
+  const out = [0];
+  for (let i = 1; i < path.length; i++) {
+    const [x0, y0] = path[i - 1]!;
+    const [x1, y1] = path[i]!;
+    out.push(out[i - 1]! + Math.hypot(x1 - x0, y1 - y0));
+  }
+  return out;
+}
+
+/** Point at fraction `t` (0–1, wrapped) of the way along a Mercator path, by length. */
+export function pointAlong(
+  path: readonly [number, number][],
+  cumulative: readonly number[],
+  t: number,
+): [number, number] {
+  const total = cumulative[cumulative.length - 1] ?? 0;
+  if (path.length === 0) return [0, 0];
+  if (path.length === 1 || total === 0) return path[0]!;
+  const f = ((t % 1) + 1) % 1;
+  const target = f * total;
+  let lo = 0;
+  let hi = cumulative.length - 1;
+  while (hi - lo > 1) {
+    const mid = (lo + hi) >> 1;
+    if (cumulative[mid]! <= target) lo = mid;
+    else hi = mid;
+  }
+  const seg = cumulative[hi]! - cumulative[lo]!;
+  const u = seg === 0 ? 0 : (target - cumulative[lo]!) / seg;
+  const [x0, y0] = path[lo]!;
+  const [x1, y1] = path[hi]!;
+  return [x0 + (x1 - x0) * u, y0 + (y1 - y0) * u];
+}
+
+/**
+ * Particles for one connection at time `seconds`: evenly spaced (≈ `spacingPx` apart on screen)
+ * and moving towards the UK at `speedPx` per second. Returns fractions along the path.
+ */
+export function particleFractions(
+  screenLengthPx: number,
+  seconds: number,
+  spacingPx = 90,
+  speedPx = 55,
+): number[] {
+  if (!(screenLengthPx > 0)) return [];
+  const n = Math.max(1, Math.floor(screenLengthPx / spacingPx));
+  const phase = ((seconds * speedPx) / screenLengthPx) % 1;
+  return Array.from({ length: n }, (_, i) => (phase + i / n) % 1);
+}

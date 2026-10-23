@@ -348,3 +348,34 @@ describe("real data: HMRC tomatoes (HS 0702), snapshot 2026-10-23", () => {
     expect(totalBefore).toBe(390_983_271);
   });
 });
+
+describe("flow particles (FO-04)", () => {
+  it("measures paths and interpolates by length", async () => {
+    const { cumulativeLengths, pointAlong } = await import("./arcs");
+    const path: [number, number][] = [
+      [0, 0],
+      [3, 4],
+      [3, 10],
+    ];
+    const cum = cumulativeLengths(path);
+    expect(cum).toEqual([0, 5, 11]);
+    expect(pointAlong(path, cum, 0)).toEqual([0, 0]);
+    expect(pointAlong(path, cum, 5 / 11)).toEqual([3, 4]);
+    const end = pointAlong(path, cum, 0.999999);
+    expect(end[0]).toBeCloseTo(3, 6);
+    expect(end[1]).toBeCloseTo(10, 4);
+    expect(pointAlong(path, cum, 1.5)).toEqual(pointAlong(path, cum, 0.5)); // wraps
+    expect(pointAlong([[1, 2]], [0], 0.3)).toEqual([1, 2]);
+  });
+
+  it("spaces particles evenly and moves them at a constant screen speed", async () => {
+    const { particleFractions } = await import("./arcs");
+    expect(particleFractions(0, 1)).toEqual([]);
+    expect(particleFractions(45, 0)).toEqual([0]); // short line: one particle
+    const a = particleFractions(360, 0, 90, 60);
+    expect(a).toEqual([0, 0.25, 0.5, 0.75]);
+    const b = particleFractions(360, 1, 90, 60);
+    expect(b[0]).toBeCloseTo(60 / 360, 12);
+    expect(particleFractions(360, 6, 90, 60)[0]).toBeCloseTo(0, 12); // full loop after 360 px
+  });
+});

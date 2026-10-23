@@ -40,10 +40,10 @@ export const MODULES: readonly ModuleDef[] = [
     icon: Globe2,
     question: "Where does our food come from?",
     summary:
-      "Recorded import partners for 16 commodities, with symbolic connections to the UK, partner shares and concentration indicators.",
+      "Recorded import partners for tomatoes, strawberries, bananas, potatoes and wheat (HMRC, monthly from January 2019), with symbolic connections to the UK, partner shares and concentration indicators. The remaining 11 commodities follow in a later stage.",
     release: 1,
-    buildStage: 3,
-    requirementIds: "FO-01 – FO-11",
+    buildStage: 2,
+    requirementIds: "FO-01 – FO-07, FO-10, FO-11",
     plannedKpis: [
       "Recorded imports",
       "Recorded import value",

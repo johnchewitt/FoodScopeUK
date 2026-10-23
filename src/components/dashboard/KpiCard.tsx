@@ -1,6 +1,8 @@
+import type { ReactNode } from "react";
 import { Skeleton } from "@/components/states/Skeleton";
 import type { Indicator } from "@/types/indicator";
 import { Metric } from "./Metric";
+import { ProvenanceBadge } from "./ProvenanceBadge";
 
 export type KpiState = "loading" | "empty" | "error" | "ready";
 
@@ -10,14 +12,21 @@ interface Props {
   indicator?: Indicator<number | string> | null;
   /** Explains an empty or error state. */
   note?: string;
+  /** Context line under a ready value (replaces the default "period, coverage" line). */
+  detail?: ReactNode;
 }
 
 /** Floating KPI card. Shows a value only when a provenance-complete indicator is supplied. */
-export function KpiCard({ label, state, indicator, note }: Props) {
+export function KpiCard({ label, state, indicator, note, detail }: Props) {
   return (
     <article className="kpi-card glass" aria-label={label} data-state={state}>
-      <h3 className="kpi-card__label" title={label}>
+      <h3 className="kpi-card__label" title={indicator?.method ?? label}>
         {label}
+        {state === "ready" && indicator && (
+          <span className="kpi-card__badge">
+            <ProvenanceBadge cls={indicator.provenance} showLabel={false} />
+          </span>
+        )}
       </h3>
       {state === "loading" && (
         <div style={{ marginTop: 10 }}>
@@ -27,8 +36,8 @@ export function KpiCard({ label, state, indicator, note }: Props) {
       {state === "ready" && indicator && (
         <div style={{ marginTop: 6 }}>
           <Metric indicator={indicator} compact />
-          <p className="kpi-card__meta">
-            {indicator.referencePeriod}, {indicator.coverage}
+          <p className="kpi-card__meta" title={typeof detail === "string" ? detail : undefined}>
+            {detail ?? `${indicator.referencePeriod}, ${indicator.coverage}`}
           </p>
         </div>
       )}

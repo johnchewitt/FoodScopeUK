@@ -1,10 +1,11 @@
 import { getModule } from "@/app/modules";
 import { KpiCard } from "@/components/dashboard/KpiCard";
+import { OriginsKpis } from "@/features/origins/OriginsKpis";
 import { useAppStore } from "@/state/store";
 
 /**
- * Floating KPI cards for the active module. In Stage 1 no statistical data is loaded, so each
- * card names the measure it will show and says when it arrives — no placeholder numbers (P14).
+ * Floating KPI cards for the active module. Food Origins shows real indicators (Stage 2); other
+ * modules name the measure they will show and say when it arrives — no placeholder numbers (P14).
  */
 export function KpiStrip() {
   const module = useAppStore((s) => s.module);
@@ -14,9 +15,11 @@ export function KpiStrip() {
 
   return (
     <section className="kpi-strip" aria-label={`${mod.label} key figures`}>
-      {mod.plannedKpis.map((label) => (
-        <KpiCard key={label} label={label} state="empty" note={note} />
-      ))}
+      {module === "origins" ? (
+        <OriginsKpis />
+      ) : (
+        mod.plannedKpis.map((label) => <KpiCard key={label} label={label} state="empty" note={note} />)
+      )}
     </section>
   );
 }

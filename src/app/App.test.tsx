@@ -13,9 +13,17 @@ vi.mock("@/components/maps/MapHost", () => ({
   default: () => <div data-testid="map-stub" />,
 }));
 
+const manifestText = readRepoFile("public/data/manifest.json");
 const files: Record<string, string> = {
   "config.json": readRepoFile("public/config.json"),
-  "data/manifest.json": readRepoFile("public/data/manifest.json"),
+  "data/manifest.json": manifestText,
+  // Every dataset the manifest lists (real committed data: HMRC snapshot, Natural Earth).
+  ...Object.fromEntries(
+    (JSON.parse(manifestText) as { datasets: { path: string }[] }).datasets.map((d) => [
+      `data/${d.path}`,
+      readRepoFile(`public/data/${d.path}`),
+    ]),
+  ),
 };
 
 function stubFetch(overrides: Record<string, Response> = {}) {
@@ -54,8 +62,11 @@ describe("App shell", () => {
     const nav = screen.getByRole("navigation", { name: "Modules" });
     for (const m of MODULES)
       expect(within(nav).getByRole("button", { name: new RegExp(m.railLabel) })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "Food Origins key figures" })).toBeInTheDocument();
-    expect(screen.getAllByText("No data loaded")).toHaveLength(4);
+    const kpis = screen.getByRole("region", { name: "Food Origins key figures" });
+    // Real HMRC figures: tomatoes, 12 months to Aug 2026 (see src/analysis/trade.test.ts).
+    expect(await within(kpis).findByText("391.1 kt")).toBeInTheDocument();
+    expect(within(kpis).getByText("43.8 %")).toBeInTheDocument();
+    expect(within(kpis).getByText("Netherlands · top 3: 84.5 %")).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "Timeline" })).toBeInTheDocument();
     expect(await screen.findByTestId("map-stub")).toBeInTheDocument();
   });
@@ -81,11 +92,23 @@ describe("App shell", () => {
 
   it("selects months and mirrors them to the URL", async () => {
     renderApp();
-    await userEvent.click(screen.getByRole("button", { name: "Mar" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Mar" }));
     expect(useAppStore.getState().month).toBe(3);
-    expect(window.location.search).toBe("?mo=3");
+    expect(window.location.search).toBe("?y=2026&mo=3");
     await userEvent.click(screen.getByRole("button", { name: "Next month" }));
-    expect(window.location.search).toBe("?mo=4");
+    expect(window.location.search).toBe("?y=2026&mo=4");
+    // Unpublished months are disabled and ignored.
+    const oct = screen.getByRole("button", { name: "Oct" });
+    expect(oct).toHaveAttribute("aria-disabled", "true");
+    await userEvent.click(oct);
+    expect(useAppStore.getState().month).toBe(4);
+  });
+
+  it("other modules keep the Stage 1 month preview", async () => {
+    window.history.replaceState(null, "", "/FoodScopeUK/?m=profiles");
+    renderApp();
+    await userEvent.click(await screen.findByRole("button", { name: "Mar" }));
+    expect(window.location.search).toBe("?m=profiles&mo=3");
   });
 
   it("collapses and reopens panels with buttons and keyboard shortcuts", async () => {
@@ -114,8 +137,9 @@ describe("App shell", () => {
     const insights = document.getElementById("insights-panel")!;
     expect(await within(insights).findByText("Country outlines")).toBeInTheDocument();
     expect(within(insights).getByText(/Natural Earth v5.1.2, 1:110m, 176 countries/)).toBeInTheDocument();
+    expect(within(insights).getByText("Trade snapshot 2026-10-23")).toBeInTheDocument();
     expect(
-      await screen.findByRole("button", { name: /Data freshness: No statistics loaded/ }),
+      await screen.findByRole("button", { name: /Data freshness: Snapshot 2026-10-23/ }),
     ).toBeInTheDocument();
   });
 
@@ -140,7 +164,9 @@ describe("App shell", () => {
     expect(useAppStore.getState().overlay).toBe("evidence");
     expect(window.location.search).toBe("?view=evidence");
     expect(await screen.findByText("World country outlines (Natural Earth 1:110m)")).toBeInTheDocument();
-    expect(screen.getByText("No statistics have been published yet")).toBeInTheDocument();
+    expect(screen.getByText("Recorded UK imports: tomatoes (HS 0702)")).toBeInTheDocument();
+    expect(screen.getByText("Reading the trade figures (Food Origins)")).toBeInTheDocument();
+    expect(screen.queryByText("No statistics have been published yet")).not.toBeInTheDocument();
   });
 
   it("marks planned tools as unavailable rather than hiding them", () => {

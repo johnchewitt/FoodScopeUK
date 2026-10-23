@@ -1,6 +1,7 @@
 import { Globe, Map as MapIcon, PanelLeftClose } from "lucide-react";
 import { getModule } from "@/app/modules";
 import { EmptyState } from "@/components/states/EmptyState";
+import { OriginsControls } from "@/features/origins/OriginsControls";
 import { selectReducedMotion, useAppStore } from "@/state/store";
 
 /** Collapsible left panel: module controls (from Stage 3 onward) and map display settings. */
@@ -36,30 +37,34 @@ export function FilterPanel() {
       </div>
 
       <div className="panel__body scroll-area">
-        <section className="panel-section" aria-labelledby="controls-heading">
-          <h3 id="controls-heading" className="panel-section__title">
-            Controls
-          </h3>
-          <EmptyState
-            title="Not available in this build"
-            body={
-              mod.release > 1
-                ? `This module is planned for Release ${mod.release}. These controls will appear here:`
-                : `The controls for this module are added in build stage ${mod.buildStage}, together with their data:`
-            }
-          />
-          <ul className="planned-list" aria-label="Planned controls">
-            {mod.plannedControls.map((c) => (
-              <li key={c}>{c}</li>
-            ))}
-          </ul>
-          {module === "profiles" && lad && (
-            <p style={{ marginTop: 12 }}>
-              This link selects local authority <code>{lad}</code>. Its profile appears once profiles are
-              built.
-            </p>
-          )}
-        </section>
+        {module === "origins" ? (
+          <OriginsControls />
+        ) : (
+          <section className="panel-section" aria-labelledby="controls-heading">
+            <h3 id="controls-heading" className="panel-section__title">
+              Controls
+            </h3>
+            <EmptyState
+              title="Not available in this build"
+              body={
+                mod.release > 1
+                  ? `This module is planned for Release ${mod.release}. These controls will appear here:`
+                  : `The controls for this module are added in build stage ${mod.buildStage}, together with their data:`
+              }
+            />
+            <ul className="planned-list" aria-label="Planned controls">
+              {mod.plannedControls.map((c) => (
+                <li key={c}>{c}</li>
+              ))}
+            </ul>
+            {module === "profiles" && lad && (
+              <p style={{ marginTop: 12 }}>
+                This link selects local authority <code>{lad}</code>. Its profile appears once profiles are
+                built.
+              </p>
+            )}
+          </section>
+        )}
 
         <section className="panel-section" aria-labelledby="view-heading">
           <h3 id="view-heading" className="panel-section__title">
