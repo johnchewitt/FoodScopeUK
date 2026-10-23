@@ -72,7 +72,10 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["mass", "value"],
-      "properties": { "mass": { "const": "kg" }, "value": { "const": "GBP" } }
+      "properties": {
+        "mass": { "type": "string", "const": "kg" },
+        "value": { "type": "string", "const": "GBP" }
+      }
     },
     "partners": {
       "type": "array",

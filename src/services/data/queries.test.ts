@@ -51,9 +51,20 @@ describe("summariseFreshness", () => {
   });
 
   it("says no statistics are loaded when only reference data exists (Stage 1)", () => {
-    const f = summariseFreshness(manifest, "success");
+    const referenceOnly: DataManifest = {
+      ...manifest,
+      snapshotId: null,
+      datasets: manifest.datasets.filter((d) => d.role === "reference"),
+    };
+    const f = summariseFreshness(referenceOnly, "success");
     expect(f.state).toBe("none");
     expect(f.label).toBe("No statistics loaded");
+  });
+
+  it("reports the committed HMRC trade snapshot", () => {
+    const f = summariseFreshness(manifest, "success");
+    expect(f.state).toBe("current");
+    expect(f.label).toBe("Snapshot 2026-10-23");
   });
 
   it("reports a snapshot when statistical datasets exist", () => {

@@ -25,3 +25,32 @@ export function useDataset(
     },
   });
 }
+
+/**
+ * Loads a manifest dataset and validates it against its schema before use (ADR-06, ADR-08).
+ * A payload that fails validation is rejected with a typed error, never shown.
+ */
+export function useValidatedDataset<T>(
+  id: string | null,
+  validate: (data: unknown) => { ok: boolean; value?: T; errors: string[] },
+  adapter: DataSourceAdapter = staticSnapshotAdapter,
+): UseQueryResult<T, Error> {
+  const manifest = useManifest();
+  return useQuery({
+    queryKey: ["dataset", id, adapter.kind, "validated"],
+    enabled: manifest.isSuccess && id !== null,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: 1,
+    queryFn: async ({ signal }) => {
+      const dataset = id ? findDataset(manifest.data, id) : undefined;
+      if (!dataset) throw new DataLoadError("not_found", id ?? "dataset", "not listed in manifest");
+      const raw = await adapter.load(dataset, signal);
+      const result = validate(raw);
+      if (!result.ok || result.value === undefined) {
+        throw new DataLoadError("validation", dataset.title, "schema validation failed", result.errors);
+      }
+      return result.value;
+    },
+  });
+}
