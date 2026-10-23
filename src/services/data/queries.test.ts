@@ -1,0 +1,81 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { readRepoJson } from "@/test/files";
+import type { DataManifest } from "@/types/generated/manifest";
+import { DataLoadError, describeDataError } from "./errors";
+import { loadConfig, loadManifest, summariseFreshness } from "./queries";
+
+const manifest = readRepoJson<DataManifest>("public/data/manifest.json");
+
+function mockFetch(impl: () => Promise<Response>) {
+  vi.stubGlobal("fetch", vi.fn(impl));
+}
+
+afterEach(() => vi.unstubAllGlobals());
+
+describe("loadManifest", () => {
+  it("returns the validated committed manifest", async () => {
+    mockFetch(async () => new Response(JSON.stringify(manifest), { status: 200 }));
+    await expect(loadManifest()).resolves.toEqual(manifest);
+  });
+
+  it("raises a typed http error", async () => {
+    mockFetch(async () => new Response("nope", { status: 503 }));
+    await expect(loadManifest()).rejects.toMatchObject({ kind: "http" });
+  });
+
+  it("raises a typed parse error", async () => {
+    mockFetch(async () => new Response("{not json", { status: 200 }));
+    await expect(loadManifest()).rejects.toMatchObject({ kind: "parse" });
+  });
+
+  it("raises a typed validation error with details", async () => {
+    mockFetch(async () => new Response(JSON.stringify({ schemaVersion: 2 }), { status: 200 }));
+    const err = await loadManifest().catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(DataLoadError);
+    expect((err as DataLoadError).kind).toBe("validation");
+    expect((err as DataLoadError).details.length).toBeGreaterThan(0);
+  });
+
+  it("raises a typed network error", async () => {
+    mockFetch(async () => {
+      throw new TypeError("Failed to fetch");
+    });
+    await expect(loadConfig()).rejects.toMatchObject({ kind: "network" });
+  });
+});
+
+describe("summariseFreshness", () => {
+  it("reports loading and errors", () => {
+    expect(summariseFreshness(undefined, "pending").state).toBe("loading");
+    expect(summariseFreshness(undefined, "error").state).toBe("error");
+  });
+
+  it("says no statistics are loaded when only reference data exists (Stage 1)", () => {
+    const f = summariseFreshness(manifest, "success");
+    expect(f.state).toBe("none");
+    expect(f.label).toBe("No statistics loaded");
+  });
+
+  it("reports a snapshot when statistical datasets exist", () => {
+    const withStats: DataManifest = {
+      ...manifest,
+      snapshotId: "2026-11-15",
+      datasets: [
+        ...manifest.datasets,
+        { ...manifest.datasets[0]!, id: "synthetic.stat", role: "statistical" },
+      ],
+    };
+    expect(summariseFreshness(withStats, "success")).toMatchObject({
+      state: "current",
+      label: "Snapshot 2026-11-15",
+    });
+  });
+});
+
+describe("describeDataError", () => {
+  it("gives plain-English causes", () => {
+    expect(describeDataError(new DataLoadError("timeout", "Data index", "t"))).toMatch(/took too long/);
+    expect(describeDataError(new DataLoadError("validation", "Data index", "v"))).toMatch(/published schema/);
+    expect(describeDataError(new Error("x"))).toBe("x");
+  });
+});

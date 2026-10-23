@@ -51,7 +51,7 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S21 | Rural–urban classifications | ONS / Scottish Gov / NISRA | 🟡 | Profiles, Access | R1 |
 | S22 | Journey time statistics | DfT | 🔴 (England only) | Access context | R2 |
 | S23 | Port freight annual statistics 2025 | DfT | 🟡 | Risks, Scenario B | R2 |
-| S24 | Natural Earth Admin 0 countries | Natural Earth | 🔴 | Origins map | R1 |
+| S24 | Natural Earth Admin 0 countries | Natural Earth | 🟡 (1:110m in use as reference outlines) | Map reference layer; Origins map | R1 |
 | S25 | Basemap styles service | Esri (ArcGIS Location Platform) | 🔴 key needed | Map | R1 |
 | S26 | ArcGIS Living Atlas items | Esri and contributors | 🔴 per item | Optional reference layers | R2 |
 | S27 | Consumer price inflation — food (CPIH) | ONS (via Defra pocketbook CSV) | 🟡 | National context | R1 |
@@ -257,9 +257,11 @@ Release 2 (national access layers).
 - NRS (Scotland) and NISRA (NI) mid-year estimates: vintages and LAD/small-area availability to confirm.
 - Rule: per-capita indicators use the latest year available **for all nations being compared**; where vintages differ, the comparability warning appears.
 
-### S24 — Country geometries 🔴
+### S24 — Country geometries 🟡
 
-Natural Earth Admin 0 (public domain), 1:50m, version recorded in catalogue. Representative points computed in pipeline (pole of inaccessibility or Natural Earth label points). Crosswalk HMRC `CountryCodeAlpha` → ISO 3166-1 alpha-2 → Natural Earth `ISO_A2`/`ISO_A2_EH`; HMRC non-country codes (e.g. stores and provisions, unspecified) are listed explicitly in `trade/countries.json` and mapped to "not mappable".
+**In use since Stage 1 (reference outlines only):** Natural Earth **v4.1.0** Admin 0 countries at **1:110m**, from the `world-atlas` npm package **2.0.2** (ISC packaging; Natural Earth data is public domain). Converted by `scripts/build-reference-layers.mjs`: 177 features, coordinates rounded to 3 dp, rings that jumped across the antimeridian (Russia, Fiji, Antarctica) split at ±180° so they do not draw lines across the map. Output `public/data/reference/world-countries-110m.geojson` with a provenance sidecar; checksum verified by the pipeline's `publish` step. Properties: `name`, `iso_n3` (ISO numeric, not alpha-2). Antarctica is hidden on the map by a display filter.
+
+**Still to verify for Stage 3:** Natural Earth Admin 0 (public domain), 1:50m, with ISO alpha-2 codes, version recorded in catalogue. Representative points computed in pipeline (pole of inaccessibility or Natural Earth label points). Crosswalk HMRC `CountryCodeAlpha` → ISO 3166-1 alpha-2 → Natural Earth `ISO_A2`/`ISO_A2_EH`; HMRC non-country codes (e.g. stores and provisions, unspecified) are listed explicitly in `trade/countries.json` and mapped to "not mappable".
 
 ---
 
@@ -334,5 +336,14 @@ Defra pocketbook CSV of CPIH food and non-alcoholic beverages since 2020 (S05) f
 | DfT port freight 2025 | gov.uk page | Published 29 Jul 2026, ZIP tables; food breakdown unconfirmed |
 | NISRA DZ2021 | NISRA geography page | Counts, nesting, formats; CRS and licence unconfirmed |
 | npm package versions | `npm view` | As listed in architecture §2 |
+
+### Stage 1 additions (23 October 2026)
+
+| Check | Method | Result |
+|---|---|---|
+| world-atlas package contents | Read package files and README | Natural Earth v4.1.0 confirmed; 1:110m, 1:50m, 1:10m TopoJSON; ISC licence |
+| Reference outlines conversion | `scripts/build-reference-layers.mjs` + Vitest | 177 features in → 177 out; no ring segment crosses more than 180° of longitude |
+| Manifest publish | `uv run foodscope-pipeline publish` + pytest | Manifest validates against schema; checksum and size verified; reruns byte-identical |
+| ArcGIS services from the build sandbox | `curl` (one attempt each) | `js.arcgis.com`, `services1.arcgis.com`, `basemapstyles-api.arcgis.com` unreachable from the sandbox — so the Esri basemap (S25) and CDN mode were not exercised there |
 
 Not verified on this date (and therefore not to be coded against yet): CORS on the HMRC API; GEOLYTIX current schema and NI coverage; PPFI v2.1 column names and NI coverage; Census car-availability table IDs for NI and Scotland; LSOA 2021 centroid service; NISRA CRS; Natural Earth version; DfT table contents; SIMD 2026 status; Defra annual production files.

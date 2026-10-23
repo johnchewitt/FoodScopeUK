@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-23T00:00:00Z",
+  "generator": "foodscope-pipeline 0.1.0",
+  "snapshotId": null,
+  "datasets": [
+    {
+      "id": "reference.world_countries_110m",
+      "title": "World country outlines (Natural Earth 1:110m)",
+      "role": "reference",
+      "path": "reference/world-countries-110m.geojson",
+      "format": "geojson",
+      "schemaId": null,
+      "sha256": "928455649f3c1e3be46f7f28cf4030dde1c97a248773e638d9944da784cb4e0f",
+      "bytes": 194282,
+      "featureCount": 177,
+      "sourceIds": [
+        "S24"
+      ],
+      "referencePeriod": "Natural Earth v4.1.0",
+      "coverage": "World",
+      "provenance": "measured",
+      "licence": "Public domain (Natural Earth); world-atlas packaging ISC",
+      "attribution": "Made with Natural Earth",
+      "expectedCadence": "static",
+      "retrieval": {
+        "method": "npm package",
+        "source": "world-atlas@2.0.2 countries-110m.json",
+        "retrievedAt": "2026-10-23T00:00:00Z",
+        "notes": "Converted with topojson-client; rings crossing the antimeridian split at ±180°; coordinates rounded to 3 dp; features sorted by name."
+      }
+    }
+  ],
+  "catalogue": [
+    {
+      "id": "S24",
+      "title": "Natural Earth Admin 0 countries (1:110m), via world-atlas",
+      "publisher": "Natural Earth (packaged by the world-atlas project)",
+      "url": "https://www.naturalearthdata.com/downloads/110m-cultural-vectors/",
+      "licence": "Public domain (Natural Earth); world-atlas packaging ISC",
+      "status": "partly_verified",
+      "notes": "Version 4.1.0 confirmed from the world-atlas 2.0.2 README. Used only as reference outlines. The 1:50m edition with ISO codes for the Food Origins map is verified in Stage 2."
+    },
+    {
+      "id": "S25",
+      "title": "ArcGIS Basemap styles service",
+      "publisher": "Esri",
+      "url": "https://developers.arcgis.com/rest/basemap-styles/",
+      "licence": "Esri terms of use; attribution rendered by the SDK",
+      "status": "to_verify",
+      "notes": "Used only when an ArcGIS API key is configured (Actions secret ARCGIS_API_KEY). Not reachable from the build sandbox, so untested there."
+    }
+  ]
+}

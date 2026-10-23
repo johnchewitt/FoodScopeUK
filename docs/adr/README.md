@@ -1,0 +1,20 @@
+# Architecture decision records
+
+MADR-style records. Status values: Proposed · Accepted · Superseded. Summaries also appear in `docs/02-ARCHITECTURE.md` §3.
+
+| ADR | Title | Status |
+|---|---|---|
+| [0001](0001-static-first-hosting.md) | Static-first hosting with pipeline-built snapshots | Accepted (Stage 1) |
+| [0002](0002-map-components-in-react-19.md) | ArcGIS map components directly in React 19; no widgets, no React wrapper | Accepted (Stage 1) |
+| [0003](0003-one-way-state-to-map-sync.md) | One-way sync: Zustand store → map controllers | Accepted (Stage 1) |
+| [0004](0004-single-2d-web-mercator-view.md) | Single 2D Web Mercator view; 3D globe later | Accepted (Stage 1) |
+| [0005](0005-symbolic-flow-arcs.md) | Flows as symbolic great-circle arcs | Proposed (spike in Stage 3) |
+| [0006](0006-json-schema-contracts.md) | JSON Schema as the canonical data contract | Accepted (Stage 1) |
+| [0007](0007-python-pipeline.md) | Python pipeline, TypeScript app | Accepted (Stage 1) |
+| [0008](0008-data-adapters.md) | Data access through adapters | Accepted (Stage 1, static adapter only) |
+| [0009](0009-indicator-envelope.md) | Indicator envelope with provenance | Accepted (Stage 1) |
+| [0010](0010-pdf-from-profile-model.md) | PDF built from the profile model | Proposed (Stage 7) |
+| [0011](0011-api-key-handling.md) | Referrer-restricted API key injected at build | Accepted (Stage 1) |
+| [0012](0012-straight-line-first.md) | Straight-line proximity first; network times pre-computed later | Accepted |
+| [0013](0013-query-string-state.md) | Query-string state, no path routing | Accepted (Stage 1) |
+| [0014](0014-sdk-asset-hosting.md) | ArcGIS/Calcite assets: Esri CDN in production, local copy for tests | Accepted (Stage 1) |

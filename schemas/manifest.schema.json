@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/manifest.schema.json",
+  "title": "DataManifest",
+  "description": "Index of published data (public/data/manifest.json), written by the pipeline's publish step (ADR-06).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatedAt", "generator", "snapshotId", "datasets", "catalogue"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "generator": { "type": "string" },
+    "snapshotId": {
+      "description": "Dated statistical snapshot (YYYY-MM-DD) or null when none has been published yet.",
+      "type": ["string", "null"],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "datasets": { "type": "array", "items": { "$ref": "#/definitions/Dataset" } },
+    "catalogue": { "type": "array", "items": { "$ref": "#/definitions/CatalogueEntry" } }
+  },
+  "definitions": {
+    "ProvenanceClass": {
+      "type": "string",
+      "enum": ["measured", "official_estimate", "derived", "scenario", "illustrative"]
+    },
+    "Dataset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "role",
+        "path",
+        "format",
+        "sha256",
+        "bytes",
+        "sourceIds",
+        "referencePeriod",
+        "coverage",
+        "provenance",
+        "licence",
+        "attribution",
+        "retrieval"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9_.-]+$" },
+        "title": { "type": "string" },
+        "role": {
+          "type": "string",
+          "enum": ["reference", "statistical"],
+          "description": "reference = geometry/context used for display; statistical = values shown as indicators."
+        },
+        "path": { "type": "string", "description": "Relative to public/data/." },
+        "format": { "type": "string", "enum": ["geojson", "json"] },
+        "schemaId": { "type": ["string", "null"] },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "featureCount": { "type": "integer", "minimum": 0 },
+        "sourceIds": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^S\\d{2}$" },
+          "minItems": 1
+        },
+        "referencePeriod": { "type": "string" },
+        "coverage": { "type": "string" },
+        "provenance": { "$ref": "#/definitions/ProvenanceClass" },
+        "licence": { "type": "string" },
+        "attribution": { "type": "string" },
+        "expectedCadence": {
+          "type": "string",
+          "enum": ["monthly", "quarterly", "annual", "irregular", "static"]
+        },
+        "retrieval": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["method", "source", "retrievedAt"],
+          "properties": {
+            "method": { "type": "string" },
+            "source": { "type": "string" },
+            "retrievedAt": { "type": "string", "format": "date-time" },
+            "notes": { "type": "string" }
+          }
+        }
+      }
+    },
+    "CatalogueEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "publisher", "url", "licence", "status"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^S\\d{2}$" },
+        "title": { "type": "string" },
+        "publisher": { "type": "string" },
+        "url": { "type": "string" },
+        "licence": { "type": "string" },
+        "status": { "type": "string", "enum": ["verified", "partly_verified", "to_verify", "gap"] },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

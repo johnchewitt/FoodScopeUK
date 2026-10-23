@@ -1,0 +1,81 @@
+name: Deploy to GitHub Pages
+
+# Requires: Settings → Pages → Source = "GitHub Actions".
+# Optional: Actions secret ARCGIS_API_KEY (referrer-restricted, basemap-only; see docs/setup/arcgis-api-key.md).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          BASE_PATH: /FoodScopeUK/
+          VITE_ARCGIS_ASSETS: cdn
+          VITE_ARCGIS_API_KEY: ${{ secrets.ARCGIS_API_KEY }}
+
+      - name: Report basemap mode
+        run: |
+          if [ -n "${{ secrets.ARCGIS_API_KEY != '' && 'yes' || '' }}" ]; then
+            echo "::notice::ArcGIS API key present — Esri dark grey basemap enabled."
+          else
+            echo "::warning::ARCGIS_API_KEY secret not set — the site uses the offline outline map."
+          fi
+
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
+
+  smoke:
+    name: Post-deploy smoke test
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Smoke test the live site
+        run: npx playwright test tests/e2e/smoke.spec.ts -g "loads the shell and a ready ArcGIS map"
+        env:
+          CI: "true"
+          PLAYWRIGHT_BASE_URL: https://johnchewitt.github.io/FoodScopeUK/

@@ -1,0 +1,26 @@
+{
+  "id": "reference.world_countries_110m",
+  "title": "World country outlines (Natural Earth 1:110m)",
+  "role": "reference",
+  "path": "reference/world-countries-110m.geojson",
+  "format": "geojson",
+  "schemaId": null,
+  "sha256": "928455649f3c1e3be46f7f28cf4030dde1c97a248773e638d9944da784cb4e0f",
+  "bytes": 194282,
+  "featureCount": 177,
+  "sourceIds": [
+    "S24"
+  ],
+  "referencePeriod": "Natural Earth v4.1.0",
+  "coverage": "World",
+  "provenance": "measured",
+  "licence": "Public domain (Natural Earth); world-atlas packaging ISC",
+  "attribution": "Made with Natural Earth",
+  "expectedCadence": "static",
+  "retrieval": {
+    "method": "npm package",
+    "source": "world-atlas@2.0.2 countries-110m.json",
+    "retrievedAt": "2026-10-23T00:00:00Z",
+    "notes": "Converted with topojson-client; rings crossing the antimeridian split at ±180°; coordinates rounded to 3 dp; features sorted by name."
+  }
+}

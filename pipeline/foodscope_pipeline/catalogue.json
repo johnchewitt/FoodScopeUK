@@ -1,0 +1,20 @@
+[
+  {
+    "id": "S24",
+    "title": "Natural Earth Admin 0 countries (1:110m), via world-atlas",
+    "publisher": "Natural Earth (packaged by the world-atlas project)",
+    "url": "https://www.naturalearthdata.com/downloads/110m-cultural-vectors/",
+    "licence": "Public domain (Natural Earth); world-atlas packaging ISC",
+    "status": "partly_verified",
+    "notes": "Version 4.1.0 confirmed from the world-atlas 2.0.2 README. Used only as reference outlines. The 1:50m edition with ISO codes for the Food Origins map is verified in Stage 2."
+  },
+  {
+    "id": "S25",
+    "title": "ArcGIS Basemap styles service",
+    "publisher": "Esri",
+    "url": "https://developers.arcgis.com/rest/basemap-styles/",
+    "licence": "Esri terms of use; attribution rendered by the SDK",
+    "status": "to_verify",
+    "notes": "Used only when an ArcGIS API key is configured (Actions secret ARCGIS_API_KEY). Not reachable from the build sandbox, so untested there."
+  }
+]

@@ -1,0 +1,13 @@
+dist
+coverage
+playwright-report
+test-results
+node_modules
+public/data
+pipeline
+src/types/generated
+docs/00-ORIGINAL-BRIEF.md
+package-lock.json
+docs
+*.md
+.github

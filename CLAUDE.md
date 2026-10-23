@@ -16,7 +16,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 
 ## Current stage
 
-**Stage 1 — Application foundation** (see roadmap §3). Do not build data features yet. Update this line when a stage is merged.
+**Stage 1 — Application foundation: built on branch `stage/1-foundation`, awaiting review and merge** (report: `docs/stage-reports/stage-1.md`). Next is Stage 2 — Data pipeline v1; do not start it until Stage 1 is merged. Update this line when a stage is merged.
 
 ## How to work
 
@@ -54,7 +54,10 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 - JSX types: `src/vite-env.d.ts` contains `/// <reference types="@arcgis/map-components/types/react" />`.
 - Events in JSX: `onarcgisViewReadyChange`, `onarcgisReady`, etc. Get the view from the element after view-ready.
 - Import core modules granularly from `@arcgis/core/...` (ESM). Check the 5.1 API reference at developers.arcgis.com before using an API you have not used in this repo; if documentation and the installed package's `.d.ts` disagree, trust the package typings and note it.
-- `<arcgis-map>` is mounted **once** (`src/components/maps/MapHost.tsx`) and never re-mounted on module change.
+- `<arcgis-map>` is mounted **once** (`src/components/maps/MapHost.tsx`) and never re-mounted on module change. `MapHost` is lazy-loaded (`React.lazy`) so the SDK chunk does not block the shell; it is the only module that registers `arcgis-map`.
+- **Without a basemap the view has no tiling scheme**: keep the Web Mercator `constraints.lods` that `MapHost` passes, or the view never becomes ready (ADR-0004).
+- Asset hosting (ADR-0014): production uses the Esri CDN; `VITE_ARCGIS_ASSETS=local` copies ArcGIS/Calcite assets into the build for offline/sandboxed runs. `src/app/bootstrapAssets.ts` must stay the first import in `main.tsx`.
+- Component tests never load the SDK: `MapHost` is mocked with `vi.mock`, and Calcite elements are registered only in `src/app/registerComponents.ts` (imported by `main.tsx`). Keep UI modules free of `@arcgis/core` imports (shared ids live in `src/map/layerIds.ts`).
 
 ### State and map synchronisation (ADR-03)
 
@@ -83,21 +86,28 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 
 ## Commands
 
-Created in Stage 1 — keep this list accurate as scripts change.
+Keep this list accurate as scripts change.
 
 ```bash
-npm ci                 # install (lockfile)
-npm run dev            # local dev server
-npm run typecheck      # tsc --noEmit
-npm run lint           # eslint
-npm test               # vitest (unit + component)
-npm run e2e            # playwright against a preview build
-npm run build          # production build (respects BASE_PATH)
-npm run preview        # serve the build locally
-npm run gen:types      # JSON Schema -> src/types/generated
+npm ci                     # install (lockfile)
+npm run dev                # dev server at http://localhost:5173/FoodScopeUK/
+npm run typecheck          # tsc -b (app, node and test projects)
+npm run lint               # eslint (includes banned-import rules)
+npm run format             # prettier --check (format:write to fix)
+npm run check:banned       # no widgets / map-components-react / __esri / AMD
+npm test                   # vitest: unit + component tests (jsdom)
+npm run build              # typecheck + production build (BASE_PATH, VITE_ARCGIS_ASSETS)
+npm run preview            # serve dist/ at http://localhost:4173/FoodScopeUK/
+npm run e2e                # playwright against `vite preview` of an existing build
+npm run gen:types          # schemas/*.json -> src/types/generated (commit the output)
+npm run build:reference    # rebuild Natural Earth reference outlines + provenance sidecar
 
-cd pipeline && uv sync && uv run pytest          # pipeline tests
-cd pipeline && uv run foodscope-pipeline --help  # pipeline CLI
+# E2E without internet access to the Esri CDN (e.g. a sandbox):
+VITE_ARCGIS_ASSETS=local npm run build
+PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome npm run e2e   # only if Playwright's browser is not installed
+
+cd pipeline && uv sync && uv run pytest              # pipeline tests
+cd pipeline && uv run foodscope-pipeline publish     # rebuild public/data/manifest.json
 ```
 
 ## Definition of done (every task)
