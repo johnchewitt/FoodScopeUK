@@ -223,6 +223,15 @@
       "notes": "Monthly UK imports by CN8 commodity and recorded partner. Partner = country of dispatch, which may differ from where goods were grown. Imports valued CIF (statistical value; Intrastat EU trade uses invoice value). Net mass in kg; about a third of Intrastat goods need no weight declaration and are estimated. Provisional for up to 18 months after publication. Series breaks: EU exit (Jan 2021) and customs-based GB–EU import collection (Jan 2022)."
     },
     {
+      "id": "S02",
+      "title": "UK import trade in goods by country of origin and country of dispatch, 2024",
+      "publisher": "HM Revenue & Customs",
+      "url": "https://www.gov.uk/government/statistics/uk-import-trade-in-goods-by-country-of-origin-and-country-of-dispatch-2024",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Context only (Evidence page caveat on the Netherlands dispatch effect). Not used for figures: it covers only trade where both origin and dispatch were declared."
+    },
+    {
       "id": "S24",
       "title": "Natural Earth Admin 0 countries (1:110m outlines, 1:50m label points)",
       "publisher": "Natural Earth",
