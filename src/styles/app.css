@@ -1573,41 +1573,37 @@
   flex: none;
   width: 14px;
   height: 10px;
-  border: 1px solid rgb(73 234 216 / 0.45);
+  border: 1px solid var(--fs-navy);
   border-radius: 3px;
 }
-/* Mirrors SHARE_CLASS_COLOURS in src/map/layers/origins.ts (teal → cyan ramp, rising opacity). */
+/* Share classes: the same opaque tokens as the map fills and the Seasonal heatmap (palette.ts). */
 .swatch[data-class="0"] {
-  background: color-mix(in oklab, var(--fs-teal) 80%, var(--fs-cyan));
-  opacity: 0.6;
+  background: var(--fs-seq-0);
 }
 .swatch[data-class="1"] {
-  background: color-mix(in oklab, var(--fs-teal) 64%, var(--fs-cyan));
-  opacity: 0.68;
+  background: var(--fs-seq-1);
 }
 .swatch[data-class="2"] {
-  background: color-mix(in oklab, var(--fs-teal) 48%, var(--fs-cyan));
-  opacity: 0.76;
+  background: var(--fs-seq-2);
 }
 .swatch[data-class="3"] {
-  background: color-mix(in oklab, var(--fs-teal) 32%, var(--fs-cyan));
-  opacity: 0.84;
+  background: var(--fs-seq-3);
 }
 .swatch[data-class="4"] {
-  background: color-mix(in oklab, var(--fs-teal) 16%, var(--fs-cyan));
-  opacity: 0.92;
+  background: var(--fs-seq-4);
 }
 .swatch[data-class="5"] {
-  background: var(--fs-cyan);
+  background: var(--fs-seq-5);
 }
 .swatch--none {
   border-style: dashed;
+  border-color: var(--fs-text-muted);
   background: transparent;
 }
 .swatch--point {
   width: 10px;
   border-radius: 50%;
-  background: color-mix(in oklab, var(--fs-teal) 35%, var(--fs-cyan));
+  background: var(--fs-seq-3);
 }
 .map-legend__flows {
   display: grid;

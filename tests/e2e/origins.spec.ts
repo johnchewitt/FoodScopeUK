@@ -113,7 +113,7 @@ test.describe("Food Origins explorer", () => {
     await expect(page).toHaveURL(/p=MA/);
     await expect(page.locator(".selected-partner")).toContainText("Morocco");
     await expect(page.locator(".selected-partner")).toContainText("29.6 %");
-    await expect.poll(() => mapInfo(page).then((i) => i.selectedOutline.MA)).toBe(2);
+    await expect.poll(() => mapInfo(page).then((i) => i.selectedOutline.MA)).toBe(2.25);
     // Selecting again clears it.
     await page.locator(".partner-table").getByRole("button", { name: "Morocco" }).click();
     await expect(page).not.toHaveURL(/p=MA/);
