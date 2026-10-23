@@ -51,6 +51,14 @@ export function formatPercentagePoints(pp: number | null | undefined): string {
   return `${sign}${nf(1, 1).format(Math.abs(rounded))} pp`;
 }
 
+/** Relative change given as a fraction, signed, one decimal place: "+4.2 %", "−9.0 %", "±0.0 %". */
+export function formatChange(fraction: number | null | undefined): string {
+  if (!isFiniteNumber(fraction)) return "—";
+  const pct = Math.round(fraction * 1000) / 10;
+  const sign = pct > 0 ? "+" : pct < 0 ? "−" : "±";
+  return `${sign}${nf(1, 1).format(Math.abs(pct))} %`;
+}
+
 /** Herfindahl–Hirschman Index (0–10,000), nearest 10. */
 export function formatHhi(hhi: number | null | undefined): string {
   if (!isFiniteNumber(hhi)) return "—";
@@ -89,6 +97,8 @@ export function formatByUnit(value: number | string | null, unit: string): strin
       return formatShare(value);
     case "pp":
       return formatPercentagePoints(value);
+    case "change":
+      return formatChange(value);
     case "HHI":
       return formatHhi(value);
     case "km (straight-line)":
