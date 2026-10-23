@@ -1,0 +1,113 @@
+name: Refresh trade data (HMRC)
+
+# Fetches HMRC Overseas Trade Statistics for the Food Origins baskets, rebuilds the trade
+# snapshot and manifest, and commits the raw responses and outputs to a data-refresh branch.
+# Data refreshes reach `main` only through a pull request (CLAUDE.md). The HMRC API is called
+# from this job, never from the browser.
+#
+# Triggers:
+#   - push to a `data-refresh/**` branch: runs on that branch and commits back to it
+#   - manual run (workflow_dispatch): creates `data-refresh/<snapshot>` and opens a pull request
+
+on:
+  push:
+    branches: ["data-refresh/**"]
+  workflow_dispatch:
+    inputs:
+      snapshot:
+        description: "Snapshot id (YYYY-MM-DD); default today (UTC)"
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-trade-data-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Ingest HMRC, build snapshot, validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+
+      - name: Choose snapshot id
+        id: snap
+        run: |
+          snapshot="${{ github.event.inputs.snapshot }}"
+          if [ -z "$snapshot" ]; then snapshot="$(date -u +%F)"; fi
+          echo "id=$snapshot" >> "$GITHUB_OUTPUT"
+          echo "Snapshot: $snapshot"
+
+      - name: Skip if this snapshot is already cached
+        id: existing
+        run: |
+          if [ -f "pipeline/raw/hmrc/${{ steps.snap.outputs.id }}/index.json" ]; then
+            echo "cached=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Raw HMRC cache for ${{ steps.snap.outputs.id }} already committed; rebuilding offline only."
+          fi
+
+      - name: Install pipeline
+        working-directory: pipeline
+        run: uv sync --locked
+
+      - name: Ingest from the HMRC API (≤ 50 requests/minute)
+        if: steps.existing.outputs.cached != 'true'
+        working-directory: pipeline
+        run: uv run foodscope-pipeline ingest-hmrc --snapshot "${{ steps.snap.outputs.id }}"
+
+      - name: Build trade snapshot (offline, from the raw cache) and reconcile (gate G1)
+        working-directory: pipeline
+        run: uv run foodscope-pipeline build-trade --snapshot "${{ steps.snap.outputs.id }}"
+
+      - name: Publish manifest
+        working-directory: pipeline
+        run: uv run foodscope-pipeline publish
+
+      - name: Pipeline tests
+        working-directory: pipeline
+        run: uv run pytest
+
+      - name: Summary
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          import json, pathlib
+          snap = "${{ steps.snap.outputs.id }}"
+          idx = json.loads(pathlib.Path(f"pipeline/raw/hmrc/{snap}/index.json").read_text())
+          rec = json.loads(pathlib.Path(f"pipeline/reports/hmrc-reconciliation-{snap}.json").read_text())
+          print(f"### HMRC trade snapshot {snap}\n")
+          print(f"- Requests: {idx['requests']}; latest month: {idx['latestMonthId']}")
+          for c in rec["checks"]:
+              print(f"- Reconciliation {c['basket']} {c['month']}: {'match' if c['match'] else 'MISMATCH'} "
+                    f"({c['rawRows']} raw rows, {c['netMassKg']['raw']:,} kg)")
+          EOF
+
+      - name: Commit to the data-refresh branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SNAPSHOT: ${{ steps.snap.outputs.id }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pipeline/raw/hmrc pipeline/reports public/data
+          if git diff --cached --quiet; then
+            echo "::notice::No data changes."
+            exit 0
+          fi
+          git commit -m "data(trade): HMRC OTS snapshot $SNAPSHOT" \
+            -m "Raw responses in pipeline/raw/hmrc/$SNAPSHOT; reconciliation in pipeline/reports/. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          if [[ "$GITHUB_REF_NAME" == data-refresh/* ]]; then
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          else
+            branch="data-refresh/$SNAPSHOT"
+            git push origin "HEAD:refs/heads/$branch"
+            gh pr create --base "$GITHUB_REF_NAME" --head "$branch" \
+              --title "data(trade): HMRC OTS snapshot $SNAPSHOT" \
+              --body "Automated refresh of the Food Origins trade snapshot. Check the reconciliation report and the job summary before merging."
+          fi
