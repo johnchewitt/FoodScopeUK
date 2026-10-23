@@ -128,7 +128,7 @@ Full ADR texts live in `docs/adr/` from Stage 1 onward (one file per decision, M
 Adapted from brief §18. Folders marked † are created in later stages.
 
 ```text
-foodscope-uk/
+FoodScopeUK/                       # repository root
 ├── CLAUDE.md                      # instructions for Claude Code (read first)
 ├── README.md                      # setup, data, refresh, licensing, limitations
 ├── docs/
