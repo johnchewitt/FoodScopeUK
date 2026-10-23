@@ -10,6 +10,7 @@ import CIMSymbol from "@arcgis/core/symbols/CIMSymbol";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
 import { symbolicArc } from "@/analysis/arcs";
+import { interpolateWidths, widthsDiffer } from "@/analysis/transition";
 import {
   selectReducedMotion,
   type AppState,
@@ -19,6 +20,7 @@ import {
 } from "@/state/store";
 import { ORIGINS_FLOWS_LAYER_ID, ORIGINS_PARTNERS_LAYER_ID } from "../layerIds";
 import { FlowParticles, type ParticleFlow, type ParticleView } from "./flowParticles";
+import { FLOW_TWEEN_MS, TWEEN_FRAME_MS } from "./flowTiming";
 import type { HitResult, LayerController, LayerStatusReporter, ViewLike, ViewPointerEvent } from "../types";
 
 /**
@@ -30,9 +32,14 @@ import type { HitResult, LayerController, LayerStatusReporter, ViewLike, ViewPoi
  *   by FlowParticles on a canvas over the map; ADR-0015).
  * Connections are not routes and never end at a port.
  *
- * All values come from `state.originsMap` (built by the Origins feature from the snapshot);
- * this controller only draws them and turns clicks/hovers into store actions (ADR-03).
+ * All values come from `state.originsMap` (built by the Food Origins or Seasonal Supply feature
+ * from the snapshot); this controller only draws them and turns clicks/hovers into store actions
+ * (ADR-03). When the month changes, connection widths ease from the old to the new values for at
+ * most FLOW_TWEEN_MS (instant under reduced motion) and always end at the exact model widths.
  */
+
+/** Modules whose map is drawn from `state.originsMap`. */
+const TRADE_MAP_MODULES: readonly string[] = ["origins", "seasonal"];
 
 /** Palette mirrors src/styles/tokens.css (ArcGIS symbols need concrete colours). */
 const NAVY: [number, number, number] = [7, 25, 35];
@@ -123,6 +130,13 @@ export class OriginsLayersController implements LayerController {
   private visible = false;
   private hoverFrame = 0;
   private lastHover: string | null = null;
+  /** One graphic per connection, reused across months so widths can ease. */
+  private flowGraphics = new Map<string, Graphic>();
+  private drawnWidths = new Map<string, number>();
+  private pathKey = "";
+  private tweenFrame = 0;
+  /** Transitions started so far (exposed on the view container for tests; no ArcGIS state in React). */
+  private transitions = 0;
 
   constructor(private readonly actions: OriginsActions) {}
 
@@ -147,13 +161,17 @@ export class OriginsLayersController implements LayerController {
 
   update(state: AppState): void {
     this.model = state.originsMap;
-    const visible = state.module === "origins" && state.originsMap !== null;
+    const visible = TRADE_MAP_MODULES.includes(state.module) && state.originsMap !== null;
     if (visible !== this.visible) {
       this.visible = visible;
       for (const l of this.layers()) l.visible = visible;
       if (!visible) {
         this.clearHover();
         this.particles?.setFlows([], false);
+        this.cancelTween();
+        this.flows?.removeAll();
+        this.flowGraphics.clear();
+        this.drawnWidths.clear();
         this.signature = { ...this.signature, flows: "" };
       }
     }
@@ -175,6 +193,9 @@ export class OriginsLayersController implements LayerController {
     for (const h of this.handles) h.remove();
     this.handles = [];
     if (this.hoverFrame) cancelAnimationFrame(this.hoverFrame);
+    this.cancelTween();
+    this.flowGraphics.clear();
+    this.drawnWidths.clear();
     for (const l of this.layers()) {
       view.map?.remove(l);
       l.destroy();
@@ -297,26 +318,51 @@ export class OriginsLayersController implements LayerController {
 
   private drawFlows(m: OriginsMapModel, selected: string | null, animate: boolean): void {
     if (!this.flows) return;
-    this.flows.removeAll();
+    this.cancelTween();
     const wgs84 = SpatialReference.WGS84;
     const flows = m.partners.filter((p) => p.flow && p.point);
-    // Draw the widest first so thin connections stay visible on top.
-    const ordered = [...flows].sort((a, b) => b.flowWidth - a.flowWidth);
-    const graphics: Graphic[] = [];
-    const particles: ParticleFlow[] = [];
-    for (const p of ordered) {
-      const path = symbolicArc(p.point!, m.ukAnchor, 64);
-      const emphasis = selected ? (p.key === selected ? "selected" : "dimmed") : "normal";
-      graphics.push(
+    const target = new Map(flows.map((p) => [p.key, p.flowWidth]));
+    const emphasis = (key: string) => (selected ? (key === selected ? "selected" : "dimmed") : "normal");
+    // Paths depend on the partners' points and the UK anchor, which change with the commodity.
+    const pathKey = `${m.commodityId}|${m.ukAnchor.join(",")}`;
+    const tween = animate && pathKey === this.pathKey && this.drawnWidths.size > 0;
+    if (pathKey !== this.pathKey) {
+      this.flowGraphics.clear();
+      this.drawnWidths.clear();
+    }
+    this.pathKey = pathKey;
+
+    // Every connection that is drawn now or was drawn before (the latter shrink away).
+    const keys = new Set([...flows.map((p) => p.key), ...(tween ? this.flowGraphics.keys() : [])]);
+    for (const p of flows) {
+      if (this.flowGraphics.has(p.key)) continue;
+      this.flowGraphics.set(
+        p.key,
         new Graphic({
-          geometry: new Polyline({ paths: [path], spatialReference: wgs84 }),
+          geometry: new Polyline({ paths: [symbolicArc(p.point!, m.ukAnchor, 64)], spatialReference: wgs84 }),
           attributes: { key: p.key },
-          symbol: new CIMSymbol({ data: flowLineSymbolData(p.flowWidth, emphasis) as never }),
         }),
       );
-      particles.push({ key: p.key, path, widthPx: p.flowWidth, emphasis });
     }
-    graphics.push(
+    for (const key of [...this.flowGraphics.keys()]) if (!keys.has(key)) this.flowGraphics.delete(key);
+    const from = new Map(
+      [...keys].map((k) => [k, tween ? (this.drawnWidths.get(k) ?? 0) : (target.get(k) ?? 0)]),
+    );
+    const symbolFor = (key: string, width: number) =>
+      new CIMSymbol({ data: flowLineSymbolData(Math.max(0, width), emphasis(key)) as never });
+
+    // Widest (final width) first, so thin connections stay visible on top; the UK point last.
+    const ordered = [...keys].sort(
+      (a, b) => (target.get(b) ?? 0) - (target.get(a) ?? 0) || a.localeCompare(b),
+    );
+    for (const key of ordered) {
+      const g = this.flowGraphics.get(key)!;
+      g.attributes = { key, targetWidth: target.get(key) ?? 0 };
+      g.symbol = symbolFor(key, from.get(key) ?? 0);
+    }
+    this.flows.removeAll();
+    this.flows.addMany([
+      ...ordered.map((k) => this.flowGraphics.get(k)!),
       new Graphic({
         geometry: new Point({ longitude: m.ukAnchor[0], latitude: m.ukAnchor[1] }),
         attributes: { key: "__uk" },
@@ -327,9 +373,68 @@ export class OriginsLayersController implements LayerController {
           outline: { color: [...GREEN, 1], width: 2 },
         }),
       }),
-    );
-    this.flows.addMany(graphics);
+    ]);
+
+    const particles: ParticleFlow[] = flows.map((p) => ({
+      key: p.key,
+      path: symbolicArc(p.point!, m.ukAnchor, 64),
+      widthPx: p.flowWidth,
+      emphasis: emphasis(p.key),
+    }));
     this.particles?.setFlows(particles, animate);
+
+    const to = new Map(target);
+    const finish = () => {
+      for (const key of ordered) {
+        const w = to.get(key);
+        if (w === undefined) {
+          const g = this.flowGraphics.get(key);
+          if (g) this.flows?.remove(g);
+          this.flowGraphics.delete(key);
+          this.drawnWidths.delete(key);
+        } else {
+          this.flowGraphics.get(key)!.symbol = symbolFor(key, w);
+          this.drawnWidths.set(key, w);
+        }
+      }
+      this.tweenFrame = 0;
+      this.setTransitionState("idle");
+    };
+    if (!tween || !widthsDiffer(from, to) || typeof requestAnimationFrame === "undefined") {
+      finish();
+      return;
+    }
+    this.transitions += 1;
+    this.setTransitionState("running");
+    const start = performance.now();
+    let last = 0;
+    const step = (now: number) => {
+      const t = (now - start) / FLOW_TWEEN_MS;
+      if (t >= 1) return finish();
+      if (now - last >= TWEEN_FRAME_MS) {
+        last = now;
+        for (const [key, w] of interpolateWidths(from, to, t)) {
+          const g = this.flowGraphics.get(key);
+          if (!g) continue;
+          g.symbol = symbolFor(key, w);
+          this.drawnWidths.set(key, w);
+        }
+      }
+      this.tweenFrame = requestAnimationFrame(step);
+    };
+    this.tweenFrame = requestAnimationFrame(step);
+  }
+
+  private setTransitionState(state: "running" | "idle"): void {
+    const container = (this.view as { container?: HTMLElement | null } | null)?.container;
+    if (!container) return;
+    container.dataset.flowTransition = state;
+    container.dataset.flowTransitions = String(this.transitions);
+  }
+
+  private cancelTween(): void {
+    if (this.tweenFrame) cancelAnimationFrame(this.tweenFrame);
+    this.tweenFrame = 0;
   }
 
   private hitLayers(): unknown[] {

@@ -10,6 +10,8 @@ export const RAIL_TO_PANEL = 8;
 export const KPI_H = 92;
 export const KPI_H_MOBILE = 96;
 export const TIMELINE_H = 64;
+/** Seasonal Supply's timeline also carries month bars and playback controls. */
+export const TIMELINE_H_SEASONAL = 88;
 export const ATTRIBUTION_H = 22;
 
 export const PANEL_WIDTHS: Record<Breakpoint, { filter: number; insights: number }> = {
@@ -45,6 +47,8 @@ export interface PaddingInputs {
   filterPanelOpen: boolean;
   insightsOpen: boolean;
   timelineVisible: boolean;
+  /** Height of the visible timeline (default TIMELINE_H). */
+  timelineHeight?: number;
 }
 
 /**
@@ -56,6 +60,7 @@ export function computeViewPadding({
   filterPanelOpen,
   insightsOpen,
   timelineVisible,
+  timelineHeight = TIMELINE_H,
 }: PaddingInputs): ViewPadding {
   const docked = breakpoint === "desktop" || breakpoint === "laptop";
   const widths = PANEL_WIDTHS[breakpoint];
@@ -63,7 +68,7 @@ export function computeViewPadding({
   const left = docked && filterPanelOpen ? railEdge + widths.filter + GAP : railEdge;
   const right = docked && insightsOpen ? GAP * 2 + widths.insights : 0;
   const top = GAP + (breakpoint === "mobile" ? KPI_H_MOBILE : KPI_H);
-  const bottom = ATTRIBUTION_H + GAP + (timelineVisible ? TIMELINE_H + GAP : 0);
+  const bottom = ATTRIBUTION_H + GAP + (timelineVisible ? timelineHeight + GAP : 0);
   return { top, right, bottom, left };
 }
 

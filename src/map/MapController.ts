@@ -1,7 +1,7 @@
 import type { StoreApi, UseBoundStore } from "zustand";
 import { selectReducedMotion, type AppState, type MapCommand } from "@/state/store";
 import { getModule } from "@/app/modules";
-import { computeViewPadding, paddingEquals } from "./layoutMetrics";
+import { computeViewPadding, paddingEquals, TIMELINE_H, TIMELINE_H_SEASONAL } from "./layoutMetrics";
 import { FLIGHT_DURATION_MS, GO_TO_TARGETS, type LayerController, type ViewLike } from "./types";
 
 type Store = UseBoundStore<StoreApi<AppState>>;
@@ -56,6 +56,7 @@ export class MapController {
       filterPanelOpen: state.filterPanelOpen,
       insightsOpen: state.insightsOpen,
       timelineVisible: getModule(state.module).usesTimeline,
+      timelineHeight: state.module === "seasonal" ? TIMELINE_H_SEASONAL : TIMELINE_H,
     });
     if (!paddingEquals(view.padding, padding)) view.padding = padding;
 
