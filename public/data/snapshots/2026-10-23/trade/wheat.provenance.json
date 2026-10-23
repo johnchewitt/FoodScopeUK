@@ -1,0 +1,26 @@
+{
+  "id": "trade.wheat",
+  "title": "Recorded UK imports: wheat (HS 1001)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-23/trade/wheat.json",
+  "format": "json",
+  "schemaId": "trade-snapshot",
+  "sha256": "d7423b43c3e187a2c7aecc09d0315f68fccba492284339c33e33e4fde171d130",
+  "bytes": 41450,
+  "sourceIds": [
+    "S01",
+    "S24"
+  ],
+  "referencePeriod": "Jan 2019 \u2013 Aug 2026 (monthly)",
+  "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+  "expectedCadence": "monthly",
+  "retrieval": {
+    "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+    "source": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010011000%20or%20CommodityId%20eq%2010011100%20or%20CommodityId%20eq%2010011900%20or%20CommodityId%20eq%2010019010%20or%20CommodityId%20eq%2010019091%20or%20CommodityId%20eq%2010019099%20or%20CommodityId%20eq%2010019110%20or%20CommodityId%20eq%2010019120%20or%20CommodityId%20eq%2010019190%20or%20CommodityId%20eq%2010019900))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+    "retrievedAt": "2026-10-23T14:27:03Z",
+    "notes": "CN8 codes: 10011000, 10011100, 10011900, 10019010, 10019091, 10019099, 10019110, 10019120, 10019190, 10019900. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of dispatch recorded by HMRC. Suppressed trade kept separately. Latest month confirmed by probing the following month. Months from provisionalFrom are within HMRC's 18-month revision window (estimated from publication lag)."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "trade.tomatoes",
+  "title": "Recorded UK imports: tomatoes (HS 0702)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-23/trade/tomatoes.json",
+  "format": "json",
+  "schemaId": "trade-snapshot",
+  "sha256": "23b8c56d1fe5b24dda09f926434387c4d52915985c9df634e5bf28f34c70c7db",
+  "bytes": 35230,
+  "sourceIds": [
+    "S01",
+    "S24"
+  ],
+  "referencePeriod": "Jan 2019 \u2013 Aug 2026 (monthly)",
+  "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+  "expectedCadence": "monthly",
+  "retrieval": {
+    "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+    "source": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%207020000%20or%20CommodityId%20eq%207020010%20or%20CommodityId%20eq%207020091%20or%20CommodityId%20eq%207020099))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+    "retrievedAt": "2026-10-23T14:26:52Z",
+    "notes": "CN8 codes: 07020000, 07020010, 07020091, 07020099. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of dispatch recorded by HMRC. Suppressed trade kept separately. Latest month confirmed by probing the following month. Months from provisionalFrom are within HMRC's 18-month revision window (estimated from publication lag)."
+  }
+}

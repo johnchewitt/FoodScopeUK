@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-23T00:00:00Z",
+  "generatedAt": "2026-10-23T14:27:03Z",
   "generator": "foodscope-pipeline 0.1.0",
-  "snapshotId": null,
+  "snapshotId": "2026-10-23",
   "datasets": [
     {
       "id": "reference.world_countries_110m",
@@ -54,6 +54,161 @@
         "source": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_admin_0_countries.geojson (sha256 3e458fc036ad0a66411f2c1e6cac49c5d7bfb81cb1123bc513b22511a2b7fdeb)",
         "retrievedAt": "2026-10-23T00:00:00Z",
         "notes": "Natural Earth's own label point (LABEL_X, LABEL_Y) per ISO_A2_EH code, rounded to 4 dp. Used as the symbolic start of import connections and for partners too small for 1:110m. Not a port or production location."
+      }
+    },
+    {
+      "id": "trade.bananas",
+      "title": "Recorded UK imports: bananas (HS 0803)",
+      "role": "statistical",
+      "path": "snapshots/2026-10-23/trade/bananas.json",
+      "format": "json",
+      "schemaId": "trade-snapshot",
+      "sha256": "afe7cd048cc06bdba427f12b45828d2c18e0bb5efaaba9ba0f60d3affba0f4e9",
+      "bytes": 65369,
+      "sourceIds": [
+        "S01",
+        "S24"
+      ],
+      "referencePeriod": "Jan 2019 – Aug 2026 (monthly)",
+      "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+      "expectedCadence": "monthly",
+      "retrieval": {
+        "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+        "source": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%208030011%20or%20CommodityId%20eq%208030019%20or%20CommodityId%20eq%208030090%20or%20CommodityId%20eq%208031010%20or%20CommodityId%20eq%208031090%20or%20CommodityId%20eq%208039010%20or%20CommodityId%20eq%208039011%20or%20CommodityId%20eq%208039019%20or%20CommodityId%20eq%208039090))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+        "retrievedAt": "2026-10-23T14:26:57Z",
+        "notes": "CN8 codes: 08030011, 08030019, 08030090, 08031010, 08031090, 08039010, 08039011, 08039019, 08039090. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of dispatch recorded by HMRC. Suppressed trade kept separately. Latest month confirmed by probing the following month. Months from provisionalFrom are within HMRC's 18-month revision window (estimated from publication lag)."
+      }
+    },
+    {
+      "id": "trade.index",
+      "title": "Food Origins commodity baskets",
+      "role": "statistical",
+      "path": "snapshots/2026-10-23/trade/index.json",
+      "format": "json",
+      "schemaId": "trade-index",
+      "sha256": "4c370c4247b6edd51ea6a63e171c0c54a990491f8684f21cf012531eff111547",
+      "bytes": 1565,
+      "sourceIds": [
+        "S01"
+      ],
+      "referencePeriod": "Jan 2019 – Aug 2026",
+      "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+      "expectedCadence": "monthly",
+      "retrieval": {
+        "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+        "source": "https://api.uktradeinfo.com/Commodity?$filter=Hs4Code%20eq%20'0701'%20or%20Hs4Code%20eq%20'0702'%20or%20Hs4Code%20eq%20'0803'%20or%20Hs4Code%20eq%20'1001'%20or%20Hs6Code%20eq%20'081010'",
+        "retrievedAt": "2026-10-23T14:26:48Z",
+        "notes": "Basket definitions (pipeline/foodscope_pipeline/config/trade_baskets.json) with the CN8 codes HMRC lists under each heading."
+      }
+    },
+    {
+      "id": "trade.potatoes",
+      "title": "Recorded UK imports: potatoes (HS 0701)",
+      "role": "statistical",
+      "path": "snapshots/2026-10-23/trade/potatoes.json",
+      "format": "json",
+      "schemaId": "trade-snapshot",
+      "sha256": "35275bff5ea78a0edd9c72e63eb9cd5a27f604d5dd27f0ae4c55f00ed68341a6",
+      "bytes": 30525,
+      "sourceIds": [
+        "S01",
+        "S24"
+      ],
+      "referencePeriod": "Jan 2019 – Aug 2026 (monthly)",
+      "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+      "expectedCadence": "monthly",
+      "retrieval": {
+        "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+        "source": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%207011000%20or%20CommodityId%20eq%207019010%20or%20CommodityId%20eq%207019050%20or%20CommodityId%20eq%207019090))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+        "retrievedAt": "2026-10-23T14:27:00Z",
+        "notes": "CN8 codes: 07011000, 07019010, 07019050, 07019090. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of dispatch recorded by HMRC. Suppressed trade kept separately. Latest month confirmed by probing the following month. Months from provisionalFrom are within HMRC's 18-month revision window (estimated from publication lag)."
+      }
+    },
+    {
+      "id": "trade.strawberries",
+      "title": "Recorded UK imports: strawberries (HS 0810 10)",
+      "role": "statistical",
+      "path": "snapshots/2026-10-23/trade/strawberries.json",
+      "format": "json",
+      "schemaId": "trade-snapshot",
+      "sha256": "f8148c88d091c7cd525ebeddc252f2dc7c1bff169464aea81a8ad8bed439aec3",
+      "bytes": 30946,
+      "sourceIds": [
+        "S01",
+        "S24"
+      ],
+      "referencePeriod": "Jan 2019 – Aug 2026 (monthly)",
+      "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+      "expectedCadence": "monthly",
+      "retrieval": {
+        "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+        "source": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20CommodityId%20eq%208101000)/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+        "retrievedAt": "2026-10-23T14:26:54Z",
+        "notes": "CN8 codes: 08101000. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of dispatch recorded by HMRC. Suppressed trade kept separately. Latest month confirmed by probing the following month. Months from provisionalFrom are within HMRC's 18-month revision window (estimated from publication lag)."
+      }
+    },
+    {
+      "id": "trade.tomatoes",
+      "title": "Recorded UK imports: tomatoes (HS 0702)",
+      "role": "statistical",
+      "path": "snapshots/2026-10-23/trade/tomatoes.json",
+      "format": "json",
+      "schemaId": "trade-snapshot",
+      "sha256": "23b8c56d1fe5b24dda09f926434387c4d52915985c9df634e5bf28f34c70c7db",
+      "bytes": 35230,
+      "sourceIds": [
+        "S01",
+        "S24"
+      ],
+      "referencePeriod": "Jan 2019 – Aug 2026 (monthly)",
+      "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+      "expectedCadence": "monthly",
+      "retrieval": {
+        "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+        "source": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%207020000%20or%20CommodityId%20eq%207020010%20or%20CommodityId%20eq%207020091%20or%20CommodityId%20eq%207020099))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+        "retrievedAt": "2026-10-23T14:26:52Z",
+        "notes": "CN8 codes: 07020000, 07020010, 07020091, 07020099. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of dispatch recorded by HMRC. Suppressed trade kept separately. Latest month confirmed by probing the following month. Months from provisionalFrom are within HMRC's 18-month revision window (estimated from publication lag)."
+      }
+    },
+    {
+      "id": "trade.wheat",
+      "title": "Recorded UK imports: wheat (HS 1001)",
+      "role": "statistical",
+      "path": "snapshots/2026-10-23/trade/wheat.json",
+      "format": "json",
+      "schemaId": "trade-snapshot",
+      "sha256": "d7423b43c3e187a2c7aecc09d0315f68fccba492284339c33e33e4fde171d130",
+      "bytes": 41450,
+      "sourceIds": [
+        "S01",
+        "S24"
+      ],
+      "referencePeriod": "Jan 2019 – Aug 2026 (monthly)",
+      "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+      "expectedCadence": "monthly",
+      "retrieval": {
+        "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+        "source": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010011000%20or%20CommodityId%20eq%2010011100%20or%20CommodityId%20eq%2010011900%20or%20CommodityId%20eq%2010019010%20or%20CommodityId%20eq%2010019091%20or%20CommodityId%20eq%2010019099%20or%20CommodityId%20eq%2010019110%20or%20CommodityId%20eq%2010019120%20or%20CommodityId%20eq%2010019190%20or%20CommodityId%20eq%2010019900))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+        "retrievedAt": "2026-10-23T14:27:03Z",
+        "notes": "CN8 codes: 10011000, 10011100, 10011900, 10019010, 10019091, 10019099, 10019110, 10019120, 10019190, 10019900. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of dispatch recorded by HMRC. Suppressed trade kept separately. Latest month confirmed by probing the following month. Months from provisionalFrom are within HMRC's 18-month revision window (estimated from publication lag)."
       }
     }
   ],
