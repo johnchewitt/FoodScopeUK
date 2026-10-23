@@ -15,8 +15,8 @@
 | 0 | Planning baseline | — | — | This document pack ✅ |
 | **1** | **Application foundation** ✅ merged (PR #1) and deployed | R1 | 0, decisions D1–D2 | Branded shell, live dark map, empty module panels, CI + Pages deploy |
 | **2** | **Food Origins explorer + HMRC trade pipeline** ✅ merged (PR #3) and deployed | R1 | 1, gates G1, G2, G4 | Pick tomatoes, step Jan→Jul, watch partners, connections, cards and charts change — real HMRC data for five commodities |
-| **3** | **Seasonal Supply Explorer** ✅ built (branch `stage/3-seasonal-supply`) | R1 | 2 | Play tomatoes January → December 2025; compare January with July; partner-by-month heatmap; year-on-year change — the same real HMRC data as Food Origins |
-| 4 | Supermarket network | R1 | 3, G7, and the LAD/GEOLYTIX ingest moved out of Stage 3 (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth |
+| **3** | **Seasonal Supply Explorer** ✅ merged (PR #5) and deployed | R1 | 2 | Play tomatoes January → December 2025; compare January with July; partner-by-month heatmap; year-on-year change — the same real HMRC data as Food Origins |
+| 4 | Supermarket network | R1 | 3, G7, and the LAD/GEOLYTIX ingest moved out of Stage 3 (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth; basemap choice: dark grey, light grey, imagery (SH-08) |
 | 5 | Local Authority Profiles (Belfast, Manchester deep) | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
 | 6 | Scenario Lab (import disruption, store closure) | R1 | 3, 5 | Spanish tomato preset; close a store and see the access change |
 | 7 | Consulting Insights + PDF export | R1 | 5, 6, D3, D7 | One-click profile PDF that matches the screen |
@@ -189,6 +189,39 @@ Deliverables: stores layer via adapter (SM-01); clustering and symbols (SM-02/04
 
 Exit: filter counts match pipeline counts; LAD totals reconciled and differences from ONS S12 explained in the stage report.
 
+### 6.1 Curated basemap switcher (SH-08; added at John's request, 23 Oct 2026)
+
+Why in Stage 4: at world and continent scale the shaded countries carry the information, and the current colours are checked against dark grey only. A basemap choice pays off when the map reaches street level (stores, catchments) and for presentations and print (PDF export in Stage 7).
+
+Deliverables:
+- **Styles:**
+  - dark grey: the default, unchanged;
+  - light grey;
+  - imagery with labels, offered only at local zooms. The zoom threshold is set in the stage plan; the control explains why imagery is unavailable at world scale.
+- **Verify the services first:** check the Basemap styles service style IDs and attribution on the live site (S25) and record them in `docs/03-DATA-SOURCES.md`. Do not assume IDs.
+- **Colour sets per style:**
+  - share ramp, connection lines and casing, store symbols and choropleths, as tokens in `tokens.css` and `src/styles/palette.ts`;
+  - checked with the dataviz validator against each style's land colour, sampled on the live site;
+  - legend swatches follow the active set (parity test as in ADR-0019);
+  - glass panels and text contrast re-checked over light grey (backlog B3).
+- **Control and state:**
+  - a bespoke basemap control in the map controls, keyboard operable and labelled;
+  - the choice in the store and the URL (`bm`), restored from deep links and kept across module changes;
+  - the map controller swaps `map.basemap` (ADR-03), keeping the `apiKeys.basemapStyles` registration (ADR-0011) and the reference-outline fallback when a style fails;
+  - hidden when no API key is configured.
+- **ADR:** one ADR for per-style colour sets and the imagery scale rule.
+
+Exit criteria:
+- **Colour checks:** validator runs for every style are recorded in the stage report.
+- **E2E tests:**
+  - switching style updates the basemap, legend and data colours;
+  - deep link `bm=light` restores the style;
+  - imagery is not offered at world scale;
+  - no console errors;
+  - axe passes in both dark and light grey.
+- **Live checks:** each style seen on the live site with a real GPU. Attribution changes with the style and is never hidden.
+- **Usage note:** basemap request usage under the key is recorded in the stage report, since each style counts towards it (risk R8).
+
 ## 7. Stage 5 — Local Authority Profiles
 
 Deliverables: LAD search/selection and fly-to (LP-01); basic profiles for all LADs (A, B, D); deep profiles for Belfast and Manchester (C, E) with small-area layers, straight-line distances from representative points, deprivation within nation, car availability, PPFI (subject to G8); comparison view with comparability warnings (LP-07).
@@ -279,3 +312,4 @@ Rules of engagement:
 | 2026-10-23 | Commodity-code history added to the trade snapshot (additive, offline from the committed raw cache) | S01, §5.1 |
 | 2026-10-23 | UK seasonal production not shown for the five baskets: no verified monthly series (S06–S08 cover meat and milk; S09/S10 annual, unverified) | SS-07, S05–S10 |
 | 2026-10-23 | Post-Stage 3 review (John's request): trade views framed on the data; one opaque share ramp for map, legend and heatmap; series-break and current-price cautions in Food Origins; data before the map on first load; KPI cards never hidden | ADR-0018, ADR-0019, `docs/reviews/2026-10-23-review.md` |
+| 2026-10-23 | Curated basemap switcher (dark grey, light grey, imagery at local scales) scheduled for Stage 4 (John's decision); each style needs its own checked colour set; no switcher for the trade views before then | SH-08, §6.1 |
