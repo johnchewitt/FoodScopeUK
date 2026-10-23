@@ -2,7 +2,8 @@ import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer";
 import UniqueValueRenderer from "@arcgis/core/renderers/UniqueValueRenderer";
 import UniqueValueInfo from "@arcgis/core/renderers/support/UniqueValueInfo";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
-import { REFERENCE_LAYER_ID } from "../layerIds";
+import type { AppState } from "@/state/store";
+import { BASEMAP_STATUS_ID, REFERENCE_LAYER_ID } from "../layerIds";
 import type { LayerController, LayerStatusReporter, ViewLike } from "../types";
 
 /** Palette values mirror src/styles/tokens.css (ArcGIS symbols need concrete colours). */
@@ -30,9 +31,13 @@ function buildRenderer(withBasemap: boolean): UniqueValueRenderer {
   });
 }
 
+const OFFLINE_GLOW = "bloom(0.9, 0.4px, 0.2)";
+
 /**
  * Natural Earth 1:110m country outlines (S24) used as the offline base map, and as subtle
- * outlines over the Esri basemap when a key is configured. Display-only reference geometry.
+ * outlines over the Esri basemap when a key is configured. If the Esri basemap fails to
+ * load, the outlines switch to the offline style so the map is still legible.
+ * Display-only reference geometry.
  */
 export class ReferenceOutlinesController implements LayerController {
   readonly id = REFERENCE_LAYER_ID;
@@ -42,6 +47,7 @@ export class ReferenceOutlinesController implements LayerController {
   private url: string | null = null;
   private failure: string | null = null;
   private readonly withBasemap: boolean;
+  private basemapFailed = false;
 
   constructor(withBasemap: boolean) {
     this.withBasemap = withBasemap;
@@ -68,6 +74,16 @@ export class ReferenceOutlinesController implements LayerController {
     if (this.view && url) this.addLayer();
   }
 
+  update(state: AppState): void {
+    if (!this.withBasemap || this.basemapFailed) return;
+    if (state.layerStatus[BASEMAP_STATUS_ID]?.status !== "error") return;
+    this.basemapFailed = true;
+    if (this.layer) {
+      this.layer.renderer = buildRenderer(false);
+      this.layer.effect = OFFLINE_GLOW;
+    }
+  }
+
   deactivate(view: ViewLike): void {
     if (this.layer) {
       view.map?.remove(this.layer);
@@ -76,6 +92,11 @@ export class ReferenceOutlinesController implements LayerController {
     this.layer = null;
     this.view = null;
     this.report = null;
+  }
+
+  /** True while the outlines are drawn over a working Esri basemap. */
+  private get overBasemap(): boolean {
+    return this.withBasemap && !this.basemapFailed;
   }
 
   private addLayer(): void {
@@ -93,8 +114,8 @@ export class ReferenceOutlinesController implements LayerController {
       title: "Country outlines (Natural Earth 1:110m)",
       copyright: "Made with Natural Earth",
       definitionExpression: "name <> 'Antarctica'",
-      renderer: buildRenderer(this.withBasemap),
-      effect: this.withBasemap ? null : "bloom(0.9, 0.4px, 0.2)",
+      renderer: buildRenderer(this.overBasemap),
+      effect: this.overBasemap ? null : OFFLINE_GLOW,
       popupEnabled: false,
       legendEnabled: false,
       listMode: "hide",

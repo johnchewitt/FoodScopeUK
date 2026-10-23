@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/states/EmptyState";
 import { PartialNotice } from "@/components/states/Notice";
 import { SkeletonLines } from "@/components/states/Skeleton";
 import { principlesById } from "@/content/principles";
-import { REFERENCE_DATASET_ID, REFERENCE_LAYER_ID } from "@/map/layerIds";
+import { BASEMAP_STATUS_ID, REFERENCE_DATASET_ID, REFERENCE_LAYER_ID } from "@/map/layerIds";
 import { basemapMode, readArcgisEnv } from "@/services/arcgis/env";
 import { describeDataError } from "@/services/data/errors";
 import { findDataset, useAppConfig, useManifest } from "@/services/data/queries";
@@ -37,6 +37,7 @@ export function InsightsPanel() {
   const openOverlay = useAppStore((s) => s.openOverlay);
   const mapStatus = useAppStore((s) => s.mapStatus);
   const referenceLayer = useAppStore((s) => s.layerStatus[REFERENCE_LAYER_ID]);
+  const basemapLayer = useAppStore((s) => s.layerStatus[BASEMAP_STATUS_ID]);
   const manifest = useManifest();
   const config = useAppConfig();
   const mod = getModule(module);
@@ -116,11 +117,25 @@ export function InsightsPanel() {
                 />
               ) : null}
               <StatusItem
-                tone={mode === "esri-dark-gray" ? (mapStatus === "ready" ? "ok" : "pending") : "pending"}
+                tone={
+                  mode === "esri-dark-gray"
+                    ? basemapLayer?.status === "ready"
+                      ? "ok"
+                      : basemapLayer?.status === "error"
+                        ? "warn"
+                        : "pending"
+                    : "pending"
+                }
                 title={mode === "esri-dark-gray" ? "Esri dark grey basemap" : "Offline outline map"}
                 detail={
                   mode === "esri-dark-gray" ? (
-                    "Basemap styles service, authorised by the site's API key."
+                    basemapLayer?.status === "error" ? (
+                      (basemapLayer.message ?? "The Esri basemap could not be loaded.")
+                    ) : basemapLayer?.status === "ready" ? (
+                      "Basemap styles service, authorised by the site's API key."
+                    ) : (
+                      "Loading the basemap styles service."
+                    )
                   ) : (
                     <>
                       No ArcGIS API key is configured for this build, so the map uses country outlines only.{" "}

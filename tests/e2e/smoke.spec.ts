@@ -35,6 +35,17 @@ test.describe("Stage 1 shell", () => {
       )
       .toContain("reference-outlines");
 
+    // With a key (the deployed site), the Esri basemap must actually load: a view becomes
+    // ready even when its basemap fails. Without a key there is no basemap to check.
+    const host = page.locator(".map-host");
+    if ((await host.getAttribute("data-basemap")) === "esri") {
+      await expect(host).toHaveAttribute("data-basemap-status", "ready", { timeout: 30_000 });
+    } else {
+      await expect(host).toHaveAttribute("data-basemap-status", "none");
+    }
+    // Visitors are never asked to sign in to ArcGIS (ADR-11).
+    await expect(page.getByText(/sign in to access/i)).toHaveCount(0);
+
     expect(errors, `console errors:\n${errors.join("\n")}`).toEqual([]);
   });
 
