@@ -20,6 +20,8 @@ interface Props {
   children?: ReactNode;
   /** Small heading-side content (provenance badge, chips). */
   meta?: ReactNode;
+  /** Animate updates in place (stable series ids) instead of redrawing (Seasonal Supply). */
+  merge?: boolean;
 }
 
 export function ChartFrame({
@@ -32,6 +34,7 @@ export function ChartFrame({
   height = 180,
   children,
   meta,
+  merge = false,
 }: Props) {
   const reducedMotion = useAppStore(selectReducedMotion);
   // ECharts' aria component writes the container's accessible name; supply our description
@@ -43,7 +46,7 @@ export function ChartFrame({
         : null,
     [option, description],
   );
-  const { ref, status, error } = useEChart(fullOption, { reducedMotion, onEvents });
+  const { ref, status, error } = useEChart(fullOption, { reducedMotion, onEvents, merge });
 
   return (
     <figure className="chart-frame" style={{ margin: 0 }}>

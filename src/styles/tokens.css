@@ -20,6 +20,29 @@
   --fs-line-strong: rgb(73 234 216 / 0.4);
   --fs-surface-hover: rgb(73 234 216 / 0.08);
 
+  /*
+   * Seasonal heatmap scales (spec §7.4: fixed classes). Derived from the palette and checked with
+   * the dataviz palette validator on the panel surface (stage 3 report):
+   * sequential teal → cyan, monotone lightness, lowest class ≥ 2:1 against the panel;
+   * diverging amber (lower share) ← neutral grey → cyan (higher share), two steps per side.
+   */
+  --fs-seq-0: color-mix(in oklab, var(--fs-cyan) 34%, var(--fs-teal));
+  --fs-seq-1: color-mix(in oklab, var(--fs-cyan) 47%, var(--fs-teal));
+  --fs-seq-2: color-mix(in oklab, var(--fs-cyan) 60%, var(--fs-teal));
+  --fs-seq-3: color-mix(in oklab, var(--fs-cyan) 73%, var(--fs-teal));
+  --fs-seq-4: color-mix(in oklab, var(--fs-cyan) 86%, var(--fs-teal));
+  --fs-seq-5: var(--fs-cyan);
+  --fs-div-neutral: color-mix(in oklab, var(--fs-text-muted) 52%, var(--fs-navy));
+  --fs-div-0: var(--fs-amber);
+  --fs-div-1: color-mix(in oklab, var(--fs-amber) 62%, var(--fs-div-neutral));
+  --fs-div-2: var(--fs-div-neutral);
+  --fs-div-3: color-mix(in oklab, var(--fs-cyan) 62%, var(--fs-div-neutral));
+  --fs-div-4: var(--fs-cyan);
+  /* No figures for the month (not yet published / before the snapshot): hatched, never a ramp colour. */
+  --fs-hatch: repeating-linear-gradient(135deg, rgb(142 173 174 / 0.32) 0 1.5px, transparent 1.5px 5px);
+  /* Comparison year in charts: de-emphasised grey beside the cyan selected year. */
+  --fs-compare: var(--fs-text-muted);
+
   /* Glass surfaces (spec §7.3) */
   --fs-glass: color-mix(in oklab, var(--fs-emerald) 76%, transparent);
   --fs-glass-deep: color-mix(in oklab, var(--fs-navy) 86%, transparent);
@@ -52,6 +75,7 @@
   --fs-insights-w: 340px;
   --fs-kpi-h: 92px;
   --fs-timeline-h: 64px;
+  --fs-timeline-h-seasonal: 88px;
   --fs-attribution-h: 22px;
 
   /* Motion */

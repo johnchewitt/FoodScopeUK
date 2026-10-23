@@ -40,6 +40,10 @@ const TRADE_CAVEATS = [
   "Series breaks: the end of the EU exit transition period (January 2021) and GB imports from the EU compiled from customs declarations from January 2022. Comparisons across these dates should be read with care.",
   "Suppressed trade, and trade HMRC records without a partner country, is listed separately in the Insights panel and never redistributed across partners.",
   "Import dependence is not food insecurity (P8); recorded imports describe trade, not consumption or supply.",
+  "Seasonal Supply: months HMRC has not yet published are shown hatched and are never estimated or interpolated. Partial years are compared like for like, and annual figures need all 12 months.",
+  "Seasonal Supply: connection widths use one fixed scale for every month and year (12 px = the largest monthly value from one partner), and heatmap classes are the same for every year, so months and years compare directly.",
+  "Commodity codes change over time (e.g. tomatoes split into three codes from January 2025). Each basket includes every current and discontinued code, so its totals are continuous; the Seasonal panel lists when each code was recorded.",
+  "UK seasonal production is not shown: no verified monthly series exists for these five commodities. Imports are never used to estimate domestic production.",
 ];
 
 /** Evidence & Limitations (SH-06, EV-03), generated from the data manifest. */
@@ -134,7 +138,7 @@ export function EvidenceDialog() {
 
           {manifest.data?.datasets.some((d) => d.id.startsWith("trade.")) && (
             <section>
-              <h3>Reading the trade figures (Food Origins)</h3>
+              <h3>Reading the trade figures (Food Origins and Seasonal Supply)</h3>
               <ul className="evidence-caveats">
                 {TRADE_CAVEATS.map((c) => (
                   <li key={c}>{c}</li>

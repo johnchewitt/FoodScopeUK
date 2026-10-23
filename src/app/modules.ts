@@ -65,10 +65,10 @@ export const MODULES: readonly ModuleDef[] = [
     icon: CalendarRange,
     question: "How does this change throughout the year?",
     summary:
-      "Month-by-month recorded import patterns, a partner-by-month heatmap and year-on-year comparison with fixed colour scales.",
+      "Month-by-month recorded imports for the same five commodities: a January–December timeline you can play, a partner-by-month heatmap with fixed classes, monthly trend, year-on-year change and concentration. UK seasonal production is not shown until a verified monthly series exists.",
     release: 1,
     buildStage: 3,
-    requirementIds: "SS-01 – SS-08",
+    requirementIds: "SS-01 – SS-08 (SS-07: imports only)",
     plannedKpis: [
       "Recorded imports this month",
       "Peak-month share",

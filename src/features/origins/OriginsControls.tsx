@@ -1,15 +1,12 @@
-import type { KeyboardEvent } from "react";
-import { useRef } from "react";
 import { MONTHS_SHORT } from "@/analysis/format";
 import { parseMonthKey, type MonthKey } from "@/analysis/trade";
 import { ErrorState } from "@/components/states/ErrorState";
-import { Notice } from "@/components/states/Notice";
 import { SkeletonLines } from "@/components/states/Skeleton";
 import { describeDataError } from "@/services/data/errors";
 import { useAppStore } from "@/state/store";
 import type { PeriodMode } from "@/state/urlState";
 import { CaveatChip } from "./CaveatChip";
-import { CommodityIcon } from "./CommodityIcon";
+import { CommodityPicker } from "./CommodityPicker";
 import { resolveCommodity, useOrigins } from "./useOrigins";
 
 const PERIODS: { id: PeriodMode; label: string; hint: string }[] = [
@@ -28,7 +25,6 @@ function yearsIn(first: MonthKey, last: MonthKey): number[] {
 export function OriginsControls() {
   const { status, error, index, model, unknownCommodity } = useOrigins();
   const commodity = useAppStore((s) => s.commodity);
-  const setCommodity = useAppStore((s) => s.setCommodity);
   const period = useAppStore((s) => s.period);
   const setPeriod = useAppStore((s) => s.setPeriod);
   const year = useAppStore((s) => s.year);
@@ -37,7 +33,6 @@ export function OriginsControls() {
   const setMeasure = useAppStore((s) => s.setMeasure);
   const flowCount = useAppStore((s) => s.flowCount);
   const setFlowCount = useAppStore((s) => s.setFlowCount);
-  const listRef = useRef<HTMLDivElement | null>(null);
 
   if (status === "error")
     return (
@@ -53,66 +48,13 @@ export function OriginsControls() {
     );
 
   const active = resolveCommodity(index, commodity);
-  const ids = index.commodities.map((c) => c.id);
-  const onListKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    const i = ids.indexOf(active?.id ?? "");
-    let next = -1;
-    if (e.key === "ArrowDown" || e.key === "ArrowRight") next = (i + 1) % ids.length;
-    else if (e.key === "ArrowUp" || e.key === "ArrowLeft") next = (i - 1 + ids.length) % ids.length;
-    else if (e.key === "Home") next = 0;
-    else if (e.key === "End") next = ids.length - 1;
-    if (next < 0) return;
-    e.preventDefault();
-    setCommodity(ids[next]!);
-    listRef.current?.querySelectorAll<HTMLButtonElement>("[role=radio]")[next]?.focus();
-  };
   const range = active?.months;
   const years = range ? yearsIn(range.first, range.last) : [];
   const shownYear = model ? parseMonthKey(model.period.anchor).year : (year ?? years[0]);
 
   return (
     <>
-      <section className="panel-section" aria-labelledby="commodity-heading">
-        <h3 id="commodity-heading" className="panel-section__title">
-          Commodity
-        </h3>
-        {unknownCommodity && (
-          <Notice tone="warn">
-            The commodity in this link is not in the snapshot, so {active?.label} is shown.
-          </Notice>
-        )}
-        <div
-          ref={listRef}
-          className="commodity-list"
-          role="radiogroup"
-          aria-labelledby="commodity-heading"
-          onKeyDown={onListKey}
-        >
-          {index.commodities.map((c) => {
-            const checked = c.id === active?.id;
-            return (
-              <button
-                key={c.id}
-                type="button"
-                role="radio"
-                aria-checked={checked}
-                tabIndex={checked ? 0 : -1}
-                className="commodity-option"
-                onClick={() => setCommodity(c.id)}
-              >
-                <span className="commodity-option__icon">
-                  <CommodityIcon id={c.id} />
-                </span>
-                <span className="commodity-option__text">
-                  <span className="commodity-option__label">{c.label}</span>
-                  <span className="commodity-option__scope">{c.hsScope}</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-        {active && <p className="control-hint">{active.definition}</p>}
-      </section>
+      <CommodityPicker index={index} unknownCommodity={unknownCommodity} />
 
       <section className="panel-section" aria-labelledby="period-heading">
         <h3 id="period-heading" className="panel-section__title">

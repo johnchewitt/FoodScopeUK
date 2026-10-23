@@ -32,7 +32,8 @@ export interface OriginsData {
   snapshot: ReturnType<typeof useTradeSnapshotQuery>["data"];
 }
 
-function useTradeSnapshotQuery(datasetId: string | null) {
+/** One commodity basket's trade snapshot, validated against its schema (shared with Seasonal Supply). */
+export function useTradeSnapshotQuery(datasetId: string | null) {
   return useValidatedDataset(datasetId, validateTradeSnapshot);
 }
 
@@ -55,10 +56,7 @@ export function useOrigins(): OriginsData {
   const snapshot = useTradeSnapshotQuery(entry?.datasetId ?? null);
   const points = useCountryPoints();
 
-  const ukAnchor = useMemo<[number, number] | null>(() => {
-    const gb = points.data?.points.find((p) => p.iso_a2 === "GB");
-    return gb ? [gb.lon, gb.lat] : null;
-  }, [points.data]);
+  const ukAnchor = useUkAnchor(points.data);
 
   const model = useMemo(
     () =>
@@ -77,6 +75,14 @@ export function useOrigins(): OriginsData {
     unknownCommodity: Boolean(index.data && entry && entry.id !== commodity),
     snapshot: snapshot.data,
   };
+}
+
+/** The symbolic UK point for connections: Natural Earth's label point for the United Kingdom (not a port). */
+export function useUkAnchor(points: ReturnType<typeof useCountryPoints>["data"]): [number, number] | null {
+  return useMemo<[number, number] | null>(() => {
+    const gb = points?.points.find((p) => p.iso_a2 === "GB");
+    return gb ? [gb.lon, gb.lat] : null;
+  }, [points]);
 }
 
 /** Publishes the map view model to the store for the layer controllers (ADR-03: store → map). */

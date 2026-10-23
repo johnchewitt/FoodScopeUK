@@ -46,10 +46,14 @@ export interface ChartEventParams {
 }
 export type ChartEventHandlers = Partial<Record<"click", (params: ChartEventParams) => void>>;
 
-/** Initialises a chart when `option` is non-null; updates without recreating; disposes on unmount. */
+/**
+ * Initialises a chart when `option` is non-null; updates without recreating; disposes on unmount.
+ * `merge` keeps series with stable ids and animates the change (≤ 300 ms, SS-02) instead of
+ * redrawing from scratch; series missing from the new option are removed (`replaceMerge`).
+ */
 export function useEChart(
   option: EChartsCoreOption | null,
-  opts: { reducedMotion?: boolean; onEvents?: ChartEventHandlers } = {},
+  opts: { reducedMotion?: boolean; onEvents?: ChartEventHandlers; merge?: boolean } = {},
 ): UseEChartResult {
   const ref = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<EChartsType | null>(null);
@@ -67,8 +71,14 @@ export function useEChart(
     const el = ref.current;
     const apply = (chart: EChartsType) =>
       chart.setOption(
-        { animation: !opts.reducedMotion, aria: { enabled: true }, ...option },
-        { notMerge: true },
+        {
+          animation: !opts.reducedMotion,
+          animationDurationUpdate: 300,
+          animationEasingUpdate: "cubicOut",
+          aria: { enabled: true },
+          ...option,
+        },
+        opts.merge ? { replaceMerge: ["series", "xAxis", "yAxis", "grid"] } : { notMerge: true },
       );
 
     if (chartRef.current) {
@@ -93,7 +103,7 @@ export function useEChart(
     return () => {
       cancelled = true;
     };
-  }, [option, opts.reducedMotion]);
+  }, [option, opts.reducedMotion, opts.merge]);
 
   useEffect(() => {
     const el = ref.current;
