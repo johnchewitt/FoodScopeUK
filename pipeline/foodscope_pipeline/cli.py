@@ -44,6 +44,10 @@ def main(argv: list[str] | None = None) -> int:
     local = sub.add_parser("build-local", help="OFFLINE: raw boundaries, stores and population → public/data/snapshots/<snapshot>/local/")
     local.add_argument("--snapshot", required=True, help="ONS raw snapshot id YYYY-MM-DD (pipeline/raw/ons/<snapshot>/)")
 
+    areas = sub.add_parser("build-areas", help="OFFLINE: raw small-area files → <out>/snapshots/<snapshot>/areas/ + reports/areas-qa-<snapshot>.json")
+    areas.add_argument("--snapshot", required=True, help="raw snapshot id YYYY-MM-DD (pipeline/raw/<publisher>/<snapshot>/)")
+    areas.add_argument("--out", default=None, help="output root (default: public/data)")
+
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -116,6 +120,18 @@ def main(argv: list[str] | None = None) -> int:
             logging.error("build-local failed: %s", exc)
             return 1
         print(f"wrote {len(written)} files for local snapshot {args.snapshot}")
+        return 0
+
+    if args.command == "build-areas":
+        from foodscope_pipeline.areas import build_areas, default_inputs as areas_inputs
+
+        out = Path(args.out) if args.out else DATA_DIR
+        try:
+            written = build_areas(args.snapshot, areas_inputs(RAW, CONFIG, args.snapshot), out, REPORTS, SCHEMAS)
+        except Exception as exc:  # noqa: BLE001 (report any input problem and fail the step)
+            logging.error("build-areas failed: %s", exc)
+            return 1
+        print(f"wrote {len(written)} files for areas snapshot {args.snapshot}")
         return 0
 
     if args.command == "publish":

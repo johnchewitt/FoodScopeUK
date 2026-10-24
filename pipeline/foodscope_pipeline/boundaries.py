@@ -1,6 +1,6 @@
-"""Display boundaries for councils: simplify the clipped BGC edition for the web.
+"""Display boundaries: simplify a boundary coverage for the web (councils; Stage 5 small areas).
 
-Steps, all in EPSG:27700 until the last one:
+Steps, all in the input's projected CRS (EPSG:27700 for councils) until the last one:
 1. `shapely.coverage_clean` with 1 cm node snapping (no measurable area change; recorded), then
    `shapely.coverage_simplify` at `TOLERANCE_M`: neighbours keep one shared, simplified edge, so
    the map has no slivers or gaps (the coverage is checked valid before and after).
@@ -37,13 +37,13 @@ class DisplayResult:
     stats: dict
 
 
-def _drop_small_islands(geoms: np.ndarray) -> tuple[np.ndarray, int, float]:
+def _drop_small_islands(geoms: np.ndarray, min_island_m2: float) -> tuple[np.ndarray, int, float]:
     tree = shapely.STRtree(geoms)
     out, dropped, dropped_area = [], 0, 0.0
     for i, geom in enumerate(geoms):
         keep = []
         for part in shapely.get_parts(geom):
-            if part.area < MIN_ISLAND_M2 and not any(j != i for j in tree.query(part, predicate="intersects")):
+            if part.area < min_island_m2 and not any(j != i for j in tree.query(part, predicate="intersects")):
                 dropped += 1
                 dropped_area += part.area
                 continue
@@ -54,9 +54,9 @@ def _drop_small_islands(geoms: np.ndarray) -> tuple[np.ndarray, int, float]:
     return np.array(out, dtype=object), dropped, dropped_area
 
 
-def _overlaps_m2(wgs: np.ndarray) -> list[dict]:
-    """Pairs of councils that overlap after projection and rounding, with the overlap in m²."""
-    to_bng = Transformer.from_crs(4326, 27700, always_xy=True)
+def _overlaps_m2(wgs: np.ndarray, crs: int) -> list[dict]:
+    """Pairs of areas that overlap after projection and rounding, with the overlap in m²."""
+    to_bng = Transformer.from_crs(4326, crs, always_xy=True)
     tree = shapely.STRtree(wgs)
     out = []
     for i in np.flatnonzero(~shapely.is_empty(shapely.coverage_invalid_edges(wgs))):
@@ -72,20 +72,29 @@ def _overlaps_m2(wgs: np.ndarray) -> list[dict]:
     return out
 
 
-def display_geometry(geoms: np.ndarray) -> DisplayResult:
-    """Simplified WGS84 council polygons for the national map, with a record of every change."""
-    if not shapely.coverage_is_valid(geoms):
+def display_geometry(geoms: np.ndarray, crs: int = 27700, tolerance_m: float = TOLERANCE_M,
+                     min_island_m2: float = MIN_ISLAND_M2, require_valid_input: bool = True) -> DisplayResult:
+    """Simplified WGS84 polygons for the map, with a record of every change.
+
+    Defaults are the council settings (EPSG:27700, 150 m, islands under 1 ha dropped). `crs` is the
+    input's projected CRS in metres (e.g. 29902 for NISRA's Irish Grid files). With
+    `require_valid_input=False` an input whose neighbours do not share identical edges (NISRA's
+    Data Zones: overlaps and gaps of a few square centimetres) is accepted: `coverage_clean`
+    resolves them, and the number of mismatched areas and the area moved are reported.
+    """
+    invalid_in = int((~shapely.is_empty(shapely.coverage_invalid_edges(geoms))).sum())
+    if invalid_in and require_valid_input:
         raise DisplayBoundaryError("the boundary edition is not a valid coverage")
     cleaned = shapely.coverage_clean(geoms, snapping_distance=SNAP_M)
     if not shapely.coverage_is_valid(cleaned) or not shapely.is_valid(cleaned).all():
         raise DisplayBoundaryError("coverage_clean produced an invalid coverage")
     clean_change = float(np.abs(shapely.area(cleaned) - shapely.area(geoms)).sum())
-    simplified = shapely.coverage_simplify(cleaned, TOLERANCE_M)
+    simplified = shapely.coverage_simplify(cleaned, tolerance_m)
     if not shapely.coverage_is_valid(simplified):
         raise DisplayBoundaryError("coverage_simplify produced an invalid coverage")
-    kept, dropped, dropped_area = _drop_small_islands(simplified)
+    kept, dropped, dropped_area = _drop_small_islands(simplified, min_island_m2)
 
-    to_wgs84 = Transformer.from_crs(27700, 4326, always_xy=True)
+    to_wgs84 = Transformer.from_crs(crs, 4326, always_xy=True)
 
     def project(xy: np.ndarray) -> np.ndarray:
         lon, lat = to_wgs84.transform(xy[:, 0], xy[:, 1])
@@ -98,13 +107,14 @@ def display_geometry(geoms: np.ndarray) -> DisplayResult:
     if not shapely.is_valid(wgs).all():
         raise DisplayBoundaryError("rounded boundaries are still invalid after repair")
     wgs = shapely.orient_polygons(wgs, exterior_cw=False)
-    overlaps = _overlaps_m2(wgs)
+    overlaps = _overlaps_m2(wgs, crs)
 
     stats = {
+        **({"inputAreasWithMismatchedEdges": invalid_in} if not require_valid_input else {}),
         "cleanSnapM": SNAP_M,
         "cleanAreaChangeM2": round(clean_change, 3),
-        "toleranceM": TOLERANCE_M,
-        "minIslandM2": MIN_ISLAND_M2,
+        "toleranceM": tolerance_m,
+        "minIslandM2": min_island_m2,
         "decimals": DECIMALS,
         "verticesIn": int(shapely.get_num_coordinates(geoms).sum()),
         "verticesOut": int(shapely.get_num_coordinates(wgs).sum()),
