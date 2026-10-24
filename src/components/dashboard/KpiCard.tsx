@@ -1,3 +1,4 @@
+import { TriangleAlert } from "lucide-react";
 import type { ReactNode } from "react";
 import { Skeleton } from "@/components/states/Skeleton";
 import type { Indicator } from "@/types/indicator";
@@ -14,14 +15,30 @@ interface Props {
   note?: string;
   /** Context line under a ready value (replaces the default "period, coverage" line). */
   detail?: ReactNode;
+  /**
+   * Comparability caution for the figure or its comparison (P11), e.g. a series break. Shown as an
+   * amber marker beside the label; the full sentence is the marker's accessible name and tooltip.
+   */
+  caution?: string | null;
 }
 
 /** Floating KPI card. Shows a value only when a provenance-complete indicator is supplied. */
-export function KpiCard({ label, state, indicator, note, detail }: Props) {
+export function KpiCard({ label, state, indicator, note, detail, caution }: Props) {
+  const showCaution = state === "ready" && Boolean(indicator) && Boolean(caution);
   return (
-    <article className="kpi-card glass" aria-label={label} data-state={state}>
+    <article
+      className="kpi-card glass"
+      aria-label={label}
+      data-state={state}
+      data-caution={showCaution ? "true" : undefined}
+    >
       <h3 className="kpi-card__label" title={indicator?.method ?? label}>
-        {label}
+        <span className="kpi-card__label-text">{label}</span>
+        {showCaution && (
+          <span className="kpi-card__caution" role="img" aria-label={`Caution: ${caution}`} title={caution!}>
+            <TriangleAlert size={13} aria-hidden="true" />
+          </span>
+        )}
         {state === "ready" && indicator && (
           <span className="kpi-card__badge">
             <ProvenanceBadge cls={indicator.provenance} showLabel={false} />

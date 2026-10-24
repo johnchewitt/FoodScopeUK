@@ -103,7 +103,7 @@ The brief asks for a complete, tested first release over an extensive unfinished
 | Map | full-bleed behind floating panels; **≥ 60 % of the viewport width unobstructed between the side panels at 1920 × 1080 with both open** | | | full screen |
 | Right insights panel | 340 px, collapsible | 320 px | overlay | bottom sheet |
 | Bottom timeline | 72 px, spans map width | | | compact stepper |
-| Floating KPI cards | top of the map area, max 4 visible | max 3 | max 2 | swipeable row |
+| Floating KPI cards | top of the map area, one row; all cards fit at 1920 px | as many as fit; the row scrolls sideways (fade, snap, keyboard) — **no card is ever hidden** (review 23 Oct 2026) | same | swipeable row |
 
 ### 4.2 Requirements
 
@@ -114,6 +114,16 @@ The brief asks for a complete, tested first release over an extensive unfinished
 - **SH-05** Every panel implements five data states: loading (skeleton), empty, error (with retry and plain-English cause), partial (some sources failed — say which) and stale (data older than expected cadence).
 - **SH-06** Evidence & Limitations page reachable from every module and from every provenance badge.
 - **SH-07** Map remains interactive while side panels load; panel errors never blank the map.
+- **SH-08** Curated basemap choice (added 23 Oct 2026, scheduled for Stage 4), not a full gallery:
+  - **Dark grey:** the default.
+  - **Light grey:** for presentations, bright rooms and print.
+  - **Imagery with labels:** offered only at local scales (supermarkets, food access, authority profiles).
+
+  Rules:
+  - Each style has its own colour set for the data layers (share classes, connections, panels), checked with the dataviz validator against that style's land colour measured on the live site. A style without a checked colour set is not offered.
+  - The choice is a bespoke map control (ADR-02) and part of the URL state (SH-04).
+  - Attribution follows the style and is never hidden.
+  - Without an API key the control is hidden and the offline outline map is used.
 
 ---
 

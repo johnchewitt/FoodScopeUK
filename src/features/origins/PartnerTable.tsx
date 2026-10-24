@@ -36,6 +36,7 @@ export function PartnerTable({ model }: { model: OriginsModel }) {
             Recorded import partners for {model.commodity.label.toLowerCase()}, {model.periodText}. Share of{" "}
             {shareWord} allocated to countries; change in percentage points vs{" "}
             {model.status.comparisonLabel ?? "no comparison period"}.
+            {model.status.comparisonCaution ? ` ${model.status.comparisonCaution}` : ""}
           </caption>
           <thead>
             <tr>
@@ -55,9 +56,12 @@ export function PartnerTable({ model }: { model: OriginsModel }) {
               <th
                 scope="col"
                 className="num"
-                title="Change in share vs the same period a year earlier, percentage points"
+                title={`Change in share vs the same period a year earlier, percentage points${
+                  model.status.comparisonCaution ? `. ${model.status.comparisonCaution}` : ""
+                }`}
+                data-caution={model.status.comparisonCaution ? "true" : undefined}
               >
-                ± pp
+                ± pp{model.status.comparisonCaution && <span className="caution-mark" aria-hidden="true" />}
               </th>
             </tr>
           </thead>

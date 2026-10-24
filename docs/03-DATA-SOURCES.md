@@ -323,7 +323,7 @@ Published 29 July 2026 (accredited official statistics); data tables as a 39.9 M
 
 ### S25 — Esri basemap styles ✅
 
-ArcGIS dark grey style (`arcgis/dark-gray`) through the Basemap styles service, authorised by a referrer-restricted API key (decision D2) registered as `esriConfig.apiKeys.basemapStyles` (ADR-0011). Verified on the live site on 23 Oct 2026: style and tiles load, post-deploy smoke test requires `data-basemap-status="ready"`. Not reachable from the build sandbox. Attribution is rendered automatically by the map component; do not hide it.
+ArcGIS dark grey style (`arcgis/dark-gray`) through the Basemap styles service, authorised by a referrer-restricted API key (decision D2) registered as `esriConfig.apiKeys.basemapStyles` (ADR-0011). Verified on the live site on 23 Oct 2026: style and tiles load, post-deploy smoke test requires `data-basemap-status="ready"`. Not reachable from the build sandbox. Attribution is rendered automatically by the map component; do not hide it. **Stage 4 (SH-08):** a light grey and an imagery-with-labels style are planned. Their style IDs and attribution are **not yet verified**; verify them on the live site before use (roadmap §6.1).
 
 ### S26 — ArcGIS Living Atlas 🔴
 

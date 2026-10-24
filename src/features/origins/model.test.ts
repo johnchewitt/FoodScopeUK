@@ -38,7 +38,9 @@ describe("buildOriginsModel — real HMRC tomatoes snapshot", () => {
     expect(m.kpis.top.value).toBeCloseTo(0.43828, 5);
     expect(m.kpis.top.label).toBe("Top recorded partner: Netherlands");
     expect(m.kpis.concentration.value).toBeCloseTo(2991.676, 2);
-    expect(m.kpis.importsDetail).toBe("£679.5m · ±0.0 % vs previous 12 months");
+    expect(m.kpis.importsDetail).toBe("±0.0 % vs previous 12 months · £679.5m");
+    expect(m.kpis.comparisonCaution).toBeNull();
+    expect(m.status.seriesBreaks).toEqual([]);
     expect(m.kpis.topDetail).toBe("Netherlands · top 3: 84.5 %");
   });
 
@@ -68,6 +70,35 @@ describe("buildOriginsModel — real HMRC tomatoes snapshot", () => {
     expect(jan.status.comparisonShort).toBe("Jan 2024");
     expect(jan.shares[0]!.key).toBe("MA");
     expect(jan.current.kg).toBe(33_060_038);
+  });
+
+  it("a comparison across an HMRC series break is flagged wherever it is shown (P11)", () => {
+    const y2022 = buildOriginsModel(real, { ...base, period: "year", year: 2022 }, UK);
+    expect(y2022.status.seriesBreaks.map((b) => b.month)).toEqual(["2022-01"]);
+    expect(y2022.kpis.comparisonCaution).toContain("series break in Jan 2022");
+    expect(y2022.status.comparisonCaution).toBe(y2022.kpis.comparisonCaution);
+    expect(y2022.kpis.importsDetail).toMatch(/ vs 2021 · series break · /);
+    expect(y2022.kpis.concentrationDetail).toMatch(/ in 2021 · series break$/);
+    // Rolling 12 months to Aug 2022 against the 12 months before crosses both breaks.
+    const r = buildOriginsModel(real, { ...base, year: 2022, month: 8 }, UK);
+    expect(r.status.seriesBreaks.map((b) => b.month)).toEqual(["2021-01", "2022-01"]);
+    // Jan 2021 vs Jan 2020 crosses the EU-exit break; Jan 2023 vs Jan 2022 crosses none.
+    const jan21 = buildOriginsModel(real, { ...base, period: "month", year: 2021, month: 1 }, UK);
+    expect(jan21.status.seriesBreaks.map((b) => b.month)).toEqual(["2021-01"]);
+    const jan23 = buildOriginsModel(real, { ...base, period: "month", year: 2023, month: 1 }, UK);
+    expect(jan23.status.seriesBreaks).toEqual([]);
+    expect(jan23.kpis.comparisonCaution).toBeNull();
+    // No comparison, no caution.
+    const y2019 = buildOriginsModel(real, { ...base, period: "year", year: 2019 }, UK);
+    expect(y2019.status.seriesBreaks).toEqual([]);
+    expect(y2019.kpis.comparisonCaution).toBeNull();
+  });
+
+  it("value comparisons say they are in current prices", () => {
+    const v = buildOriginsModel(real, { ...base, measure: "value" }, UK);
+    expect(v.status.currentPricesNote).toMatch(/not adjusted for inflation/);
+    expect(v.kpis.imports.method).toMatch(/current prices/);
+    expect(m.status.currentPricesNote).toBeNull(); // net mass
   });
 
   it("the first year has no comparison and says why", () => {

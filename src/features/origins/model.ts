@@ -4,11 +4,14 @@
  * Every on-screen number is either an Indicator (KPI cards) or a table cell derived here from the
  * same snapshot, so the map, cards, charts and table always agree (FO-02, FO-05, FO-06).
  */
+import { connectionsBBox, UK_EXTENT_110M, unionBBox } from "@/analysis/frame";
 import { formatGbp, formatHhi, formatShare, formatTonnes } from "@/analysis/format";
 import {
   addMonths,
   aggregatePeriod,
+  comparisonBreaks,
   concentrationRatio,
+  CURRENT_PRICES_NOTE,
   effectivePartners,
   flowWidths,
   formatMonth,
@@ -21,6 +24,7 @@ import {
   partnerShares,
   relativeChange,
   resolvePeriod,
+  seriesBreakCaution,
   shareChanges,
   shareClass,
   type Amount,
@@ -86,6 +90,12 @@ export interface OriginsStatus {
   /** Short form for KPI cards, e.g. "previous 12 months", "Aug 2025", "2024". */
   comparisonShort: string | null;
   comparisonNote: string | null;
+  /** HMRC series breaks the year-on-year comparison crosses (P11); empty without a comparison. */
+  seriesBreaks: { month: MonthKey; label: string }[];
+  /** Caution shown wherever a comparison crossing a series break is displayed; null when none. */
+  comparisonCaution: string | null;
+  /** Value comparisons are in current prices (shown when the measure is value). */
+  currentPricesNote: string | null;
 }
 
 export interface OriginsKpis {
@@ -97,6 +107,8 @@ export interface OriginsKpis {
   topDetail: string;
   concentration: Indicator<number>;
   concentrationDetail: string;
+  /** Shown on the cards whose detail compares periods when that comparison crosses a series break. */
+  comparisonCaution: string | null;
 }
 
 export interface OriginsModel {
@@ -177,6 +189,19 @@ function ind(
   };
 }
 
+/**
+ * The map frame for a commodity: the whole UK and the drawn connections (fitted when the commodity
+ * changes). Null when nothing is drawn.
+ */
+export function frameFor(
+  commodityId: string,
+  starts: [number, number][],
+  ukAnchor: [number, number],
+): OriginsMapModel["frame"] {
+  const bbox = connectionsBBox(starts, ukAnchor);
+  return bbox ? { key: commodityId, bbox: unionBBox(bbox, UK_EXTENT_110M) } : null;
+}
+
 export function buildOriginsModel(
   snapshot: TradeSnapshot,
   sel: OriginsSelection,
@@ -219,6 +244,11 @@ export function buildOriginsModel(
       ? null
       : `No comparison: the snapshot starts ${formatMonth(range.first)}`;
 
+  const breaks = comparisonAvailable
+    ? comparisonBreaks(compMonths[0]!, period.available[period.available.length - 1]!)
+    : [];
+  const comparisonCaution = seriesBreakCaution(breaks);
+
   const tonnes = agg.grandTotal.kg / 1000;
   const status: OriginsStatus = {
     noData: period.available.length === 0,
@@ -230,6 +260,9 @@ export function buildOriginsModel(
     comparisonLabel,
     comparisonShort,
     comparisonNote,
+    seriesBreaks: [...breaks],
+    comparisonCaution,
+    currentPricesNote: measure === "value" && comparisonAvailable ? CURRENT_PRICES_NOTE : null,
   };
 
   const partnerMeta = new Map(snapshot.partners.map((p) => [p.key, p]));
@@ -308,17 +341,18 @@ export function buildOriginsModel(
     measure === "mass" ? "t" : "GBP",
     "measured",
     ref,
-    `Sum of HMRC recorded ${measureWord(measure)} for ${cn8} CN8 codes in ${snapshot.commodity.hsScope}, EU and non-EU import flows, all partners${measure === "mass" ? " (kg ÷ 1,000)" : " (CIF statistical value)"}.`,
+    `Sum of HMRC recorded ${measureWord(measure)} for ${cn8} CN8 codes in ${snapshot.commodity.hsScope}, EU and non-EU import flows, all partners${measure === "mass" ? " (kg ÷ 1,000)" : " (CIF statistical value, current prices: not adjusted for inflation)"}.`,
     missing,
   );
   const other = measure === "mass" ? formatGbp(agg.grandTotal.gbp) : formatTonnes(tonnes);
+  const breakTag = breaks.length ? " · series break" : "";
   const changeText =
     change !== null && comparisonShort
-      ? `${signedPercent(change)} vs ${comparisonShort}`
+      ? `${signedPercent(change)} vs ${comparisonShort}${breakTag}`
       : (comparisonNote ?? "");
   const importsDetail = status.noData
     ? (status.unavailableText ?? "")
-    : [other, changeText].filter(Boolean).join(" · ");
+    : [changeText, other].filter(Boolean).join(" · ");
 
   const partners = ind(
     "origins.partner_count",
@@ -355,7 +389,9 @@ export function buildOriginsModel(
     status.noData ? "not_published" : "not_applicable",
   );
   const concentrationDetail =
-    hPrev !== null && comparisonShort ? `${formatHhi(hPrev)} in ${comparisonShort}` : (comparisonNote ?? "");
+    hPrev !== null && comparisonShort
+      ? `${formatHhi(hPrev)} in ${comparisonShort}${breakTag}`
+      : (comparisonNote ?? "");
 
   const selectedRow = sel.partner ? (rows.find((r) => r.key === sel.partner) ?? null) : null;
   const selectedMeta = sel.partner ? partnerMeta.get(sel.partner) : undefined;
@@ -397,6 +433,7 @@ export function buildOriginsModel(
       topDetail,
       concentration,
       concentrationDetail,
+      comparisonCaution,
     },
     selected: sel.partner
       ? { key: sel.partner, row: selectedRow, name: selectedRow?.name ?? selectedMeta?.name ?? sel.partner }
@@ -407,6 +444,11 @@ export function buildOriginsModel(
       measure,
       partners: mapPartners,
       ukAnchor,
+      frame: frameFor(
+        snapshot.commodity.id,
+        mapPartners.filter((p) => p.flow && p.point).map((p) => p.point!),
+        ukAnchor,
+      ),
     },
   };
 }

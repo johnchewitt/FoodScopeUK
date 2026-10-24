@@ -8,6 +8,9 @@ import type { ViewPadding } from "./layoutMetrics";
 export interface ViewLike {
   padding: ViewPadding;
   zoom: number;
+  /** View size in px (MapView width/height). Absent in some unit-test fakes. */
+  width?: number;
+  height?: number;
   goTo(target: unknown, options?: { animate?: boolean; duration?: number }): Promise<unknown>;
   whenLayerView(layer: unknown): Promise<unknown>;
   map: { add(layer: unknown, index?: number): void; remove(layer: unknown): void } | null | undefined;

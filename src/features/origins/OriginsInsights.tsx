@@ -62,7 +62,14 @@ function SelectedPartner({ model }: { model: OriginsModel }) {
             </div>
             <div>
               <dt>Change vs {model.status.comparisonLabel ?? "a year earlier"}</dt>
-              <dd>{r.changePp === null ? "Not available" : formatPercentagePoints(r.changePp)}</dd>
+              <dd>
+                {r.changePp === null ? "Not available" : formatPercentagePoints(r.changePp)}
+                {r.changePp !== null && model.status.comparisonCaution && (
+                  <span className="caution-tag" title={model.status.comparisonCaution}>
+                    series break
+                  </span>
+                )}
+              </dd>
             </div>
           </dl>
           <p className="control-hint">
@@ -213,6 +220,13 @@ export function OriginsInsights() {
           )}
         </div>
         {model.status.unavailableText && <Notice tone="info">{model.status.unavailableText}.</Notice>}
+        {model.status.comparisonCaution && (
+          <Notice tone="warn">
+            {model.status.comparisonCaution} Changes against {model.status.comparisonLabel} are marked “series
+            break”.
+          </Notice>
+        )}
+        {model.status.currentPricesNote && <Notice tone="info">{model.status.currentPricesNote}</Notice>}
         {model.status.nilMonths.length > 0 && (
           <Notice tone="info">
             No recorded imports in {model.status.nilMonths.map(formatMonth).join(", ")}.

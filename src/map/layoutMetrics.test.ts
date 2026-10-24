@@ -10,6 +10,8 @@ import {
   TIMELINE_H_SEASONAL,
   breakpointForWidth,
   computeViewPadding,
+  framingPadding,
+  LEGEND_W,
   paddingEquals,
 } from "./layoutMetrics";
 
@@ -100,5 +102,39 @@ describe("CSS tokens stay in sync with layout metrics", () => {
     expect(px("fs-attribution-h")).toBe(ATTRIBUTION_H);
     expect(px("fs-filter-w")).toBe(PANEL_WIDTHS.desktop.filter);
     expect(px("fs-insights-w")).toBe(PANEL_WIDTHS.desktop.insights);
+  });
+});
+
+describe("framingPadding", () => {
+  const p = { top: 104, right: 364, bottom: 110, left: 420 };
+  it("keeps clear of the desktop legend column", () => {
+    expect(framingPadding(p, "desktop")).toEqual({ ...p, left: 420 + LEGEND_W + GAP });
+  });
+  it("is the view padding elsewhere (legend collapsed or hidden)", () => {
+    expect(framingPadding(p, "laptop")).toEqual(p);
+    expect(framingPadding(p, "mobile")).toEqual(p);
+  });
+  it("reads padding exposed through getters (MapView's Accessor padding)", () => {
+    class AccessorPadding {
+      get top() {
+        return 104;
+      }
+      get right() {
+        return 364;
+      }
+      get bottom() {
+        return 110;
+      }
+      get left() {
+        return 420;
+      }
+    }
+    expect(framingPadding(new AccessorPadding(), "laptop")).toEqual(p);
+    expect(framingPadding(new AccessorPadding(), "desktop").left).toBe(420 + LEGEND_W + GAP);
+  });
+  it("matches the legend width in app.css", () => {
+    const css = readRepoFile("src/styles/app.css");
+    const rule = /\.map-legend \{([^}]*)\}/.exec(css)?.[1] ?? "";
+    expect(rule).toContain(`width: ${LEGEND_W}px;`);
   });
 });

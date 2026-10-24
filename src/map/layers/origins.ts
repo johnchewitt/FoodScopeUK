@@ -9,7 +9,10 @@ import UniqueValueInfo from "@arcgis/core/renderers/support/UniqueValueInfo";
 import CIMSymbol from "@arcgis/core/symbols/CIMSymbol";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
+import HighlightOptions from "@arcgis/core/views/support/HighlightOptions";
 import { symbolicArc } from "@/analysis/arcs";
+import { hexToRgb } from "@/analysis/colour";
+import { SHARE_CLASS_HEX } from "@/styles/palette";
 import { interpolateWidths, widthsDiffer } from "@/analysis/transition";
 import {
   selectReducedMotion,
@@ -25,7 +28,9 @@ import type { HitResult, LayerController, LayerStatusReporter, ViewLike, ViewPoi
 
 /**
  * Food Origins map layers (FO-02 – FO-04, P3, P4):
- * - recorded import partners shaded by share (fixed classes), the selected partner outlined;
+ * - recorded import partners shaded by share (fixed classes, opaque colours shared with the legend
+ *   and the Seasonal heatmap), the selected partner outlined; the partner under the pointer is
+ *   emphasised with the view's highlight, so hovering never rebuilds the renderer;
  * - partners too small for the 1:110m outlines as points;
  * - symbolic curved connections from each top partner's label point to one UK anchor, width
  *   linear in the measure, with markers moving towards the UK unless motion is reduced (drawn
@@ -43,23 +48,26 @@ const TRADE_MAP_MODULES: readonly string[] = ["origins", "seasonal"];
 
 /** Palette mirrors src/styles/tokens.css (ArcGIS symbols need concrete colours). */
 const NAVY: [number, number, number] = [7, 25, 35];
-const TEAL: [number, number, number] = [10, 68, 74];
 const CYAN: [number, number, number] = [73, 234, 216];
 const GREEN: [number, number, number] = [161, 235, 131];
 
-/** Fill per share class 0–5 (below 1 % … 50 % and over): a ramp from teal to cyan. */
-export const SHARE_CLASS_COLOURS: readonly [number, number, number, number][] = [0, 1, 2, 3, 4, 5].map(
-  (c) => {
-    const t = 0.2 + (0.8 * c) / 5;
-    const mix = (i: 0 | 1 | 2) => Math.round(TEAL[i] + (CYAN[i] - TEAL[i]) * t);
-    return [mix(0), mix(1), mix(2), Math.round((0.55 + 0.08 * c) * 100) / 100] as [
-      number,
-      number,
-      number,
-      number,
-    ];
-  },
+/**
+ * Fill per share class 0–5 (below 1 % … 50 % and over): the opaque `--fs-seq-*` ramp, so the map
+ * shows exactly the legend colours whatever the basemap (src/styles/palette.ts).
+ */
+export const SHARE_CLASS_COLOURS: readonly [number, number, number, number][] = SHARE_CLASS_HEX.map(
+  (hex) => [...hexToRgb(hex), 1] as [number, number, number, number],
 );
+
+/** Thin navy separators between adjacent partner fills (dataviz: surface gap between fills). */
+const SEPARATOR: [number, number, number, number] = [...NAVY, 0.9];
+
+/** Named view highlight for the partner under the pointer. */
+export const HOVER_HIGHLIGHT = "fs-hover";
+
+interface HighlightableLayerView {
+  highlight?(target: unknown, options?: { name?: string }): { remove(): void };
+}
 
 export interface OriginsActions {
   selectPartner(key: string | null): void;
@@ -74,21 +82,24 @@ interface Signature {
 function partnerFromHits(
   results: HitResult[],
   layers: unknown[],
-): { key: string; name: string | null } | null {
+): { key: string; name: string | null; graphic: NonNullable<HitResult["graphic"]> } | null {
   for (const r of results) {
     if (r.type !== "graphic" || !r.graphic || !layers.includes(r.graphic.layer)) continue;
     const a = r.graphic.attributes ?? {};
     const key = (a.key ?? a.iso_a2) as unknown;
     const name = typeof a.name === "string" ? a.name : null;
-    if (typeof key === "string" && key) return { key, name };
+    if (typeof key === "string" && key) return { key, name, graphic: r.graphic };
   }
   return null;
 }
 
-/** CIM line symbol for one connection: a core stroke and a soft glow (static, always drawn). */
+/**
+ * CIM line symbol for one connection (static, always drawn). Layers, top first: the core stroke,
+ * a thin navy casing so the line stays readable over the bright share fills, and a soft glow.
+ */
 export function flowLineSymbolData(width: number, emphasis: "normal" | "selected" | "dimmed") {
   const base = emphasis === "selected" ? GREEN : CYAN;
-  const alpha = emphasis === "dimmed" ? 70 : emphasis === "selected" ? 235 : 175;
+  const alpha = emphasis === "dimmed" ? 70 : emphasis === "selected" ? 235 : 190;
   return {
     type: "CIMSymbolReference",
     symbol: {
@@ -99,6 +110,14 @@ export function flowLineSymbolData(width: number, emphasis: "normal" | "selected
           enable: true,
           width,
           color: [...base, alpha],
+          capStyle: "Round",
+          joinStyle: "Round",
+        },
+        {
+          type: "CIMSolidStroke",
+          enable: true,
+          width: width + 2,
+          color: [...NAVY, emphasis === "dimmed" ? 60 : 150],
           capStyle: "Round",
           joinStyle: "Round",
         },
@@ -137,6 +156,12 @@ export class OriginsLayersController implements LayerController {
   private tweenFrame = 0;
   /** Transitions started so far (exposed on the view container for tests; no ArcGIS state in React). */
   private transitions = 0;
+  /** Layer views, for hover highlights (set when each layer view is created). */
+  private layerViews = new Map<unknown, HighlightableLayerView>();
+  private hoverHighlight: { remove(): void } | null = null;
+  private highlightedKey: string | null = null;
+  /** Renderer rebuilds so far (exposed on the view container for tests). */
+  private rendererBuilds = 0;
 
   constructor(private readonly actions: OriginsActions) {}
 
@@ -151,6 +176,7 @@ export class OriginsLayersController implements LayerController {
     this.view = view;
     this.report = report;
     this.particles = new FlowParticles(view as unknown as ParticleView);
+    this.registerHoverHighlight(view);
     if (this.url) this.createLayers();
     if (view.on && view.hitTest) {
       this.handles.push(view.on("click", (e) => void this.onClick(e)));
@@ -181,10 +207,10 @@ export class OriginsLayersController implements LayerController {
     const partnerSig = m.partners
       .map((p) => `${p.key}:${p.shareClass}:${p.flow ? p.flowWidth.toFixed(2) : ""}`)
       .join("|");
-    const polygons = `${m.commodityId}|${m.periodLabel}|${m.measure}|${partnerSig}|${state.partner ?? ""}|${state.hoverPartner?.key ?? ""}`;
+    // Hover is drawn with the view's highlight, so it is not part of the renderer's signature.
+    const polygons = `${m.commodityId}|${m.periodLabel}|${m.measure}|${partnerSig}|${state.partner ?? ""}`;
     const flows = `${m.commodityId}|${m.periodLabel}|${m.measure}|${partnerSig}|${state.partner ?? ""}|${animate}`;
-    if (polygons !== this.signature.polygons)
-      this.drawPartners(m, state.partner, state.hoverPartner?.key ?? null);
+    if (polygons !== this.signature.polygons) this.drawPartners(m, state.partner);
     if (flows !== this.signature.flows) this.drawFlows(m, state.partner, animate);
     this.signature = { polygons, flows };
   }
@@ -193,6 +219,8 @@ export class OriginsLayersController implements LayerController {
     for (const h of this.handles) h.remove();
     this.handles = [];
     if (this.hoverFrame) cancelAnimationFrame(this.hoverFrame);
+    this.setHoverHighlight(null);
+    this.layerViews.clear();
     this.cancelTween();
     this.flowGraphics.clear();
     this.drawnWidths.clear();
@@ -239,6 +267,16 @@ export class OriginsLayersController implements LayerController {
     view.map?.add(this.flows);
     view.map?.add(this.points);
     this.signature = { polygons: "", flows: "" };
+    this.setHoverHighlight(null);
+    this.layerViews.clear();
+    for (const l of this.layers()) {
+      view
+        .whenLayerView(l)
+        .then((lv) => {
+          if (this.layers().includes(l)) this.layerViews.set(l, lv as HighlightableLayerView);
+        })
+        .catch(() => undefined);
+    }
     const layer = this.polygons;
     view
       .whenLayerView(layer)
@@ -261,40 +299,27 @@ export class OriginsLayersController implements LayerController {
     return new SimpleFillSymbol({ color: [0, 0, 0, 0], outline: { color: [0, 0, 0, 0], width: 0 } });
   }
 
-  private drawPartners(m: OriginsMapModel, selected: string | null, hover: string | null): void {
+  private drawPartners(m: OriginsMapModel, selected: string | null): void {
     if (!this.polygons || !this.points) return;
     const fill = (p: OriginsMapPartner) => {
       const c = SHARE_CLASS_COLOURS[p.shareClass] ?? SHARE_CLASS_COLOURS[0]!;
       const isSel = p.key === selected;
-      const isHover = p.key === hover;
       return new SimpleFillSymbol({
-        color: isSel ? [GREEN[0], GREEN[1], GREEN[2], 0.55] : c,
-        outline: {
-          color: isSel ? [...GREEN, 1] : isHover ? [...CYAN, 0.95] : [...CYAN, 0.45],
-          width: isSel ? 2 : isHover ? 1.6 : 0.6,
-        },
+        color: c,
+        outline: isSel ? { color: [...GREEN, 1], width: 2.25 } : { color: SEPARATOR, width: 0.75 },
       });
     };
     const infos = m.partners
       .filter((p) => p.geometry === "polygon" && p.iso2)
       .map((p) => new UniqueValueInfo({ value: p.iso2!, symbol: fill(p), label: p.name }));
-    // A hovered country that is not a partner still gets a faint outline (interactive highlighting).
-    if (hover && !m.partners.some((p) => p.iso2 === hover)) {
-      infos.push(
-        new UniqueValueInfo({
-          value: hover,
-          symbol: new SimpleFillSymbol({
-            color: [...NAVY, 0.2],
-            outline: { color: [...CYAN, 0.6], width: 1 },
-          }),
-        }),
-      );
-    }
     this.polygons.renderer = new UniqueValueRenderer({
       field: "iso_a2",
       defaultSymbol: this.noFill(),
       uniqueValueInfos: infos,
     });
+    this.rendererBuilds += 1;
+    const container = (this.view as { container?: HTMLElement | null } | null)?.container;
+    if (container) container.dataset.partnerRendererBuilds = String(this.rendererBuilds);
 
     this.points.removeAll();
     const pointPartners = m.partners.filter((p) => p.geometry === "point" && p.point);
@@ -307,9 +332,9 @@ export class OriginsLayersController implements LayerController {
           attributes: { key: p.key },
           symbol: new SimpleMarkerSymbol({
             style: "circle",
-            size: isSel ? 11 : p.key === hover ? 9 : 7,
-            color: isSel ? [...GREEN, 0.9] : [c[0], c[1], c[2], 0.9],
-            outline: { color: isSel ? [...GREEN, 1] : [...CYAN, 0.8], width: isSel ? 2 : 1 },
+            size: isSel ? 11 : 8,
+            color: c,
+            outline: isSel ? { color: [...GREEN, 1], width: 2 } : { color: SEPARATOR, width: 1 },
           }),
         });
       }),
@@ -462,14 +487,50 @@ export class OriginsLayersController implements LayerController {
         const hit = partnerFromHits(results, this.hitLayers());
         if (!hit || hit.key === "__uk") return this.clearHover();
         this.lastHover = hit.key;
+        this.setHoverHighlight(hit.graphic, hit.key);
         this.actions.setHoverPartner({ key: hit.key, name: hit.name, x, y });
       });
     });
   }
 
   private clearHover(): void {
+    this.setHoverHighlight(null);
     if (this.lastHover === null) return;
     this.lastHover = null;
     this.actions.setHoverPartner(null);
+  }
+
+  /** Adds the hover highlight style to the view once (cyan halo, faint fill). */
+  private registerHoverHighlight(view: ViewLike): void {
+    const highlights = (
+      view as { highlights?: { find(f: (h: { name?: string }) => boolean): unknown; add(h: unknown): void } }
+    ).highlights;
+    if (!highlights || highlights.find((h) => h.name === HOVER_HIGHLIGHT)) return;
+    highlights.add(
+      new HighlightOptions({
+        name: HOVER_HIGHLIGHT,
+        color: [...CYAN],
+        haloColor: [...CYAN],
+        haloOpacity: 0.95,
+        fillOpacity: 0.14,
+      }),
+    );
+  }
+
+  /**
+   * Emphasises the hovered partner (or country) with the view's highlight instead of rebuilding
+   * the partner renderer (which re-symbolised every country on each pointer move).
+   */
+  private setHoverHighlight(
+    graphic: NonNullable<HitResult["graphic"]> | null,
+    key: string | null = null,
+  ): void {
+    if (graphic && key === this.highlightedKey) return;
+    this.hoverHighlight?.remove();
+    this.hoverHighlight = null;
+    this.highlightedKey = graphic ? key : null;
+    if (!graphic) return;
+    const lv = this.layerViews.get(graphic.layer);
+    this.hoverHighlight = lv?.highlight?.(graphic, { name: HOVER_HIGHLIGHT }) ?? null;
   }
 }

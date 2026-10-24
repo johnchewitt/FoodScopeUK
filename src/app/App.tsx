@@ -5,6 +5,7 @@ import { KpiStrip } from "@/components/layout/KpiStrip";
 import { NavRail } from "@/components/layout/NavRail";
 import { TimelineBar } from "@/components/layout/TimelineBar";
 import { TopBar } from "@/components/layout/TopBar";
+import { loadMapHost } from "@/components/maps/loadMapHost";
 import { MapControls } from "@/components/maps/MapControls";
 import { EvidenceDialog } from "@/components/overlays/EvidenceDialog";
 import { HelpDialog } from "@/components/overlays/HelpDialog";
@@ -22,7 +23,7 @@ import { SeasonalMapExtrasLazy } from "@/features/seasonal/lazy";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 // The ArcGIS SDK is large; loading it lazily lets the shell paint first (PF-04).
-const MapHost = lazy(() => import("@/components/maps/MapHost"));
+const MapHost = lazy(loadMapHost);
 
 export function App() {
   useBreakpoint();

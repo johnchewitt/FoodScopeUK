@@ -21,7 +21,12 @@ async function mapInfo(page: Page) {
     const layers = el.view.map!.layers;
     const partners = layers.find((l) => l.id === "origins-partners") as unknown as {
       visible: boolean;
-      renderer: { uniqueValueInfos: { value: string; symbol: { color: { a: number } } }[] };
+      renderer: {
+        uniqueValueInfos: {
+          value: string;
+          symbol: { color: { r: number; g: number; b: number; a: number } };
+        }[];
+      };
     };
     const flows = layers.find((l) => l.id === "origins-flows") as unknown as {
       graphics: {
@@ -37,7 +42,15 @@ async function mapInfo(page: Page) {
     const graphics = flows?.graphics?.toArray() ?? [];
     return {
       visible: partners?.visible ?? false,
-      alpha: Object.fromEntries(infos.map((i) => [i.value, i.symbol.color.a])),
+      /** Fill colour per partner as #rrggbb plus its opacity. */
+      fill: Object.fromEntries(
+        infos.map((i) => {
+          const c = i.symbol.color;
+          const hex = `#${[c.r, c.g, c.b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+          return [i.value, c.a === 1 ? hex : `${hex}@${c.a}`];
+        }),
+      ),
+      rendererBuilds: Number(el.view.container?.dataset.partnerRendererBuilds ?? 0),
       flows: graphics.length,
       width: Object.fromEntries(
         graphics
@@ -66,8 +79,12 @@ async function waitForSeasonal(page: Page) {
 }
 
 const kpi = (page: Page, label: string | RegExp) => page.getByRole("article", { name: label });
-/** Share-class fill opacity on the map: 0.55 + 0.08 × class (src/map/layers/origins.ts). */
-const alphaFor = (cls: number) => Math.round((0.55 + 0.08 * cls) * 100) / 100;
+/**
+ * Share-class fills: the opaque --fs-seq-* tokens (src/styles/palette.ts), identical to the legend
+ * swatches and the heatmap cells.
+ */
+const SHARE_CLASS_HEX = ["#1e7877", "#268e8a", "#2ea39c", "#37baaf", "#3fd1c3", "#49ead8"];
+const fillFor = (cls: number) => SHARE_CLASS_HEX[cls];
 /** Fixed width scale: 12 px = 24,806.216 t (Netherlands, Jul 2026), linear from 1.5 px. */
 const widthFor = (tonnes: number) => 1.5 + (10.5 * tonnes) / 24_806.216;
 
@@ -100,8 +117,8 @@ test.describe("Seasonal Supply explorer", () => {
     await expect.poll(() => mapInfo(page).then((i) => i.flows), { timeout: 20_000 }).toBe(13);
     const info = await mapInfo(page);
     expect(info.visible).toBe(true);
-    expect(info.alpha.MA).toBe(alphaFor(4)); // Morocco 42.5 % → 25–50 %
-    expect(info.alpha.NL).toBe(alphaFor(3)); // Netherlands 20.4 % → 10–25 %
+    expect(info.fill.MA).toBe(fillFor(4)); // Morocco 42.5 % → 25–50 %
+    expect(info.fill.NL).toBe(fillFor(3)); // Netherlands 20.4 % → 10–25 %
     // At rest every connection is drawn at exactly its model width (fixed scale).
     expect(info.width.MA).toBeCloseTo(widthFor(14_056.585), 4);
     for (const [k, w] of Object.entries(info.width)) expect(w, k).toBeCloseTo(info.target[k]!, 6);
@@ -132,7 +149,7 @@ test.describe("Seasonal Supply explorer", () => {
     await expect(kpi(page, "Top recorded partner")).toContainText("Netherlands");
     await expect(kpi(page, "Top recorded partner")).toContainText("63.8 %");
     await expect(kpi(page, "Monthly concentration (HHI)")).toContainText("4,680");
-    expect((await mapInfo(page)).alpha.NL).toBe(alphaFor(5)); // 63.8 % → ≥ 50 %
+    expect((await mapInfo(page)).fill.NL).toBe(fillFor(5)); // 63.8 % → ≥ 50 %
     await expect(
       page.locator("#insights-panel").getByRole("heading", { name: "Tomatoes · Jul 2025" }),
     ).toBeVisible();
@@ -193,7 +210,7 @@ test.describe("Seasonal Supply explorer", () => {
       await expect(card).toContainText("Not published");
     await expect.poll(() => mapInfo(page).then((i) => i.flows), { timeout: 20_000 }).toBe(1); // UK point only
     const info = await mapInfo(page);
-    expect(Object.keys(info.alpha)).toEqual([]);
+    expect(Object.keys(info.fill)).toEqual([]);
     expect(info.particles).toBe(0);
     await expect(page.locator('.season-tl__col[data-state="not_yet_published"]')).toHaveCount(4);
     await expect(page.locator('.heatmap__cell[data-kind="gap"]').first()).toBeVisible();

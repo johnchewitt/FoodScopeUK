@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { resetAppStore, useAppStore } from "@/state/store";
+import { fitBBox } from "@/analysis/frame";
+import { framingPadding } from "./layoutMetrics";
+import { resetAppStore, useAppStore, type OriginsMapModel } from "@/state/store";
 import { MapController } from "./MapController";
 import {
   FLIGHT_DURATION_MS,
@@ -14,6 +16,8 @@ function fakeView(): ViewLike & { goTo: ReturnType<typeof vi.fn>; paddingSets: n
   const view = {
     paddingSets: 0,
     zoom: 3.4,
+    width: 1920,
+    height: 1024,
     get padding() {
       return padding;
     },
@@ -115,6 +119,89 @@ describe("MapController", () => {
     expect(useAppStore.getState().layerStatus.reporting).toEqual({
       status: "error",
       message: "synthetic failure",
+    });
+  });
+
+  describe("framing the recorded partners", () => {
+    /** Obviously synthetic map model: commodity "A", one box. */
+    const model = (key: string, bbox: [number, number, number, number]): OriginsMapModel => ({
+      commodityId: key,
+      periodLabel: "synthetic",
+      measure: "mass",
+      partners: [],
+      ukAnchor: [0, 52],
+      frame: { key, bbox },
+    });
+    const BOX_A: [number, number, number, number] = [-20, 25, 15, 58];
+    const BOX_B: [number, number, number, number] = [-90, -10, 5, 58];
+    const expected = (view: ViewLike, bbox: [number, number, number, number]) =>
+      fitBBox(bbox, {
+        width: view.width!,
+        height: view.height!,
+        padding: view.padding,
+        framePadding: framingPadding(view.padding, useAppStore.getState().breakpoint),
+      });
+
+    it("fits the first frame instantly, inside the panels", () => {
+      const view = fakeView();
+      new MapController(useAppStore, []).attach(view);
+      useAppStore.getState().setOriginsMap(model("A", BOX_A));
+      expect(view.goTo).toHaveBeenCalledOnce();
+      expect(view.goTo).toHaveBeenCalledWith(expected(view, BOX_A), { animate: false });
+      const target = view.goTo.mock.calls[0]![0] as { zoom: number };
+      expect(target.zoom).toBeGreaterThan(2.4); // closer than the default world view
+    });
+
+    it("does not move on month, year or measure changes (same commodity)", () => {
+      const view = fakeView();
+      new MapController(useAppStore, []).attach(view);
+      useAppStore.getState().setOriginsMap(model("A", BOX_A));
+      useAppStore.getState().setMonth(4);
+      useAppStore.getState().setOriginsMap(model("A", [-30, 20, 20, 60]));
+      expect(view.goTo).toHaveBeenCalledOnce();
+    });
+
+    it("flies to a new commodity's frame, instantly under reduced motion", () => {
+      const view = fakeView();
+      new MapController(useAppStore, []).attach(view);
+      useAppStore.getState().setOriginsMap(model("A", BOX_A));
+      useAppStore.getState().setOriginsMap(model("B", BOX_B));
+      expect(view.goTo).toHaveBeenLastCalledWith(expected(view, BOX_B), {
+        animate: true,
+        duration: FLIGHT_DURATION_MS,
+      });
+      useAppStore.getState().setMotionPreference("reduced");
+      useAppStore.getState().setOriginsMap(model("A", BOX_A));
+      expect(view.goTo).toHaveBeenLastCalledWith(expected(view, BOX_A), { animate: false });
+    });
+
+    it("re-applies the frame on request, only in the trade views", () => {
+      const view = fakeView();
+      new MapController(useAppStore, []).attach(view);
+      useAppStore.getState().setOriginsMap(model("A", BOX_A));
+      useAppStore.getState().issueMapCommand({ type: "goTo", target: "partners" });
+      expect(view.goTo).toHaveBeenCalledTimes(2);
+      expect(view.goTo).toHaveBeenLastCalledWith(expected(view, BOX_A), {
+        animate: true,
+        duration: FLIGHT_DURATION_MS,
+      });
+      useAppStore.getState().setModule("access");
+      useAppStore.getState().issueMapCommand({ type: "goTo", target: "partners" });
+      expect(view.goTo).toHaveBeenCalledTimes(2);
+      // Returning to a trade view frames it again.
+      useAppStore.getState().setModule("origins");
+      expect(view.goTo).toHaveBeenCalledTimes(3);
+    });
+
+    it("waits for a view with a size", () => {
+      const view = fakeView();
+      view.width = 0;
+      new MapController(useAppStore, []).attach(view);
+      useAppStore.getState().setOriginsMap(model("A", BOX_A));
+      expect(view.goTo).not.toHaveBeenCalled();
+      view.width = 1920;
+      useAppStore.getState().setMonth(2); // any later sync frames it
+      expect(view.goTo).toHaveBeenCalledWith(expected(view, BOX_A), { animate: false });
     });
   });
 });

@@ -44,16 +44,20 @@ import {
 } from "@/analysis/seasonal";
 import {
   addMonths,
+  comparisonBreaks,
   concentrationRatio,
+  CURRENT_PRICES_NOTE,
   effectivePartners,
   formatMonth,
   formatMonthRange,
+  inSentence,
   monthKey,
   parseMonthKey,
+  seriesBreakCaution,
   type MonthKey,
 } from "@/analysis/trade";
 import { domesticProduction, type DomesticProductionStatus } from "@/content/domesticProduction";
-import { buildOriginsModel, formatMeasure, type OriginsModel } from "@/features/origins/model";
+import { buildOriginsModel, formatMeasure, frameFor, type OriginsModel } from "@/features/origins/model";
 import type { OriginsMapModel } from "@/state/store";
 import type { HeatmapMode, Measure } from "@/state/urlState";
 import type { Indicator } from "@/types/indicator";
@@ -115,6 +119,8 @@ export interface SeasonalKpis {
   change: Indicator<number>;
   changeLabel: string;
   changeDetail: string;
+  /** The month-on-same-month comparison crosses an HMRC series break (P11); null when not. */
+  changeCaution: string | null;
   top: Indicator<number>;
   topDetail: string;
   hhi: Indicator<number>;
@@ -459,7 +465,7 @@ export function buildSeasonalModel(
     "change",
     "derived",
     compKey ? `${monthLabel} vs ${formatMonth(compKey)}` : monthLabel,
-    `Relative change in recorded ${word}: (${monthLabel} − same month of the comparison year) ÷ same month of the comparison year.`,
+    `Relative change in recorded ${word}: (${monthLabel} − same month of the comparison year) ÷ same month of the comparison year.${measure === "value" ? " Current prices: not adjusted for inflation." : ""}`,
     available && compKey ? "not_applicable" : missing,
   );
   const changeDetail = !available
@@ -469,6 +475,9 @@ export function buildSeasonalModel(
       : compTotal === null
         ? `${formatMonth(compKey)} has no figures`
         : `${formatMonth(compKey)}: ${formatMeasure(compTotal, measure)}`;
+  const changeBreaks = available && compKey && changeValue !== null ? comparisonBreaks(compKey, key) : [];
+  const changeCaution = seriesBreakCaution(changeBreaks);
+  const changeDetailText = changeBreaks.length ? `${changeDetail} · series break` : changeDetail;
 
   const topShare = current?.shares[0] ?? null;
   const top = ind(
@@ -561,12 +570,15 @@ export function buildSeasonalModel(
   if (compareYearNote && sel.compareYear !== null && compareYear !== sel.compareYear)
     notices.push({ id: "compare-year", tone: "warn", text: compareYearNote });
 
+  if (measure === "value" && compareYear !== null)
+    notices.push({ id: "current-prices", tone: "info", text: CURRENT_PRICES_NOTE.replace(/\.$/, "") });
+
   const comp = comparability(snapshot, year, compareYear);
   for (const b of comp.seriesBreaks)
     notices.push({
       id: `break-${b.month}`,
       tone: "warn",
-      text: `Comparison crosses a series break in ${formatMonth(b.month)} (${b.label.toLowerCase()}): differences between ${compareYear} and ${year} may partly reflect how the data was collected`,
+      text: `Comparison crosses a series break in ${formatMonth(b.month)} (${inSentence(b.label)}): differences between ${compareYear} and ${year} may partly reflect how the data was collected`,
     });
   for (const c of comp.codeChanges) {
     const ended = c.ended.map((x) => x.code).join(", ");
@@ -585,9 +597,17 @@ export function buildSeasonalModel(
       text: `Code ${c.code} (HMRC: “${c.description}”) holds ${formatShare(c.coverage)} of its recorded net mass in ${monthRunsText(c.months)} and ${formatShare(c.shareOfBasket)} of the basket since ${formatMonth(range.first)}. The basket includes every code, so its monthly totals do not switch with the code`,
     });
 
+  // The map frames the year's leading partners, so it stays still while the months play.
+  const meta = new Map(snapshot.partners.map((p) => [p.key, p]));
+  const yearStarts = topPartnersForYear(matrix, Number.MAX_SAFE_INTEGER)
+    .keys.map((k) => meta.get(k))
+    .filter((p) => p !== undefined && p.key !== "GB" && p.geometry !== "none" && p.point !== null)
+    .slice(0, Math.max(0, sel.flowCount))
+    .map((p) => p!.point!);
+  const frame = frameFor(snapshot.commodity.id, yearStarts, ukAnchor);
   const map: OriginsMapModel = current
-    ? current.map
-    : { commodityId: snapshot.commodity.id, periodLabel: monthLabel, measure, partners: [], ukAnchor };
+    ? { ...current.map, frame }
+    : { commodityId: snapshot.commodity.id, periodLabel: monthLabel, measure, partners: [], ukAnchor, frame };
 
   return {
     commodity: snapshot.commodity,
@@ -624,7 +644,8 @@ export function buildSeasonalModel(
       importsDetail,
       change,
       changeLabel,
-      changeDetail,
+      changeDetail: changeDetailText,
+      changeCaution,
       top,
       topDetail,
       hhi: hhiInd,
