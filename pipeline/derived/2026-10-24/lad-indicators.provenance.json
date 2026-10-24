@@ -1,0 +1,27 @@
+{
+  "id": "local.lad_indicators",
+  "title": "Councils: population mid-2025, land area and store counts",
+  "role": "statistical",
+  "path": "lad-indicators.json",
+  "format": "json",
+  "schemaId": "lad-indicators",
+  "sha256": "4563e1cd58bcaee580303b4d2fd3ebfd2f99ff4f280a2c6029aac74428ea67ea",
+  "bytes": 70981,
+  "sourceIds": [
+    "S11",
+    "S14",
+    "S18"
+  ],
+  "referencePeriod": "Population mid-2025; stores June 2026",
+  "coverage": "United Kingdom: 361 councils",
+  "provenance": "derived",
+  "licence": "Open Government Licence v3.0; GEOLYTIX open data",
+  "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025. Contains GEOLYTIX Grocery Retail Points data (v46, June 2026)",
+  "expectedCadence": "quarterly",
+  "retrieval": {
+    "method": "Derived offline from the committed raw files",
+    "source": "mye25tablesuk.xlsx (sha256 8ae244e33412…); geolytix_retailpoints_v46_202606.xlsx (sha256 093ba30b12e8…); LAD_MAY_2025_UK_BFE_V2_7705143053794342073.zip (sha256 1d1e35faf003…)",
+    "retrievedAt": "2026-10-24T08:24:03Z",
+    "notes": "Population: ONS MYE2 'All ages'; land area: ONS MYE5. Store counts per council by size band × format. Barnsley and Sheffield population and land area are on their boundaries before the 2025 change (see each council's note)."
+  }
+}

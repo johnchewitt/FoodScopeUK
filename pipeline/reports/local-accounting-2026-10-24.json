@@ -1,0 +1,60 @@
+[
+  {
+    "step": "boundaries.read_bfe",
+    "rows_in": 361,
+    "rows_out": 361,
+    "rejects": {}
+  },
+  {
+    "step": "boundaries.read_bgc",
+    "rows_in": 361,
+    "rows_out": 361,
+    "rejects": {}
+  },
+  {
+    "step": "boundaries.display",
+    "rows_in": 361,
+    "rows_out": 361,
+    "rejects": {}
+  },
+  {
+    "step": "stores.read",
+    "rows_in": 19299,
+    "rows_out": 19299,
+    "rejects": {}
+  },
+  {
+    "step": "stores.classify",
+    "rows_in": 19299,
+    "rows_out": 19299,
+    "rejects": {}
+  },
+  {
+    "step": "stores.locate",
+    "rows_in": 19299,
+    "rows_out": 19299,
+    "rejects": {}
+  },
+  {
+    "step": "stores.assign_council",
+    "rows_in": 19299,
+    "rows_out": 19174,
+    "rejects": {
+      "Crown Dependency (Guernsey, Jersey or Isle of Man): outside UK councils": 125
+    }
+  },
+  {
+    "step": "population.councils",
+    "rows_in": 361,
+    "rows_out": 361,
+    "rejects": {}
+  },
+  {
+    "step": "benchmark.s12_councils",
+    "rows_in": 376,
+    "rows_out": 374,
+    "rejects": {
+      "Channel Islands and Isle of Man: no UK council": 2
+    }
+  }
+]

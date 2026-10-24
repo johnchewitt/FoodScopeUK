@@ -1,0 +1,196 @@
+{
+  "snapshot": "2026-10-24",
+  "inputs": {
+    "geolytix": {
+      "file": "geolytix_retailpoints_v46_202606.xlsx",
+      "sha256": "093ba30b12e820442ad149cce74c5d8c04c92a0619bfb72ff18a7e45f0b41cb1",
+      "rows": 19299
+    },
+    "bfe": {
+      "file": "LAD_MAY_2025_UK_BFE_V2_7705143053794342073.zip",
+      "sha256": "1d1e35faf0037d5a95e1124761adb49346c64257c05feb5fcbc2850a6451d9ed",
+      "councils": 361
+    },
+    "bgc": {
+      "pages": [
+        "lad-may-2025-uk-bgc-v2.p000.json",
+        "lad-may-2025-uk-bgc-v2.p001.json",
+        "lad-may-2025-uk-bgc-v2.p002.json",
+        "lad-may-2025-uk-bgc-v2.p003.json",
+        "lad-may-2025-uk-bgc-v2.p004.json",
+        "lad-may-2025-uk-bgc-v2.p005.json",
+        "lad-may-2025-uk-bgc-v2.p006.json",
+        "lad-may-2025-uk-bgc-v2.p007.json"
+      ],
+      "councils": 361
+    },
+    "population": {
+      "file": "mye25tablesuk.xlsx",
+      "sha256": "8ae244e3341257ecccaee55f4973fe12f46afe6656ead6c1a9ed3f4f8585e40f",
+      "ukTotal": 69483939,
+      "councilRows": 361
+    },
+    "s12": {
+      "file": "accesstoamenitiessupermarkets.xlsx",
+      "sha256": "d1a333520364b8932bcf18737932b58cd597c3aa1181acbbcc5ada0552e64468",
+      "councilRows": 376
+    }
+  },
+  "boundaries": {
+    "cleanSnapM": 0.01,
+    "cleanAreaChangeM2": 0.0,
+    "toleranceM": 150.0,
+    "minIslandM2": 10000.0,
+    "decimals": 6,
+    "verticesIn": 533561,
+    "verticesOut": 121517,
+    "partsIn": 5491,
+    "partsOut": 2112,
+    "islandPartsDropped": 3379,
+    "islandAreaDroppedHa": 939.0,
+    "repairedAfterRounding": [],
+    "coverageValidAfterRounding": false,
+    "overlapsAfterRounding": [
+      {
+        "councils": [
+          "E06000001",
+          "E06000004"
+        ],
+        "areaM2": 0.04
+      },
+      {
+        "councils": [
+          "E06000044",
+          "E07000087"
+        ],
+        "areaM2": 3.93
+      }
+    ],
+    "bfeAreaKm2": 248695,
+    "bgcAreaKm2": 244366,
+    "onsLandAreaKm2": 242494
+  },
+  "stores": {
+    "rows": 19299,
+    "byPostcodeArea": {
+      "BT (Northern Ireland)": 627,
+      "GY (Guernsey)": 30,
+      "JE (Jersey)": 51,
+      "IM (Isle of Man)": 44,
+      "no postcode": 98
+    },
+    "pqi": {
+      "Building": 28,
+      "Rooftop": 19254,
+      "Third Party": 17
+    },
+    "coordinateSource": {
+      "wgs84": 19298,
+      "bng": 1
+    },
+    "derivedFromBng": [
+      {
+        "id": 1010001979,
+        "name": "M&S Anlaby Hull SF",
+        "postcode": "HU10 6RJ"
+      }
+    ],
+    "assigned": 19174,
+    "rejected": {
+      "Crown Dependency (Guernsey, Jersey or Isle of Man): outside UK councils": 125
+    },
+    "crownDependencyByPostcodeArea": {
+      "GY": 30,
+      "IM": 44,
+      "JE": 51
+    },
+    "crownPostcodesInsideACouncil": 0,
+    "nearestCouncil": [
+      {
+        "id": 1010018076,
+        "name": "Spar - Carnlough",
+        "postcode": "BT44 0EU",
+        "council": "N09000008",
+        "distanceM": 14.2
+      },
+      {
+        "id": 1010018039,
+        "name": "Spar - Whiteabbey",
+        "postcode": "BT37 0ST",
+        "council": "N09000001",
+        "distanceM": 20.3
+      }
+    ],
+    "insideMoreThanOneCouncil": 0,
+    "within10mOfAnotherCouncil": 14,
+    "bngVersusWgs84": {
+      "Great Britain": {
+        "stores": 18448,
+        "medianM": 0.0,
+        "p95M": 0.0,
+        "maxM": 66.84
+      },
+      "Northern Ireland": {
+        "stores": 725,
+        "medianM": 0.0,
+        "p95M": 0.0,
+        "maxM": 0.0
+      },
+      "outside UK councils": {
+        "stores": 125,
+        "medianM": 0.0,
+        "p95M": 0.0,
+        "maxM": 0.0
+      }
+    },
+    "bySizeBand": {
+      "lt280": 11988,
+      "280to1400": 4503,
+      "1400to2800": 1226,
+      "ge2800": 1582
+    },
+    "byFormat": {
+      "standard": 17915,
+      "forecourt": 1071,
+      "motorway": 86,
+      "travel": 47,
+      "hospital": 64,
+      "wholesale": 52,
+      "nonfood": 64
+    },
+    "defaultView": 7171,
+    "onsConvenienceFasciasIn280PlusBands": {
+      "Aldi Local (280to1400)": 12,
+      "Budgens (280to1400)": 17,
+      "Little Waitrose (280to1400)": 15,
+      "Sainsburys Local (280to1400)": 27,
+      "Tesco Express (1400to2800)": 6,
+      "Tesco Express (280to1400)": 88,
+      "The Co-operative Food (1400to2800)": 27,
+      "The Co-operative Food (280to1400)": 521
+    },
+    "fasciasNotGroupedByOns": [
+      "Centra",
+      "Cook",
+      "Marks and Spencer Clothing",
+      "Marks and Spencer Food Outlet"
+    ]
+  },
+  "population": {
+    "councilsWithEstimate": 361,
+    "councilsWithoutEstimate": [],
+    "codeChanges": [
+      {
+        "from": "E08000016",
+        "to": "E08000038",
+        "name": "Barnsley"
+      },
+      {
+        "from": "E08000019",
+        "to": "E08000039",
+        "name": "Sheffield"
+      }
+    ],
+    "sumOfCouncils": 69483939
+  }
+}

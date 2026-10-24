@@ -1,0 +1,27 @@
+{
+  "id": "local.stores",
+  "title": "Grocery stores, GEOLYTIX v46 (June 2026)",
+  "role": "statistical",
+  "path": "stores.geojson",
+  "format": "geojson",
+  "schemaId": "stores",
+  "sha256": "ee2475803c3076d248d8a9f02b60a127d9e4eb22815bdc2f80fda553321a4667",
+  "bytes": 8063763,
+  "featureCount": 19174,
+  "sourceIds": [
+    "S11",
+    "S14"
+  ],
+  "referencePeriod": "June 2026 (GEOLYTIX v46)",
+  "coverage": "United Kingdom (Crown Dependency stores excluded)",
+  "provenance": "measured",
+  "licence": "GEOLYTIX open data, no named licence (described by GEOLYTIX as \"completely free and open to use data\", blog page read 24 Oct 2026)",
+  "attribution": "Contains GEOLYTIX Grocery Retail Points data (v46, June 2026). Councils: Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025",
+  "expectedCadence": "quarterly",
+  "retrieval": {
+    "method": "Files provided by the project owner, committed in pipeline/raw/ with checksums",
+    "source": "geolytix_retailpoints_v46_202606.xlsx (sha256 093ba30b12e8…); LAD_MAY_2025_UK_BFE_V2_7705143053794342073.zip (sha256 1d1e35faf003…)",
+    "retrievedAt": "2026-10-24T07:52:53Z",
+    "notes": "Size band, class and format by decision D5 (pipeline config/store_classes.json). Council by point-in-polygon on the BFE edition in EPSG:27700; a store just outside every council (within 50 m) takes the nearest one and is flagged. Store positions are GEOLYTIX's; a store without WGS84 coordinates is placed from its British National Grid reference."
+  }
+}

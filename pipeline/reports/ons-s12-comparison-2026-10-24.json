@@ -1,0 +1,10413 @@
+{
+  "summary": {
+    "councils": 361,
+    "ours": 19174,
+    "s12": 18069,
+    "difference": 1105,
+    "differencePct": 6.1,
+    "medianAbsDifferencePct": 6.7,
+    "councilsWithin5Pct": 147,
+    "councilsWithin10Pct": 261,
+    "councilsWithin20Pct": 346,
+    "councilsMoreThan20Pct": 15,
+    "mapping": {
+      "same code": 355,
+      "2023 merger": 17,
+      "2025 code change": 2
+    }
+  },
+  "byNation": {
+    "England": {
+      "councils": 296,
+      "ours": 15540,
+      "s12": 14673,
+      "difference": 867,
+      "differencePct": 5.9
+    },
+    "Wales": {
+      "councils": 22,
+      "ours": 952,
+      "s12": 919,
+      "difference": 33,
+      "differencePct": 3.6
+    },
+    "Scotland": {
+      "councils": 32,
+      "ours": 1957,
+      "s12": 1845,
+      "difference": 112,
+      "differencePct": 6.1
+    },
+    "Northern Ireland": {
+      "councils": 11,
+      "ours": 725,
+      "s12": 632,
+      "difference": 93,
+      "differencePct": 14.7
+    }
+  },
+  "bySizeBand": [
+    {
+      "sizeBand": "< 3,013 ft2 (280m2)",
+      "ours": 11885,
+      "s12": 10649,
+      "difference": 1236,
+      "differencePct": 11.6
+    },
+    {
+      "sizeBand": "3,013 < 15,069 ft2 (280 < 1,400 m2)",
+      "ours": 4491,
+      "s12": 4561,
+      "difference": -70,
+      "differencePct": -1.5
+    },
+    {
+      "sizeBand": "15,069 < 30,138 ft2 (1,400 < 2,800 m2)",
+      "ours": 1219,
+      "s12": 1441,
+      "difference": -222,
+      "differencePct": -15.4
+    },
+    {
+      "sizeBand": "30,138 ft2 > (2,800 m2)",
+      "ours": 1579,
+      "s12": 1418,
+      "difference": 161,
+      "differencePct": 11.4
+    }
+  ],
+  "byRetailerType": [
+    {
+      "type": "Convenience",
+      "ours": 8694,
+      "s12": 7630,
+      "difference": 1064
+    },
+    {
+      "type": "Discounter",
+      "ours": 2131,
+      "s12": 1991,
+      "difference": 140
+    },
+    {
+      "type": "Freezer Centre",
+      "ours": 1617,
+      "s12": 1657,
+      "difference": -40
+    },
+    {
+      "type": "Petrol Forecourt",
+      "ours": 1068,
+      "s12": 1093,
+      "difference": -25
+    },
+    {
+      "type": "Specialist",
+      "ours": 888,
+      "s12": 901,
+      "difference": -13
+    },
+    {
+      "type": "Symbol Group",
+      "ours": 1737,
+      "s12": 1996,
+      "difference": -259
+    },
+    {
+      "type": "Traditional",
+      "ours": 2491,
+      "s12": 2481,
+      "difference": 10
+    },
+    {
+      "type": "Travel",
+      "ours": 133,
+      "s12": 125,
+      "difference": 8
+    },
+    {
+      "type": "Wholesaler",
+      "ours": 52,
+      "s12": 56,
+      "difference": -4
+    },
+    {
+      "type": "Other",
+      "ours": 142,
+      "s12": 139,
+      "difference": 3
+    },
+    {
+      "type": "not grouped by ONS",
+      "ours": 221,
+      "s12": 0,
+      "difference": 221
+    }
+  ],
+  "crownDependencies": [
+    {
+      "s12Code": "L99999999",
+      "name": "Channel Islands",
+      "s12": 59,
+      "oursRejected": 81,
+      "postcodeAreas": [
+        "GY",
+        "JE"
+      ]
+    },
+    {
+      "s12Code": "M99999999",
+      "name": "Isle of Man",
+      "s12": 32,
+      "oursRejected": 44,
+      "postcodeAreas": [
+        "IM"
+      ]
+    }
+  ],
+  "largestDifferences": [
+    {
+      "code": "E08000025",
+      "name": "Birmingham",
+      "ours": 226,
+      "s12": 210,
+      "difference": 16,
+      "differencePct": 7.6
+    },
+    {
+      "code": "N09000003",
+      "name": "Belfast",
+      "ours": 142,
+      "s12": 126,
+      "difference": 16,
+      "differencePct": 12.7
+    },
+    {
+      "code": "E06000050",
+      "name": "Cheshire West and Chester",
+      "ours": 122,
+      "s12": 107,
+      "difference": 15,
+      "differencePct": 14.0
+    },
+    {
+      "code": "E06000060",
+      "name": "Buckinghamshire",
+      "ours": 148,
+      "s12": 133,
+      "difference": 15,
+      "differencePct": 11.3
+    },
+    {
+      "code": "E06000065",
+      "name": "North Yorkshire",
+      "ours": 196,
+      "s12": 181,
+      "difference": 15,
+      "differencePct": 8.3
+    },
+    {
+      "code": "N09000007",
+      "name": "Lisburn and Castlereagh",
+      "ours": 52,
+      "s12": 37,
+      "difference": 15,
+      "differencePct": 40.5
+    },
+    {
+      "code": "E06000011",
+      "name": "East Riding of Yorkshire",
+      "ours": 104,
+      "s12": 90,
+      "difference": 14,
+      "differencePct": 15.6
+    },
+    {
+      "code": "S12000029",
+      "name": "South Lanarkshire",
+      "ours": 115,
+      "s12": 101,
+      "difference": 14,
+      "differencePct": 13.9
+    },
+    {
+      "code": "S12000049",
+      "name": "Glasgow City",
+      "ours": 201,
+      "s12": 187,
+      "difference": 14,
+      "differencePct": 7.5
+    },
+    {
+      "code": "S12000034",
+      "name": "Aberdeenshire",
+      "ours": 103,
+      "s12": 90,
+      "difference": 13,
+      "differencePct": 14.4
+    },
+    {
+      "code": "E06000025",
+      "name": "South Gloucestershire",
+      "ours": 93,
+      "s12": 81,
+      "difference": 12,
+      "differencePct": 14.8
+    },
+    {
+      "code": "N09000009",
+      "name": "Mid Ulster",
+      "ours": 64,
+      "s12": 52,
+      "difference": 12,
+      "differencePct": 23.1
+    },
+    {
+      "code": "E09000003",
+      "name": "Barnet",
+      "ours": 85,
+      "s12": 74,
+      "difference": 11,
+      "differencePct": 14.9
+    },
+    {
+      "code": "E09000023",
+      "name": "Lewisham",
+      "ours": 69,
+      "s12": 58,
+      "difference": 11,
+      "differencePct": 19.0
+    },
+    {
+      "code": "N09000002",
+      "name": "Armagh City, Banbridge and Craigavon",
+      "ours": 74,
+      "s12": 63,
+      "difference": 11,
+      "differencePct": 17.5
+    }
+  ],
+  "councils": [
+    {
+      "code": "E06000001",
+      "name": "Hartlepool",
+      "ours": 36,
+      "s12": 32,
+      "difference": 4,
+      "differencePct": 12.5,
+      "s12Codes": [
+        "E06000001"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.612,
+      "s12Per10k": 3.466,
+      "oursBySizeBand": [
+        24,
+        9,
+        0,
+        3
+      ],
+      "s12BySizeBand": [
+        20,
+        9,
+        0,
+        3
+      ]
+    },
+    {
+      "code": "E06000002",
+      "name": "Middlesbrough",
+      "ours": 46,
+      "s12": 46,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E06000002"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.011,
+      "s12Per10k": 3.196,
+      "oursBySizeBand": [
+        32,
+        11,
+        1,
+        2
+      ],
+      "s12BySizeBand": [
+        32,
+        11,
+        1,
+        2
+      ]
+    },
+    {
+      "code": "E06000003",
+      "name": "Redcar and Cleveland",
+      "ours": 52,
+      "s12": 49,
+      "difference": 3,
+      "differencePct": 6.1,
+      "s12Codes": [
+        "E06000003"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.727,
+      "s12Per10k": 3.589,
+      "oursBySizeBand": [
+        31,
+        13,
+        5,
+        3
+      ],
+      "s12BySizeBand": [
+        28,
+        13,
+        5,
+        3
+      ]
+    },
+    {
+      "code": "E06000004",
+      "name": "Stockton-on-Tees",
+      "ours": 61,
+      "s12": 58,
+      "difference": 3,
+      "differencePct": 5.2,
+      "s12Codes": [
+        "E06000004"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.945,
+      "s12Per10k": 2.95,
+      "oursBySizeBand": [
+        33,
+        17,
+        3,
+        8
+      ],
+      "s12BySizeBand": [
+        30,
+        18,
+        3,
+        7
+      ]
+    },
+    {
+      "code": "E06000005",
+      "name": "Darlington",
+      "ours": 29,
+      "s12": 32,
+      "difference": -3,
+      "differencePct": -9.4,
+      "s12Codes": [
+        "E06000005"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.557,
+      "s12Per10k": 2.968,
+      "oursBySizeBand": [
+        15,
+        10,
+        1,
+        3
+      ],
+      "s12BySizeBand": [
+        17,
+        10,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "E06000006",
+      "name": "Halton",
+      "ours": 42,
+      "s12": 36,
+      "difference": 6,
+      "differencePct": 16.7,
+      "s12Codes": [
+        "E06000006"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.184,
+      "s12Per10k": 2.802,
+      "oursBySizeBand": [
+        28,
+        9,
+        0,
+        5
+      ],
+      "s12BySizeBand": [
+        24,
+        7,
+        1,
+        4
+      ]
+    },
+    {
+      "code": "E06000007",
+      "name": "Warrington",
+      "ours": 68,
+      "s12": 68,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E06000007"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.157,
+      "s12Per10k": 3.223,
+      "oursBySizeBand": [
+        45,
+        15,
+        1,
+        7
+      ],
+      "s12BySizeBand": [
+        40,
+        20,
+        2,
+        6
+      ]
+    },
+    {
+      "code": "E06000008",
+      "name": "Blackburn with Darwen",
+      "ours": 30,
+      "s12": 31,
+      "difference": -1,
+      "differencePct": -3.2,
+      "s12Codes": [
+        "E06000008"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.831,
+      "s12Per10k": 2.003,
+      "oursBySizeBand": [
+        18,
+        8,
+        2,
+        2
+      ],
+      "s12BySizeBand": [
+        18,
+        8,
+        3,
+        2
+      ]
+    },
+    {
+      "code": "E06000009",
+      "name": "Blackpool",
+      "ours": 52,
+      "s12": 46,
+      "difference": 6,
+      "differencePct": 13.0,
+      "s12Codes": [
+        "E06000009"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.624,
+      "s12Per10k": 3.262,
+      "oursBySizeBand": [
+        36,
+        10,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        29,
+        10,
+        4,
+        3
+      ]
+    },
+    {
+      "code": "E06000010",
+      "name": "Kingston upon Hull, City of",
+      "ours": 90,
+      "s12": 84,
+      "difference": 6,
+      "differencePct": 7.1,
+      "s12Codes": [
+        "E06000010"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.294,
+      "s12Per10k": 3.146,
+      "oursBySizeBand": [
+        63,
+        17,
+        1,
+        9
+      ],
+      "s12BySizeBand": [
+        56,
+        19,
+        0,
+        9
+      ]
+    },
+    {
+      "code": "E06000011",
+      "name": "East Riding of Yorkshire",
+      "ours": 104,
+      "s12": 90,
+      "difference": 14,
+      "differencePct": 15.6,
+      "s12Codes": [
+        "E06000011"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.886,
+      "s12Per10k": 2.63,
+      "oursBySizeBand": [
+        61,
+        32,
+        5,
+        6
+      ],
+      "s12BySizeBand": [
+        48,
+        29,
+        7,
+        6
+      ]
+    },
+    {
+      "code": "E06000012",
+      "name": "North East Lincolnshire",
+      "ours": 54,
+      "s12": 55,
+      "difference": -1,
+      "differencePct": -1.8,
+      "s12Codes": [
+        "E06000012"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.373,
+      "s12Per10k": 3.504,
+      "oursBySizeBand": [
+        37,
+        10,
+        2,
+        5
+      ],
+      "s12BySizeBand": [
+        38,
+        9,
+        3,
+        5
+      ]
+    },
+    {
+      "code": "E06000013",
+      "name": "North Lincolnshire",
+      "ours": 60,
+      "s12": 52,
+      "difference": 8,
+      "differencePct": 15.4,
+      "s12Codes": [
+        "E06000013"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.5,
+      "s12Per10k": 3.065,
+      "oursBySizeBand": [
+        40,
+        14,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        31,
+        14,
+        3,
+        4
+      ]
+    },
+    {
+      "code": "E06000014",
+      "name": "York",
+      "ours": 74,
+      "s12": 73,
+      "difference": 1,
+      "differencePct": 1.4,
+      "s12Codes": [
+        "E06000014"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.539,
+      "s12Per10k": 3.599,
+      "oursBySizeBand": [
+        52,
+        11,
+        4,
+        7
+      ],
+      "s12BySizeBand": [
+        48,
+        14,
+        6,
+        5
+      ]
+    },
+    {
+      "code": "E06000015",
+      "name": "Derby",
+      "ours": 79,
+      "s12": 79,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E06000015"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.869,
+      "s12Per10k": 3.023,
+      "oursBySizeBand": [
+        46,
+        21,
+        4,
+        8
+      ],
+      "s12BySizeBand": [
+        44,
+        23,
+        5,
+        7
+      ]
+    },
+    {
+      "code": "E06000016",
+      "name": "Leicester",
+      "ours": 72,
+      "s12": 71,
+      "difference": 1,
+      "differencePct": 1.4,
+      "s12Codes": [
+        "E06000016"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.879,
+      "s12Per10k": 1.926,
+      "oursBySizeBand": [
+        46,
+        19,
+        2,
+        5
+      ],
+      "s12BySizeBand": [
+        38,
+        25,
+        3,
+        5
+      ]
+    },
+    {
+      "code": "E06000017",
+      "name": "Rutland",
+      "ours": 12,
+      "s12": 9,
+      "difference": 3,
+      "differencePct": 33.3,
+      "s12Codes": [
+        "E06000017"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.883,
+      "s12Per10k": 2.193,
+      "oursBySizeBand": [
+        7,
+        3,
+        2,
+        0
+      ],
+      "s12BySizeBand": [
+        4,
+        3,
+        2,
+        0
+      ]
+    },
+    {
+      "code": "E06000018",
+      "name": "Nottingham",
+      "ours": 92,
+      "s12": 87,
+      "difference": 5,
+      "differencePct": 5.7,
+      "s12Codes": [
+        "E06000018"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.824,
+      "s12Per10k": 2.688,
+      "oursBySizeBand": [
+        60,
+        21,
+        5,
+        6
+      ],
+      "s12BySizeBand": [
+        55,
+        18,
+        8,
+        6
+      ]
+    },
+    {
+      "code": "E06000019",
+      "name": "Herefordshire, County of",
+      "ours": 52,
+      "s12": 49,
+      "difference": 3,
+      "differencePct": 6.1,
+      "s12Codes": [
+        "E06000019"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.701,
+      "s12Per10k": 2.62,
+      "oursBySizeBand": [
+        28,
+        15,
+        3,
+        6
+      ],
+      "s12BySizeBand": [
+        25,
+        16,
+        3,
+        5
+      ]
+    },
+    {
+      "code": "E06000020",
+      "name": "Telford and Wrekin",
+      "ours": 48,
+      "s12": 42,
+      "difference": 6,
+      "differencePct": 14.3,
+      "s12Codes": [
+        "E06000020"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.407,
+      "s12Per10k": 2.264,
+      "oursBySizeBand": [
+        25,
+        13,
+        4,
+        6
+      ],
+      "s12BySizeBand": [
+        19,
+        13,
+        5,
+        5
+      ]
+    },
+    {
+      "code": "E06000021",
+      "name": "Stoke-on-Trent",
+      "ours": 73,
+      "s12": 72,
+      "difference": 1,
+      "differencePct": 1.4,
+      "s12Codes": [
+        "E06000021"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.681,
+      "s12Per10k": 2.787,
+      "oursBySizeBand": [
+        44,
+        21,
+        2,
+        6
+      ],
+      "s12BySizeBand": [
+        38,
+        25,
+        3,
+        6
+      ]
+    },
+    {
+      "code": "E06000022",
+      "name": "Bath and North East Somerset",
+      "ours": 67,
+      "s12": 65,
+      "difference": 2,
+      "differencePct": 3.1,
+      "s12Codes": [
+        "E06000022"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.335,
+      "s12Per10k": 3.361,
+      "oursBySizeBand": [
+        51,
+        6,
+        6,
+        4
+      ],
+      "s12BySizeBand": [
+        48,
+        7,
+        7,
+        3
+      ]
+    },
+    {
+      "code": "E06000023",
+      "name": "Bristol, City of",
+      "ours": 134,
+      "s12": 136,
+      "difference": -2,
+      "differencePct": -1.5,
+      "s12Codes": [
+        "E06000023"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.706,
+      "s12Per10k": 2.879,
+      "oursBySizeBand": [
+        86,
+        33,
+        5,
+        10
+      ],
+      "s12BySizeBand": [
+        85,
+        37,
+        5,
+        9
+      ]
+    },
+    {
+      "code": "E06000024",
+      "name": "North Somerset",
+      "ours": 63,
+      "s12": 60,
+      "difference": 3,
+      "differencePct": 5.0,
+      "s12Codes": [
+        "E06000024"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.773,
+      "s12Per10k": 2.768,
+      "oursBySizeBand": [
+        37,
+        13,
+        9,
+        4
+      ],
+      "s12BySizeBand": [
+        34,
+        13,
+        9,
+        4
+      ]
+    },
+    {
+      "code": "E06000025",
+      "name": "South Gloucestershire",
+      "ours": 93,
+      "s12": 81,
+      "difference": 12,
+      "differencePct": 14.8,
+      "s12Codes": [
+        "E06000025"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.012,
+      "s12Per10k": 2.789,
+      "oursBySizeBand": [
+        56,
+        19,
+        8,
+        10
+      ],
+      "s12BySizeBand": [
+        48,
+        17,
+        8,
+        8
+      ]
+    },
+    {
+      "code": "E06000026",
+      "name": "Plymouth",
+      "ours": 80,
+      "s12": 74,
+      "difference": 6,
+      "differencePct": 8.1,
+      "s12Codes": [
+        "E06000026"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.948,
+      "s12Per10k": 2.796,
+      "oursBySizeBand": [
+        48,
+        23,
+        2,
+        7
+      ],
+      "s12BySizeBand": [
+        44,
+        21,
+        3,
+        6
+      ]
+    },
+    {
+      "code": "E06000027",
+      "name": "Torbay",
+      "ours": 52,
+      "s12": 54,
+      "difference": -2,
+      "differencePct": -3.7,
+      "s12Codes": [
+        "E06000027"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.728,
+      "s12Per10k": 3.876,
+      "oursBySizeBand": [
+        37,
+        7,
+        4,
+        4
+      ],
+      "s12BySizeBand": [
+        40,
+        7,
+        4,
+        3
+      ]
+    },
+    {
+      "code": "E06000030",
+      "name": "Swindon",
+      "ours": 64,
+      "s12": 60,
+      "difference": 4,
+      "differencePct": 6.7,
+      "s12Codes": [
+        "E06000030"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.609,
+      "s12Per10k": 2.571,
+      "oursBySizeBand": [
+        35,
+        19,
+        4,
+        6
+      ],
+      "s12BySizeBand": [
+        31,
+        17,
+        7,
+        5
+      ]
+    },
+    {
+      "code": "E06000031",
+      "name": "Peterborough",
+      "ours": 54,
+      "s12": 55,
+      "difference": -1,
+      "differencePct": -1.8,
+      "s12Codes": [
+        "E06000031"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.403,
+      "s12Per10k": 2.55,
+      "oursBySizeBand": [
+        28,
+        14,
+        6,
+        6
+      ],
+      "s12BySizeBand": [
+        26,
+        16,
+        8,
+        5
+      ]
+    },
+    {
+      "code": "E06000032",
+      "name": "Luton",
+      "ours": 43,
+      "s12": 40,
+      "difference": 3,
+      "differencePct": 7.5,
+      "s12Codes": [
+        "E06000032"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.819,
+      "s12Per10k": 1.776,
+      "oursBySizeBand": [
+        25,
+        14,
+        1,
+        3
+      ],
+      "s12BySizeBand": [
+        21,
+        15,
+        1,
+        3
+      ]
+    },
+    {
+      "code": "E06000033",
+      "name": "Southend-on-Sea",
+      "ours": 55,
+      "s12": 52,
+      "difference": 3,
+      "differencePct": 5.8,
+      "s12Codes": [
+        "E06000033"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.97,
+      "s12Per10k": 2.878,
+      "oursBySizeBand": [
+        37,
+        13,
+        0,
+        5
+      ],
+      "s12BySizeBand": [
+        32,
+        14,
+        2,
+        4
+      ]
+    },
+    {
+      "code": "E06000034",
+      "name": "Thurrock",
+      "ours": 40,
+      "s12": 39,
+      "difference": 1,
+      "differencePct": 2.6,
+      "s12Codes": [
+        "E06000034"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.202,
+      "s12Per10k": 2.216,
+      "oursBySizeBand": [
+        26,
+        8,
+        0,
+        6
+      ],
+      "s12BySizeBand": [
+        22,
+        10,
+        1,
+        6
+      ]
+    },
+    {
+      "code": "E06000035",
+      "name": "Medway",
+      "ours": 69,
+      "s12": 67,
+      "difference": 2,
+      "differencePct": 3.0,
+      "s12Codes": [
+        "E06000035"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.357,
+      "s12Per10k": 2.395,
+      "oursBySizeBand": [
+        46,
+        14,
+        3,
+        6
+      ],
+      "s12BySizeBand": [
+        44,
+        13,
+        5,
+        5
+      ]
+    },
+    {
+      "code": "E06000036",
+      "name": "Bracknell Forest",
+      "ours": 33,
+      "s12": 30,
+      "difference": 3,
+      "differencePct": 10.0,
+      "s12Codes": [
+        "E06000036"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.497,
+      "s12Per10k": 2.408,
+      "oursBySizeBand": [
+        21,
+        3,
+        3,
+        6
+      ],
+      "s12BySizeBand": [
+        18,
+        2,
+        6,
+        4
+      ]
+    },
+    {
+      "code": "E06000037",
+      "name": "West Berkshire",
+      "ours": 49,
+      "s12": 48,
+      "difference": 1,
+      "differencePct": 2.1,
+      "s12Codes": [
+        "E06000037"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.96,
+      "s12Per10k": 2.973,
+      "oursBySizeBand": [
+        32,
+        9,
+        5,
+        3
+      ],
+      "s12BySizeBand": [
+        32,
+        8,
+        5,
+        3
+      ]
+    },
+    {
+      "code": "E06000038",
+      "name": "Reading",
+      "ours": 49,
+      "s12": 44,
+      "difference": 5,
+      "differencePct": 11.4,
+      "s12Codes": [
+        "E06000038"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.666,
+      "s12Per10k": 2.525,
+      "oursBySizeBand": [
+        28,
+        12,
+        4,
+        5
+      ],
+      "s12BySizeBand": [
+        24,
+        12,
+        4,
+        4
+      ]
+    },
+    {
+      "code": "E06000039",
+      "name": "Slough",
+      "ours": 25,
+      "s12": 27,
+      "difference": -2,
+      "differencePct": -7.4,
+      "s12Codes": [
+        "E06000039"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.493,
+      "s12Per10k": 1.703,
+      "oursBySizeBand": [
+        15,
+        7,
+        0,
+        3
+      ],
+      "s12BySizeBand": [
+        17,
+        7,
+        0,
+        3
+      ]
+    },
+    {
+      "code": "E06000040",
+      "name": "Windsor and Maidenhead",
+      "ours": 44,
+      "s12": 42,
+      "difference": 2,
+      "differencePct": 4.8,
+      "s12Codes": [
+        "E06000040"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.754,
+      "s12Per10k": 2.736,
+      "oursBySizeBand": [
+        32,
+        5,
+        6,
+        1
+      ],
+      "s12BySizeBand": [
+        29,
+        6,
+        6,
+        1
+      ]
+    },
+    {
+      "code": "E06000041",
+      "name": "Wokingham",
+      "ours": 45,
+      "s12": 40,
+      "difference": 5,
+      "differencePct": 12.5,
+      "s12Codes": [
+        "E06000041"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.381,
+      "s12Per10k": 2.253,
+      "oursBySizeBand": [
+        27,
+        8,
+        6,
+        4
+      ],
+      "s12BySizeBand": [
+        24,
+        7,
+        5,
+        4
+      ]
+    },
+    {
+      "code": "E06000042",
+      "name": "Milton Keynes",
+      "ours": 88,
+      "s12": 80,
+      "difference": 8,
+      "differencePct": 10.0,
+      "s12Codes": [
+        "E06000042"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.849,
+      "s12Per10k": 2.787,
+      "oursBySizeBand": [
+        56,
+        18,
+        3,
+        11
+      ],
+      "s12BySizeBand": [
+        49,
+        17,
+        5,
+        9
+      ]
+    },
+    {
+      "code": "E06000043",
+      "name": "Brighton and Hove",
+      "ours": 81,
+      "s12": 73,
+      "difference": 8,
+      "differencePct": 11.0,
+      "s12Codes": [
+        "E06000043"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.85,
+      "s12Per10k": 2.634,
+      "oursBySizeBand": [
+        60,
+        9,
+        8,
+        4
+      ],
+      "s12BySizeBand": [
+        50,
+        12,
+        8,
+        3
+      ]
+    },
+    {
+      "code": "E06000044",
+      "name": "Portsmouth",
+      "ours": 65,
+      "s12": 70,
+      "difference": -5,
+      "differencePct": -7.1,
+      "s12Codes": [
+        "E06000044"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.074,
+      "s12Per10k": 3.365,
+      "oursBySizeBand": [
+        43,
+        15,
+        3,
+        4
+      ],
+      "s12BySizeBand": [
+        46,
+        17,
+        3,
+        4
+      ]
+    },
+    {
+      "code": "E06000045",
+      "name": "Southampton",
+      "ours": 68,
+      "s12": 75,
+      "difference": -7,
+      "differencePct": -9.3,
+      "s12Codes": [
+        "E06000045"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.623,
+      "s12Per10k": 3.013,
+      "oursBySizeBand": [
+        45,
+        13,
+        4,
+        6
+      ],
+      "s12BySizeBand": [
+        51,
+        12,
+        7,
+        5
+      ]
+    },
+    {
+      "code": "E06000046",
+      "name": "Isle of Wight",
+      "ours": 40,
+      "s12": 40,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E06000046"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.841,
+      "s12Per10k": 2.848,
+      "oursBySizeBand": [
+        21,
+        9,
+        5,
+        5
+      ],
+      "s12BySizeBand": [
+        20,
+        9,
+        7,
+        4
+      ]
+    },
+    {
+      "code": "E06000047",
+      "name": "County Durham",
+      "ours": 172,
+      "s12": 164,
+      "difference": 8,
+      "differencePct": 4.9,
+      "s12Codes": [
+        "E06000047"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.19,
+      "s12Per10k": 3.141,
+      "oursBySizeBand": [
+        114,
+        38,
+        7,
+        13
+      ],
+      "s12BySizeBand": [
+        107,
+        36,
+        9,
+        12
+      ]
+    },
+    {
+      "code": "E06000049",
+      "name": "Cheshire East",
+      "ours": 133,
+      "s12": 125,
+      "difference": 8,
+      "differencePct": 6.4,
+      "s12Codes": [
+        "E06000049"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.126,
+      "s12Per10k": 3.135,
+      "oursBySizeBand": [
+        86,
+        27,
+        12,
+        8
+      ],
+      "s12BySizeBand": [
+        76,
+        27,
+        15,
+        7
+      ]
+    },
+    {
+      "code": "E06000050",
+      "name": "Cheshire West and Chester",
+      "ours": 122,
+      "s12": 107,
+      "difference": 15,
+      "differencePct": 14.0,
+      "s12Codes": [
+        "E06000050"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.262,
+      "s12Per10k": 2.996,
+      "oursBySizeBand": [
+        83,
+        19,
+        7,
+        13
+      ],
+      "s12BySizeBand": [
+        72,
+        15,
+        9,
+        11
+      ]
+    },
+    {
+      "code": "E06000051",
+      "name": "Shropshire",
+      "ours": 109,
+      "s12": 103,
+      "difference": 6,
+      "differencePct": 5.8,
+      "s12Codes": [
+        "E06000051"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.272,
+      "s12Per10k": 3.183,
+      "oursBySizeBand": [
+        67,
+        28,
+        10,
+        4
+      ],
+      "s12BySizeBand": [
+        60,
+        26,
+        14,
+        3
+      ]
+    },
+    {
+      "code": "E06000052",
+      "name": "Cornwall",
+      "ours": 205,
+      "s12": 202,
+      "difference": 3,
+      "differencePct": 1.5,
+      "s12Codes": [
+        "E06000052"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.506,
+      "s12Per10k": 3.542,
+      "oursBySizeBand": [
+        129,
+        44,
+        21,
+        11
+      ],
+      "s12BySizeBand": [
+        125,
+        45,
+        22,
+        10
+      ]
+    },
+    {
+      "code": "E06000053",
+      "name": "Isles of Scilly",
+      "ours": 1,
+      "s12": 2,
+      "difference": -1,
+      "differencePct": -50.0,
+      "s12Codes": [
+        "E06000053"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.35,
+      "s12Per10k": 9.742,
+      "oursBySizeBand": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "s12BySizeBand": [
+        2,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "code": "E06000054",
+      "name": "Wiltshire",
+      "ours": 166,
+      "s12": 161,
+      "difference": 5,
+      "differencePct": 3.1,
+      "s12Codes": [
+        "E06000054"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.154,
+      "s12Per10k": 3.155,
+      "oursBySizeBand": [
+        100,
+        41,
+        17,
+        8
+      ],
+      "s12BySizeBand": [
+        95,
+        42,
+        17,
+        7
+      ]
+    },
+    {
+      "code": "E06000055",
+      "name": "Bedford",
+      "ours": 48,
+      "s12": 46,
+      "difference": 2,
+      "differencePct": 4.3,
+      "s12Codes": [
+        "E06000055"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.444,
+      "s12Per10k": 2.483,
+      "oursBySizeBand": [
+        31,
+        11,
+        1,
+        5
+      ],
+      "s12BySizeBand": [
+        28,
+        11,
+        2,
+        5
+      ]
+    },
+    {
+      "code": "E06000056",
+      "name": "Central Bedfordshire",
+      "ours": 78,
+      "s12": 71,
+      "difference": 7,
+      "differencePct": 9.9,
+      "s12Codes": [
+        "E06000056"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.425,
+      "s12Per10k": 2.413,
+      "oursBySizeBand": [
+        47,
+        17,
+        8,
+        6
+      ],
+      "s12BySizeBand": [
+        42,
+        12,
+        12,
+        5
+      ]
+    },
+    {
+      "code": "E06000057",
+      "name": "Northumberland",
+      "ours": 109,
+      "s12": 107,
+      "difference": 2,
+      "differencePct": 1.9,
+      "s12Codes": [
+        "E06000057"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.264,
+      "s12Per10k": 3.338,
+      "oursBySizeBand": [
+        64,
+        29,
+        10,
+        6
+      ],
+      "s12BySizeBand": [
+        58,
+        31,
+        12,
+        6
+      ]
+    },
+    {
+      "code": "E06000058",
+      "name": "Bournemouth, Christchurch and Poole",
+      "ours": 122,
+      "s12": 120,
+      "difference": 2,
+      "differencePct": 1.7,
+      "s12Codes": [
+        "E06000058"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.006,
+      "s12Per10k": 2.999,
+      "oursBySizeBand": [
+        74,
+        29,
+        7,
+        12
+      ],
+      "s12BySizeBand": [
+        67,
+        33,
+        9,
+        11
+      ]
+    },
+    {
+      "code": "E06000059",
+      "name": "Dorset",
+      "ours": 139,
+      "s12": 140,
+      "difference": -1,
+      "differencePct": -0.7,
+      "s12Codes": [
+        "E06000059"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.555,
+      "s12Per10k": 3.688,
+      "oursBySizeBand": [
+        85,
+        38,
+        12,
+        4
+      ],
+      "s12BySizeBand": [
+        89,
+        35,
+        12,
+        4
+      ]
+    },
+    {
+      "code": "E06000060",
+      "name": "Buckinghamshire",
+      "ours": 148,
+      "s12": 133,
+      "difference": 15,
+      "differencePct": 11.3,
+      "s12Codes": [
+        "E06000060"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.533,
+      "s12Per10k": 2.405,
+      "oursBySizeBand": [
+        94,
+        29,
+        11,
+        14
+      ],
+      "s12BySizeBand": [
+        76,
+        32,
+        13,
+        12
+      ]
+    },
+    {
+      "code": "E06000061",
+      "name": "North Northamptonshire",
+      "ours": 106,
+      "s12": 102,
+      "difference": 4,
+      "differencePct": 3.9,
+      "s12Codes": [
+        "E06000061"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.793,
+      "s12Per10k": 2.837,
+      "oursBySizeBand": [
+        64,
+        28,
+        4,
+        10
+      ],
+      "s12BySizeBand": [
+        57,
+        31,
+        5,
+        9
+      ]
+    },
+    {
+      "code": "E06000062",
+      "name": "West Northamptonshire",
+      "ours": 98,
+      "s12": 90,
+      "difference": 8,
+      "differencePct": 8.9,
+      "s12Codes": [
+        "E06000062"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.206,
+      "s12Per10k": 2.114,
+      "oursBySizeBand": [
+        62,
+        23,
+        8,
+        5
+      ],
+      "s12BySizeBand": [
+        54,
+        21,
+        10,
+        5
+      ]
+    },
+    {
+      "code": "E06000063",
+      "name": "Cumberland",
+      "ours": 104,
+      "s12": 100,
+      "difference": 4,
+      "differencePct": 4.0,
+      "s12Codes": [
+        "E07000026",
+        "E07000028",
+        "E07000029"
+      ],
+      "mapping": [
+        "2023 merger"
+      ],
+      "oursPer10k": 3.683,
+      "s12Per10k": null,
+      "oursBySizeBand": [
+        69,
+        23,
+        6,
+        6
+      ],
+      "s12BySizeBand": [
+        64,
+        22,
+        9,
+        5
+      ]
+    },
+    {
+      "code": "E06000064",
+      "name": "Westmorland and Furness",
+      "ours": 90,
+      "s12": 85,
+      "difference": 5,
+      "differencePct": 5.9,
+      "s12Codes": [
+        "E07000027",
+        "E07000030",
+        "E07000031"
+      ],
+      "mapping": [
+        "2023 merger"
+      ],
+      "oursPer10k": 3.891,
+      "s12Per10k": null,
+      "oursBySizeBand": [
+        60,
+        19,
+        4,
+        7
+      ],
+      "s12BySizeBand": [
+        53,
+        21,
+        4,
+        7
+      ]
+    },
+    {
+      "code": "E06000065",
+      "name": "North Yorkshire",
+      "ours": 196,
+      "s12": 181,
+      "difference": 15,
+      "differencePct": 8.3,
+      "s12Codes": [
+        "E07000163",
+        "E07000164",
+        "E07000165",
+        "E07000166",
+        "E07000167",
+        "E07000168",
+        "E07000169"
+      ],
+      "mapping": [
+        "2023 merger"
+      ],
+      "oursPer10k": 3.067,
+      "s12Per10k": null,
+      "oursBySizeBand": [
+        124,
+        46,
+        16,
+        10
+      ],
+      "s12BySizeBand": [
+        106,
+        51,
+        16,
+        8
+      ]
+    },
+    {
+      "code": "E06000066",
+      "name": "Somerset",
+      "ours": 187,
+      "s12": 178,
+      "difference": 9,
+      "differencePct": 5.1,
+      "s12Codes": [
+        "E07000187",
+        "E07000188",
+        "E07000189",
+        "E07000246"
+      ],
+      "mapping": [
+        "2023 merger"
+      ],
+      "oursPer10k": 3.164,
+      "s12Per10k": null,
+      "oursBySizeBand": [
+        116,
+        39,
+        20,
+        12
+      ],
+      "s12BySizeBand": [
+        108,
+        40,
+        20,
+        10
+      ]
+    },
+    {
+      "code": "E07000008",
+      "name": "Cambridge",
+      "ours": 47,
+      "s12": 48,
+      "difference": -1,
+      "differencePct": -2.1,
+      "s12Codes": [
+        "E07000008"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.136,
+      "s12Per10k": 3.295,
+      "oursBySizeBand": [
+        32,
+        9,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        32,
+        10,
+        2,
+        4
+      ]
+    },
+    {
+      "code": "E07000009",
+      "name": "East Cambridgeshire",
+      "ours": 25,
+      "s12": 23,
+      "difference": 2,
+      "differencePct": 8.7,
+      "s12Codes": [
+        "E07000009"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.643,
+      "s12Per10k": 2.621,
+      "oursBySizeBand": [
+        18,
+        5,
+        0,
+        2
+      ],
+      "s12BySizeBand": [
+        14,
+        7,
+        0,
+        2
+      ]
+    },
+    {
+      "code": "E07000010",
+      "name": "Fenland",
+      "ours": 29,
+      "s12": 26,
+      "difference": 3,
+      "differencePct": 11.5,
+      "s12Codes": [
+        "E07000010"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.738,
+      "s12Per10k": 2.538,
+      "oursBySizeBand": [
+        15,
+        9,
+        2,
+        3
+      ],
+      "s12BySizeBand": [
+        13,
+        7,
+        2,
+        4
+      ]
+    },
+    {
+      "code": "E07000011",
+      "name": "Huntingdonshire",
+      "ours": 53,
+      "s12": 47,
+      "difference": 6,
+      "differencePct": 12.8,
+      "s12Codes": [
+        "E07000011"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.761,
+      "s12Per10k": 2.599,
+      "oursBySizeBand": [
+        32,
+        16,
+        2,
+        3
+      ],
+      "s12BySizeBand": [
+        27,
+        15,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "E07000012",
+      "name": "South Cambridgeshire",
+      "ours": 36,
+      "s12": 31,
+      "difference": 5,
+      "differencePct": 16.1,
+      "s12Codes": [
+        "E07000012"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.061,
+      "s12Per10k": 1.912,
+      "oursBySizeBand": [
+        31,
+        1,
+        0,
+        4
+      ],
+      "s12BySizeBand": [
+        25,
+        2,
+        0,
+        4
+      ]
+    },
+    {
+      "code": "E07000032",
+      "name": "Amber Valley",
+      "ours": 37,
+      "s12": 36,
+      "difference": 1,
+      "differencePct": 2.8,
+      "s12Codes": [
+        "E07000032"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.805,
+      "s12Per10k": 2.852,
+      "oursBySizeBand": [
+        21,
+        10,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        20,
+        10,
+        3,
+        3
+      ]
+    },
+    {
+      "code": "E07000033",
+      "name": "Bolsover",
+      "ours": 18,
+      "s12": 18,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000033"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.133,
+      "s12Per10k": 2.242,
+      "oursBySizeBand": [
+        9,
+        7,
+        2,
+        0
+      ],
+      "s12BySizeBand": [
+        9,
+        7,
+        2,
+        0
+      ]
+    },
+    {
+      "code": "E07000034",
+      "name": "Chesterfield",
+      "ours": 37,
+      "s12": 36,
+      "difference": 1,
+      "differencePct": 2.8,
+      "s12Codes": [
+        "E07000034"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.477,
+      "s12Per10k": 3.476,
+      "oursBySizeBand": [
+        24,
+        7,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        23,
+        6,
+        4,
+        3
+      ]
+    },
+    {
+      "code": "E07000035",
+      "name": "Derbyshire Dales",
+      "ours": 24,
+      "s12": 23,
+      "difference": 1,
+      "differencePct": 4.3,
+      "s12Codes": [
+        "E07000035"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.332,
+      "s12Per10k": 3.215,
+      "oursBySizeBand": [
+        15,
+        8,
+        1,
+        0
+      ],
+      "s12BySizeBand": [
+        14,
+        8,
+        1,
+        0
+      ]
+    },
+    {
+      "code": "E07000036",
+      "name": "Erewash",
+      "ours": 31,
+      "s12": 30,
+      "difference": 1,
+      "differencePct": 3.3,
+      "s12Codes": [
+        "E07000036"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.732,
+      "s12Per10k": 2.657,
+      "oursBySizeBand": [
+        19,
+        8,
+        0,
+        4
+      ],
+      "s12BySizeBand": [
+        19,
+        7,
+        0,
+        4
+      ]
+    },
+    {
+      "code": "E07000037",
+      "name": "High Peak",
+      "ours": 27,
+      "s12": 24,
+      "difference": 3,
+      "differencePct": 12.5,
+      "s12Codes": [
+        "E07000037"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.945,
+      "s12Per10k": 2.639,
+      "oursBySizeBand": [
+        14,
+        9,
+        3,
+        1
+      ],
+      "s12BySizeBand": [
+        10,
+        9,
+        4,
+        1
+      ]
+    },
+    {
+      "code": "E07000038",
+      "name": "North East Derbyshire",
+      "ours": 26,
+      "s12": 25,
+      "difference": 1,
+      "differencePct": 4.0,
+      "s12Codes": [
+        "E07000038"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.41,
+      "s12Per10k": 2.451,
+      "oursBySizeBand": [
+        18,
+        6,
+        1,
+        1
+      ],
+      "s12BySizeBand": [
+        15,
+        8,
+        1,
+        1
+      ]
+    },
+    {
+      "code": "E07000039",
+      "name": "South Derbyshire",
+      "ours": 26,
+      "s12": 25,
+      "difference": 1,
+      "differencePct": 4.0,
+      "s12Codes": [
+        "E07000039"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.177,
+      "s12Per10k": 2.332,
+      "oursBySizeBand": [
+        16,
+        8,
+        0,
+        2
+      ],
+      "s12BySizeBand": [
+        15,
+        8,
+        0,
+        2
+      ]
+    },
+    {
+      "code": "E07000040",
+      "name": "East Devon",
+      "ours": 48,
+      "s12": 42,
+      "difference": 6,
+      "differencePct": 14.3,
+      "s12Codes": [
+        "E07000040"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.007,
+      "s12Per10k": 2.785,
+      "oursBySizeBand": [
+        32,
+        10,
+        5,
+        1
+      ],
+      "s12BySizeBand": [
+        26,
+        11,
+        4,
+        1
+      ]
+    },
+    {
+      "code": "E07000041",
+      "name": "Exeter",
+      "ours": 47,
+      "s12": 48,
+      "difference": -1,
+      "differencePct": -2.1,
+      "s12Codes": [
+        "E07000041"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.408,
+      "s12Per10k": 3.672,
+      "oursBySizeBand": [
+        27,
+        13,
+        2,
+        5
+      ],
+      "s12BySizeBand": [
+        28,
+        12,
+        4,
+        4
+      ]
+    },
+    {
+      "code": "E07000042",
+      "name": "Mid Devon",
+      "ours": 24,
+      "s12": 20,
+      "difference": 4,
+      "differencePct": 20.0,
+      "s12Codes": [
+        "E07000042"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.804,
+      "s12Per10k": 2.414,
+      "oursBySizeBand": [
+        15,
+        4,
+        3,
+        2
+      ],
+      "s12BySizeBand": [
+        12,
+        2,
+        4,
+        2
+      ]
+    },
+    {
+      "code": "E07000043",
+      "name": "North Devon",
+      "ours": 34,
+      "s12": 31,
+      "difference": 3,
+      "differencePct": 9.7,
+      "s12Codes": [
+        "E07000043"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.357,
+      "s12Per10k": 3.144,
+      "oursBySizeBand": [
+        20,
+        7,
+        3,
+        4
+      ],
+      "s12BySizeBand": [
+        15,
+        8,
+        4,
+        4
+      ]
+    },
+    {
+      "code": "E07000044",
+      "name": "South Hams",
+      "ours": 29,
+      "s12": 33,
+      "difference": -4,
+      "differencePct": -12.1,
+      "s12Codes": [
+        "E07000044"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.113,
+      "s12Per10k": 3.723,
+      "oursBySizeBand": [
+        21,
+        4,
+        3,
+        1
+      ],
+      "s12BySizeBand": [
+        23,
+        6,
+        3,
+        1
+      ]
+    },
+    {
+      "code": "E07000045",
+      "name": "Teignbridge",
+      "ours": 41,
+      "s12": 38,
+      "difference": 3,
+      "differencePct": 7.9,
+      "s12Codes": [
+        "E07000045"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.958,
+      "s12Per10k": 2.819,
+      "oursBySizeBand": [
+        29,
+        7,
+        2,
+        3
+      ],
+      "s12BySizeBand": [
+        27,
+        6,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "E07000046",
+      "name": "Torridge",
+      "ours": 22,
+      "s12": 19,
+      "difference": 3,
+      "differencePct": 15.8,
+      "s12Codes": [
+        "E07000046"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.126,
+      "s12Per10k": 2.789,
+      "oursBySizeBand": [
+        14,
+        4,
+        3,
+        1
+      ],
+      "s12BySizeBand": [
+        11,
+        4,
+        3,
+        1
+      ]
+    },
+    {
+      "code": "E07000047",
+      "name": "West Devon",
+      "ours": 18,
+      "s12": 21,
+      "difference": -3,
+      "differencePct": -14.3,
+      "s12Codes": [
+        "E07000047"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.052,
+      "s12Per10k": 3.678,
+      "oursBySizeBand": [
+        10,
+        5,
+        3,
+        0
+      ],
+      "s12BySizeBand": [
+        13,
+        5,
+        3,
+        0
+      ]
+    },
+    {
+      "code": "E07000061",
+      "name": "Eastbourne",
+      "ours": 36,
+      "s12": 32,
+      "difference": 4,
+      "differencePct": 12.5,
+      "s12Codes": [
+        "E07000061"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.465,
+      "s12Per10k": 3.147,
+      "oursBySizeBand": [
+        21,
+        7,
+        3,
+        5
+      ],
+      "s12BySizeBand": [
+        19,
+        5,
+        4,
+        4
+      ]
+    },
+    {
+      "code": "E07000062",
+      "name": "Hastings",
+      "ours": 23,
+      "s12": 23,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000062"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.532,
+      "s12Per10k": 2.528,
+      "oursBySizeBand": [
+        14,
+        2,
+        3,
+        4
+      ],
+      "s12BySizeBand": [
+        15,
+        2,
+        2,
+        4
+      ]
+    },
+    {
+      "code": "E07000063",
+      "name": "Lewes",
+      "ours": 23,
+      "s12": 20,
+      "difference": 3,
+      "differencePct": 15.0,
+      "s12Codes": [
+        "E07000063"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.241,
+      "s12Per10k": 2.002,
+      "oursBySizeBand": [
+        17,
+        2,
+        3,
+        1
+      ],
+      "s12BySizeBand": [
+        12,
+        3,
+        4,
+        1
+      ]
+    },
+    {
+      "code": "E07000064",
+      "name": "Rother",
+      "ours": 22,
+      "s12": 19,
+      "difference": 3,
+      "differencePct": 15.8,
+      "s12Codes": [
+        "E07000064"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.288,
+      "s12Per10k": 2.041,
+      "oursBySizeBand": [
+        16,
+        3,
+        1,
+        2
+      ],
+      "s12BySizeBand": [
+        13,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "code": "E07000065",
+      "name": "Wealden",
+      "ours": 46,
+      "s12": 39,
+      "difference": 7,
+      "differencePct": 17.9,
+      "s12Codes": [
+        "E07000065"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.733,
+      "s12Per10k": 2.435,
+      "oursBySizeBand": [
+        31,
+        8,
+        7,
+        0
+      ],
+      "s12BySizeBand": [
+        23,
+        9,
+        7,
+        0
+      ]
+    },
+    {
+      "code": "E07000066",
+      "name": "Basildon",
+      "ours": 44,
+      "s12": 36,
+      "difference": 8,
+      "differencePct": 22.2,
+      "s12Codes": [
+        "E07000066"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.274,
+      "s12Per10k": 1.919,
+      "oursBySizeBand": [
+        26,
+        10,
+        3,
+        5
+      ],
+      "s12BySizeBand": [
+        20,
+        9,
+        2,
+        5
+      ]
+    },
+    {
+      "code": "E07000067",
+      "name": "Braintree",
+      "ours": 41,
+      "s12": 42,
+      "difference": -1,
+      "differencePct": -2.4,
+      "s12Codes": [
+        "E07000067"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.463,
+      "s12Per10k": 2.705,
+      "oursBySizeBand": [
+        21,
+        11,
+        7,
+        2
+      ],
+      "s12BySizeBand": [
+        20,
+        15,
+        5,
+        2
+      ]
+    },
+    {
+      "code": "E07000068",
+      "name": "Brentwood",
+      "ours": 25,
+      "s12": 24,
+      "difference": 1,
+      "differencePct": 4.2,
+      "s12Codes": [
+        "E07000068"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.121,
+      "s12Per10k": 3.115,
+      "oursBySizeBand": [
+        21,
+        2,
+        1,
+        1
+      ],
+      "s12BySizeBand": [
+        20,
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "code": "E07000069",
+      "name": "Castle Point",
+      "ours": 22,
+      "s12": 21,
+      "difference": 1,
+      "differencePct": 4.8,
+      "s12Codes": [
+        "E07000069"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.428,
+      "s12Per10k": 2.344,
+      "oursBySizeBand": [
+        11,
+        7,
+        2,
+        2
+      ],
+      "s12BySizeBand": [
+        9,
+        8,
+        2,
+        2
+      ]
+    },
+    {
+      "code": "E07000070",
+      "name": "Chelmsford",
+      "ours": 59,
+      "s12": 58,
+      "difference": 1,
+      "differencePct": 1.7,
+      "s12Codes": [
+        "E07000070"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.096,
+      "s12Per10k": 3.195,
+      "oursBySizeBand": [
+        41,
+        8,
+        4,
+        6
+      ],
+      "s12BySizeBand": [
+        40,
+        9,
+        4,
+        5
+      ]
+    },
+    {
+      "code": "E07000071",
+      "name": "Colchester",
+      "ours": 63,
+      "s12": 59,
+      "difference": 4,
+      "differencePct": 6.8,
+      "s12Codes": [
+        "E07000071"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.132,
+      "s12Per10k": 3.062,
+      "oursBySizeBand": [
+        40,
+        14,
+        4,
+        5
+      ],
+      "s12BySizeBand": [
+        34,
+        16,
+        4,
+        5
+      ]
+    },
+    {
+      "code": "E07000072",
+      "name": "Epping Forest",
+      "ours": 28,
+      "s12": 23,
+      "difference": 5,
+      "differencePct": 21.7,
+      "s12Codes": [
+        "E07000072"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.023,
+      "s12Per10k": 1.704,
+      "oursBySizeBand": [
+        15,
+        8,
+        4,
+        1
+      ],
+      "s12BySizeBand": [
+        9,
+        9,
+        4,
+        1
+      ]
+    },
+    {
+      "code": "E07000073",
+      "name": "Harlow",
+      "ours": 24,
+      "s12": 21,
+      "difference": 3,
+      "differencePct": 14.3,
+      "s12Codes": [
+        "E07000073"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.435,
+      "s12Per10k": 2.25,
+      "oursBySizeBand": [
+        15,
+        5,
+        0,
+        4
+      ],
+      "s12BySizeBand": [
+        11,
+        5,
+        0,
+        5
+      ]
+    },
+    {
+      "code": "E07000074",
+      "name": "Maldon",
+      "ours": 15,
+      "s12": 13,
+      "difference": 2,
+      "differencePct": 15.4,
+      "s12Codes": [
+        "E07000074"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.137,
+      "s12Per10k": 1.964,
+      "oursBySizeBand": [
+        8,
+        5,
+        1,
+        1
+      ],
+      "s12BySizeBand": [
+        4,
+        7,
+        1,
+        1
+      ]
+    },
+    {
+      "code": "E07000075",
+      "name": "Rochford",
+      "ours": 20,
+      "s12": 16,
+      "difference": 4,
+      "differencePct": 25.0,
+      "s12Codes": [
+        "E07000075"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.204,
+      "s12Per10k": 1.868,
+      "oursBySizeBand": [
+        14,
+        4,
+        1,
+        1
+      ],
+      "s12BySizeBand": [
+        10,
+        4,
+        1,
+        1
+      ]
+    },
+    {
+      "code": "E07000076",
+      "name": "Tendring",
+      "ours": 53,
+      "s12": 49,
+      "difference": 4,
+      "differencePct": 8.2,
+      "s12Codes": [
+        "E07000076"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.332,
+      "s12Per10k": 3.304,
+      "oursBySizeBand": [
+        31,
+        13,
+        7,
+        2
+      ],
+      "s12BySizeBand": [
+        23,
+        18,
+        6,
+        2
+      ]
+    },
+    {
+      "code": "E07000077",
+      "name": "Uttlesford",
+      "ours": 19,
+      "s12": 17,
+      "difference": 2,
+      "differencePct": 11.8,
+      "s12Codes": [
+        "E07000077"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.964,
+      "s12Per10k": 1.861,
+      "oursBySizeBand": [
+        13,
+        3,
+        3,
+        0
+      ],
+      "s12BySizeBand": [
+        12,
+        2,
+        3,
+        0
+      ]
+    },
+    {
+      "code": "E07000078",
+      "name": "Cheltenham",
+      "ours": 41,
+      "s12": 41,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000078"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.376,
+      "s12Per10k": 3.45,
+      "oursBySizeBand": [
+        25,
+        8,
+        2,
+        6
+      ],
+      "s12BySizeBand": [
+        23,
+        9,
+        4,
+        5
+      ]
+    },
+    {
+      "code": "E07000079",
+      "name": "Cotswold",
+      "ours": 33,
+      "s12": 35,
+      "difference": -2,
+      "differencePct": -5.7,
+      "s12Codes": [
+        "E07000079"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.604,
+      "s12Per10k": 3.853,
+      "oursBySizeBand": [
+        25,
+        6,
+        1,
+        1
+      ],
+      "s12BySizeBand": [
+        26,
+        6,
+        2,
+        1
+      ]
+    },
+    {
+      "code": "E07000080",
+      "name": "Forest of Dean",
+      "ours": 22,
+      "s12": 20,
+      "difference": 2,
+      "differencePct": 10.0,
+      "s12Codes": [
+        "E07000080"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.44,
+      "s12Per10k": 2.299,
+      "oursBySizeBand": [
+        15,
+        6,
+        1,
+        0
+      ],
+      "s12BySizeBand": [
+        13,
+        6,
+        1,
+        0
+      ]
+    },
+    {
+      "code": "E07000081",
+      "name": "Gloucester",
+      "ours": 44,
+      "s12": 42,
+      "difference": 2,
+      "differencePct": 4.8,
+      "s12Codes": [
+        "E07000081"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.175,
+      "s12Per10k": 3.172,
+      "oursBySizeBand": [
+        24,
+        11,
+        3,
+        6
+      ],
+      "s12BySizeBand": [
+        22,
+        10,
+        4,
+        6
+      ]
+    },
+    {
+      "code": "E07000082",
+      "name": "Stroud",
+      "ours": 31,
+      "s12": 30,
+      "difference": 1,
+      "differencePct": 3.3,
+      "s12Codes": [
+        "E07000082"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.452,
+      "s12Per10k": 2.477,
+      "oursBySizeBand": [
+        17,
+        9,
+        4,
+        1
+      ],
+      "s12BySizeBand": [
+        16,
+        8,
+        5,
+        1
+      ]
+    },
+    {
+      "code": "E07000083",
+      "name": "Tewkesbury",
+      "ours": 28,
+      "s12": 23,
+      "difference": 5,
+      "differencePct": 21.7,
+      "s12Codes": [
+        "E07000083"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.699,
+      "s12Per10k": 2.424,
+      "oursBySizeBand": [
+        18,
+        7,
+        2,
+        1
+      ],
+      "s12BySizeBand": [
+        15,
+        5,
+        2,
+        1
+      ]
+    },
+    {
+      "code": "E07000084",
+      "name": "Basingstoke and Deane",
+      "ours": 49,
+      "s12": 51,
+      "difference": -2,
+      "differencePct": -3.9,
+      "s12Codes": [
+        "E07000084"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.525,
+      "s12Per10k": 2.754,
+      "oursBySizeBand": [
+        32,
+        10,
+        1,
+        6
+      ],
+      "s12BySizeBand": [
+        32,
+        11,
+        3,
+        5
+      ]
+    },
+    {
+      "code": "E07000085",
+      "name": "East Hampshire",
+      "ours": 39,
+      "s12": 37,
+      "difference": 2,
+      "differencePct": 5.4,
+      "s12Codes": [
+        "E07000085"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.986,
+      "s12Per10k": 2.942,
+      "oursBySizeBand": [
+        24,
+        9,
+        5,
+        1
+      ],
+      "s12BySizeBand": [
+        23,
+        8,
+        5,
+        1
+      ]
+    },
+    {
+      "code": "E07000086",
+      "name": "Eastleigh",
+      "ours": 42,
+      "s12": 38,
+      "difference": 4,
+      "differencePct": 10.5,
+      "s12Codes": [
+        "E07000086"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.923,
+      "s12Per10k": 2.785,
+      "oursBySizeBand": [
+        26,
+        10,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        22,
+        9,
+        4,
+        3
+      ]
+    },
+    {
+      "code": "E07000087",
+      "name": "Fareham",
+      "ours": 41,
+      "s12": 37,
+      "difference": 4,
+      "differencePct": 10.8,
+      "s12Codes": [
+        "E07000087"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.554,
+      "s12Per10k": 3.231,
+      "oursBySizeBand": [
+        28,
+        8,
+        1,
+        4
+      ],
+      "s12BySizeBand": [
+        24,
+        8,
+        1,
+        4
+      ]
+    },
+    {
+      "code": "E07000088",
+      "name": "Gosport",
+      "ours": 29,
+      "s12": 28,
+      "difference": 1,
+      "differencePct": 3.6,
+      "s12Codes": [
+        "E07000088"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.51,
+      "s12Per10k": 3.417,
+      "oursBySizeBand": [
+        18,
+        8,
+        2,
+        1
+      ],
+      "s12BySizeBand": [
+        18,
+        7,
+        2,
+        1
+      ]
+    },
+    {
+      "code": "E07000089",
+      "name": "Hart",
+      "ours": 31,
+      "s12": 30,
+      "difference": 1,
+      "differencePct": 3.3,
+      "s12Codes": [
+        "E07000089"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.0,
+      "s12Per10k": 3.018,
+      "oursBySizeBand": [
+        22,
+        6,
+        3,
+        0
+      ],
+      "s12BySizeBand": [
+        18,
+        9,
+        3,
+        0
+      ]
+    },
+    {
+      "code": "E07000090",
+      "name": "Havant",
+      "ours": 43,
+      "s12": 40,
+      "difference": 3,
+      "differencePct": 7.5,
+      "s12Codes": [
+        "E07000090"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.376,
+      "s12Per10k": 3.22,
+      "oursBySizeBand": [
+        26,
+        11,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        24,
+        11,
+        1,
+        4
+      ]
+    },
+    {
+      "code": "E07000091",
+      "name": "New Forest",
+      "ours": 62,
+      "s12": 58,
+      "difference": 4,
+      "differencePct": 6.9,
+      "s12Codes": [
+        "E07000091"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.524,
+      "s12Per10k": 3.299,
+      "oursBySizeBand": [
+        41,
+        13,
+        7,
+        1
+      ],
+      "s12BySizeBand": [
+        38,
+        12,
+        7,
+        1
+      ]
+    },
+    {
+      "code": "E07000092",
+      "name": "Rushmoor",
+      "ours": 24,
+      "s12": 22,
+      "difference": 2,
+      "differencePct": 9.1,
+      "s12Codes": [
+        "E07000092"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.26,
+      "s12Per10k": 2.205,
+      "oursBySizeBand": [
+        13,
+        5,
+        1,
+        5
+      ],
+      "s12BySizeBand": [
+        12,
+        3,
+        2,
+        5
+      ]
+    },
+    {
+      "code": "E07000093",
+      "name": "Test Valley",
+      "ours": 43,
+      "s12": 42,
+      "difference": 1,
+      "differencePct": 2.4,
+      "s12Codes": [
+        "E07000093"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.169,
+      "s12Per10k": 3.219,
+      "oursBySizeBand": [
+        33,
+        6,
+        2,
+        2
+      ],
+      "s12BySizeBand": [
+        31,
+        7,
+        2,
+        2
+      ]
+    },
+    {
+      "code": "E07000094",
+      "name": "Winchester",
+      "ours": 31,
+      "s12": 30,
+      "difference": 1,
+      "differencePct": 3.3,
+      "s12Codes": [
+        "E07000094"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.265,
+      "s12Per10k": 2.354,
+      "oursBySizeBand": [
+        20,
+        5,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        20,
+        4,
+        4,
+        2
+      ]
+    },
+    {
+      "code": "E07000095",
+      "name": "Broxbourne",
+      "ours": 26,
+      "s12": 23,
+      "difference": 3,
+      "differencePct": 13.0,
+      "s12Codes": [
+        "E07000095"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.521,
+      "s12Per10k": 2.323,
+      "oursBySizeBand": [
+        14,
+        7,
+        1,
+        4
+      ],
+      "s12BySizeBand": [
+        11,
+        7,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "E07000096",
+      "name": "Dacorum",
+      "ours": 46,
+      "s12": 36,
+      "difference": 10,
+      "differencePct": 27.8,
+      "s12Codes": [
+        "E07000096"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.834,
+      "s12Per10k": 2.321,
+      "oursBySizeBand": [
+        29,
+        10,
+        4,
+        3
+      ],
+      "s12BySizeBand": [
+        22,
+        8,
+        4,
+        2
+      ]
+    },
+    {
+      "code": "E07000098",
+      "name": "Hertsmere",
+      "ours": 31,
+      "s12": 31,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000098"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.812,
+      "s12Per10k": 2.875,
+      "oursBySizeBand": [
+        22,
+        4,
+        1,
+        4
+      ],
+      "s12BySizeBand": [
+        20,
+        5,
+        2,
+        4
+      ]
+    },
+    {
+      "code": "E07000099",
+      "name": "North Hertfordshire",
+      "ours": 29,
+      "s12": 28,
+      "difference": 1,
+      "differencePct": 3.6,
+      "s12Codes": [
+        "E07000099"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.111,
+      "s12Per10k": 2.102,
+      "oursBySizeBand": [
+        14,
+        9,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        11,
+        11,
+        2,
+        4
+      ]
+    },
+    {
+      "code": "E07000102",
+      "name": "Three Rivers",
+      "ours": 20,
+      "s12": 20,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000102"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.082,
+      "s12Per10k": 2.133,
+      "oursBySizeBand": [
+        15,
+        3,
+        2,
+        0
+      ],
+      "s12BySizeBand": [
+        15,
+        3,
+        2,
+        0
+      ]
+    },
+    {
+      "code": "E07000103",
+      "name": "Watford",
+      "ours": 21,
+      "s12": 22,
+      "difference": -1,
+      "differencePct": -4.5,
+      "s12Codes": [
+        "E07000103"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.951,
+      "s12Per10k": 2.152,
+      "oursBySizeBand": [
+        13,
+        2,
+        1,
+        5
+      ],
+      "s12BySizeBand": [
+        13,
+        3,
+        2,
+        4
+      ]
+    },
+    {
+      "code": "E07000105",
+      "name": "Ashford",
+      "ours": 35,
+      "s12": 31,
+      "difference": 4,
+      "differencePct": 12.9,
+      "s12Codes": [
+        "E07000105"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.456,
+      "s12Per10k": 2.335,
+      "oursBySizeBand": [
+        21,
+        8,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        19,
+        7,
+        1,
+        4
+      ]
+    },
+    {
+      "code": "E07000106",
+      "name": "Canterbury",
+      "ours": 44,
+      "s12": 41,
+      "difference": 3,
+      "differencePct": 7.3,
+      "s12Codes": [
+        "E07000106"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.706,
+      "s12Per10k": 2.604,
+      "oursBySizeBand": [
+        21,
+        14,
+        3,
+        6
+      ],
+      "s12BySizeBand": [
+        18,
+        13,
+        5,
+        5
+      ]
+    },
+    {
+      "code": "E07000107",
+      "name": "Dartford",
+      "ours": 29,
+      "s12": 26,
+      "difference": 3,
+      "differencePct": 11.5,
+      "s12Codes": [
+        "E07000107"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.296,
+      "s12Per10k": 2.227,
+      "oursBySizeBand": [
+        20,
+        5,
+        2,
+        2
+      ],
+      "s12BySizeBand": [
+        17,
+        5,
+        3,
+        1
+      ]
+    },
+    {
+      "code": "E07000108",
+      "name": "Dover",
+      "ours": 29,
+      "s12": 29,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000108"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.396,
+      "s12Per10k": 2.491,
+      "oursBySizeBand": [
+        17,
+        9,
+        2,
+        1
+      ],
+      "s12BySizeBand": [
+        16,
+        10,
+        2,
+        1
+      ]
+    },
+    {
+      "code": "E07000109",
+      "name": "Gravesham",
+      "ours": 25,
+      "s12": 24,
+      "difference": 1,
+      "differencePct": 4.2,
+      "s12Codes": [
+        "E07000109"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.248,
+      "s12Per10k": 2.245,
+      "oursBySizeBand": [
+        16,
+        5,
+        2,
+        2
+      ],
+      "s12BySizeBand": [
+        16,
+        4,
+        2,
+        2
+      ]
+    },
+    {
+      "code": "E07000110",
+      "name": "Maidstone",
+      "ours": 43,
+      "s12": 39,
+      "difference": 4,
+      "differencePct": 10.3,
+      "s12Codes": [
+        "E07000110"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.246,
+      "s12Per10k": 2.219,
+      "oursBySizeBand": [
+        28,
+        9,
+        4,
+        2
+      ],
+      "s12BySizeBand": [
+        24,
+        8,
+        6,
+        1
+      ]
+    },
+    {
+      "code": "E07000111",
+      "name": "Sevenoaks",
+      "ours": 28,
+      "s12": 26,
+      "difference": 2,
+      "differencePct": 7.7,
+      "s12Codes": [
+        "E07000111"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.273,
+      "s12Per10k": 2.157,
+      "oursBySizeBand": [
+        15,
+        7,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        13,
+        7,
+        3,
+        3
+      ]
+    },
+    {
+      "code": "E07000112",
+      "name": "Folkestone and Hythe",
+      "ours": 30,
+      "s12": 28,
+      "difference": 2,
+      "differencePct": 7.1,
+      "s12Codes": [
+        "E07000112"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.675,
+      "s12Per10k": 2.551,
+      "oursBySizeBand": [
+        17,
+        5,
+        3,
+        5
+      ],
+      "s12BySizeBand": [
+        14,
+        6,
+        3,
+        5
+      ]
+    },
+    {
+      "code": "E07000113",
+      "name": "Swale",
+      "ours": 39,
+      "s12": 38,
+      "difference": 1,
+      "differencePct": 2.6,
+      "s12Codes": [
+        "E07000113"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.427,
+      "s12Per10k": 2.505,
+      "oursBySizeBand": [
+        24,
+        8,
+        1,
+        6
+      ],
+      "s12BySizeBand": [
+        21,
+        8,
+        3,
+        6
+      ]
+    },
+    {
+      "code": "E07000114",
+      "name": "Thanet",
+      "ours": 37,
+      "s12": 39,
+      "difference": -2,
+      "differencePct": -5.1,
+      "s12Codes": [
+        "E07000114"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.576,
+      "s12Per10k": 2.774,
+      "oursBySizeBand": [
+        20,
+        11,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        19,
+        14,
+        3,
+        3
+      ]
+    },
+    {
+      "code": "E07000115",
+      "name": "Tonbridge and Malling",
+      "ours": 40,
+      "s12": 36,
+      "difference": 4,
+      "differencePct": 11.1,
+      "s12Codes": [
+        "E07000115"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.9,
+      "s12Per10k": 2.723,
+      "oursBySizeBand": [
+        23,
+        12,
+        1,
+        4
+      ],
+      "s12BySizeBand": [
+        20,
+        11,
+        1,
+        4
+      ]
+    },
+    {
+      "code": "E07000116",
+      "name": "Tunbridge Wells",
+      "ours": 30,
+      "s12": 27,
+      "difference": 3,
+      "differencePct": 11.1,
+      "s12Codes": [
+        "E07000116"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.498,
+      "s12Per10k": 2.341,
+      "oursBySizeBand": [
+        18,
+        6,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        14,
+        7,
+        5,
+        1
+      ]
+    },
+    {
+      "code": "E07000117",
+      "name": "Burnley",
+      "ours": 21,
+      "s12": 21,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000117"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.08,
+      "s12Per10k": 2.219,
+      "oursBySizeBand": [
+        8,
+        8,
+        0,
+        5
+      ],
+      "s12BySizeBand": [
+        9,
+        7,
+        1,
+        4
+      ]
+    },
+    {
+      "code": "E07000118",
+      "name": "Chorley",
+      "ours": 38,
+      "s12": 34,
+      "difference": 4,
+      "differencePct": 11.8,
+      "s12Codes": [
+        "E07000118"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.12,
+      "s12Per10k": 2.888,
+      "oursBySizeBand": [
+        25,
+        8,
+        1,
+        4
+      ],
+      "s12BySizeBand": [
+        21,
+        8,
+        1,
+        4
+      ]
+    },
+    {
+      "code": "E07000119",
+      "name": "Fylde",
+      "ours": 32,
+      "s12": 30,
+      "difference": 2,
+      "differencePct": 6.7,
+      "s12Codes": [
+        "E07000119"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.691,
+      "s12Per10k": 3.687,
+      "oursBySizeBand": [
+        19,
+        9,
+        3,
+        1
+      ],
+      "s12BySizeBand": [
+        18,
+        8,
+        3,
+        1
+      ]
+    },
+    {
+      "code": "E07000120",
+      "name": "Hyndburn",
+      "ours": 22,
+      "s12": 19,
+      "difference": 3,
+      "differencePct": 15.8,
+      "s12Codes": [
+        "E07000120"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.531,
+      "s12Per10k": 2.31,
+      "oursBySizeBand": [
+        11,
+        7,
+        1,
+        3
+      ],
+      "s12BySizeBand": [
+        8,
+        7,
+        1,
+        3
+      ]
+    },
+    {
+      "code": "E07000121",
+      "name": "Lancaster",
+      "ours": 48,
+      "s12": 46,
+      "difference": 2,
+      "differencePct": 4.3,
+      "s12Codes": [
+        "E07000121"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.305,
+      "s12Per10k": 3.218,
+      "oursBySizeBand": [
+        30,
+        12,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        29,
+        10,
+        3,
+        4
+      ]
+    },
+    {
+      "code": "E07000122",
+      "name": "Pendle",
+      "ours": 26,
+      "s12": 23,
+      "difference": 3,
+      "differencePct": 13.0,
+      "s12Codes": [
+        "E07000122"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.595,
+      "s12Per10k": 2.402,
+      "oursBySizeBand": [
+        16,
+        7,
+        0,
+        3
+      ],
+      "s12BySizeBand": [
+        13,
+        7,
+        0,
+        3
+      ]
+    },
+    {
+      "code": "E07000123",
+      "name": "Preston",
+      "ours": 54,
+      "s12": 48,
+      "difference": 6,
+      "differencePct": 12.5,
+      "s12Codes": [
+        "E07000123"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.283,
+      "s12Per10k": 3.247,
+      "oursBySizeBand": [
+        35,
+        11,
+        1,
+        7
+      ],
+      "s12BySizeBand": [
+        29,
+        12,
+        2,
+        5
+      ]
+    },
+    {
+      "code": "E07000124",
+      "name": "Ribble Valley",
+      "ours": 16,
+      "s12": 16,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000124"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.39,
+      "s12Per10k": 2.599,
+      "oursBySizeBand": [
+        9,
+        6,
+        1,
+        0
+      ],
+      "s12BySizeBand": [
+        9,
+        6,
+        1,
+        0
+      ]
+    },
+    {
+      "code": "E07000125",
+      "name": "Rossendale",
+      "ours": 16,
+      "s12": 16,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000125"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.171,
+      "s12Per10k": 2.258,
+      "oursBySizeBand": [
+        7,
+        6,
+        0,
+        3
+      ],
+      "s12BySizeBand": [
+        6,
+        7,
+        0,
+        3
+      ]
+    },
+    {
+      "code": "E07000126",
+      "name": "South Ribble",
+      "ours": 43,
+      "s12": 41,
+      "difference": 2,
+      "differencePct": 4.9,
+      "s12Codes": [
+        "E07000126"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.658,
+      "s12Per10k": 3.693,
+      "oursBySizeBand": [
+        28,
+        10,
+        2,
+        3
+      ],
+      "s12BySizeBand": [
+        25,
+        11,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "E07000127",
+      "name": "West Lancashire",
+      "ours": 33,
+      "s12": 30,
+      "difference": 3,
+      "differencePct": 10.0,
+      "s12Codes": [
+        "E07000127"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.671,
+      "s12Per10k": 2.555,
+      "oursBySizeBand": [
+        18,
+        11,
+        3,
+        1
+      ],
+      "s12BySizeBand": [
+        15,
+        11,
+        3,
+        1
+      ]
+    },
+    {
+      "code": "E07000128",
+      "name": "Wyre",
+      "ours": 39,
+      "s12": 39,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000128"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.236,
+      "s12Per10k": 3.484,
+      "oursBySizeBand": [
+        25,
+        11,
+        1,
+        2
+      ],
+      "s12BySizeBand": [
+        25,
+        11,
+        1,
+        2
+      ]
+    },
+    {
+      "code": "E07000129",
+      "name": "Blaby",
+      "ours": 30,
+      "s12": 28,
+      "difference": 2,
+      "differencePct": 7.1,
+      "s12Codes": [
+        "E07000129"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.767,
+      "s12Per10k": 2.72,
+      "oursBySizeBand": [
+        20,
+        5,
+        1,
+        4
+      ],
+      "s12BySizeBand": [
+        19,
+        4,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "E07000130",
+      "name": "Charnwood",
+      "ours": 41,
+      "s12": 40,
+      "difference": 1,
+      "differencePct": 2.5,
+      "s12Codes": [
+        "E07000130"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.161,
+      "s12Per10k": 2.174,
+      "oursBySizeBand": [
+        22,
+        13,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        21,
+        13,
+        2,
+        4
+      ]
+    },
+    {
+      "code": "E07000131",
+      "name": "Harborough",
+      "ours": 29,
+      "s12": 28,
+      "difference": 1,
+      "differencePct": 3.6,
+      "s12Codes": [
+        "E07000131"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.721,
+      "s12Per10k": 2.868,
+      "oursBySizeBand": [
+        16,
+        11,
+        2,
+        0
+      ],
+      "s12BySizeBand": [
+        15,
+        11,
+        2,
+        0
+      ]
+    },
+    {
+      "code": "E07000132",
+      "name": "Hinckley and Bosworth",
+      "ours": 31,
+      "s12": 29,
+      "difference": 2,
+      "differencePct": 6.9,
+      "s12Codes": [
+        "E07000132"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.622,
+      "s12Per10k": 2.552,
+      "oursBySizeBand": [
+        22,
+        5,
+        1,
+        3
+      ],
+      "s12BySizeBand": [
+        20,
+        5,
+        1,
+        3
+      ]
+    },
+    {
+      "code": "E07000133",
+      "name": "Melton",
+      "ours": 12,
+      "s12": 13,
+      "difference": -1,
+      "differencePct": -7.7,
+      "s12Codes": [
+        "E07000133"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.194,
+      "s12Per10k": 2.512,
+      "oursBySizeBand": [
+        6,
+        3,
+        2,
+        1
+      ],
+      "s12BySizeBand": [
+        7,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "code": "E07000134",
+      "name": "North West Leicestershire",
+      "ours": 39,
+      "s12": 36,
+      "difference": 3,
+      "differencePct": 8.3,
+      "s12Codes": [
+        "E07000134"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.443,
+      "s12Per10k": 3.438,
+      "oursBySizeBand": [
+        26,
+        10,
+        1,
+        2
+      ],
+      "s12BySizeBand": [
+        26,
+        7,
+        1,
+        2
+      ]
+    },
+    {
+      "code": "E07000135",
+      "name": "Oadby and Wigston",
+      "ours": 19,
+      "s12": 21,
+      "difference": -2,
+      "differencePct": -9.5,
+      "s12Codes": [
+        "E07000135"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.088,
+      "s12Per10k": 3.637,
+      "oursBySizeBand": [
+        10,
+        6,
+        0,
+        3
+      ],
+      "s12BySizeBand": [
+        11,
+        7,
+        0,
+        3
+      ]
+    },
+    {
+      "code": "E07000136",
+      "name": "Boston",
+      "ours": 23,
+      "s12": 24,
+      "difference": -1,
+      "differencePct": -4.2,
+      "s12Codes": [
+        "E07000136"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.19,
+      "s12Per10k": 3.404,
+      "oursBySizeBand": [
+        17,
+        4,
+        0,
+        2
+      ],
+      "s12BySizeBand": [
+        17,
+        5,
+        0,
+        2
+      ]
+    },
+    {
+      "code": "E07000137",
+      "name": "East Lindsey",
+      "ours": 71,
+      "s12": 67,
+      "difference": 4,
+      "differencePct": 6.0,
+      "s12Codes": [
+        "E07000137"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.838,
+      "s12Per10k": 4.708,
+      "oursBySizeBand": [
+        53,
+        13,
+        4,
+        1
+      ],
+      "s12BySizeBand": [
+        48,
+        14,
+        4,
+        1
+      ]
+    },
+    {
+      "code": "E07000138",
+      "name": "Lincoln",
+      "ours": 46,
+      "s12": 42,
+      "difference": 4,
+      "differencePct": 9.5,
+      "s12Codes": [
+        "E07000138"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.451,
+      "s12Per10k": 4.046,
+      "oursBySizeBand": [
+        28,
+        10,
+        3,
+        5
+      ],
+      "s12BySizeBand": [
+        23,
+        10,
+        5,
+        4
+      ]
+    },
+    {
+      "code": "E07000139",
+      "name": "North Kesteven",
+      "ours": 37,
+      "s12": 35,
+      "difference": 2,
+      "differencePct": 5.7,
+      "s12Codes": [
+        "E07000139"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.002,
+      "s12Per10k": 2.964,
+      "oursBySizeBand": [
+        26,
+        7,
+        3,
+        1
+      ],
+      "s12BySizeBand": [
+        25,
+        6,
+        3,
+        1
+      ]
+    },
+    {
+      "code": "E07000140",
+      "name": "South Holland",
+      "ours": 30,
+      "s12": 28,
+      "difference": 2,
+      "differencePct": 7.1,
+      "s12Codes": [
+        "E07000140"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.977,
+      "s12Per10k": 2.944,
+      "oursBySizeBand": [
+        20,
+        7,
+        1,
+        2
+      ],
+      "s12BySizeBand": [
+        19,
+        6,
+        1,
+        2
+      ]
+    },
+    {
+      "code": "E07000141",
+      "name": "South Kesteven",
+      "ours": 46,
+      "s12": 41,
+      "difference": 5,
+      "differencePct": 12.2,
+      "s12Codes": [
+        "E07000141"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.107,
+      "s12Per10k": 2.859,
+      "oursBySizeBand": [
+        27,
+        10,
+        6,
+        3
+      ],
+      "s12BySizeBand": [
+        22,
+        10,
+        6,
+        3
+      ]
+    },
+    {
+      "code": "E07000142",
+      "name": "West Lindsey",
+      "ours": 26,
+      "s12": 22,
+      "difference": 4,
+      "differencePct": 18.2,
+      "s12Codes": [
+        "E07000142"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.607,
+      "s12Per10k": 2.312,
+      "oursBySizeBand": [
+        17,
+        7,
+        2,
+        0
+      ],
+      "s12BySizeBand": [
+        14,
+        6,
+        2,
+        0
+      ]
+    },
+    {
+      "code": "E07000143",
+      "name": "Breckland",
+      "ours": 38,
+      "s12": 35,
+      "difference": 3,
+      "differencePct": 8.6,
+      "s12Codes": [
+        "E07000143"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.566,
+      "s12Per10k": 2.474,
+      "oursBySizeBand": [
+        17,
+        13,
+        5,
+        3
+      ],
+      "s12BySizeBand": [
+        15,
+        13,
+        4,
+        3
+      ]
+    },
+    {
+      "code": "E07000144",
+      "name": "Broadland",
+      "ours": 34,
+      "s12": 31,
+      "difference": 3,
+      "differencePct": 9.7,
+      "s12Codes": [
+        "E07000144"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.435,
+      "s12Per10k": 2.353,
+      "oursBySizeBand": [
+        22,
+        6,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        18,
+        6,
+        3,
+        4
+      ]
+    },
+    {
+      "code": "E07000145",
+      "name": "Great Yarmouth",
+      "ours": 33,
+      "s12": 34,
+      "difference": -1,
+      "differencePct": -2.9,
+      "s12Codes": [
+        "E07000145"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.269,
+      "s12Per10k": 3.409,
+      "oursBySizeBand": [
+        20,
+        8,
+        2,
+        3
+      ],
+      "s12BySizeBand": [
+        20,
+        9,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "E07000146",
+      "name": "King's Lynn and West Norfolk",
+      "ours": 35,
+      "s12": 34,
+      "difference": 1,
+      "differencePct": 2.9,
+      "s12Codes": [
+        "E07000146"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.23,
+      "s12Per10k": 2.203,
+      "oursBySizeBand": [
+        17,
+        8,
+        6,
+        4
+      ],
+      "s12BySizeBand": [
+        16,
+        9,
+        5,
+        4
+      ]
+    },
+    {
+      "code": "E07000147",
+      "name": "North Norfolk",
+      "ours": 30,
+      "s12": 26,
+      "difference": 4,
+      "differencePct": 15.4,
+      "s12Codes": [
+        "E07000147"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.893,
+      "s12Per10k": 2.525,
+      "oursBySizeBand": [
+        14,
+        10,
+        5,
+        1
+      ],
+      "s12BySizeBand": [
+        10,
+        11,
+        4,
+        1
+      ]
+    },
+    {
+      "code": "E07000148",
+      "name": "Norwich",
+      "ours": 46,
+      "s12": 48,
+      "difference": -2,
+      "differencePct": -4.2,
+      "s12Codes": [
+        "E07000148"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.158,
+      "s12Per10k": 3.335,
+      "oursBySizeBand": [
+        31,
+        9,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        28,
+        14,
+        3,
+        3
+      ]
+    },
+    {
+      "code": "E07000149",
+      "name": "South Norfolk",
+      "ours": 30,
+      "s12": 29,
+      "difference": 1,
+      "differencePct": 3.4,
+      "s12Codes": [
+        "E07000149"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.995,
+      "s12Per10k": 2.043,
+      "oursBySizeBand": [
+        15,
+        8,
+        4,
+        3
+      ],
+      "s12BySizeBand": [
+        14,
+        8,
+        4,
+        3
+      ]
+    },
+    {
+      "code": "E07000170",
+      "name": "Ashfield",
+      "ours": 37,
+      "s12": 35,
+      "difference": 2,
+      "differencePct": 5.7,
+      "s12Codes": [
+        "E07000170"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.833,
+      "s12Per10k": 2.771,
+      "oursBySizeBand": [
+        24,
+        10,
+        0,
+        3
+      ],
+      "s12BySizeBand": [
+        22,
+        10,
+        0,
+        3
+      ]
+    },
+    {
+      "code": "E07000171",
+      "name": "Bassetlaw",
+      "ours": 35,
+      "s12": 30,
+      "difference": 5,
+      "differencePct": 16.7,
+      "s12Codes": [
+        "E07000171"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.768,
+      "s12Per10k": 2.547,
+      "oursBySizeBand": [
+        19,
+        10,
+        1,
+        5
+      ],
+      "s12BySizeBand": [
+        14,
+        9,
+        2,
+        5
+      ]
+    },
+    {
+      "code": "E07000172",
+      "name": "Broxtowe",
+      "ours": 32,
+      "s12": 31,
+      "difference": 1,
+      "differencePct": 3.2,
+      "s12Codes": [
+        "E07000172"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.808,
+      "s12Per10k": 2.794,
+      "oursBySizeBand": [
+        21,
+        5,
+        1,
+        5
+      ],
+      "s12BySizeBand": [
+        18,
+        7,
+        2,
+        4
+      ]
+    },
+    {
+      "code": "E07000173",
+      "name": "Gedling",
+      "ours": 34,
+      "s12": 33,
+      "difference": 1,
+      "differencePct": 3.0,
+      "s12Codes": [
+        "E07000173"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.807,
+      "s12Per10k": 2.814,
+      "oursBySizeBand": [
+        18,
+        9,
+        3,
+        4
+      ],
+      "s12BySizeBand": [
+        18,
+        8,
+        3,
+        4
+      ]
+    },
+    {
+      "code": "E07000174",
+      "name": "Mansfield",
+      "ours": 25,
+      "s12": 25,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000174"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.199,
+      "s12Per10k": 2.263,
+      "oursBySizeBand": [
+        12,
+        7,
+        1,
+        5
+      ],
+      "s12BySizeBand": [
+        11,
+        8,
+        1,
+        5
+      ]
+    },
+    {
+      "code": "E07000175",
+      "name": "Newark and Sherwood",
+      "ours": 43,
+      "s12": 40,
+      "difference": 3,
+      "differencePct": 7.5,
+      "s12Codes": [
+        "E07000175"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.342,
+      "s12Per10k": 3.253,
+      "oursBySizeBand": [
+        31,
+        8,
+        2,
+        2
+      ],
+      "s12BySizeBand": [
+        28,
+        8,
+        2,
+        2
+      ]
+    },
+    {
+      "code": "E07000176",
+      "name": "Rushcliffe",
+      "ours": 36,
+      "s12": 32,
+      "difference": 4,
+      "differencePct": 12.5,
+      "s12Codes": [
+        "E07000176"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.816,
+      "s12Per10k": 2.687,
+      "oursBySizeBand": [
+        22,
+        12,
+        0,
+        2
+      ],
+      "s12BySizeBand": [
+        17,
+        11,
+        2,
+        2
+      ]
+    },
+    {
+      "code": "E07000177",
+      "name": "Cherwell",
+      "ours": 56,
+      "s12": 55,
+      "difference": 1,
+      "differencePct": 1.8,
+      "s12Codes": [
+        "E07000177"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.252,
+      "s12Per10k": 3.416,
+      "oursBySizeBand": [
+        37,
+        10,
+        2,
+        7
+      ],
+      "s12BySizeBand": [
+        36,
+        9,
+        4,
+        6
+      ]
+    },
+    {
+      "code": "E07000178",
+      "name": "Oxford",
+      "ours": 49,
+      "s12": 53,
+      "difference": -4,
+      "differencePct": -7.5,
+      "s12Codes": [
+        "E07000178"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.953,
+      "s12Per10k": 3.271,
+      "oursBySizeBand": [
+        30,
+        13,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        31,
+        15,
+        5,
+        2
+      ]
+    },
+    {
+      "code": "E07000179",
+      "name": "South Oxfordshire",
+      "ours": 40,
+      "s12": 37,
+      "difference": 3,
+      "differencePct": 8.1,
+      "s12Codes": [
+        "E07000179"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.53,
+      "s12Per10k": 2.482,
+      "oursBySizeBand": [
+        27,
+        6,
+        6,
+        1
+      ],
+      "s12BySizeBand": [
+        23,
+        7,
+        6,
+        1
+      ]
+    },
+    {
+      "code": "E07000180",
+      "name": "Vale of White Horse",
+      "ours": 43,
+      "s12": 34,
+      "difference": 9,
+      "differencePct": 26.5,
+      "s12Codes": [
+        "E07000180"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.825,
+      "s12Per10k": 2.448,
+      "oursBySizeBand": [
+        28,
+        11,
+        2,
+        2
+      ],
+      "s12BySizeBand": [
+        21,
+        10,
+        1,
+        2
+      ]
+    },
+    {
+      "code": "E07000181",
+      "name": "West Oxfordshire",
+      "ours": 36,
+      "s12": 32,
+      "difference": 4,
+      "differencePct": 12.5,
+      "s12Codes": [
+        "E07000181"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.965,
+      "s12Per10k": 2.801,
+      "oursBySizeBand": [
+        24,
+        7,
+        4,
+        1
+      ],
+      "s12BySizeBand": [
+        19,
+        8,
+        4,
+        1
+      ]
+    },
+    {
+      "code": "E07000192",
+      "name": "Cannock Chase",
+      "ours": 30,
+      "s12": 28,
+      "difference": 2,
+      "differencePct": 7.1,
+      "s12Codes": [
+        "E07000192"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.876,
+      "s12Per10k": 2.786,
+      "oursBySizeBand": [
+        13,
+        9,
+        4,
+        4
+      ],
+      "s12BySizeBand": [
+        12,
+        9,
+        3,
+        4
+      ]
+    },
+    {
+      "code": "E07000193",
+      "name": "East Staffordshire",
+      "ours": 36,
+      "s12": 36,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000193"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.737,
+      "s12Per10k": 2.903,
+      "oursBySizeBand": [
+        21,
+        7,
+        6,
+        2
+      ],
+      "s12BySizeBand": [
+        17,
+        10,
+        7,
+        2
+      ]
+    },
+    {
+      "code": "E07000194",
+      "name": "Lichfield",
+      "ours": 30,
+      "s12": 29,
+      "difference": 1,
+      "differencePct": 3.4,
+      "s12Codes": [
+        "E07000194"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.649,
+      "s12Per10k": 2.725,
+      "oursBySizeBand": [
+        19,
+        5,
+        4,
+        2
+      ],
+      "s12BySizeBand": [
+        17,
+        7,
+        3,
+        2
+      ]
+    },
+    {
+      "code": "E07000195",
+      "name": "Newcastle-under-Lyme",
+      "ours": 34,
+      "s12": 33,
+      "difference": 1,
+      "differencePct": 3.0,
+      "s12Codes": [
+        "E07000195"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.654,
+      "s12Per10k": 2.676,
+      "oursBySizeBand": [
+        22,
+        6,
+        1,
+        5
+      ],
+      "s12BySizeBand": [
+        18,
+        8,
+        3,
+        4
+      ]
+    },
+    {
+      "code": "E07000196",
+      "name": "South Staffordshire",
+      "ours": 25,
+      "s12": 24,
+      "difference": 1,
+      "differencePct": 4.2,
+      "s12Codes": [
+        "E07000196"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.177,
+      "s12Per10k": 2.172,
+      "oursBySizeBand": [
+        19,
+        3,
+        3,
+        0
+      ],
+      "s12BySizeBand": [
+        19,
+        3,
+        2,
+        0
+      ]
+    },
+    {
+      "code": "E07000197",
+      "name": "Stafford",
+      "ours": 41,
+      "s12": 37,
+      "difference": 4,
+      "differencePct": 10.8,
+      "s12Codes": [
+        "E07000197"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.869,
+      "s12Per10k": 2.703,
+      "oursBySizeBand": [
+        26,
+        9,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        22,
+        9,
+        3,
+        3
+      ]
+    },
+    {
+      "code": "E07000198",
+      "name": "Staffordshire Moorlands",
+      "ours": 24,
+      "s12": 22,
+      "difference": 2,
+      "differencePct": 9.1,
+      "s12Codes": [
+        "E07000198"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.48,
+      "s12Per10k": 2.295,
+      "oursBySizeBand": [
+        12,
+        9,
+        1,
+        2
+      ],
+      "s12BySizeBand": [
+        11,
+        8,
+        1,
+        2
+      ]
+    },
+    {
+      "code": "E07000199",
+      "name": "Tamworth",
+      "ours": 28,
+      "s12": 28,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000199"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.44,
+      "s12Per10k": 3.56,
+      "oursBySizeBand": [
+        17,
+        7,
+        0,
+        4
+      ],
+      "s12BySizeBand": [
+        16,
+        8,
+        1,
+        3
+      ]
+    },
+    {
+      "code": "E07000200",
+      "name": "Babergh",
+      "ours": 27,
+      "s12": 26,
+      "difference": 1,
+      "differencePct": 3.8,
+      "s12Codes": [
+        "E07000200"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.76,
+      "s12Per10k": 2.816,
+      "oursBySizeBand": [
+        16,
+        6,
+        1,
+        4
+      ],
+      "s12BySizeBand": [
+        14,
+        7,
+        1,
+        4
+      ]
+    },
+    {
+      "code": "E07000202",
+      "name": "Ipswich",
+      "ours": 54,
+      "s12": 52,
+      "difference": 2,
+      "differencePct": 3.8,
+      "s12Codes": [
+        "E07000202"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.872,
+      "s12Per10k": 3.724,
+      "oursBySizeBand": [
+        39,
+        8,
+        2,
+        5
+      ],
+      "s12BySizeBand": [
+        30,
+        14,
+        4,
+        4
+      ]
+    },
+    {
+      "code": "E07000203",
+      "name": "Mid Suffolk",
+      "ours": 28,
+      "s12": 23,
+      "difference": 5,
+      "differencePct": 21.7,
+      "s12Codes": [
+        "E07000203"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.477,
+      "s12Per10k": 2.24,
+      "oursBySizeBand": [
+        22,
+        4,
+        2,
+        0
+      ],
+      "s12BySizeBand": [
+        17,
+        4,
+        2,
+        0
+      ]
+    },
+    {
+      "code": "E07000207",
+      "name": "Elmbridge",
+      "ours": 32,
+      "s12": 31,
+      "difference": 1,
+      "differencePct": 3.2,
+      "s12Codes": [
+        "E07000207"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.246,
+      "s12Per10k": 2.234,
+      "oursBySizeBand": [
+        17,
+        7,
+        3,
+        5
+      ],
+      "s12BySizeBand": [
+        16,
+        7,
+        4,
+        4
+      ]
+    },
+    {
+      "code": "E07000208",
+      "name": "Epsom and Ewell",
+      "ours": 21,
+      "s12": 22,
+      "difference": -1,
+      "differencePct": -4.5,
+      "s12Codes": [
+        "E07000208"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.519,
+      "s12Per10k": 2.718,
+      "oursBySizeBand": [
+        16,
+        3,
+        0,
+        2
+      ],
+      "s12BySizeBand": [
+        17,
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "code": "E07000209",
+      "name": "Guildford",
+      "ours": 41,
+      "s12": 35,
+      "difference": 6,
+      "differencePct": 17.1,
+      "s12Codes": [
+        "E07000209"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.695,
+      "s12Per10k": 2.436,
+      "oursBySizeBand": [
+        31,
+        5,
+        2,
+        3
+      ],
+      "s12BySizeBand": [
+        26,
+        5,
+        2,
+        2
+      ]
+    },
+    {
+      "code": "E07000210",
+      "name": "Mole Valley",
+      "ours": 27,
+      "s12": 24,
+      "difference": 3,
+      "differencePct": 12.5,
+      "s12Codes": [
+        "E07000210"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.04,
+      "s12Per10k": 2.746,
+      "oursBySizeBand": [
+        16,
+        7,
+        3,
+        1
+      ],
+      "s12BySizeBand": [
+        13,
+        7,
+        3,
+        1
+      ]
+    },
+    {
+      "code": "E07000211",
+      "name": "Reigate and Banstead",
+      "ours": 37,
+      "s12": 35,
+      "difference": 2,
+      "differencePct": 5.7,
+      "s12Codes": [
+        "E07000211"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.321,
+      "s12Per10k": 2.32,
+      "oursBySizeBand": [
+        27,
+        4,
+        4,
+        2
+      ],
+      "s12BySizeBand": [
+        24,
+        5,
+        4,
+        2
+      ]
+    },
+    {
+      "code": "E07000212",
+      "name": "Runnymede",
+      "ours": 25,
+      "s12": 23,
+      "difference": 2,
+      "differencePct": 8.7,
+      "s12Codes": [
+        "E07000212"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.688,
+      "s12Per10k": 2.611,
+      "oursBySizeBand": [
+        16,
+        4,
+        3,
+        2
+      ],
+      "s12BySizeBand": [
+        15,
+        3,
+        3,
+        2
+      ]
+    },
+    {
+      "code": "E07000213",
+      "name": "Spelthorne",
+      "ours": 26,
+      "s12": 26,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000213"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.426,
+      "s12Per10k": 2.525,
+      "oursBySizeBand": [
+        18,
+        5,
+        0,
+        3
+      ],
+      "s12BySizeBand": [
+        18,
+        3,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "E07000214",
+      "name": "Surrey Heath",
+      "ours": 24,
+      "s12": 23,
+      "difference": 1,
+      "differencePct": 4.3,
+      "s12Codes": [
+        "E07000214"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.524,
+      "s12Per10k": 2.543,
+      "oursBySizeBand": [
+        17,
+        5,
+        1,
+        1
+      ],
+      "s12BySizeBand": [
+        16,
+        5,
+        1,
+        1
+      ]
+    },
+    {
+      "code": "E07000215",
+      "name": "Tandridge",
+      "ours": 23,
+      "s12": 23,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000215"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.546,
+      "s12Per10k": 2.617,
+      "oursBySizeBand": [
+        15,
+        5,
+        2,
+        1
+      ],
+      "s12BySizeBand": [
+        16,
+        4,
+        2,
+        1
+      ]
+    },
+    {
+      "code": "E07000216",
+      "name": "Waverley",
+      "ours": 34,
+      "s12": 29,
+      "difference": 5,
+      "differencePct": 17.2,
+      "s12Codes": [
+        "E07000216"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.478,
+      "s12Per10k": 2.262,
+      "oursBySizeBand": [
+        21,
+        7,
+        4,
+        2
+      ],
+      "s12BySizeBand": [
+        17,
+        7,
+        3,
+        2
+      ]
+    },
+    {
+      "code": "E07000217",
+      "name": "Woking",
+      "ours": 28,
+      "s12": 28,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000217"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.637,
+      "s12Per10k": 2.694,
+      "oursBySizeBand": [
+        19,
+        2,
+        3,
+        4
+      ],
+      "s12BySizeBand": [
+        19,
+        2,
+        4,
+        3
+      ]
+    },
+    {
+      "code": "E07000218",
+      "name": "North Warwickshire",
+      "ours": 19,
+      "s12": 21,
+      "difference": -2,
+      "differencePct": -9.5,
+      "s12Codes": [
+        "E07000218"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.807,
+      "s12Per10k": 3.229,
+      "oursBySizeBand": [
+        13,
+        6,
+        0,
+        0
+      ],
+      "s12BySizeBand": [
+        14,
+        7,
+        0,
+        0
+      ]
+    },
+    {
+      "code": "E07000219",
+      "name": "Nuneaton and Bedworth",
+      "ours": 29,
+      "s12": 29,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000219"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.013,
+      "s12Per10k": 2.161,
+      "oursBySizeBand": [
+        17,
+        7,
+        3,
+        2
+      ],
+      "s12BySizeBand": [
+        16,
+        8,
+        3,
+        2
+      ]
+    },
+    {
+      "code": "E07000220",
+      "name": "Rugby",
+      "ours": 28,
+      "s12": 26,
+      "difference": 2,
+      "differencePct": 7.7,
+      "s12Codes": [
+        "E07000220"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.229,
+      "s12Per10k": 2.273,
+      "oursBySizeBand": [
+        20,
+        4,
+        0,
+        4
+      ],
+      "s12BySizeBand": [
+        15,
+        7,
+        1,
+        3
+      ]
+    },
+    {
+      "code": "E07000221",
+      "name": "Stratford-on-Avon",
+      "ours": 39,
+      "s12": 38,
+      "difference": 1,
+      "differencePct": 2.6,
+      "s12Codes": [
+        "E07000221"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.621,
+      "s12Per10k": 2.821,
+      "oursBySizeBand": [
+        23,
+        9,
+        5,
+        2
+      ],
+      "s12BySizeBand": [
+        19,
+        12,
+        5,
+        2
+      ]
+    },
+    {
+      "code": "E07000222",
+      "name": "Warwick",
+      "ours": 41,
+      "s12": 37,
+      "difference": 4,
+      "differencePct": 10.8,
+      "s12Codes": [
+        "E07000222"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.596,
+      "s12Per10k": 2.492,
+      "oursBySizeBand": [
+        26,
+        7,
+        3,
+        5
+      ],
+      "s12BySizeBand": [
+        23,
+        5,
+        5,
+        4
+      ]
+    },
+    {
+      "code": "E07000223",
+      "name": "Adur",
+      "ours": 16,
+      "s12": 15,
+      "difference": 1,
+      "differencePct": 6.7,
+      "s12Codes": [
+        "E07000223"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.469,
+      "s12Per10k": 2.324,
+      "oursBySizeBand": [
+        9,
+        5,
+        0,
+        2
+      ],
+      "s12BySizeBand": [
+        8,
+        5,
+        1,
+        1
+      ]
+    },
+    {
+      "code": "E07000224",
+      "name": "Arun",
+      "ours": 46,
+      "s12": 43,
+      "difference": 3,
+      "differencePct": 7.0,
+      "s12Codes": [
+        "E07000224"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.669,
+      "s12Per10k": 2.608,
+      "oursBySizeBand": [
+        29,
+        10,
+        2,
+        5
+      ],
+      "s12BySizeBand": [
+        25,
+        10,
+        3,
+        5
+      ]
+    },
+    {
+      "code": "E07000225",
+      "name": "Chichester",
+      "ours": 39,
+      "s12": 35,
+      "difference": 4,
+      "differencePct": 11.4,
+      "s12Codes": [
+        "E07000225"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.995,
+      "s12Per10k": 2.821,
+      "oursBySizeBand": [
+        26,
+        8,
+        3,
+        2
+      ],
+      "s12BySizeBand": [
+        21,
+        9,
+        3,
+        2
+      ]
+    },
+    {
+      "code": "E07000226",
+      "name": "Crawley",
+      "ours": 32,
+      "s12": 30,
+      "difference": 2,
+      "differencePct": 6.7,
+      "s12Codes": [
+        "E07000226"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.571,
+      "s12Per10k": 2.532,
+      "oursBySizeBand": [
+        23,
+        6,
+        0,
+        3
+      ],
+      "s12BySizeBand": [
+        19,
+        7,
+        1,
+        3
+      ]
+    },
+    {
+      "code": "E07000227",
+      "name": "Horsham",
+      "ours": 48,
+      "s12": 40,
+      "difference": 8,
+      "differencePct": 20.0,
+      "s12Codes": [
+        "E07000227"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.158,
+      "s12Per10k": 2.725,
+      "oursBySizeBand": [
+        35,
+        9,
+        1,
+        3
+      ],
+      "s12BySizeBand": [
+        27,
+        8,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "E07000228",
+      "name": "Mid Sussex",
+      "ours": 51,
+      "s12": 43,
+      "difference": 8,
+      "differencePct": 18.6,
+      "s12Codes": [
+        "E07000228"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.118,
+      "s12Per10k": 2.818,
+      "oursBySizeBand": [
+        38,
+        6,
+        4,
+        3
+      ],
+      "s12BySizeBand": [
+        29,
+        7,
+        4,
+        3
+      ]
+    },
+    {
+      "code": "E07000229",
+      "name": "Worthing",
+      "ours": 37,
+      "s12": 34,
+      "difference": 3,
+      "differencePct": 8.8,
+      "s12Codes": [
+        "E07000229"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.25,
+      "s12Per10k": 3.054,
+      "oursBySizeBand": [
+        28,
+        4,
+        1,
+        4
+      ],
+      "s12BySizeBand": [
+        25,
+        4,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "E07000234",
+      "name": "Bromsgrove",
+      "ours": 32,
+      "s12": 31,
+      "difference": 1,
+      "differencePct": 3.2,
+      "s12Codes": [
+        "E07000234"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.138,
+      "s12Per10k": 3.126,
+      "oursBySizeBand": [
+        25,
+        5,
+        1,
+        1
+      ],
+      "s12BySizeBand": [
+        22,
+        7,
+        1,
+        1
+      ]
+    },
+    {
+      "code": "E07000235",
+      "name": "Malvern Hills",
+      "ours": 21,
+      "s12": 23,
+      "difference": -2,
+      "differencePct": -8.7,
+      "s12Codes": [
+        "E07000235"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.489,
+      "s12Per10k": 2.894,
+      "oursBySizeBand": [
+        12,
+        6,
+        2,
+        1
+      ],
+      "s12BySizeBand": [
+        14,
+        6,
+        2,
+        1
+      ]
+    },
+    {
+      "code": "E07000236",
+      "name": "Redditch",
+      "ours": 17,
+      "s12": 16,
+      "difference": 1,
+      "differencePct": 6.2,
+      "s12Codes": [
+        "E07000236"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.942,
+      "s12Per10k": 1.838,
+      "oursBySizeBand": [
+        9,
+        4,
+        0,
+        4
+      ],
+      "s12BySizeBand": [
+        9,
+        3,
+        0,
+        4
+      ]
+    },
+    {
+      "code": "E07000237",
+      "name": "Worcester",
+      "ours": 39,
+      "s12": 35,
+      "difference": 4,
+      "differencePct": 11.4,
+      "s12Codes": [
+        "E07000237"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.646,
+      "s12Per10k": 3.37,
+      "oursBySizeBand": [
+        20,
+        12,
+        2,
+        5
+      ],
+      "s12BySizeBand": [
+        18,
+        10,
+        3,
+        4
+      ]
+    },
+    {
+      "code": "E07000238",
+      "name": "Wychavon",
+      "ours": 35,
+      "s12": 32,
+      "difference": 3,
+      "differencePct": 9.4,
+      "s12Codes": [
+        "E07000238"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.515,
+      "s12Per10k": 2.415,
+      "oursBySizeBand": [
+        21,
+        8,
+        5,
+        1
+      ],
+      "s12BySizeBand": [
+        20,
+        6,
+        5,
+        1
+      ]
+    },
+    {
+      "code": "E07000239",
+      "name": "Wyre Forest",
+      "ours": 30,
+      "s12": 27,
+      "difference": 3,
+      "differencePct": 11.1,
+      "s12Codes": [
+        "E07000239"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.88,
+      "s12Per10k": 2.657,
+      "oursBySizeBand": [
+        18,
+        6,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        14,
+        6,
+        4,
+        3
+      ]
+    },
+    {
+      "code": "E07000240",
+      "name": "St Albans",
+      "ours": 45,
+      "s12": 40,
+      "difference": 5,
+      "differencePct": 12.5,
+      "s12Codes": [
+        "E07000240"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.985,
+      "s12Per10k": 2.7,
+      "oursBySizeBand": [
+        31,
+        7,
+        3,
+        4
+      ],
+      "s12BySizeBand": [
+        24,
+        9,
+        4,
+        3
+      ]
+    },
+    {
+      "code": "E07000241",
+      "name": "Welwyn Hatfield",
+      "ours": 31,
+      "s12": 25,
+      "difference": 6,
+      "differencePct": 24.0,
+      "s12Codes": [
+        "E07000241"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.546,
+      "s12Per10k": 2.086,
+      "oursBySizeBand": [
+        18,
+        8,
+        2,
+        3
+      ],
+      "s12BySizeBand": [
+        13,
+        7,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "E07000242",
+      "name": "East Hertfordshire",
+      "ours": 34,
+      "s12": 27,
+      "difference": 7,
+      "differencePct": 25.9,
+      "s12Codes": [
+        "E07000242"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.151,
+      "s12Per10k": 1.798,
+      "oursBySizeBand": [
+        20,
+        4,
+        8,
+        2
+      ],
+      "s12BySizeBand": [
+        14,
+        4,
+        7,
+        2
+      ]
+    },
+    {
+      "code": "E07000243",
+      "name": "Stevenage",
+      "ours": 23,
+      "s12": 22,
+      "difference": 1,
+      "differencePct": 4.5,
+      "s12Codes": [
+        "E07000243"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.498,
+      "s12Per10k": 2.458,
+      "oursBySizeBand": [
+        14,
+        2,
+        0,
+        7
+      ],
+      "s12BySizeBand": [
+        11,
+        4,
+        0,
+        7
+      ]
+    },
+    {
+      "code": "E07000244",
+      "name": "East Suffolk",
+      "ours": 71,
+      "s12": 71,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E07000244"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.839,
+      "s12Per10k": 2.885,
+      "oursBySizeBand": [
+        36,
+        20,
+        10,
+        5
+      ],
+      "s12BySizeBand": [
+        36,
+        21,
+        9,
+        5
+      ]
+    },
+    {
+      "code": "E07000245",
+      "name": "West Suffolk",
+      "ours": 52,
+      "s12": 44,
+      "difference": 8,
+      "differencePct": 18.2,
+      "s12Codes": [
+        "E07000245"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.745,
+      "s12Per10k": 2.445,
+      "oursBySizeBand": [
+        32,
+        9,
+        4,
+        7
+      ],
+      "s12BySizeBand": [
+        23,
+        10,
+        5,
+        6
+      ]
+    },
+    {
+      "code": "E08000001",
+      "name": "Bolton",
+      "ours": 60,
+      "s12": 61,
+      "difference": -1,
+      "differencePct": -1.6,
+      "s12Codes": [
+        "E08000001"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.937,
+      "s12Per10k": 2.061,
+      "oursBySizeBand": [
+        29,
+        18,
+        4,
+        9
+      ],
+      "s12BySizeBand": [
+        30,
+        17,
+        5,
+        9
+      ]
+    },
+    {
+      "code": "E08000002",
+      "name": "Bury",
+      "ours": 53,
+      "s12": 50,
+      "difference": 3,
+      "differencePct": 6.0,
+      "s12Codes": [
+        "E08000002"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.66,
+      "s12Per10k": 2.579,
+      "oursBySizeBand": [
+        32,
+        12,
+        3,
+        6
+      ],
+      "s12BySizeBand": [
+        28,
+        13,
+        4,
+        5
+      ]
+    },
+    {
+      "code": "E08000003",
+      "name": "Manchester",
+      "ours": 152,
+      "s12": 142,
+      "difference": 10,
+      "differencePct": 7.0,
+      "s12Codes": [
+        "E08000003"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.584,
+      "s12Per10k": 2.573,
+      "oursBySizeBand": [
+        95,
+        39,
+        6,
+        12
+      ],
+      "s12BySizeBand": [
+        83,
+        42,
+        7,
+        10
+      ]
+    },
+    {
+      "code": "E08000004",
+      "name": "Oldham",
+      "ours": 42,
+      "s12": 36,
+      "difference": 6,
+      "differencePct": 16.7,
+      "s12Codes": [
+        "E08000004"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.667,
+      "s12Per10k": 1.487,
+      "oursBySizeBand": [
+        17,
+        15,
+        1,
+        9
+      ],
+      "s12BySizeBand": [
+        14,
+        12,
+        1,
+        9
+      ]
+    },
+    {
+      "code": "E08000005",
+      "name": "Rochdale",
+      "ours": 52,
+      "s12": 50,
+      "difference": 2,
+      "differencePct": 4.0,
+      "s12Codes": [
+        "E08000005"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.188,
+      "s12Per10k": 2.234,
+      "oursBySizeBand": [
+        29,
+        17,
+        1,
+        5
+      ],
+      "s12BySizeBand": [
+        26,
+        18,
+        1,
+        5
+      ]
+    },
+    {
+      "code": "E08000006",
+      "name": "Salford",
+      "ours": 65,
+      "s12": 59,
+      "difference": 6,
+      "differencePct": 10.2,
+      "s12Codes": [
+        "E08000006"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.189,
+      "s12Per10k": 2.186,
+      "oursBySizeBand": [
+        35,
+        20,
+        3,
+        7
+      ],
+      "s12BySizeBand": [
+        31,
+        19,
+        2,
+        7
+      ]
+    },
+    {
+      "code": "E08000007",
+      "name": "Stockport",
+      "ours": 83,
+      "s12": 83,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E08000007"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.722,
+      "s12Per10k": 2.816,
+      "oursBySizeBand": [
+        56,
+        15,
+        6,
+        6
+      ],
+      "s12BySizeBand": [
+        53,
+        17,
+        6,
+        7
+      ]
+    },
+    {
+      "code": "E08000008",
+      "name": "Tameside",
+      "ours": 41,
+      "s12": 37,
+      "difference": 4,
+      "differencePct": 10.8,
+      "s12Codes": [
+        "E08000008"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.703,
+      "s12Per10k": 1.601,
+      "oursBySizeBand": [
+        20,
+        8,
+        3,
+        10
+      ],
+      "s12BySizeBand": [
+        16,
+        8,
+        4,
+        9
+      ]
+    },
+    {
+      "code": "E08000009",
+      "name": "Trafford",
+      "ours": 65,
+      "s12": 65,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E08000009"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.697,
+      "s12Per10k": 2.765,
+      "oursBySizeBand": [
+        36,
+        16,
+        3,
+        10
+      ],
+      "s12BySizeBand": [
+        35,
+        17,
+        4,
+        9
+      ]
+    },
+    {
+      "code": "E08000010",
+      "name": "Wigan",
+      "ours": 95,
+      "s12": 92,
+      "difference": 3,
+      "differencePct": 3.3,
+      "s12Codes": [
+        "E08000010"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.737,
+      "s12Per10k": 2.794,
+      "oursBySizeBand": [
+        58,
+        27,
+        1,
+        9
+      ],
+      "s12BySizeBand": [
+        53,
+        29,
+        1,
+        9
+      ]
+    },
+    {
+      "code": "E08000011",
+      "name": "Knowsley",
+      "ours": 30,
+      "s12": 30,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E08000011"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.832,
+      "s12Per10k": 1.942,
+      "oursBySizeBand": [
+        19,
+        6,
+        2,
+        3
+      ],
+      "s12BySizeBand": [
+        19,
+        5,
+        3,
+        3
+      ]
+    },
+    {
+      "code": "E08000012",
+      "name": "Liverpool",
+      "ours": 134,
+      "s12": 131,
+      "difference": 3,
+      "differencePct": 2.3,
+      "s12Codes": [
+        "E08000012"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.638,
+      "s12Per10k": 2.695,
+      "oursBySizeBand": [
+        74,
+        42,
+        4,
+        14
+      ],
+      "s12BySizeBand": [
+        68,
+        42,
+        7,
+        14
+      ]
+    },
+    {
+      "code": "E08000013",
+      "name": "St. Helens",
+      "ours": 51,
+      "s12": 47,
+      "difference": 4,
+      "differencePct": 8.5,
+      "s12Codes": [
+        "E08000013"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.686,
+      "s12Per10k": 2.565,
+      "oursBySizeBand": [
+        32,
+        10,
+        4,
+        5
+      ],
+      "s12BySizeBand": [
+        28,
+        10,
+        4,
+        5
+      ]
+    },
+    {
+      "code": "E08000014",
+      "name": "Sefton",
+      "ours": 85,
+      "s12": 79,
+      "difference": 6,
+      "differencePct": 7.6,
+      "s12Codes": [
+        "E08000014"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.956,
+      "s12Per10k": 2.829,
+      "oursBySizeBand": [
+        49,
+        23,
+        3,
+        10
+      ],
+      "s12BySizeBand": [
+        45,
+        22,
+        5,
+        7
+      ]
+    },
+    {
+      "code": "E08000015",
+      "name": "Wirral",
+      "ours": 89,
+      "s12": 85,
+      "difference": 4,
+      "differencePct": 4.7,
+      "s12Codes": [
+        "E08000015"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.698,
+      "s12Per10k": 2.655,
+      "oursBySizeBand": [
+        52,
+        26,
+        4,
+        7
+      ],
+      "s12BySizeBand": [
+        48,
+        26,
+        4,
+        7
+      ]
+    },
+    {
+      "code": "E08000017",
+      "name": "Doncaster",
+      "ours": 93,
+      "s12": 87,
+      "difference": 6,
+      "differencePct": 6.9,
+      "s12Codes": [
+        "E08000017"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.879,
+      "s12Per10k": 2.824,
+      "oursBySizeBand": [
+        60,
+        24,
+        3,
+        6
+      ],
+      "s12BySizeBand": [
+        53,
+        24,
+        4,
+        6
+      ]
+    },
+    {
+      "code": "E08000018",
+      "name": "Rotherham",
+      "ours": 77,
+      "s12": 70,
+      "difference": 7,
+      "differencePct": 10.0,
+      "s12Codes": [
+        "E08000018"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.758,
+      "s12Per10k": 2.633,
+      "oursBySizeBand": [
+        46,
+        21,
+        3,
+        7
+      ],
+      "s12BySizeBand": [
+        39,
+        21,
+        3,
+        7
+      ]
+    },
+    {
+      "code": "E08000021",
+      "name": "Newcastle upon Tyne",
+      "ours": 87,
+      "s12": 80,
+      "difference": 7,
+      "differencePct": 8.8,
+      "s12Codes": [
+        "E08000021"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.712,
+      "s12Per10k": 2.666,
+      "oursBySizeBand": [
+        49,
+        26,
+        4,
+        8
+      ],
+      "s12BySizeBand": [
+        43,
+        26,
+        5,
+        6
+      ]
+    },
+    {
+      "code": "E08000022",
+      "name": "North Tyneside",
+      "ours": 51,
+      "s12": 48,
+      "difference": 3,
+      "differencePct": 6.2,
+      "s12Codes": [
+        "E08000022"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.368,
+      "s12Per10k": 2.297,
+      "oursBySizeBand": [
+        27,
+        16,
+        2,
+        6
+      ],
+      "s12BySizeBand": [
+        25,
+        15,
+        3,
+        5
+      ]
+    },
+    {
+      "code": "E08000023",
+      "name": "South Tyneside",
+      "ours": 41,
+      "s12": 37,
+      "difference": 4,
+      "differencePct": 10.8,
+      "s12Codes": [
+        "E08000023"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.711,
+      "s12Per10k": 2.504,
+      "oursBySizeBand": [
+        27,
+        9,
+        2,
+        3
+      ],
+      "s12BySizeBand": [
+        23,
+        9,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "E08000024",
+      "name": "Sunderland",
+      "ours": 75,
+      "s12": 65,
+      "difference": 10,
+      "differencePct": 15.4,
+      "s12Codes": [
+        "E08000024"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.613,
+      "s12Per10k": 2.371,
+      "oursBySizeBand": [
+        38,
+        26,
+        0,
+        11
+      ],
+      "s12BySizeBand": [
+        30,
+        25,
+        1,
+        9
+      ]
+    },
+    {
+      "code": "E08000025",
+      "name": "Birmingham",
+      "ours": 226,
+      "s12": 210,
+      "difference": 16,
+      "differencePct": 7.6,
+      "s12Codes": [
+        "E08000025"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.92,
+      "s12Per10k": 1.834,
+      "oursBySizeBand": [
+        125,
+        65,
+        13,
+        23
+      ],
+      "s12BySizeBand": [
+        106,
+        67,
+        17,
+        20
+      ]
+    },
+    {
+      "code": "E08000026",
+      "name": "Coventry",
+      "ours": 71,
+      "s12": 65,
+      "difference": 6,
+      "differencePct": 9.2,
+      "s12Codes": [
+        "E08000026"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.946,
+      "s12Per10k": 1.882,
+      "oursBySizeBand": [
+        35,
+        22,
+        3,
+        11
+      ],
+      "s12BySizeBand": [
+        30,
+        21,
+        4,
+        10
+      ]
+    },
+    {
+      "code": "E08000027",
+      "name": "Dudley",
+      "ours": 81,
+      "s12": 82,
+      "difference": -1,
+      "differencePct": -1.2,
+      "s12Codes": [
+        "E08000027"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.426,
+      "s12Per10k": 2.535,
+      "oursBySizeBand": [
+        45,
+        26,
+        2,
+        8
+      ],
+      "s12BySizeBand": [
+        46,
+        26,
+        3,
+        7
+      ]
+    },
+    {
+      "code": "E08000028",
+      "name": "Sandwell",
+      "ours": 64,
+      "s12": 59,
+      "difference": 5,
+      "differencePct": 8.5,
+      "s12Codes": [
+        "E08000028"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.813,
+      "s12Per10k": 1.726,
+      "oursBySizeBand": [
+        31,
+        24,
+        1,
+        8
+      ],
+      "s12BySizeBand": [
+        29,
+        20,
+        2,
+        8
+      ]
+    },
+    {
+      "code": "E08000029",
+      "name": "Solihull",
+      "ours": 59,
+      "s12": 55,
+      "difference": 4,
+      "differencePct": 7.3,
+      "s12Codes": [
+        "E08000029"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.664,
+      "s12Per10k": 2.543,
+      "oursBySizeBand": [
+        38,
+        11,
+        5,
+        5
+      ],
+      "s12BySizeBand": [
+        34,
+        11,
+        6,
+        4
+      ]
+    },
+    {
+      "code": "E08000030",
+      "name": "Walsall",
+      "ours": 64,
+      "s12": 58,
+      "difference": 6,
+      "differencePct": 10.3,
+      "s12Codes": [
+        "E08000030"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.164,
+      "s12Per10k": 2.041,
+      "oursBySizeBand": [
+        38,
+        12,
+        7,
+        7
+      ],
+      "s12BySizeBand": [
+        33,
+        12,
+        6,
+        7
+      ]
+    },
+    {
+      "code": "E08000031",
+      "name": "Wolverhampton",
+      "ours": 59,
+      "s12": 54,
+      "difference": 5,
+      "differencePct": 9.3,
+      "s12Codes": [
+        "E08000031"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.096,
+      "s12Per10k": 2.048,
+      "oursBySizeBand": [
+        38,
+        14,
+        2,
+        5
+      ],
+      "s12BySizeBand": [
+        31,
+        15,
+        3,
+        5
+      ]
+    },
+    {
+      "code": "E08000032",
+      "name": "Bradford",
+      "ours": 102,
+      "s12": 102,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E08000032"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.829,
+      "s12Per10k": 1.867,
+      "oursBySizeBand": [
+        57,
+        27,
+        5,
+        13
+      ],
+      "s12BySizeBand": [
+        52,
+        30,
+        7,
+        13
+      ]
+    },
+    {
+      "code": "E08000033",
+      "name": "Calderdale",
+      "ours": 46,
+      "s12": 40,
+      "difference": 6,
+      "differencePct": 15.0,
+      "s12Codes": [
+        "E08000033"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.183,
+      "s12Per10k": 1.936,
+      "oursBySizeBand": [
+        23,
+        12,
+        7,
+        4
+      ],
+      "s12BySizeBand": [
+        18,
+        12,
+        7,
+        3
+      ]
+    },
+    {
+      "code": "E08000034",
+      "name": "Kirklees",
+      "ours": 100,
+      "s12": 94,
+      "difference": 6,
+      "differencePct": 6.4,
+      "s12Codes": [
+        "E08000034"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.243,
+      "s12Per10k": 2.17,
+      "oursBySizeBand": [
+        62,
+        27,
+        5,
+        6
+      ],
+      "s12BySizeBand": [
+        55,
+        28,
+        5,
+        6
+      ]
+    },
+    {
+      "code": "E08000035",
+      "name": "Leeds",
+      "ours": 208,
+      "s12": 198,
+      "difference": 10,
+      "differencePct": 5.1,
+      "s12Codes": [
+        "E08000035"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.475,
+      "s12Per10k": 2.439,
+      "oursBySizeBand": [
+        131,
+        44,
+        13,
+        20
+      ],
+      "s12BySizeBand": [
+        116,
+        48,
+        15,
+        19
+      ]
+    },
+    {
+      "code": "E08000036",
+      "name": "Wakefield",
+      "ours": 89,
+      "s12": 82,
+      "difference": 7,
+      "differencePct": 8.5,
+      "s12Codes": [
+        "E08000036"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.409,
+      "s12Per10k": 2.321,
+      "oursBySizeBand": [
+        46,
+        31,
+        4,
+        8
+      ],
+      "s12BySizeBand": [
+        38,
+        32,
+        4,
+        8
+      ]
+    },
+    {
+      "code": "E08000037",
+      "name": "Gateshead",
+      "ours": 47,
+      "s12": 48,
+      "difference": -1,
+      "differencePct": -2.1,
+      "s12Codes": [
+        "E08000037"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.321,
+      "s12Per10k": 2.447,
+      "oursBySizeBand": [
+        23,
+        14,
+        4,
+        6
+      ],
+      "s12BySizeBand": [
+        23,
+        15,
+        5,
+        5
+      ]
+    },
+    {
+      "code": "E08000038",
+      "name": "Barnsley",
+      "ours": 62,
+      "s12": 60,
+      "difference": 2,
+      "differencePct": 3.3,
+      "s12Codes": [
+        "E08000016"
+      ],
+      "mapping": [
+        "2025 code change"
+      ],
+      "oursPer10k": 2.453,
+      "s12Per10k": null,
+      "oursBySizeBand": [
+        34,
+        23,
+        2,
+        3
+      ],
+      "s12BySizeBand": [
+        30,
+        23,
+        4,
+        3
+      ]
+    },
+    {
+      "code": "E08000039",
+      "name": "Sheffield",
+      "ours": 155,
+      "s12": 153,
+      "difference": 2,
+      "differencePct": 1.3,
+      "s12Codes": [
+        "E08000019"
+      ],
+      "mapping": [
+        "2025 code change"
+      ],
+      "oursPer10k": 2.675,
+      "s12Per10k": null,
+      "oursBySizeBand": [
+        91,
+        42,
+        4,
+        18
+      ],
+      "s12BySizeBand": [
+        88,
+        42,
+        8,
+        15
+      ]
+    },
+    {
+      "code": "E09000001",
+      "name": "City of London",
+      "ours": 35,
+      "s12": 32,
+      "difference": 3,
+      "differencePct": 9.4,
+      "s12Codes": [
+        "E09000001"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 22.391,
+      "s12Per10k": 37.283,
+      "oursBySizeBand": [
+        27,
+        8,
+        0,
+        0
+      ],
+      "s12BySizeBand": [
+        27,
+        5,
+        0,
+        0
+      ]
+    },
+    {
+      "code": "E09000002",
+      "name": "Barking and Dagenham",
+      "ours": 36,
+      "s12": 35,
+      "difference": 1,
+      "differencePct": 2.9,
+      "s12Codes": [
+        "E09000002"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.511,
+      "s12Per10k": 1.599,
+      "oursBySizeBand": [
+        22,
+        8,
+        4,
+        2
+      ],
+      "s12BySizeBand": [
+        21,
+        8,
+        4,
+        2
+      ]
+    },
+    {
+      "code": "E09000003",
+      "name": "Barnet",
+      "ours": 85,
+      "s12": 74,
+      "difference": 11,
+      "differencePct": 14.9,
+      "s12Codes": [
+        "E09000003"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.083,
+      "s12Per10k": 1.901,
+      "oursBySizeBand": [
+        55,
+        15,
+        10,
+        5
+      ],
+      "s12BySizeBand": [
+        45,
+        15,
+        10,
+        4
+      ]
+    },
+    {
+      "code": "E09000004",
+      "name": "Bexley",
+      "ours": 51,
+      "s12": 48,
+      "difference": 3,
+      "differencePct": 6.2,
+      "s12Codes": [
+        "E09000004"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.984,
+      "s12Per10k": 1.947,
+      "oursBySizeBand": [
+        30,
+        11,
+        4,
+        6
+      ],
+      "s12BySizeBand": [
+        26,
+        12,
+        4,
+        6
+      ]
+    },
+    {
+      "code": "E09000005",
+      "name": "Brent",
+      "ours": 58,
+      "s12": 56,
+      "difference": 2,
+      "differencePct": 3.6,
+      "s12Codes": [
+        "E09000005"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.647,
+      "s12Per10k": 1.648,
+      "oursBySizeBand": [
+        37,
+        12,
+        1,
+        8
+      ],
+      "s12BySizeBand": [
+        35,
+        12,
+        1,
+        8
+      ]
+    },
+    {
+      "code": "E09000006",
+      "name": "Bromley",
+      "ours": 86,
+      "s12": 81,
+      "difference": 5,
+      "differencePct": 6.2,
+      "s12Codes": [
+        "E09000006"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.559,
+      "s12Per10k": 2.455,
+      "oursBySizeBand": [
+        52,
+        16,
+        13,
+        5
+      ],
+      "s12BySizeBand": [
+        44,
+        20,
+        14,
+        3
+      ]
+    },
+    {
+      "code": "E09000007",
+      "name": "Camden",
+      "ours": 78,
+      "s12": 80,
+      "difference": -2,
+      "differencePct": -2.5,
+      "s12Codes": [
+        "E09000007"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.6,
+      "s12Per10k": 3.807,
+      "oursBySizeBand": [
+        54,
+        18,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        54,
+        21,
+        3,
+        2
+      ]
+    },
+    {
+      "code": "E09000008",
+      "name": "Croydon",
+      "ours": 85,
+      "s12": 85,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E09000008"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.073,
+      "s12Per10k": 2.175,
+      "oursBySizeBand": [
+        56,
+        17,
+        4,
+        8
+      ],
+      "s12BySizeBand": [
+        53,
+        20,
+        5,
+        7
+      ]
+    },
+    {
+      "code": "E09000009",
+      "name": "Ealing",
+      "ours": 69,
+      "s12": 65,
+      "difference": 4,
+      "differencePct": 6.2,
+      "s12Codes": [
+        "E09000009"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.783,
+      "s12Per10k": 1.771,
+      "oursBySizeBand": [
+        46,
+        15,
+        3,
+        5
+      ],
+      "s12BySizeBand": [
+        41,
+        16,
+        4,
+        4
+      ]
+    },
+    {
+      "code": "E09000010",
+      "name": "Enfield",
+      "ours": 53,
+      "s12": 50,
+      "difference": 3,
+      "differencePct": 6.0,
+      "s12Codes": [
+        "E09000010"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.609,
+      "s12Per10k": 1.515,
+      "oursBySizeBand": [
+        28,
+        13,
+        3,
+        9
+      ],
+      "s12BySizeBand": [
+        25,
+        13,
+        4,
+        8
+      ]
+    },
+    {
+      "code": "E09000011",
+      "name": "Greenwich",
+      "ours": 72,
+      "s12": 66,
+      "difference": 6,
+      "differencePct": 9.1,
+      "s12Codes": [
+        "E09000011"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.39,
+      "s12Per10k": 2.283,
+      "oursBySizeBand": [
+        41,
+        19,
+        4,
+        8
+      ],
+      "s12BySizeBand": [
+        32,
+        22,
+        6,
+        6
+      ]
+    },
+    {
+      "code": "E09000012",
+      "name": "Hackney",
+      "ours": 51,
+      "s12": 47,
+      "difference": 4,
+      "differencePct": 8.5,
+      "s12Codes": [
+        "E09000012"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.916,
+      "s12Per10k": 1.814,
+      "oursBySizeBand": [
+        36,
+        11,
+        4,
+        0
+      ],
+      "s12BySizeBand": [
+        32,
+        12,
+        3,
+        0
+      ]
+    },
+    {
+      "code": "E09000013",
+      "name": "Hammersmith and Fulham",
+      "ours": 62,
+      "s12": 62,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E09000013"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.259,
+      "s12Per10k": 3.385,
+      "oursBySizeBand": [
+        44,
+        11,
+        5,
+        2
+      ],
+      "s12BySizeBand": [
+        45,
+        11,
+        5,
+        1
+      ]
+    },
+    {
+      "code": "E09000014",
+      "name": "Haringey",
+      "ours": 52,
+      "s12": 49,
+      "difference": 3,
+      "differencePct": 6.1,
+      "s12Codes": [
+        "E09000014"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.953,
+      "s12Per10k": 1.854,
+      "oursBySizeBand": [
+        28,
+        18,
+        4,
+        2
+      ],
+      "s12BySizeBand": [
+        26,
+        17,
+        4,
+        2
+      ]
+    },
+    {
+      "code": "E09000015",
+      "name": "Harrow",
+      "ours": 43,
+      "s12": 41,
+      "difference": 2,
+      "differencePct": 4.9,
+      "s12Codes": [
+        "E09000015"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.577,
+      "s12Per10k": 1.57,
+      "oursBySizeBand": [
+        17,
+        18,
+        6,
+        2
+      ],
+      "s12BySizeBand": [
+        15,
+        17,
+        8,
+        1
+      ]
+    },
+    {
+      "code": "E09000016",
+      "name": "Havering",
+      "ours": 55,
+      "s12": 55,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "E09000016"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.959,
+      "s12Per10k": 2.099,
+      "oursBySizeBand": [
+        31,
+        17,
+        1,
+        6
+      ],
+      "s12BySizeBand": [
+        31,
+        16,
+        3,
+        5
+      ]
+    },
+    {
+      "code": "E09000017",
+      "name": "Hillingdon",
+      "ours": 67,
+      "s12": 61,
+      "difference": 6,
+      "differencePct": 9.8,
+      "s12Codes": [
+        "E09000017"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.051,
+      "s12Per10k": 1.994,
+      "oursBySizeBand": [
+        42,
+        15,
+        2,
+        8
+      ],
+      "s12BySizeBand": [
+        38,
+        13,
+        3,
+        7
+      ]
+    },
+    {
+      "code": "E09000018",
+      "name": "Hounslow",
+      "ours": 58,
+      "s12": 57,
+      "difference": 1,
+      "differencePct": 1.8,
+      "s12Codes": [
+        "E09000018"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.937,
+      "s12Per10k": 1.978,
+      "oursBySizeBand": [
+        36,
+        11,
+        2,
+        9
+      ],
+      "s12BySizeBand": [
+        35,
+        12,
+        2,
+        8
+      ]
+    },
+    {
+      "code": "E09000019",
+      "name": "Islington",
+      "ours": 75,
+      "s12": 72,
+      "difference": 3,
+      "differencePct": 4.2,
+      "s12Codes": [
+        "E09000019"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.34,
+      "s12Per10k": 3.324,
+      "oursBySizeBand": [
+        47,
+        22,
+        4,
+        2
+      ],
+      "s12BySizeBand": [
+        45,
+        20,
+        6,
+        1
+      ]
+    },
+    {
+      "code": "E09000020",
+      "name": "Kensington and Chelsea",
+      "ours": 41,
+      "s12": 38,
+      "difference": 3,
+      "differencePct": 7.9,
+      "s12Codes": [
+        "E09000020"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.813,
+      "s12Per10k": 2.65,
+      "oursBySizeBand": [
+        25,
+        7,
+        5,
+        4
+      ],
+      "s12BySizeBand": [
+        23,
+        7,
+        5,
+        3
+      ]
+    },
+    {
+      "code": "E09000021",
+      "name": "Kingston upon Thames",
+      "ours": 47,
+      "s12": 41,
+      "difference": 6,
+      "differencePct": 14.6,
+      "s12Codes": [
+        "E09000021"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.721,
+      "s12Per10k": 2.44,
+      "oursBySizeBand": [
+        31,
+        9,
+        5,
+        2
+      ],
+      "s12BySizeBand": [
+        24,
+        9,
+        7,
+        1
+      ]
+    },
+    {
+      "code": "E09000022",
+      "name": "Lambeth",
+      "ours": 92,
+      "s12": 89,
+      "difference": 3,
+      "differencePct": 3.4,
+      "s12Codes": [
+        "E09000022"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.927,
+      "s12Per10k": 2.802,
+      "oursBySizeBand": [
+        69,
+        17,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        65,
+        18,
+        2,
+        4
+      ]
+    },
+    {
+      "code": "E09000023",
+      "name": "Lewisham",
+      "ours": 69,
+      "s12": 58,
+      "difference": 11,
+      "differencePct": 19.0,
+      "s12Codes": [
+        "E09000023"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.292,
+      "s12Per10k": 1.93,
+      "oursBySizeBand": [
+        46,
+        14,
+        5,
+        4
+      ],
+      "s12BySizeBand": [
+        35,
+        14,
+        5,
+        4
+      ]
+    },
+    {
+      "code": "E09000024",
+      "name": "Merton",
+      "ours": 52,
+      "s12": 50,
+      "difference": 2,
+      "differencePct": 4.0,
+      "s12Codes": [
+        "E09000024"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.376,
+      "s12Per10k": 2.324,
+      "oursBySizeBand": [
+        30,
+        13,
+        6,
+        3
+      ],
+      "s12BySizeBand": [
+        28,
+        12,
+        8,
+        2
+      ]
+    },
+    {
+      "code": "E09000025",
+      "name": "Newham",
+      "ours": 51,
+      "s12": 46,
+      "difference": 5,
+      "differencePct": 10.9,
+      "s12Codes": [
+        "E09000025"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.354,
+      "s12Per10k": 1.31,
+      "oursBySizeBand": [
+        22,
+        21,
+        4,
+        4
+      ],
+      "s12BySizeBand": [
+        21,
+        17,
+        5,
+        3
+      ]
+    },
+    {
+      "code": "E09000026",
+      "name": "Redbridge",
+      "ours": 46,
+      "s12": 43,
+      "difference": 3,
+      "differencePct": 7.0,
+      "s12Codes": [
+        "E09000026"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.429,
+      "s12Per10k": 1.386,
+      "oursBySizeBand": [
+        26,
+        12,
+        5,
+        3
+      ],
+      "s12BySizeBand": [
+        22,
+        12,
+        6,
+        3
+      ]
+    },
+    {
+      "code": "E09000027",
+      "name": "Richmond upon Thames",
+      "ours": 52,
+      "s12": 49,
+      "difference": 3,
+      "differencePct": 6.1,
+      "s12Codes": [
+        "E09000027"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.643,
+      "s12Per10k": 2.509,
+      "oursBySizeBand": [
+        35,
+        11,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        29,
+        13,
+        5,
+        2
+      ]
+    },
+    {
+      "code": "E09000028",
+      "name": "Southwark",
+      "ours": 87,
+      "s12": 77,
+      "difference": 10,
+      "differencePct": 13.0,
+      "s12Codes": [
+        "E09000028"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.785,
+      "s12Per10k": 2.503,
+      "oursBySizeBand": [
+        61,
+        21,
+        0,
+        5
+      ],
+      "s12BySizeBand": [
+        46,
+        26,
+        0,
+        5
+      ]
+    },
+    {
+      "code": "E09000029",
+      "name": "Sutton",
+      "ours": 47,
+      "s12": 45,
+      "difference": 2,
+      "differencePct": 4.4,
+      "s12Codes": [
+        "E09000029"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.197,
+      "s12Per10k": 2.147,
+      "oursBySizeBand": [
+        28,
+        10,
+        2,
+        7
+      ],
+      "s12BySizeBand": [
+        26,
+        8,
+        5,
+        6
+      ]
+    },
+    {
+      "code": "E09000030",
+      "name": "Tower Hamlets",
+      "ours": 72,
+      "s12": 69,
+      "difference": 3,
+      "differencePct": 4.3,
+      "s12Codes": [
+        "E09000030"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.154,
+      "s12Per10k": 2.224,
+      "oursBySizeBand": [
+        55,
+        12,
+        2,
+        3
+      ],
+      "s12BySizeBand": [
+        53,
+        11,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "E09000031",
+      "name": "Waltham Forest",
+      "ours": 49,
+      "s12": 47,
+      "difference": 2,
+      "differencePct": 4.3,
+      "s12Codes": [
+        "E09000031"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.727,
+      "s12Per10k": 1.688,
+      "oursBySizeBand": [
+        29,
+        10,
+        4,
+        6
+      ],
+      "s12BySizeBand": [
+        29,
+        7,
+        5,
+        6
+      ]
+    },
+    {
+      "code": "E09000032",
+      "name": "Wandsworth",
+      "ours": 92,
+      "s12": 83,
+      "difference": 9,
+      "differencePct": 10.8,
+      "s12Codes": [
+        "E09000032"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.707,
+      "s12Per10k": 2.534,
+      "oursBySizeBand": [
+        61,
+        20,
+        8,
+        3
+      ],
+      "s12BySizeBand": [
+        58,
+        15,
+        7,
+        3
+      ]
+    },
+    {
+      "code": "E09000033",
+      "name": "Westminster",
+      "ours": 91,
+      "s12": 82,
+      "difference": 9,
+      "differencePct": 11.0,
+      "s12Codes": [
+        "E09000033"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.285,
+      "s12Per10k": 4.015,
+      "oursBySizeBand": [
+        62,
+        21,
+        6,
+        2
+      ],
+      "s12BySizeBand": [
+        57,
+        18,
+        7,
+        0
+      ]
+    },
+    {
+      "code": "N09000001",
+      "name": "Antrim and Newtownabbey",
+      "ours": 57,
+      "s12": 49,
+      "difference": 8,
+      "differencePct": 16.3,
+      "s12Codes": [
+        "N09000001"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.839,
+      "s12Per10k": 3.364,
+      "oursBySizeBand": [
+        42,
+        7,
+        3,
+        5
+      ],
+      "s12BySizeBand": [
+        34,
+        8,
+        3,
+        4
+      ]
+    },
+    {
+      "code": "N09000002",
+      "name": "Armagh City, Banbridge and Craigavon",
+      "ours": 74,
+      "s12": 63,
+      "difference": 11,
+      "differencePct": 17.5,
+      "s12Codes": [
+        "N09000002"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.318,
+      "s12Per10k": 2.881,
+      "oursBySizeBand": [
+        51,
+        14,
+        4,
+        5
+      ],
+      "s12BySizeBand": [
+        42,
+        12,
+        3,
+        6
+      ]
+    },
+    {
+      "code": "N09000003",
+      "name": "Belfast",
+      "ours": 142,
+      "s12": 126,
+      "difference": 16,
+      "differencePct": 12.7,
+      "s12Codes": [
+        "N09000003"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.035,
+      "s12Per10k": 3.648,
+      "oursBySizeBand": [
+        101,
+        26,
+        7,
+        8
+      ],
+      "s12BySizeBand": [
+        78,
+        31,
+        9,
+        8
+      ]
+    },
+    {
+      "code": "N09000004",
+      "name": "Causeway Coast and Glens",
+      "ours": 62,
+      "s12": 58,
+      "difference": 4,
+      "differencePct": 6.9,
+      "s12Codes": [
+        "N09000004"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.374,
+      "s12Per10k": 4.092,
+      "oursBySizeBand": [
+        47,
+        8,
+        4,
+        3
+      ],
+      "s12BySizeBand": [
+        41,
+        10,
+        5,
+        2
+      ]
+    },
+    {
+      "code": "N09000005",
+      "name": "Derry City and Strabane",
+      "ours": 55,
+      "s12": 48,
+      "difference": 7,
+      "differencePct": 14.6,
+      "s12Codes": [
+        "N09000005"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.603,
+      "s12Per10k": 3.184,
+      "oursBySizeBand": [
+        41,
+        8,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        28,
+        14,
+        3,
+        3
+      ]
+    },
+    {
+      "code": "N09000006",
+      "name": "Fermanagh and Omagh",
+      "ours": 64,
+      "s12": 53,
+      "difference": 11,
+      "differencePct": 20.8,
+      "s12Codes": [
+        "N09000006"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 5.439,
+      "s12Per10k": 4.537,
+      "oursBySizeBand": [
+        52,
+        5,
+        3,
+        4
+      ],
+      "s12BySizeBand": [
+        40,
+        8,
+        3,
+        2
+      ]
+    },
+    {
+      "code": "N09000007",
+      "name": "Lisburn and Castlereagh",
+      "ours": 52,
+      "s12": 37,
+      "difference": 15,
+      "differencePct": 40.5,
+      "s12Codes": [
+        "N09000007"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.413,
+      "s12Per10k": 2.481,
+      "oursBySizeBand": [
+        37,
+        5,
+        3,
+        7
+      ],
+      "s12BySizeBand": [
+        25,
+        6,
+        3,
+        3
+      ]
+    },
+    {
+      "code": "N09000008",
+      "name": "Mid and East Antrim",
+      "ours": 52,
+      "s12": 48,
+      "difference": 4,
+      "differencePct": 8.3,
+      "s12Codes": [
+        "N09000008"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.715,
+      "s12Per10k": 3.453,
+      "oursBySizeBand": [
+        37,
+        8,
+        3,
+        4
+      ],
+      "s12BySizeBand": [
+        32,
+        10,
+        3,
+        3
+      ]
+    },
+    {
+      "code": "N09000009",
+      "name": "Mid Ulster",
+      "ours": 64,
+      "s12": 52,
+      "difference": 12,
+      "differencePct": 23.1,
+      "s12Codes": [
+        "N09000009"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.202,
+      "s12Per10k": 3.46,
+      "oursBySizeBand": [
+        50,
+        7,
+        5,
+        2
+      ],
+      "s12BySizeBand": [
+        37,
+        9,
+        4,
+        2
+      ]
+    },
+    {
+      "code": "N09000010",
+      "name": "Newry, Mourne and Down",
+      "ours": 51,
+      "s12": 53,
+      "difference": -2,
+      "differencePct": -3.8,
+      "s12Codes": [
+        "N09000010"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.789,
+      "s12Per10k": 2.911,
+      "oursBySizeBand": [
+        37,
+        7,
+        5,
+        2
+      ],
+      "s12BySizeBand": [
+        37,
+        9,
+        5,
+        2
+      ]
+    },
+    {
+      "code": "N09000011",
+      "name": "Ards and North Down",
+      "ours": 52,
+      "s12": 45,
+      "difference": 7,
+      "differencePct": 15.6,
+      "s12Codes": [
+        "N09000011"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.144,
+      "s12Per10k": 2.75,
+      "oursBySizeBand": [
+        41,
+        4,
+        1,
+        6
+      ],
+      "s12BySizeBand": [
+        33,
+        5,
+        2,
+        5
+      ]
+    },
+    {
+      "code": "S12000005",
+      "name": "Clackmannanshire",
+      "ours": 19,
+      "s12": 18,
+      "difference": 1,
+      "differencePct": 5.6,
+      "s12Codes": [
+        "S12000005"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.681,
+      "s12Per10k": 3.475,
+      "oursBySizeBand": [
+        13,
+        3,
+        1,
+        2
+      ],
+      "s12BySizeBand": [
+        12,
+        3,
+        1,
+        2
+      ]
+    },
+    {
+      "code": "S12000006",
+      "name": "Dumfries and Galloway",
+      "ours": 61,
+      "s12": 54,
+      "difference": 7,
+      "differencePct": 13.0,
+      "s12Codes": [
+        "S12000006"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.193,
+      "s12Per10k": 3.701,
+      "oursBySizeBand": [
+        37,
+        16,
+        6,
+        2
+      ],
+      "s12BySizeBand": [
+        32,
+        14,
+        6,
+        2
+      ]
+    },
+    {
+      "code": "S12000008",
+      "name": "East Ayrshire",
+      "ours": 34,
+      "s12": 35,
+      "difference": -1,
+      "differencePct": -2.9,
+      "s12Codes": [
+        "S12000008"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.802,
+      "s12Per10k": 2.909,
+      "oursBySizeBand": [
+        18,
+        10,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        19,
+        10,
+        3,
+        3
+      ]
+    },
+    {
+      "code": "S12000010",
+      "name": "East Lothian",
+      "ours": 39,
+      "s12": 36,
+      "difference": 3,
+      "differencePct": 8.3,
+      "s12Codes": [
+        "S12000010"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.349,
+      "s12Per10k": 3.206,
+      "oursBySizeBand": [
+        24,
+        11,
+        3,
+        1
+      ],
+      "s12BySizeBand": [
+        21,
+        11,
+        3,
+        1
+      ]
+    },
+    {
+      "code": "S12000011",
+      "name": "East Renfrewshire",
+      "ours": 29,
+      "s12": 26,
+      "difference": 3,
+      "differencePct": 11.5,
+      "s12Codes": [
+        "S12000011"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.905,
+      "s12Per10k": 2.686,
+      "oursBySizeBand": [
+        18,
+        6,
+        3,
+        2
+      ],
+      "s12BySizeBand": [
+        16,
+        5,
+        3,
+        2
+      ]
+    },
+    {
+      "code": "S12000013",
+      "name": "Na h-Eileanan Siar",
+      "ours": 8,
+      "s12": 8,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "S12000013"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.104,
+      "s12Per10k": 3.053,
+      "oursBySizeBand": [
+        5,
+        2,
+        1,
+        0
+      ],
+      "s12BySizeBand": [
+        5,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "code": "S12000014",
+      "name": "Falkirk",
+      "ours": 57,
+      "s12": 51,
+      "difference": 6,
+      "differencePct": 11.8,
+      "s12Codes": [
+        "S12000014"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.557,
+      "s12Per10k": 3.22,
+      "oursBySizeBand": [
+        36,
+        13,
+        2,
+        6
+      ],
+      "s12BySizeBand": [
+        30,
+        13,
+        2,
+        6
+      ]
+    },
+    {
+      "code": "S12000017",
+      "name": "Highland",
+      "ours": 133,
+      "s12": 130,
+      "difference": 3,
+      "differencePct": 2.3,
+      "s12Codes": [
+        "S12000017"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 5.606,
+      "s12Per10k": 5.523,
+      "oursBySizeBand": [
+        90,
+        29,
+        7,
+        7
+      ],
+      "s12BySizeBand": [
+        87,
+        29,
+        8,
+        6
+      ]
+    },
+    {
+      "code": "S12000018",
+      "name": "Inverclyde",
+      "ours": 26,
+      "s12": 24,
+      "difference": 2,
+      "differencePct": 8.3,
+      "s12Codes": [
+        "S12000018"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.31,
+      "s12Per10k": 3.061,
+      "oursBySizeBand": [
+        15,
+        7,
+        2,
+        2
+      ],
+      "s12BySizeBand": [
+        11,
+        9,
+        2,
+        2
+      ]
+    },
+    {
+      "code": "S12000019",
+      "name": "Midlothian",
+      "ours": 29,
+      "s12": 25,
+      "difference": 4,
+      "differencePct": 16.0,
+      "s12Codes": [
+        "S12000019"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.889,
+      "s12Per10k": 2.588,
+      "oursBySizeBand": [
+        10,
+        13,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        8,
+        11,
+        2,
+        4
+      ]
+    },
+    {
+      "code": "S12000020",
+      "name": "Moray",
+      "ours": 45,
+      "s12": 43,
+      "difference": 2,
+      "differencePct": 4.7,
+      "s12Codes": [
+        "S12000020"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.75,
+      "s12Per10k": 4.604,
+      "oursBySizeBand": [
+        31,
+        9,
+        3,
+        2
+      ],
+      "s12BySizeBand": [
+        29,
+        9,
+        3,
+        2
+      ]
+    },
+    {
+      "code": "S12000021",
+      "name": "North Ayrshire",
+      "ours": 45,
+      "s12": 42,
+      "difference": 3,
+      "differencePct": 7.1,
+      "s12Codes": [
+        "S12000021"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.367,
+      "s12Per10k": 3.148,
+      "oursBySizeBand": [
+        24,
+        13,
+        4,
+        4
+      ],
+      "s12BySizeBand": [
+        21,
+        13,
+        4,
+        4
+      ]
+    },
+    {
+      "code": "S12000023",
+      "name": "Orkney Islands",
+      "ours": 6,
+      "s12": 6,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "S12000023"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.737,
+      "s12Per10k": 2.727,
+      "oursBySizeBand": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "s12BySizeBand": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "code": "S12000026",
+      "name": "Scottish Borders",
+      "ours": 45,
+      "s12": 42,
+      "difference": 3,
+      "differencePct": 7.1,
+      "s12Codes": [
+        "S12000026"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.853,
+      "s12Per10k": 3.593,
+      "oursBySizeBand": [
+        23,
+        17,
+        3,
+        2
+      ],
+      "s12BySizeBand": [
+        21,
+        16,
+        3,
+        2
+      ]
+    },
+    {
+      "code": "S12000027",
+      "name": "Shetland Islands",
+      "ours": 4,
+      "s12": 4,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "S12000027"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 1.761,
+      "s12Per10k": 1.747,
+      "oursBySizeBand": [
+        2,
+        1,
+        1,
+        0
+      ],
+      "s12BySizeBand": [
+        2,
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "code": "S12000028",
+      "name": "South Ayrshire",
+      "ours": 45,
+      "s12": 44,
+      "difference": 1,
+      "differencePct": 2.3,
+      "s12Codes": [
+        "S12000028"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.008,
+      "s12Per10k": 3.943,
+      "oursBySizeBand": [
+        32,
+        7,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        31,
+        7,
+        3,
+        3
+      ]
+    },
+    {
+      "code": "S12000029",
+      "name": "South Lanarkshire",
+      "ours": 115,
+      "s12": 101,
+      "difference": 14,
+      "differencePct": 13.9,
+      "s12Codes": [
+        "S12000029"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.44,
+      "s12Per10k": 3.087,
+      "oursBySizeBand": [
+        67,
+        32,
+        8,
+        8
+      ],
+      "s12BySizeBand": [
+        53,
+        32,
+        8,
+        8
+      ]
+    },
+    {
+      "code": "S12000030",
+      "name": "Stirling",
+      "ours": 37,
+      "s12": 37,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "S12000030"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.934,
+      "s12Per10k": 3.996,
+      "oursBySizeBand": [
+        24,
+        7,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        24,
+        7,
+        4,
+        2
+      ]
+    },
+    {
+      "code": "S12000033",
+      "name": "Aberdeen City",
+      "ours": 86,
+      "s12": 87,
+      "difference": -1,
+      "differencePct": -1.1,
+      "s12Codes": [
+        "S12000033"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.736,
+      "s12Per10k": 3.884,
+      "oursBySizeBand": [
+        57,
+        18,
+        1,
+        10
+      ],
+      "s12BySizeBand": [
+        56,
+        18,
+        4,
+        9
+      ]
+    },
+    {
+      "code": "S12000034",
+      "name": "Aberdeenshire",
+      "ours": 103,
+      "s12": 90,
+      "difference": 13,
+      "differencePct": 14.4,
+      "s12Codes": [
+        "S12000034"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.892,
+      "s12Per10k": 3.41,
+      "oursBySizeBand": [
+        63,
+        25,
+        11,
+        4
+      ],
+      "s12BySizeBand": [
+        51,
+        23,
+        11,
+        5
+      ]
+    },
+    {
+      "code": "S12000035",
+      "name": "Argyll and Bute",
+      "ours": 40,
+      "s12": 38,
+      "difference": 2,
+      "differencePct": 5.3,
+      "s12Codes": [
+        "S12000035"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.581,
+      "s12Per10k": 4.419,
+      "oursBySizeBand": [
+        26,
+        10,
+        4,
+        0
+      ],
+      "s12BySizeBand": [
+        24,
+        10,
+        4,
+        0
+      ]
+    },
+    {
+      "code": "S12000036",
+      "name": "City of Edinburgh",
+      "ours": 179,
+      "s12": 177,
+      "difference": 2,
+      "differencePct": 1.1,
+      "s12Codes": [
+        "S12000036"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.369,
+      "s12Per10k": 3.452,
+      "oursBySizeBand": [
+        101,
+        49,
+        13,
+        16
+      ],
+      "s12BySizeBand": [
+        98,
+        49,
+        18,
+        12
+      ]
+    },
+    {
+      "code": "S12000038",
+      "name": "Renfrewshire",
+      "ours": 45,
+      "s12": 42,
+      "difference": 3,
+      "differencePct": 7.1,
+      "s12Codes": [
+        "S12000038"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.378,
+      "s12Per10k": 2.285,
+      "oursBySizeBand": [
+        21,
+        13,
+        5,
+        6
+      ],
+      "s12BySizeBand": [
+        19,
+        12,
+        6,
+        5
+      ]
+    },
+    {
+      "code": "S12000039",
+      "name": "West Dunbartonshire",
+      "ours": 38,
+      "s12": 36,
+      "difference": 2,
+      "differencePct": 5.6,
+      "s12Codes": [
+        "S12000039"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.302,
+      "s12Per10k": 4.072,
+      "oursBySizeBand": [
+        25,
+        10,
+        0,
+        3
+      ],
+      "s12BySizeBand": [
+        23,
+        9,
+        1,
+        3
+      ]
+    },
+    {
+      "code": "S12000040",
+      "name": "West Lothian",
+      "ours": 68,
+      "s12": 63,
+      "difference": 5,
+      "differencePct": 7.9,
+      "s12Codes": [
+        "S12000040"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.632,
+      "s12Per10k": 3.475,
+      "oursBySizeBand": [
+        32,
+        27,
+        3,
+        6
+      ],
+      "s12BySizeBand": [
+        32,
+        20,
+        6,
+        5
+      ]
+    },
+    {
+      "code": "S12000041",
+      "name": "Angus",
+      "ours": 39,
+      "s12": 35,
+      "difference": 4,
+      "differencePct": 11.4,
+      "s12Codes": [
+        "S12000041"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.403,
+      "s12Per10k": 3.059,
+      "oursBySizeBand": [
+        22,
+        10,
+        7,
+        0
+      ],
+      "s12BySizeBand": [
+        18,
+        9,
+        7,
+        1
+      ]
+    },
+    {
+      "code": "S12000042",
+      "name": "Dundee City",
+      "ours": 51,
+      "s12": 50,
+      "difference": 1,
+      "differencePct": 2.0,
+      "s12Codes": [
+        "S12000042"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.437,
+      "s12Per10k": 3.376,
+      "oursBySizeBand": [
+        27,
+        15,
+        0,
+        9
+      ],
+      "s12BySizeBand": [
+        26,
+        14,
+        2,
+        8
+      ]
+    },
+    {
+      "code": "S12000045",
+      "name": "East Dunbartonshire",
+      "ours": 42,
+      "s12": 41,
+      "difference": 1,
+      "differencePct": 2.4,
+      "s12Codes": [
+        "S12000045"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.834,
+      "s12Per10k": 3.761,
+      "oursBySizeBand": [
+        26,
+        8,
+        5,
+        3
+      ],
+      "s12BySizeBand": [
+        27,
+        7,
+        4,
+        3
+      ]
+    },
+    {
+      "code": "S12000047",
+      "name": "Fife",
+      "ours": 131,
+      "s12": 125,
+      "difference": 6,
+      "differencePct": 4.8,
+      "s12Codes": [
+        "S12000047"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.503,
+      "s12Per10k": 3.375,
+      "oursBySizeBand": [
+        82,
+        35,
+        6,
+        8
+      ],
+      "s12BySizeBand": [
+        77,
+        33,
+        7,
+        8
+      ]
+    },
+    {
+      "code": "S12000048",
+      "name": "Perth and Kinross",
+      "ours": 55,
+      "s12": 54,
+      "difference": 1,
+      "differencePct": 1.9,
+      "s12Codes": [
+        "S12000048"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.55,
+      "s12Per10k": 3.581,
+      "oursBySizeBand": [
+        34,
+        14,
+        2,
+        5
+      ],
+      "s12BySizeBand": [
+        32,
+        15,
+        3,
+        4
+      ]
+    },
+    {
+      "code": "S12000049",
+      "name": "Glasgow City",
+      "ours": 201,
+      "s12": 187,
+      "difference": 14,
+      "differencePct": 7.5,
+      "s12Codes": [
+        "S12000049"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.072,
+      "s12Per10k": 3.013,
+      "oursBySizeBand": [
+        119,
+        56,
+        9,
+        17
+      ],
+      "s12BySizeBand": [
+        105,
+        54,
+        13,
+        15
+      ]
+    },
+    {
+      "code": "S12000050",
+      "name": "North Lanarkshire",
+      "ours": 102,
+      "s12": 94,
+      "difference": 8,
+      "differencePct": 8.5,
+      "s12Codes": [
+        "S12000050"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.966,
+      "s12Per10k": 2.757,
+      "oursBySizeBand": [
+        57,
+        32,
+        3,
+        10
+      ],
+      "s12BySizeBand": [
+        50,
+        31,
+        3,
+        10
+      ]
+    },
+    {
+      "code": "W06000001",
+      "name": "Isle of Anglesey",
+      "ours": 35,
+      "s12": 32,
+      "difference": 3,
+      "differencePct": 9.4,
+      "s12Codes": [
+        "W06000001"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 5.102,
+      "s12Per10k": 4.646,
+      "oursBySizeBand": [
+        22,
+        10,
+        1,
+        2
+      ],
+      "s12BySizeBand": [
+        18,
+        10,
+        2,
+        2
+      ]
+    },
+    {
+      "code": "W06000002",
+      "name": "Gwynedd",
+      "ours": 57,
+      "s12": 52,
+      "difference": 5,
+      "differencePct": 9.6,
+      "s12Codes": [
+        "W06000002"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.738,
+      "s12Per10k": 4.43,
+      "oursBySizeBand": [
+        35,
+        15,
+        6,
+        1
+      ],
+      "s12BySizeBand": [
+        31,
+        14,
+        6,
+        1
+      ]
+    },
+    {
+      "code": "W06000003",
+      "name": "Conwy",
+      "ours": 37,
+      "s12": 36,
+      "difference": 1,
+      "differencePct": 2.8,
+      "s12Codes": [
+        "W06000003"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.234,
+      "s12Per10k": 3.138,
+      "oursBySizeBand": [
+        22,
+        9,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        20,
+        10,
+        4,
+        2
+      ]
+    },
+    {
+      "code": "W06000004",
+      "name": "Denbighshire",
+      "ours": 41,
+      "s12": 42,
+      "difference": -1,
+      "differencePct": -2.4,
+      "s12Codes": [
+        "W06000004"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 4.173,
+      "s12Per10k": 4.383,
+      "oursBySizeBand": [
+        23,
+        11,
+        4,
+        3
+      ],
+      "s12BySizeBand": [
+        22,
+        13,
+        5,
+        2
+      ]
+    },
+    {
+      "code": "W06000005",
+      "name": "Flintshire",
+      "ours": 59,
+      "s12": 58,
+      "difference": 1,
+      "differencePct": 1.7,
+      "s12Codes": [
+        "W06000005"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.783,
+      "s12Per10k": 3.743,
+      "oursBySizeBand": [
+        33,
+        17,
+        4,
+        5
+      ],
+      "s12BySizeBand": [
+        33,
+        16,
+        4,
+        5
+      ]
+    },
+    {
+      "code": "W06000006",
+      "name": "Wrexham",
+      "ours": 44,
+      "s12": 43,
+      "difference": 1,
+      "differencePct": 2.3,
+      "s12Codes": [
+        "W06000006"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.189,
+      "s12Per10k": 3.182,
+      "oursBySizeBand": [
+        28,
+        11,
+        1,
+        4
+      ],
+      "s12BySizeBand": [
+        26,
+        11,
+        2,
+        4
+      ]
+    },
+    {
+      "code": "W06000008",
+      "name": "Ceredigion",
+      "ours": 18,
+      "s12": 16,
+      "difference": 2,
+      "differencePct": 12.5,
+      "s12Codes": [
+        "W06000008"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.476,
+      "s12Per10k": 2.239,
+      "oursBySizeBand": [
+        9,
+        4,
+        4,
+        1
+      ],
+      "s12BySizeBand": [
+        7,
+        4,
+        5,
+        0
+      ]
+    },
+    {
+      "code": "W06000009",
+      "name": "Pembrokeshire",
+      "ours": 36,
+      "s12": 37,
+      "difference": -1,
+      "differencePct": -2.7,
+      "s12Codes": [
+        "W06000009"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.861,
+      "s12Per10k": 2.999,
+      "oursBySizeBand": [
+        20,
+        10,
+        3,
+        3
+      ],
+      "s12BySizeBand": [
+        21,
+        10,
+        4,
+        2
+      ]
+    },
+    {
+      "code": "W06000010",
+      "name": "Carmarthenshire",
+      "ours": 51,
+      "s12": 51,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "W06000010"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.684,
+      "s12Per10k": 2.714,
+      "oursBySizeBand": [
+        27,
+        15,
+        2,
+        7
+      ],
+      "s12BySizeBand": [
+        26,
+        16,
+        3,
+        6
+      ]
+    },
+    {
+      "code": "W06000011",
+      "name": "Swansea",
+      "ours": 72,
+      "s12": 66,
+      "difference": 6,
+      "differencePct": 9.1,
+      "s12Codes": [
+        "W06000011"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.887,
+      "s12Per10k": 2.767,
+      "oursBySizeBand": [
+        44,
+        20,
+        2,
+        6
+      ],
+      "s12BySizeBand": [
+        37,
+        19,
+        4,
+        6
+      ]
+    },
+    {
+      "code": "W06000012",
+      "name": "Neath Port Talbot",
+      "ours": 32,
+      "s12": 32,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "W06000012"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.253,
+      "s12Per10k": 2.249,
+      "oursBySizeBand": [
+        18,
+        7,
+        5,
+        2
+      ],
+      "s12BySizeBand": [
+        14,
+        10,
+        6,
+        2
+      ]
+    },
+    {
+      "code": "W06000013",
+      "name": "Bridgend",
+      "ours": 37,
+      "s12": 35,
+      "difference": 2,
+      "differencePct": 5.7,
+      "s12Codes": [
+        "W06000013"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.517,
+      "s12Per10k": 2.406,
+      "oursBySizeBand": [
+        20,
+        10,
+        4,
+        3
+      ],
+      "s12BySizeBand": [
+        17,
+        11,
+        4,
+        3
+      ]
+    },
+    {
+      "code": "W06000014",
+      "name": "Vale of Glamorgan",
+      "ours": 31,
+      "s12": 31,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "W06000014"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.29,
+      "s12Per10k": 2.35,
+      "oursBySizeBand": [
+        19,
+        6,
+        2,
+        4
+      ],
+      "s12BySizeBand": [
+        19,
+        6,
+        3,
+        3
+      ]
+    },
+    {
+      "code": "W06000015",
+      "name": "Cardiff",
+      "ours": 119,
+      "s12": 112,
+      "difference": 7,
+      "differencePct": 6.2,
+      "s12Codes": [
+        "W06000015"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.119,
+      "s12Per10k": 3.091,
+      "oursBySizeBand": [
+        75,
+        28,
+        3,
+        13
+      ],
+      "s12BySizeBand": [
+        68,
+        28,
+        4,
+        12
+      ]
+    },
+    {
+      "code": "W06000016",
+      "name": "Rhondda Cynon Taf",
+      "ours": 71,
+      "s12": 70,
+      "difference": 1,
+      "differencePct": 1.4,
+      "s12Codes": [
+        "W06000016"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.946,
+      "s12Per10k": 2.945,
+      "oursBySizeBand": [
+        41,
+        17,
+        5,
+        8
+      ],
+      "s12BySizeBand": [
+        42,
+        16,
+        5,
+        7
+      ]
+    },
+    {
+      "code": "W06000018",
+      "name": "Caerphilly",
+      "ours": 36,
+      "s12": 36,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "W06000018"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.045,
+      "s12Per10k": 2.046,
+      "oursBySizeBand": [
+        16,
+        11,
+        4,
+        5
+      ],
+      "s12BySizeBand": [
+        17,
+        10,
+        4,
+        5
+      ]
+    },
+    {
+      "code": "W06000019",
+      "name": "Blaenau Gwent",
+      "ours": 15,
+      "s12": 15,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "W06000019"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.219,
+      "s12Per10k": 2.242,
+      "oursBySizeBand": [
+        6,
+        6,
+        1,
+        2
+      ],
+      "s12BySizeBand": [
+        5,
+        6,
+        2,
+        2
+      ]
+    },
+    {
+      "code": "W06000020",
+      "name": "Torfaen",
+      "ours": 22,
+      "s12": 22,
+      "difference": 0,
+      "differencePct": 0.0,
+      "s12Codes": [
+        "W06000020"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.341,
+      "s12Per10k": 2.384,
+      "oursBySizeBand": [
+        13,
+        4,
+        2,
+        3
+      ],
+      "s12BySizeBand": [
+        13,
+        4,
+        2,
+        3
+      ]
+    },
+    {
+      "code": "W06000021",
+      "name": "Monmouthshire",
+      "ours": 31,
+      "s12": 30,
+      "difference": 1,
+      "differencePct": 3.3,
+      "s12Codes": [
+        "W06000021"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.252,
+      "s12Per10k": 3.227,
+      "oursBySizeBand": [
+        17,
+        9,
+        5,
+        0
+      ],
+      "s12BySizeBand": [
+        15,
+        9,
+        6,
+        0
+      ]
+    },
+    {
+      "code": "W06000022",
+      "name": "Newport",
+      "ours": 42,
+      "s12": 44,
+      "difference": -2,
+      "differencePct": -4.5,
+      "s12Codes": [
+        "W06000022"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.491,
+      "s12Per10k": 2.757,
+      "oursBySizeBand": [
+        25,
+        8,
+        3,
+        6
+      ],
+      "s12BySizeBand": [
+        26,
+        9,
+        4,
+        5
+      ]
+    },
+    {
+      "code": "W06000023",
+      "name": "Powys",
+      "ours": 49,
+      "s12": 46,
+      "difference": 3,
+      "differencePct": 6.5,
+      "s12Codes": [
+        "W06000023"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 3.634,
+      "s12Per10k": 3.454,
+      "oursBySizeBand": [
+        32,
+        11,
+        4,
+        2
+      ],
+      "s12BySizeBand": [
+        29,
+        11,
+        4,
+        2
+      ]
+    },
+    {
+      "code": "W06000024",
+      "name": "Merthyr Tydfil",
+      "ours": 17,
+      "s12": 13,
+      "difference": 4,
+      "differencePct": 30.8,
+      "s12Codes": [
+        "W06000024"
+      ],
+      "mapping": [
+        "same code"
+      ],
+      "oursPer10k": 2.913,
+      "s12Per10k": 2.21,
+      "oursBySizeBand": [
+        8,
+        5,
+        1,
+        3
+      ],
+      "s12BySizeBand": [
+        5,
+        4,
+        2,
+        2
+      ]
+    }
+  ]
+}
