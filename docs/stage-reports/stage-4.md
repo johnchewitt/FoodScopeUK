@@ -170,7 +170,7 @@ Checked on https://johnchewitt.github.io/FoodScopeUK/ in the Claude desktop app'
 Issues found, fixed in the follow-up PR:
 1. **Overlay colours:** the proximity ring and lines were too close to the selection outline for full-colour readers on both grey styles (table above). Proximity is now pink on dark grey and imagery, magenta on light grey.
 2. **Opening view:** UK Food Access opened on the default world view (zoom 2, centred on 8° E, 30° N). It now fits the box around every mapped store (Channel Islands to Shetland, Northern Ireland to East Anglia) once per visit, instantly on first load and flying from another module. It does not move when filters change, or when the map is already at local scale.
-3. **Header at about 800 px:** the subtitle ran into the Search button. Below 1024 px the subtitle is hidden, and at any width it now shortens instead of overlapping.
+3. **Header at about 800 px:** the brand ran into the Search button. The cause was the freshness pill: with two data families its label grew to about 330 px ("Trade 2026-10-23 · Stores and population 2026-10-24"). Below 1024 px the pill now shows compact dates ("Trade 23 Oct · Stores 24 Oct"; the full dates stay in its accessible name and tooltip), and the subtitle and the disabled 2D/3D toggle are hidden, as on phones. The subtitle also shortens instead of overflowing at any width.
 
 ## Not verified, and why
 
@@ -190,7 +190,7 @@ Issues found, fixed in the follow-up PR:
 - **Cards:** "per 10,000 residents" and "per km² of land" are labelled by denominator, with the measure and area in the detail line, because the full measure name did not fit the card.
 - **Top bar:** a long module question (UK Food Access) overlapped the tools at 1600 px. The question now shortens with an ellipsis inside its column.
 - **Kernel density** stays in Release 2 (SM-08).
-- **Header subtitle below 1024 px (live-check fix):** the subtitle (SH-01) is hidden, as it already was on phones, because the tools leave no room for it. The page title still carries it.
+- **Header below 1024 px (live-check fix):** the subtitle (SH-01) and the disabled 2D/3D toggle (SH-03, Release 2) are hidden, as they already were on phones, and the freshness pill shows compact dates. The page title still carries the subtitle.
 
 ## Open questions
 

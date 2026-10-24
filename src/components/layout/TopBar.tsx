@@ -95,7 +95,10 @@ export function TopBar() {
           aria-label={`Data freshness: ${freshness.label}. ${freshness.detail} Open evidence and limitations.`}
         >
           <span className="freshness__dot" aria-hidden="true" />
-          {freshness.label}
+          <span className="freshness__full">{freshness.label}</span>
+          <span className="freshness__short" aria-hidden="true">
+            {freshness.short}
+          </span>
         </button>
         <div className="dim-toggle hide-compact" role="group" aria-label="Map dimension">
           <button type="button" aria-pressed="true">

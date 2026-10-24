@@ -65,6 +65,7 @@ describe("summariseFreshness", () => {
     const f = summariseFreshness(manifest, "success");
     expect(f.state).toBe("current");
     expect(f.label).toBe("Trade 2026-10-23 · Stores and population 2026-10-24");
+    expect(f.short).toBe("Trade 23 Oct · Stores 24 Oct");
     expect(f.detail).toMatch(/its own latest snapshot: trade 2026-10-23, stores and population 2026-10-24/);
     expect(familySnapshot(manifest, "trade")).toBe("2026-10-23");
     expect(familySnapshot(manifest, "local")).toBe("2026-10-24");
@@ -84,6 +85,7 @@ describe("summariseFreshness", () => {
     expect(summariseFreshness(withStats, "success")).toMatchObject({
       state: "current",
       label: "Snapshot 2026-11-15",
+      short: "Snapshot 15 Nov",
     });
     expect(familySnapshot(withStats, "trade")).toBe("2026-11-15");
   });

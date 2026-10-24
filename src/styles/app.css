@@ -191,6 +191,10 @@
 .freshness:hover {
   border-color: var(--fs-line-strong);
 }
+/* Compact dates on tablets (the full ISO dates stay in the accessible name and tooltip). */
+.freshness__short {
+  display: none;
+}
 .freshness__dot {
   width: 8px;
   height: 8px;
@@ -1089,10 +1093,19 @@
   }
 }
 
-/* Narrow tablet: the tools leave no room for the subtitle (it ran into Search at 800 px). */
+/*
+ * Narrow tablet: two data families made the freshness pill about 330 px wide, and with it the
+ * brand ran into Search at 800 px. Compact dates, no subtitle, and no disabled 2D/3D toggle
+ * (Release 2) give the brand its room.
+ */
 @media (max-width: 1023px) {
-  .brand__sub {
+  .brand__sub,
+  .dim-toggle,
+  .freshness__full {
     display: none;
+  }
+  .freshness__short {
+    display: inline;
   }
 }
 

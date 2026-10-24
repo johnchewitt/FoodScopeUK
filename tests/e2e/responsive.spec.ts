@@ -34,10 +34,16 @@ for (const vp of VIEWPORTS) {
         const b = document.querySelector(sel)?.getBoundingClientRect();
         return b && b.width > 0 ? { left: b.left, right: b.right } : null;
       };
+      // The module title is clipped by its column (it shortens, then disappears when the tools
+      // need the room), so only its visible part counts.
+      const ctx = box(".topbar__context");
+      const title = box(".topbar__module");
+      const left = ctx && title ? Math.max(ctx.left, title.left) : 0;
+      const right = ctx && title ? Math.min(ctx.right, title.right) : 0;
       return {
         name: box(".brand__name"),
         sub: box(".brand__sub"),
-        module: box(".topbar__module"),
+        module: right > left ? { left, right } : null,
         tools: box(".topbar__tools"),
       };
     });
