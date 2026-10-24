@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-24",
+  "files": [
+    {
+      "id": "ons.mye25",
+      "file": "mye25tablesuk.xlsx",
+      "url": "https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationestimatesforukenglandandwalesscotlandandnorthernireland/mid2025/mye25tablesuk.xlsx",
+      "sourceId": "S18",
+      "licence": "Open Government Licence v3.0",
+      "description": "Population estimates for the UK, England, Wales, Scotland and Northern Ireland: mid-2025",
+      "httpStatus": 200,
+      "bytes": 1026940,
+      "sha256": "8ae244e3341257ecccaee55f4973fe12f46afe6656ead6c1a9ed3f4f8585e40f",
+      "retrievedAt": "2026-10-24T08:24:03Z"
+    },
+    {
+      "id": "ons.lad22_lad23_lookup",
+      "file": "lad22-lad23-lookup.json",
+      "url": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LAD22_LAD23_UK_LU_v1/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=false&orderByFields=LAD22CD&resultRecordCount=2000&f=json",
+      "sourceId": "S14",
+      "licence": "Open Government Licence v3.0",
+      "description": "Local Authority District (2022) to Local Authority District (2023) Lookup in the UK",
+      "httpStatus": 200,
+      "bytes": 60139,
+      "sha256": "259c57d43b0114df3939b77b7dec31009757d4ea515820966748ec575c918d0d",
+      "retrievedAt": "2026-10-24T08:24:03Z"
+    }
+  ]
+}
