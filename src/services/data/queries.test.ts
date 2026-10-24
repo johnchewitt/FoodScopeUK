@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { readRepoJson } from "@/test/files";
 import type { DataManifest } from "@/types/generated/manifest";
 import { DataLoadError, describeDataError } from "./errors";
-import { loadConfig, loadManifest, summariseFreshness } from "./queries";
+import { familySnapshot, loadConfig, loadManifest, summariseFreshness } from "./queries";
 
 const manifest = readRepoJson<DataManifest>("public/data/manifest.json");
 
@@ -61,15 +61,20 @@ describe("summariseFreshness", () => {
     expect(f.label).toBe("No statistics loaded");
   });
 
-  it("reports the committed HMRC trade snapshot", () => {
+  it("reports each data family's snapshot from the committed manifest", () => {
     const f = summariseFreshness(manifest, "success");
     expect(f.state).toBe("current");
-    expect(f.label).toBe("Snapshot 2026-10-23");
+    expect(f.label).toBe("Trade 2026-10-23 · Stores and population 2026-10-24");
+    expect(f.detail).toMatch(/its own latest snapshot: trade 2026-10-23, stores and population 2026-10-24/);
+    expect(familySnapshot(manifest, "trade")).toBe("2026-10-23");
+    expect(familySnapshot(manifest, "local")).toBe("2026-10-24");
+    expect(familySnapshot(manifest, "production")).toBeNull();
   });
 
-  it("reports a snapshot when statistical datasets exist", () => {
+  it("reads one snapshot for everything from manifests written before families", () => {
     const withStats: DataManifest = {
       ...manifest,
+      snapshots: undefined,
       snapshotId: "2026-11-15",
       datasets: [
         ...manifest.datasets,
@@ -80,6 +85,7 @@ describe("summariseFreshness", () => {
       state: "current",
       label: "Snapshot 2026-11-15",
     });
+    expect(familySnapshot(withStats, "trade")).toBe("2026-11-15");
   });
 });
 

@@ -177,7 +177,7 @@ Evidence: `docs/stage-reports/stage-3.md`.
 ### 5.3 Moved out of Stage 3 (to schedule with John)
 
 - Remaining 11 baskets, after the Defra trade-code comparison (gate G3, B10), and commodity search (B11).
-- ~~LAD boundaries (national, generalised) and LAD population (G5); GEOLYTIX snapshot (G7). Stage 4 needs both.~~ **Done** in the pre-Stage 4 data step (24 Oct 2026): `foodscope-pipeline build-local` → `pipeline/derived/2026-10-24/` (ADR-0020). Publishing them in the app's data index is part of Stage 4.
+- ~~LAD boundaries (national, generalised) and LAD population (G5); GEOLYTIX snapshot (G7). Stage 4 needs both.~~ **Done** in the pre-Stage 4 data step (24 Oct 2026): `foodscope-pipeline build-local` → `public/data/snapshots/2026-10-24/local/` (ADR-0020), published in the app's data index in Stage 4 (ADR-0021).
 - Defra context file (UKFSR, pocketbook CSVs; G6); `catalogue.json` generated from the inventory.
 - FO-08 supplier pattern changes; FO-09 UK production context (needs S09/S10 verified).
 - Scheduled `refresh-trade-data` runs opening PRs (B14).
@@ -189,7 +189,7 @@ Deliverables: stores layer via adapter (SM-01); clustering and symbols (SM-02/04
 
 Exit: filter counts match pipeline counts; LAD totals reconciled and differences from ONS S12 explained in the stage report.
 
-Inputs ready (pre-Stage 4 data step, ADR-0020): `pipeline/derived/2026-10-24/` holds the display boundaries, the classified stores and per-council population, land area and store counts, each with a provenance record; a first all-format comparison with S12 is in `pipeline/reports/`. Stage 4 decides how they enter `public/data/manifest.json` (the newest-snapshot rule in `publish` would otherwise hide the trade snapshot) and records it in an ADR.
+Inputs ready (pre-Stage 4 data step, ADR-0020): `public/data/snapshots/2026-10-24/local/` holds the display boundaries, the classified stores and per-council population, land area and store counts, each with a provenance record; a first all-format comparison with S12 is in `pipeline/reports/`. They enter `public/data/manifest.json` with each data family taken from its own newest snapshot (John's decision, ADR-0021).
 
 ### 6.1 Curated basemap switcher (SH-08; added at John's request, 23 Oct 2026)
 

@@ -65,9 +65,45 @@ export function datasetUrl(dataset: Dataset): string {
   return publicUrl(`data/${dataset.path}`);
 }
 
+/** Display names of the dataset families (folders inside a snapshot; ADR-0021). */
+export const FAMILY_LABELS: Record<string, string> = {
+  trade: "Trade",
+  local: "Stores and population",
+};
+
+/**
+ * The snapshot date a dataset family is taken from. Each family refreshes on its own schedule
+ * (ADR-0021); manifests written before families existed name one snapshot for everything.
+ */
+export function familySnapshot(manifest: DataManifest | undefined, family: string): string | null {
+  if (!manifest) return null;
+  if (manifest.snapshots) return manifest.snapshots[family] ?? null;
+  return manifest.snapshotId;
+}
+
+/** Families and their snapshot dates, oldest family name first (stable display order). */
+export function familySnapshots(
+  manifest: DataManifest | undefined,
+): { family: string; label: string; id: string }[] {
+  if (!manifest) return [];
+  const entries = manifest.snapshots
+    ? Object.entries(manifest.snapshots)
+    : manifest.snapshotId
+      ? [["trade", manifest.snapshotId] as [string, string]]
+      : [];
+  const order = Object.keys(FAMILY_LABELS);
+  return entries
+    .map(([family, id]) => ({ family, label: FAMILY_LABELS[family] ?? family, id }))
+    .sort((a, b) => {
+      const ia = order.indexOf(a.family);
+      const ib = order.indexOf(b.family);
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.family.localeCompare(b.family);
+    });
+}
+
 export type FreshnessState = "none" | "current" | "stale" | "error" | "loading";
 
-/** Summarises data freshness for the header indicator (SH-03). Stage 1: no statistical snapshot. */
+/** Summarises data freshness for the header indicator (SH-03): one snapshot date per data family. */
 export function summariseFreshness(
   manifest: DataManifest | undefined,
   status: "pending" | "error" | "success",
@@ -84,9 +120,18 @@ export function summariseFreshness(
       detail: "No dated statistical snapshot has been published yet. Reference map layers only.",
     };
   }
+  const families = familySnapshots(manifest);
+  if (families.length <= 1)
+    return {
+      state: "current",
+      label: `Snapshot ${manifest.snapshotId}`,
+      detail: `${statistical.length} statistical datasets in snapshot ${manifest.snapshotId}.`,
+    };
   return {
     state: "current",
-    label: `Snapshot ${manifest.snapshotId}`,
-    detail: `${statistical.length} statistical datasets in snapshot ${manifest.snapshotId}.`,
+    label: families.map((f) => `${f.label} ${f.id}`).join(" · "),
+    detail: `${statistical.length} statistical datasets. Each kind of data comes from its own latest snapshot: ${families
+      .map((f) => `${f.label.toLowerCase()} ${f.id}`)
+      .join(", ")}.`,
   };
 }

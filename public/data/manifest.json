@@ -1,9 +1,93 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-23T14:27:03Z",
+  "generatedAt": "2026-10-24T08:39:41Z",
   "generator": "foodscope-pipeline 0.1.0",
-  "snapshotId": "2026-10-23",
+  "snapshotId": "2026-10-24",
+  "snapshots": {
+    "local": "2026-10-24",
+    "trade": "2026-10-23"
+  },
   "datasets": [
+    {
+      "id": "local.lad_boundaries_2025",
+      "title": "Council boundaries, May 2025 (display edition)",
+      "role": "reference",
+      "path": "snapshots/2026-10-24/local/lad-2025-uk.geojson",
+      "format": "geojson",
+      "schemaId": "lad-boundaries",
+      "sha256": "b5f857a2adbadf09660788d73caa8f2385452fa847231849d588f31e753f1cae",
+      "bytes": 2696122,
+      "featureCount": 361,
+      "sourceIds": [
+        "S14"
+      ],
+      "referencePeriod": "May 2025 boundaries",
+      "coverage": "United Kingdom: 361 councils",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025",
+      "expectedCadence": "annual",
+      "retrieval": {
+        "method": "ONS feature service LAD_MAY_2025_UK_BGC_V2, paged query cached in pipeline/raw/ons/ (fetch-ons)",
+        "source": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LAD_MAY_2025_UK_BGC_V2/FeatureServer/0 (8 pages, combined sha256 26757782716e…)",
+        "retrievedAt": "2026-10-24T08:39:41Z",
+        "notes": "BGC (20 m, clipped to the coastline), coverage-simplified at 150 m in EPSG:27700, island parts under 1 ha touching no other council dropped (3379), WGS84 to 6 decimal places."
+      }
+    },
+    {
+      "id": "local.lad_indicators",
+      "title": "Councils: population mid-2025, land area and store counts",
+      "role": "statistical",
+      "path": "snapshots/2026-10-24/local/lad-indicators.json",
+      "format": "json",
+      "schemaId": "lad-indicators",
+      "sha256": "002f8672d082855372ef2b1681f9c8940930787ee668cde1d7141482f65e50b2",
+      "bytes": 64731,
+      "sourceIds": [
+        "S11",
+        "S14",
+        "S18"
+      ],
+      "referencePeriod": "Population mid-2025; stores June 2026",
+      "coverage": "United Kingdom: 361 councils",
+      "provenance": "derived",
+      "licence": "Open Government Licence v3.0; GEOLYTIX open data",
+      "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025. Contains GEOLYTIX Grocery Retail Points data (v46, June 2026)",
+      "expectedCadence": "quarterly",
+      "retrieval": {
+        "method": "Derived offline from the committed raw files",
+        "source": "mye25tablesuk.xlsx (sha256 8ae244e33412…); geolytix_retailpoints_v46_202606.xlsx (sha256 093ba30b12e8…); LAD_MAY_2025_UK_BFE_V2_7705143053794342073.zip (sha256 1d1e35faf003…)",
+        "retrievedAt": "2026-10-24T08:24:03Z",
+        "notes": "Population: ONS MYE2 'All ages'; land area: ONS MYE5. Store counts per council by size band × format, wholesale and mainly non-food stores left out. Barnsley and Sheffield population and land area are on their boundaries before the 2025 change (see each council's note)."
+      }
+    },
+    {
+      "id": "local.stores",
+      "title": "Grocery stores, GEOLYTIX v46 (June 2026)",
+      "role": "statistical",
+      "path": "snapshots/2026-10-24/local/stores.geojson",
+      "format": "geojson",
+      "schemaId": "stores",
+      "sha256": "59dfd804b94955e796b6808324f5b6ef1fb502df29bbca68120ee3223491681a",
+      "bytes": 8509221,
+      "featureCount": 19183,
+      "sourceIds": [
+        "S11",
+        "S14"
+      ],
+      "referencePeriod": "June 2026 (GEOLYTIX v46)",
+      "coverage": "United Kingdom, plus Guernsey, Jersey and the Isle of Man (no UK council)",
+      "provenance": "measured",
+      "licence": "GEOLYTIX open data, no named licence (described by GEOLYTIX as \"completely free and open to use data\", blog page read 24 Oct 2026)",
+      "attribution": "Contains GEOLYTIX Grocery Retail Points data (v46, June 2026). Councils: Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025",
+      "expectedCadence": "quarterly",
+      "retrieval": {
+        "method": "Files provided by the project owner, committed in pipeline/raw/ with checksums",
+        "source": "geolytix_retailpoints_v46_202606.xlsx (sha256 093ba30b12e8…); LAD_MAY_2025_UK_BFE_V2_7705143053794342073.zip (sha256 1d1e35faf003…)",
+        "retrievedAt": "2026-10-24T07:52:53Z",
+        "notes": "Size band, class and format by decision D5 (pipeline config/store_classes.json); wholesale and mainly non-food stores left out. Council by point-in-polygon on the BFE edition in EPSG:27700; a store just outside every council (within 50 m) takes the nearest one and is flagged; Crown Dependency stores have no council. Store positions are GEOLYTIX's; a store without WGS84 coordinates is placed from its British National Grid reference."
+      }
+    },
     {
       "id": "reference.world_countries_110m",
       "title": "World country outlines (Natural Earth 1:110m)",
@@ -230,6 +314,33 @@
       "licence": "Open Government Licence v3.0",
       "status": "verified",
       "notes": "Context only (Evidence page caveat on the Netherlands dispatch effect). Not used for figures: it covers only trade where both origin and dispatch were declared."
+    },
+    {
+      "id": "S11",
+      "title": "Grocery Retail Points (v46, June 2026)",
+      "publisher": "GEOLYTIX",
+      "url": "https://geolytix.com/blog/grocery-retail-points-2026q1/",
+      "licence": "GEOLYTIX open data, no named licence (\"completely free and open to use data\")",
+      "status": "verified",
+      "notes": "Store locations, retailer, fascia and size band as delivered (provided by John, 24 Oct 2026). Class from size_band (convenience under 280 m², supermarket 280 m² and over); forecourt, motorway, travel and hospital formats flagged; wholesale and mainly non-food stores left out (decision D5). Retail presence only: no turnover, prices or opening hours."
+    },
+    {
+      "id": "S14",
+      "title": "Local Authority Districts (May 2025) Boundaries UK (BGC for display, BFE for store assignment)",
+      "publisher": "Office for National Statistics",
+      "url": "https://geoportal.statistics.gov.uk/",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025. 361 councils; display edition generalised to 20 m, clipped to the coastline and further simplified for the web."
+    },
+    {
+      "id": "S18",
+      "title": "Population estimates for the UK, England, Wales, Scotland and Northern Ireland: mid-2025",
+      "publisher": "Office for National Statistics (with NRS and NISRA)",
+      "url": "https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationestimatesforukenglandandwalesscotlandandnorthernireland",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Usual residents at 30 June 2025 for all four nations (accredited official statistics), on council boundaries of April 2024; land area excluding inland water (Standard Area Measurements, January 2025; NISRA for Northern Ireland). Barnsley and Sheffield figures predate their 2025 boundary change."
     },
     {
       "id": "S24",

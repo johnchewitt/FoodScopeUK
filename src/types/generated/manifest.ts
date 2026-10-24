@@ -10,9 +10,15 @@ export interface DataManifest {
   generatedAt: string;
   generator: string;
   /**
-   * Dated statistical snapshot (YYYY-MM-DD) or null when none has been published yet.
+   * Newest dated snapshot among the dataset families (YYYY-MM-DD), or null when none has been published yet.
    */
   snapshotId: string | null;
+  /**
+   * Dataset family (a folder inside a snapshot, e.g. trade, local) → the snapshot date it is taken from. Each family refreshes on its own schedule (ADR-0021).
+   */
+  snapshots?: {
+    [k: string]: string;
+  };
   datasets: Dataset[];
   catalogue: CatalogueEntry[];
 }

@@ -2,7 +2,7 @@
   "id": "local.stores",
   "title": "Grocery stores, GEOLYTIX v46 (June 2026)",
   "role": "statistical",
-  "path": "stores.geojson",
+  "path": "snapshots/2026-10-24/local/stores.geojson",
   "format": "geojson",
   "schemaId": "stores",
   "sha256": "59dfd804b94955e796b6808324f5b6ef1fb502df29bbca68120ee3223491681a",

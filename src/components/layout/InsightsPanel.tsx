@@ -11,7 +11,7 @@ import { SeasonalInsightsLazy } from "@/features/seasonal/lazy";
 import { BASEMAP_STATUS_ID, REFERENCE_DATASET_ID, REFERENCE_LAYER_ID } from "@/map/layerIds";
 import { basemapMode, readArcgisEnv } from "@/services/arcgis/env";
 import { describeDataError } from "@/services/data/errors";
-import { findDataset, useAppConfig, useManifest } from "@/services/data/queries";
+import { familySnapshot, findDataset, useAppConfig, useManifest } from "@/services/data/queries";
 import { ErrorBoundary } from "@/app/ErrorBoundary";
 import { useAppStore } from "@/state/store";
 
@@ -48,6 +48,9 @@ export function InsightsPanel() {
   const reference = findDataset(manifest.data, REFERENCE_DATASET_ID);
   const statistical = manifest.data?.datasets.filter((d) => d.role === "statistical") ?? [];
   const tradeDatasets = statistical.filter((d) => d.id.startsWith("trade.") && d.id !== "trade.index");
+  const localDatasets = statistical.filter((d) => d.id.startsWith("local."));
+  const tradeSnapshot = familySnapshot(manifest.data, "trade");
+  const localSnapshot = familySnapshot(manifest.data, "local");
 
   const failed: string[] = [];
   if (config.isError) failed.push("app configuration (defaults used)");
@@ -103,10 +106,10 @@ export function InsightsPanel() {
             <SkeletonLines label="Loading data status" />
           ) : (
             <ul className="status-list" style={{ marginTop: failed.length ? 12 : 0 }}>
-              {manifest.data?.snapshotId && tradeDatasets.length > 0 ? (
+              {tradeSnapshot && tradeDatasets.length > 0 ? (
                 <StatusItem
                   tone="ok"
-                  title={`Trade snapshot ${manifest.data.snapshotId}`}
+                  title={`Trade snapshot ${tradeSnapshot}`}
                   detail={`HMRC Overseas Trade Statistics for ${tradeDatasets.length} commodities, ${tradeDatasets[0]?.referencePeriod ?? ""}. Used by Food Origins and Seasonal Supply.`}
                 />
               ) : (
@@ -114,6 +117,13 @@ export function InsightsPanel() {
                   tone="pending"
                   title="No statistics loaded"
                   detail="Trade, retail and population data arrive from build stage 2 onward. Nothing on screen is a statistic yet."
+                />
+              )}
+              {localSnapshot && localDatasets.length > 0 && (
+                <StatusItem
+                  tone="ok"
+                  title={`Stores and population snapshot ${localSnapshot}`}
+                  detail="GEOLYTIX grocery stores (June 2026), ONS mid-2025 population and May 2025 council boundaries. Used by UK Food Access."
                 />
               )}
               {manifest.isError ? (

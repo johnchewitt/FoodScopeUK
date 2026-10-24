@@ -9,7 +9,7 @@ import { ErrorState } from "@/components/states/ErrorState";
 import { Notice } from "@/components/states/Notice";
 import { SkeletonLines } from "@/components/states/Skeleton";
 import { describeDataError } from "@/services/data/errors";
-import { findDataset, useManifest } from "@/services/data/queries";
+import { familySnapshot, findDataset, useManifest } from "@/services/data/queries";
 import { useAppStore } from "@/state/store";
 import { CaveatChip } from "./CaveatChip";
 import { CommodityIcon } from "./CommodityIcon";
@@ -122,7 +122,7 @@ function DataNotes({ model }: { model: OriginsModel }) {
         {dataset && (
           <li>
             Retrieved {dataset.retrieval.retrievedAt.slice(0, 10)} from the HMRC API by the data pipeline;
-            snapshot {manifest.data?.snapshotId}.
+            trade snapshot {familySnapshot(manifest.data, "trade")}.
           </li>
         )}
       </ul>
