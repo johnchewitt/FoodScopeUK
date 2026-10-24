@@ -1,5 +1,15 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { resetAppStore, selectReducedMotion, selectUrlState, useAppStore } from "./store";
+import {
+  LOCAL_ZOOM,
+  resetAppStore,
+  selectImageryAvailable,
+  selectLocalScale,
+  selectMapColourStyle,
+  selectReducedMotion,
+  selectRequestedMapStyle,
+  selectUrlState,
+  useAppStore,
+} from "./store";
 
 const s = () => useAppStore.getState();
 
@@ -138,5 +148,86 @@ describe("Seasonal playback (SS-03)", () => {
     expect(s().compareMonth).toBe(12);
     s().setCompareMonth(null);
     expect(s().compareMonth).toBeNull();
+  });
+});
+
+describe("UK Food Access selection (SM-03, SM-05, SM-07)", () => {
+  it("toggles store layers in a fixed order and normalises retailers", () => {
+    const s = useAppStore.getState();
+    expect(s.storeLayers).toEqual(["supermarket"]);
+    s.toggleStoreLayer("other");
+    s.toggleStoreLayer("convenience");
+    expect(useAppStore.getState().storeLayers).toEqual(["supermarket", "convenience", "other"]);
+    s.toggleStoreLayer("supermarket");
+    expect(useAppStore.getState().storeLayers).toEqual(["convenience", "other"]);
+    s.setRetailers(["Lidl", "Aldi", "Lidl"]);
+    expect(useAppStore.getState().retailers).toEqual(["Aldi", "Lidl"]);
+    s.setRetailers(null);
+    expect(useAppStore.getState().retailers).toBeNull();
+  });
+
+  it("selecting the selected council again clears it", () => {
+    const s = useAppStore.getState();
+    s.selectCouncil("N09000003");
+    expect(useAppStore.getState().lad).toBe("N09000003");
+    s.selectCouncil("N09000003");
+    expect(useAppStore.getState().lad).toBeNull();
+  });
+
+  it("clamps the proximity count and radius; choosing a point ends picking", () => {
+    const s = useAppStore.getState();
+    s.setProximityCount(0);
+    expect(useAppStore.getState().proximityCount).toBe(1);
+    s.setProximityCount(99);
+    expect(useAppStore.getState().proximityCount).toBe(20);
+    s.setProximityRadiusKm(0.1);
+    expect(useAppStore.getState().proximityRadiusKm).toBe(0.5);
+    s.setProximityRadiusKm(3.3);
+    expect(useAppStore.getState().proximityRadiusKm).toBe(3.5);
+    s.setProximityRadiusKm(50);
+    expect(useAppStore.getState().proximityRadiusKm).toBe(20);
+    s.setProximityPicking(true);
+    s.setProximityPoint([-2.24, 53.48]);
+    expect(useAppStore.getState()).toMatchObject({ proximityPicking: false, proximityPoint: [-2.24, 53.48] });
+  });
+});
+
+describe("basemap choice (SH-08)", () => {
+  const at = (zoom: number) => ({ zoom, center: [-2.24, 53.48] as [number, number] });
+
+  it("is dark grey without a key, whatever the URL asks", () => {
+    useAppStore.setState({ basemap: "light", basemapChoice: false });
+    expect(selectRequestedMapStyle(useAppStore.getState())).toBe("dark");
+    expect(selectMapColourStyle(useAppStore.getState())).toBe("dark");
+  });
+
+  it("offers imagery only at local scale in the local modules, keeping the choice", () => {
+    useAppStore.setState({ basemapChoice: true, basemap: "imagery", module: "access", mapView: at(9) });
+    expect(selectImageryAvailable(useAppStore.getState())).toBe(false);
+    expect(selectRequestedMapStyle(useAppStore.getState())).toBe("dark");
+    useAppStore.getState().setMapView(at(LOCAL_ZOOM));
+    expect(selectLocalScale(useAppStore.getState())).toBe(true);
+    expect(selectRequestedMapStyle(useAppStore.getState())).toBe("imagery");
+    useAppStore.getState().setModule("origins");
+    expect(selectRequestedMapStyle(useAppStore.getState())).toBe("dark");
+    expect(useAppStore.getState().basemap).toBe("imagery");
+  });
+
+  it("uses the dark colour set while a basemap has failed", () => {
+    useAppStore.setState({ basemapChoice: true, basemap: "light", mapView: at(6) });
+    expect(selectMapColourStyle(useAppStore.getState())).toBe("light");
+    useAppStore.getState().setLayerStatus("basemap", "error", "failed");
+    expect(selectRequestedMapStyle(useAppStore.getState())).toBe("light");
+    expect(selectMapColourStyle(useAppStore.getState())).toBe("dark");
+  });
+
+  it("records the view only when it moved", () => {
+    const s = useAppStore.getState();
+    s.setMapView(at(6));
+    const first = useAppStore.getState().mapView;
+    s.setMapView({ zoom: 6.001, center: [-2.24, 53.48] });
+    expect(useAppStore.getState().mapView).toBe(first);
+    s.setMapView(at(7));
+    expect(useAppStore.getState().mapView?.zoom).toBe(7);
   });
 });

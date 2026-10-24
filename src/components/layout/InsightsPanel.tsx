@@ -7,13 +7,21 @@ import { PartialNotice } from "@/components/states/Notice";
 import { SkeletonLines } from "@/components/states/Skeleton";
 import { principlesById } from "@/content/principles";
 import { OriginsInsights } from "@/features/origins/OriginsInsights";
+import { AccessInsightsLazy } from "@/features/access/lazy";
 import { SeasonalInsightsLazy } from "@/features/seasonal/lazy";
 import { BASEMAP_STATUS_ID, REFERENCE_DATASET_ID, REFERENCE_LAYER_ID } from "@/map/layerIds";
 import { basemapMode, readArcgisEnv } from "@/services/arcgis/env";
 import { describeDataError } from "@/services/data/errors";
 import { familySnapshot, findDataset, useAppConfig, useManifest } from "@/services/data/queries";
 import { ErrorBoundary } from "@/app/ErrorBoundary";
-import { useAppStore } from "@/state/store";
+import { selectRequestedMapStyle, useAppStore } from "@/state/store";
+import type { MapStyle } from "@/styles/palette";
+
+const BASEMAP_TITLES: Record<MapStyle, string> = {
+  dark: "Esri dark grey basemap",
+  light: "Esri light grey basemap",
+  imagery: "Esri imagery with labels",
+};
 
 const KEY_GUIDE_URL = "https://github.com/johnchewitt/FoodScopeUK/blob/main/docs/setup/arcgis-api-key.md";
 
@@ -45,6 +53,7 @@ export function InsightsPanel() {
   const config = useAppConfig();
   const mod = getModule(module);
   const mode = basemapMode(readArcgisEnv().apiKey);
+  const requestedStyle = useAppStore(selectRequestedMapStyle);
   const reference = findDataset(manifest.data, REFERENCE_DATASET_ID);
   const statistical = manifest.data?.datasets.filter((d) => d.role === "statistical") ?? [];
   const tradeDatasets = statistical.filter((d) => d.id.startsWith("trade.") && d.id !== "trade.index");
@@ -83,6 +92,10 @@ export function InsightsPanel() {
         ) : module === "seasonal" ? (
           <ErrorBoundary region="Seasonal Supply insights">
             <SeasonalInsightsLazy />
+          </ErrorBoundary>
+        ) : module === "access" ? (
+          <ErrorBoundary region="UK Food Access insights">
+            <AccessInsightsLazy />
           </ErrorBoundary>
         ) : (
           <section className="panel-section" aria-labelledby="about-heading">
@@ -159,7 +172,7 @@ export function InsightsPanel() {
                         : "pending"
                     : "pending"
                 }
-                title={mode === "esri-dark-gray" ? "Esri dark grey basemap" : "Offline outline map"}
+                title={mode === "esri-dark-gray" ? BASEMAP_TITLES[requestedStyle] : "Offline outline map"}
                 detail={
                   mode === "esri-dark-gray" ? (
                     basemapLayer?.status === "error" ? (
@@ -183,7 +196,7 @@ export function InsightsPanel() {
           )}
         </section>
 
-        {module !== "origins" && module !== "seasonal" && (
+        {module !== "origins" && module !== "seasonal" && module !== "access" && (
           <section className="panel-section">
             <ChartFrame
               title="Trend"

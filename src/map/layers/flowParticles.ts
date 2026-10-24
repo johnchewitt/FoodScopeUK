@@ -1,6 +1,8 @@
 import Point from "@arcgis/core/geometry/Point";
 import SpatialReference from "@arcgis/core/geometry/SpatialReference";
 import { cumulativeLengths, particleFractions, pointAlong, toMercator, type LonLat } from "@/analysis/arcs";
+import { hexToRgb } from "@/analysis/colour";
+import { MAP_COLOURS, type MapStyle } from "@/styles/palette";
 
 /**
  * Moving markers along the Food Origins connections (FO-04), drawn on a 2D canvas over the map.
@@ -30,9 +32,10 @@ interface Prepared extends ParticleFlow {
   cumulative: number[];
 }
 
-/** Palette mirrors src/styles/tokens.css. */
-const CYAN = "73, 234, 216";
-const GREEN = "161, 235, 131";
+/** "r, g, b" for canvas colours. */
+function rgbText(hex: string): string {
+  return hexToRgb(hex).join(", ");
+}
 
 export class FlowParticles {
   private canvas: HTMLCanvasElement | null = null;
@@ -42,6 +45,17 @@ export class FlowParticles {
   private start = 0;
   private resize: ResizeObserver | null = null;
   private readonly point = new Point({ x: 0, y: 0, spatialReference: SpatialReference.WebMercator });
+  /** Marker colours for the basemap style (connection colour; selection colour). */
+  private colours = {
+    base: rgbText(MAP_COLOURS.dark.connection),
+    selected: rgbText(MAP_COLOURS.dark.selection),
+  };
+
+  /** Recolours the markers for a basemap style (SH-08). */
+  setStyle(style: MapStyle): void {
+    const c = MAP_COLOURS[style];
+    this.colours = { base: rgbText(c.connection), selected: rgbText(c.selection) };
+  }
 
   constructor(private readonly view: ParticleView) {}
 
@@ -136,7 +150,7 @@ export class FlowParticles {
       const total = f.cumulative[f.cumulative.length - 1] ?? 0;
       const screenLength = total / res;
       const radius = Math.max(1.6, Math.min(4, 1.2 + f.widthPx * 0.22));
-      const rgb = f.emphasis === "selected" ? GREEN : CYAN;
+      const rgb = f.emphasis === "selected" ? this.colours.selected : this.colours.base;
       const alpha = f.emphasis === "dimmed" ? 0.35 : 0.95;
       ctx.fillStyle = `rgba(${rgb}, ${alpha})`;
       ctx.shadowColor = `rgba(${rgb}, ${f.emphasis === "dimmed" ? 0.2 : 0.8})`;

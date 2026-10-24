@@ -9,18 +9,19 @@ import UniqueValueInfo from "@arcgis/core/renderers/support/UniqueValueInfo";
 import CIMSymbol from "@arcgis/core/symbols/CIMSymbol";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
-import HighlightOptions from "@arcgis/core/views/support/HighlightOptions";
 import { symbolicArc } from "@/analysis/arcs";
 import { hexToRgb } from "@/analysis/colour";
-import { SHARE_CLASS_HEX } from "@/styles/palette";
+import { BRAND, MAP_COLOURS, type MapStyle } from "@/styles/palette";
 import { interpolateWidths, widthsDiffer } from "@/analysis/transition";
 import {
+  selectMapColourStyle,
   selectReducedMotion,
   type AppState,
   type HoverPartner,
   type OriginsMapModel,
   type OriginsMapPartner,
 } from "@/state/store";
+import { ensureHoverHighlight, HOVER_HIGHLIGHT } from "../highlight";
 import { ORIGINS_FLOWS_LAYER_ID, ORIGINS_PARTNERS_LAYER_ID } from "../layerIds";
 import { FlowParticles, type ParticleFlow, type ParticleView } from "./flowParticles";
 import { FLOW_TWEEN_MS, TWEEN_FRAME_MS } from "./flowTiming";
@@ -46,24 +47,17 @@ import type { HitResult, LayerController, LayerStatusReporter, ViewLike, ViewPoi
 /** Modules whose map is drawn from `state.originsMap`. */
 const TRADE_MAP_MODULES: readonly string[] = ["origins", "seasonal"];
 
-/** Palette mirrors src/styles/tokens.css (ArcGIS symbols need concrete colours). */
-const NAVY: [number, number, number] = [7, 25, 35];
-const CYAN: [number, number, number] = [73, 234, 216];
-const GREEN: [number, number, number] = [161, 235, 131];
+type Rgba = [number, number, number, number];
+
+const rgba = (hex: string, alpha = 1): Rgba => [...hexToRgb(hex), alpha];
 
 /**
- * Fill per share class 0–5 (below 1 % … 50 % and over): the opaque `--fs-seq-*` ramp, so the map
- * shows exactly the legend colours whatever the basemap (src/styles/palette.ts).
+ * Fill per share class 0–5 (below 1 % … 50 % and over) for a basemap style: opaque, so the map
+ * shows exactly the legend colours (src/styles/palette.ts, ADR-0019, ADR-0022).
  */
-export const SHARE_CLASS_COLOURS: readonly [number, number, number, number][] = SHARE_CLASS_HEX.map(
-  (hex) => [...hexToRgb(hex), 1] as [number, number, number, number],
-);
-
-/** Thin navy separators between adjacent partner fills (dataviz: surface gap between fills). */
-const SEPARATOR: [number, number, number, number] = [...NAVY, 0.9];
-
-/** Named view highlight for the partner under the pointer. */
-export const HOVER_HIGHLIGHT = "fs-hover";
+export function shareClassColours(style: MapStyle): Rgba[] {
+  return MAP_COLOURS[style].seq.map((hex) => rgba(hex));
+}
 
 interface HighlightableLayerView {
   highlight?(target: unknown, options?: { name?: string }): { remove(): void };
@@ -95,10 +89,17 @@ function partnerFromHits(
 
 /**
  * CIM line symbol for one connection (static, always drawn). Layers, top first: the core stroke,
- * a thin navy casing so the line stays readable over the bright share fills, and a soft glow.
+ * a thin casing so the line stays readable over the opaque share fills (navy on dark grey, white
+ * on light grey), and a soft glow.
  */
-export function flowLineSymbolData(width: number, emphasis: "normal" | "selected" | "dimmed") {
-  const base = emphasis === "selected" ? GREEN : CYAN;
+export function flowLineSymbolData(
+  width: number,
+  emphasis: "normal" | "selected" | "dimmed",
+  style: MapStyle = "dark",
+) {
+  const c = MAP_COLOURS[style];
+  const base = hexToRgb(emphasis === "selected" ? c.selection : c.connection);
+  const casing = hexToRgb(c.connectionCasing);
   const alpha = emphasis === "dimmed" ? 70 : emphasis === "selected" ? 235 : 190;
   return {
     type: "CIMSymbolReference",
@@ -117,7 +118,7 @@ export function flowLineSymbolData(width: number, emphasis: "normal" | "selected
           type: "CIMSolidStroke",
           enable: true,
           width: width + 2,
-          color: [...NAVY, emphasis === "dimmed" ? 60 : 150],
+          color: [...casing, emphasis === "dimmed" ? 60 : 150],
           capStyle: "Round",
           joinStyle: "Round",
         },
@@ -146,6 +147,8 @@ export class OriginsLayersController implements LayerController {
   private handles: { remove(): void }[] = [];
   private signature: Signature = { polygons: "", flows: "" };
   private model: OriginsMapModel | null = null;
+  /** Basemap colour set in use (SH-08). */
+  private style: MapStyle = "dark";
   private visible = false;
   private hoverFrame = 0;
   private lastHover: string | null = null;
@@ -176,7 +179,7 @@ export class OriginsLayersController implements LayerController {
     this.view = view;
     this.report = report;
     this.particles = new FlowParticles(view as unknown as ParticleView);
-    this.registerHoverHighlight(view);
+    ensureHoverHighlight(view, this.style);
     if (this.url) this.createLayers();
     if (view.on && view.hitTest) {
       this.handles.push(view.on("click", (e) => void this.onClick(e)));
@@ -201,6 +204,12 @@ export class OriginsLayersController implements LayerController {
         this.signature = { ...this.signature, flows: "" };
       }
     }
+    const style = selectMapColourStyle(state);
+    if (style !== this.style) {
+      this.style = style;
+      this.particles?.setStyle(style);
+      if (this.view) ensureHoverHighlight(this.view, style);
+    }
     if (!visible || !this.model) return;
     const animate = !selectReducedMotion(state);
     const m = this.model;
@@ -208,8 +217,8 @@ export class OriginsLayersController implements LayerController {
       .map((p) => `${p.key}:${p.shareClass}:${p.flow ? p.flowWidth.toFixed(2) : ""}`)
       .join("|");
     // Hover is drawn with the view's highlight, so it is not part of the renderer's signature.
-    const polygons = `${m.commodityId}|${m.periodLabel}|${m.measure}|${partnerSig}|${state.partner ?? ""}`;
-    const flows = `${m.commodityId}|${m.periodLabel}|${m.measure}|${partnerSig}|${state.partner ?? ""}|${animate}`;
+    const polygons = `${style}|${m.commodityId}|${m.periodLabel}|${m.measure}|${partnerSig}|${state.partner ?? ""}`;
+    const flows = `${style}|${m.commodityId}|${m.periodLabel}|${m.measure}|${partnerSig}|${state.partner ?? ""}|${animate}`;
     if (polygons !== this.signature.polygons) this.drawPartners(m, state.partner);
     if (flows !== this.signature.flows) this.drawFlows(m, state.partner, animate);
     this.signature = { polygons, flows };
@@ -301,12 +310,16 @@ export class OriginsLayersController implements LayerController {
 
   private drawPartners(m: OriginsMapModel, selected: string | null): void {
     if (!this.polygons || !this.points) return;
+    const colours = MAP_COLOURS[this.style];
+    const classes = shareClassColours(this.style);
+    const selection = rgba(colours.selection);
+    const separator = rgba(colours.separator, colours.separatorAlpha);
     const fill = (p: OriginsMapPartner) => {
-      const c = SHARE_CLASS_COLOURS[p.shareClass] ?? SHARE_CLASS_COLOURS[0]!;
+      const c = classes[p.shareClass] ?? classes[0]!;
       const isSel = p.key === selected;
       return new SimpleFillSymbol({
         color: c,
-        outline: isSel ? { color: [...GREEN, 1], width: 2.25 } : { color: SEPARATOR, width: 0.75 },
+        outline: isSel ? { color: selection, width: 2.25 } : { color: separator, width: 0.75 },
       });
     };
     const infos = m.partners
@@ -325,7 +338,7 @@ export class OriginsLayersController implements LayerController {
     const pointPartners = m.partners.filter((p) => p.geometry === "point" && p.point);
     this.points.addMany(
       pointPartners.map((p) => {
-        const c = SHARE_CLASS_COLOURS[p.shareClass] ?? SHARE_CLASS_COLOURS[0]!;
+        const c = classes[p.shareClass] ?? classes[0]!;
         const isSel = p.key === selected;
         return new Graphic({
           geometry: new Point({ longitude: p.point![0], latitude: p.point![1] }),
@@ -334,7 +347,7 @@ export class OriginsLayersController implements LayerController {
             style: "circle",
             size: isSel ? 11 : 8,
             color: c,
-            outline: isSel ? { color: [...GREEN, 1], width: 2 } : { color: SEPARATOR, width: 1 },
+            outline: isSel ? { color: selection, width: 2 } : { color: separator, width: 1 },
           }),
         });
       }),
@@ -374,7 +387,7 @@ export class OriginsLayersController implements LayerController {
       [...keys].map((k) => [k, tween ? (this.drawnWidths.get(k) ?? 0) : (target.get(k) ?? 0)]),
     );
     const symbolFor = (key: string, width: number) =>
-      new CIMSymbol({ data: flowLineSymbolData(Math.max(0, width), emphasis(key)) as never });
+      new CIMSymbol({ data: flowLineSymbolData(Math.max(0, width), emphasis(key), this.style) as never });
 
     // Widest (final width) first, so thin connections stay visible on top; the UK point last.
     const ordered = [...keys].sort(
@@ -394,8 +407,8 @@ export class OriginsLayersController implements LayerController {
         symbol: new SimpleMarkerSymbol({
           style: "circle",
           size: 9,
-          color: [...NAVY, 0.9],
-          outline: { color: [...GREEN, 1], width: 2 },
+          color: rgba(BRAND.navy, 0.9),
+          outline: { color: rgba(MAP_COLOURS[this.style].selection), width: 2 },
         }),
       }),
     ]);
@@ -498,23 +511,6 @@ export class OriginsLayersController implements LayerController {
     if (this.lastHover === null) return;
     this.lastHover = null;
     this.actions.setHoverPartner(null);
-  }
-
-  /** Adds the hover highlight style to the view once (cyan halo, faint fill). */
-  private registerHoverHighlight(view: ViewLike): void {
-    const highlights = (
-      view as { highlights?: { find(f: (h: { name?: string }) => boolean): unknown; add(h: unknown): void } }
-    ).highlights;
-    if (!highlights || highlights.find((h) => h.name === HOVER_HIGHLIGHT)) return;
-    highlights.add(
-      new HighlightOptions({
-        name: HOVER_HIGHLIGHT,
-        color: [...CYAN],
-        haloColor: [...CYAN],
-        haloOpacity: 0.95,
-        fillOpacity: 0.14,
-      }),
-    );
   }
 
   /**

@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import type { ModuleId } from "@/app/modules";
 import { type Breakpoint } from "@/map/layoutMetrics";
+import { BASEMAP_STATUS_ID } from "@/map/layerIds";
 import { STORE_LAYERS, type StoreLayer } from "@/analysis/retail";
+import type { MapStyle } from "@/styles/palette";
 import {
   DEFAULT_URL_STATE,
   type BasemapId,
@@ -57,6 +59,11 @@ export interface AppState extends UrlState {
   playing: boolean;
   playSpeed: PlaySpeed;
 
+  /** True when an ArcGIS API key is configured, so Esri basemaps (and the basemap choice) exist (SH-08). */
+  basemapChoice: boolean;
+  /** Zoom and centre (WGS84) of the map when it last came to rest (set by the map; not in the URL). */
+  mapView: { zoom: number; center: [number, number] } | null;
+
   /** UK Food Access map view model (serialisable; written by the feature, read by layer controllers). */
   accessMap: AccessMapModel | null;
   /** Store or council under the pointer on the Food Access map (not in the URL). */
@@ -107,6 +114,8 @@ export interface AppState extends UrlState {
   setProximityCount: (n: number) => void;
   setProximityRadiusKm: (km: number) => void;
   setBasemap: (basemap: BasemapId) => void;
+  setBasemapChoice: (available: boolean) => void;
+  setMapView: (view: { zoom: number; center: [number, number] }) => void;
 
   setBreakpoint: (bp: Breakpoint) => void;
   toggleFilterPanel: (open?: boolean) => void;
@@ -183,8 +192,11 @@ export interface AccessMapModel {
   storesUrl: string;
   /** SQL where clause for the store layer (store layers and retailers shown). */
   storeWhere: string;
+  /** Attribution for the store layer (from the manifest; never hidden). */
+  storesCopyright: string;
   /** Council boundaries (display edition) from the manifest. */
   councilsUrl: string;
+  councilsCopyright: string;
   /** Council choropleth: class index → council codes; no-data codes; or null when the layer is off. */
   choropleth: { measure: string; classes: string[][]; noData: string[] } | null;
   selectedStore: AccessPoint | null;
@@ -236,6 +248,8 @@ export const initialState = {
   flowCount: FLOW_COUNT_DEFAULT,
   playing: false,
   playSpeed: 1 as PlaySpeed,
+  basemapChoice: false,
+  mapView: null,
   accessMap: null,
   hoverAccess: null,
   proximityPicking: false,
@@ -303,6 +317,16 @@ export const useAppStore = create<AppState>()((set, get) => ({
   setProximityRadiusKm: (km) =>
     set({ proximityRadiusKm: Math.min(PROXIMITY_RADIUS_KM_MAX, Math.max(0.5, Math.round(km * 2) / 2)) }),
   setBasemap: (basemap) => set({ basemap }),
+  setBasemapChoice: (basemapChoice) => set({ basemapChoice }),
+  setMapView: (mapView) => {
+    const prev = get().mapView;
+    const same =
+      prev &&
+      Math.abs(prev.zoom - mapView.zoom) < 0.01 &&
+      Math.abs(prev.center[0] - mapView.center[0]) < 1e-6 &&
+      Math.abs(prev.center[1] - mapView.center[1]) < 1e-6;
+    if (!same) set({ mapView });
+  },
 
   setBreakpoint: (bp) => {
     const { layoutInitialised, breakpoint } = get();
@@ -383,6 +407,48 @@ export function selectUrlState(s: AppState): UrlState {
     store: s.store,
     basemap: s.basemap,
   };
+}
+
+/**
+ * Local scale (SH-08, SM-02): from this zoom level (about 1:144,000) stores are drawn individually,
+ * councils as outlines, and imagery is offered. Below it stores are clustered and councils shaded.
+ */
+export const LOCAL_ZOOM = 12;
+
+/** Modules that work at local scale, where the imagery basemap is offered (SH-08). */
+export const IMAGERY_MODULES: readonly ModuleId[] = ["access", "profiles"];
+
+/** True when the map is at local scale (stationary zoom ≥ LOCAL_ZOOM, with a small tolerance). */
+export function selectLocalScale(s: Pick<AppState, "mapView">): boolean {
+  return (s.mapView?.zoom ?? 0) >= LOCAL_ZOOM - 0.01;
+}
+
+/** True when imagery can be shown: a local-scale module, zoomed in to local scale. */
+export function selectImageryAvailable(s: Pick<AppState, "module" | "mapView">): boolean {
+  return IMAGERY_MODULES.includes(s.module) && selectLocalScale(s);
+}
+
+/**
+ * The basemap style to load: the visitor's choice, except that imagery falls back to dark grey
+ * outside local scale (it stays the choice and returns when they zoom in). Dark grey without a key.
+ */
+export function selectRequestedMapStyle(
+  s: Pick<AppState, "basemap" | "basemapChoice" | "module" | "mapView">,
+): MapStyle {
+  if (!s.basemapChoice) return "dark";
+  if (s.basemap === "imagery") return selectImageryAvailable(s) ? "imagery" : "dark";
+  return s.basemap;
+}
+
+/**
+ * The colour set for the data layers and legends: the requested style while its basemap works;
+ * dark grey (the offline outline map's colours) when there is no key or the basemap failed.
+ */
+export function selectMapColourStyle(
+  s: Pick<AppState, "basemap" | "basemapChoice" | "module" | "mapView" | "layerStatus">,
+): MapStyle {
+  if (s.layerStatus[BASEMAP_STATUS_ID]?.status === "error") return "dark";
+  return selectRequestedMapStyle(s);
 }
 
 /** Reset helper for tests. */

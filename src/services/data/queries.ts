@@ -42,8 +42,15 @@ export async function loadManifest(signal?: AbortSignal): Promise<DataManifest> 
 /** Static snapshots never change for a given deploy (ADR-01). */
 export const STATIC = { staleTime: Infinity, gcTime: Infinity, retry: 1 } as const;
 
+/** Query options for config.json, shared by `useAppConfig` and the startup prefetch. */
+export const configQuery = {
+  queryKey: ["config"] as const,
+  queryFn: ({ signal }: { signal?: AbortSignal }) => loadConfig(signal),
+  ...STATIC,
+};
+
 export function useAppConfig(): UseQueryResult<AppConfig, Error> {
-  return useQuery({ queryKey: ["config"], queryFn: ({ signal }) => loadConfig(signal), ...STATIC });
+  return useQuery(configQuery);
 }
 
 /** Query options for the data index, shared by `useManifest` and the startup prefetch. */

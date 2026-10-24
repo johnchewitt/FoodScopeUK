@@ -2,6 +2,7 @@ import { Globe, Map as MapIcon, PanelLeftClose } from "lucide-react";
 import { getModule } from "@/app/modules";
 import { EmptyState } from "@/components/states/EmptyState";
 import { OriginsControls } from "@/features/origins/OriginsControls";
+import { AccessControlsLazy } from "@/features/access/lazy";
 import { SeasonalControlsLazy } from "@/features/seasonal/lazy";
 import { selectReducedMotion, useAppStore } from "@/state/store";
 
@@ -42,6 +43,8 @@ export function FilterPanel() {
           <OriginsControls />
         ) : module === "seasonal" ? (
           <SeasonalControlsLazy />
+        ) : module === "access" ? (
+          <AccessControlsLazy />
         ) : (
           <section className="panel-section" aria-labelledby="controls-heading">
             <h3 id="controls-heading" className="panel-section__title">

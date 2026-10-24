@@ -1,5 +1,6 @@
 import { Focus, Globe, Map as MapIcon, Minus, Plus } from "lucide-react";
 import { canFramePartners, useAppStore } from "@/state/store";
+import { BasemapControl } from "./BasemapControl";
 
 /** Bespoke map controls (map components' widget-style UI is not used; ADR-02). */
 export function MapControls() {
@@ -58,6 +59,7 @@ export function MapControls() {
       >
         <MapIcon size={17} aria-hidden="true" />
       </button>
+      <BasemapControl />
     </div>
   );
 }

@@ -32,6 +32,8 @@ export class MapController {
   private lastCommandId: number | null = null;
   private lastFrameKey: string | null = null;
   private framedOnce = false;
+  private syncing = false;
+  private resync = false;
   private readonly store: Store;
   private readonly layers: LayerController[];
 
@@ -64,7 +66,29 @@ export class MapController {
     return this.view !== null;
   }
 
+  /**
+   * Store → view. A controller that reports a status inside its update changes the store, which
+   * calls sync again: that call is deferred until this one ends and then runs with the latest
+   * state, so no controller is updated inside another or with an older state after a newer one.
+   */
   private sync(state: AppState): void {
+    if (this.syncing) {
+      this.resync = true;
+      return;
+    }
+    this.syncing = true;
+    try {
+      this.syncOnce(state);
+    } finally {
+      this.syncing = false;
+    }
+    if (this.resync) {
+      this.resync = false;
+      this.sync(this.store.getState());
+    }
+  }
+
+  private syncOnce(state: AppState): void {
     const view = this.view;
     if (!view) return;
 

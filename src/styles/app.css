@@ -100,14 +100,19 @@
   align-items: baseline;
   gap: 12px;
   min-width: 0;
+  /* Never wider than its column: a long question is shortened, not drawn over the tools. */
+  max-width: 100%;
+  overflow: hidden;
   justify-self: center;
 }
 .topbar__module {
+  flex: none;
   font-size: var(--fs-text-md);
   font-weight: 600;
   white-space: nowrap;
 }
 .topbar__question {
+  min-width: 0;
   font-size: var(--fs-text-md);
   color: var(--fs-text-muted);
   white-space: nowrap;
@@ -1597,24 +1602,24 @@
   border: 1px solid var(--fs-navy);
   border-radius: 3px;
 }
-/* Share classes: the same opaque tokens as the map fills and the Seasonal heatmap (palette.ts). */
+/* Map classes: the same opaque tokens as the map fills for the active basemap (palette.ts, ADR-0022). */
 .swatch[data-class="0"] {
-  background: var(--fs-seq-0);
+  background: var(--fs-map-seq-0);
 }
 .swatch[data-class="1"] {
-  background: var(--fs-seq-1);
+  background: var(--fs-map-seq-1);
 }
 .swatch[data-class="2"] {
-  background: var(--fs-seq-2);
+  background: var(--fs-map-seq-2);
 }
 .swatch[data-class="3"] {
-  background: var(--fs-seq-3);
+  background: var(--fs-map-seq-3);
 }
 .swatch[data-class="4"] {
-  background: var(--fs-seq-4);
+  background: var(--fs-map-seq-4);
 }
 .swatch[data-class="5"] {
-  background: var(--fs-seq-5);
+  background: var(--fs-map-seq-5);
 }
 .swatch--none {
   border-style: dashed;
@@ -1624,7 +1629,7 @@
 .swatch--point {
   width: 10px;
   border-radius: 50%;
-  background: var(--fs-seq-3);
+  background: var(--fs-map-seq-3);
 }
 .map-legend__flows {
   display: grid;
@@ -1635,7 +1640,7 @@
 .flow-sample {
   display: block;
   border-radius: 6px;
-  background: var(--fs-cyan);
+  background: var(--fs-map-connection);
   opacity: 0.75;
 }
 .flow-sample--thin {
@@ -2196,4 +2201,426 @@
 }
 .selected-partner .chart-frame {
   margin-top: 16px;
+}
+
+/* ───────────────────────── UK Food Access (Stage 4) ───────────────────────── */
+
+/* SM-10: always visible on the map while the module is open. */
+.provision-note {
+  position: absolute;
+  z-index: 11;
+  left: var(--content-left);
+  right: var(--content-right);
+  bottom: var(--content-bottom);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: fit-content;
+  max-width: min(560px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 8px 12px;
+  border-radius: var(--fs-radius-sm);
+  font-size: var(--fs-text-xs);
+  line-height: 1.45;
+  color: var(--fs-text);
+  transition:
+    left var(--fs-dur) var(--fs-ease),
+    right var(--fs-dur) var(--fs-ease);
+}
+.provision-note svg,
+.provision-callout svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--fs-amber);
+}
+.provision-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgb(232 183 107 / 0.35);
+  border-radius: var(--fs-radius-sm);
+  background: var(--fs-amber-soft);
+  font-size: var(--fs-text-xs);
+  line-height: 1.5;
+}
+.panel-section .provision-callout {
+  color: var(--fs-text);
+}
+.stage[data-module="access"] .map-legend {
+  bottom: calc(var(--content-bottom) + 52px);
+  max-height: calc(100% - var(--fs-kpi-h) - 140px);
+  overflow-y: auto;
+}
+
+/* Legend: store symbols, clusters, choropleth counts, no-data hatch, proximity ring. */
+.map-legend__symbols {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.map-legend__symbols li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.map-legend__classes--one {
+  grid-template-columns: 1fr;
+}
+.map-legend__count {
+  margin-left: auto;
+  font-family: var(--fs-font-mono);
+  color: var(--fs-text-muted);
+}
+.swatch--hatch {
+  background: repeating-linear-gradient(135deg, var(--fs-map-no-data) 0 1.5px, transparent 1.5px 4px);
+}
+.store-symbol {
+  flex: none;
+  display: inline-block;
+  vertical-align: -1px;
+}
+.cluster-sample {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--fs-map-cluster-ring);
+  border-radius: 50%;
+  background: var(--fs-map-cluster-fill);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--fs-map-cluster-ring);
+}
+.ring-sample {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 2px;
+  border: 1.5px dashed var(--fs-map-proximity);
+  border-radius: 50%;
+  vertical-align: -2px;
+}
+
+/* Controls */
+.panel-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.text-btn-row {
+  display: flex;
+  gap: 6px;
+}
+.text-btn-row .text-btn {
+  padding: 3px 8px;
+  font-size: var(--fs-text-xs);
+}
+.text-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--fs-line-strong);
+  border-radius: var(--fs-radius-sm);
+  background: var(--fs-glass-deep);
+  color: var(--fs-text-muted);
+}
+.search-field:focus-within {
+  box-shadow: var(--fs-glow-focus);
+}
+.search-field__input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-text-sm);
+  color: var(--fs-text);
+}
+.search-results {
+  display: grid;
+  gap: 2px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.search-results__item,
+.nearest-list__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: var(--fs-radius-sm);
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  color: var(--fs-text);
+  cursor: pointer;
+}
+.search-results__item:hover,
+.nearest-list__item:hover {
+  background: var(--fs-surface-hover);
+}
+.search-results__item > span {
+  display: grid;
+  min-width: 0;
+  line-height: 1.3;
+}
+.search-results__name {
+  overflow: hidden;
+  font-size: var(--fs-text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.search-results__meta {
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.check-list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: var(--fs-radius-sm);
+  font-size: var(--fs-text-sm);
+  color: var(--fs-text);
+  cursor: pointer;
+}
+.check-row:hover {
+  background: var(--fs-surface-hover);
+}
+.check-row input {
+  flex: none;
+  margin: 0;
+  accent-color: var(--fs-cyan);
+}
+.check-list--dense .check-row {
+  padding: 3px 4px;
+}
+.check-row__text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.3;
+}
+.check-row__hint {
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.check-row__count {
+  flex: none;
+  font-family: var(--fs-font-mono);
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--fs-line-strong);
+  border-radius: var(--fs-radius-pill);
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text);
+  cursor: pointer;
+}
+.chip-btn:hover {
+  background: var(--fs-surface-hover);
+}
+.chip-btn[aria-pressed="true"] {
+  border-color: var(--fs-cyan);
+  background: var(--fs-cyan-soft);
+  color: var(--fs-cyan);
+}
+.chip-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.link-btn {
+  padding: 0;
+  margin-right: 8px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--fs-cyan);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.field-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.select--small {
+  min-width: 0;
+  height: 28px;
+  font-size: var(--fs-text-xs);
+}
+.row-btn {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+.row-btn:hover {
+  color: var(--fs-cyan);
+}
+
+/* Insights */
+.detail-list {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+}
+.detail-list dt {
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.detail-list dd {
+  margin: 1px 0 0;
+  font-size: var(--fs-text-sm);
+  color: var(--fs-text);
+}
+.proximity-summary {
+  margin: 0 0 8px;
+}
+.proximity-summary strong {
+  font-weight: 600;
+  color: var(--fs-text);
+}
+.nearest-list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: nearest;
+}
+.nearest-list__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--fs-text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nearest-list__dist {
+  flex: none;
+  font-family: var(--fs-font-mono);
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.data-table tr[data-selected="true"] {
+  background: var(--fs-green-soft);
+}
+
+/* Basemap control (SH-08) */
+.basemap-control {
+  position: relative;
+}
+.basemap-control__panel {
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  right: calc(100% + 12px);
+  display: grid;
+  gap: 4px;
+  width: 232px;
+  margin: 0;
+  padding: 10px;
+  border: 0;
+  border-radius: var(--fs-radius-md);
+}
+.basemap-control__title {
+  float: left;
+  width: 100%;
+  margin-bottom: 4px;
+  padding: 0;
+  font-size: var(--fs-text-sm);
+  font-weight: 600;
+  color: var(--fs-text);
+}
+.basemap-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border-radius: var(--fs-radius-sm);
+  font-size: var(--fs-text-sm);
+  color: var(--fs-text);
+  cursor: pointer;
+}
+.basemap-option:hover {
+  background: var(--fs-surface-hover);
+}
+.basemap-option[data-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.basemap-option input {
+  margin: 0;
+  accent-color: var(--fs-cyan);
+}
+.basemap-option__swatch {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--fs-line-strong);
+  border-radius: 6px;
+}
+/* Swatches name the style (approximate land and water tones), not data. */
+.basemap-option__swatch--dark {
+  background: var(--fs-basemap-swatch-dark);
+}
+.basemap-option__swatch--light {
+  background: var(--fs-basemap-swatch-light);
+}
+.basemap-option__swatch--imagery {
+  background: var(--fs-basemap-swatch-imagery);
+}
+.basemap-option__text {
+  display: grid;
+  line-height: 1.25;
+}
+.basemap-option__hint,
+.basemap-control__note {
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.basemap-control__note {
+  margin: 4px 0 0;
+  line-height: 1.4;
 }

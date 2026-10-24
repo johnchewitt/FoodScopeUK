@@ -38,6 +38,31 @@
   --fs-div-2: var(--fs-div-neutral);
   --fs-div-3: color-mix(in oklab, var(--fs-cyan) 62%, var(--fs-div-neutral));
   --fs-div-4: var(--fs-cyan);
+  /*
+   * Data colours on the map, per basemap style (SH-08, ADR-0022). Map fills and legend swatches
+   * use --fs-map-*; panels (the Seasonal heatmap) keep --fs-seq-*. Dark grey (default) shares the
+   * panel ramp; [data-map-style] below switches the set. palette.ts mirrors every value.
+   */
+  --fs-map-seq-0: var(--fs-seq-0);
+  --fs-map-seq-1: var(--fs-seq-1);
+  --fs-map-seq-2: var(--fs-seq-2);
+  --fs-map-seq-3: var(--fs-seq-3);
+  --fs-map-seq-4: var(--fs-seq-4);
+  --fs-map-seq-5: var(--fs-seq-5);
+  --fs-map-selection: var(--fs-green);
+  --fs-map-connection: var(--fs-cyan);
+  --fs-map-no-data: var(--fs-text-muted);
+  --fs-map-store-supermarket: var(--fs-text);
+  --fs-map-store-convenience: #eb6834;
+  --fs-map-store-other: #9085e9;
+  --fs-map-store-outline: var(--fs-navy);
+  --fs-map-cluster-fill: var(--fs-navy);
+  --fs-map-cluster-ring: var(--fs-text);
+  --fs-map-proximity: var(--fs-cyan);
+  /* Basemap choice swatches (SH-08): approximate tones of each style, for recognition only. */
+  --fs-basemap-swatch-dark: linear-gradient(135deg, #3d3d3d 55%, #262626 55%);
+  --fs-basemap-swatch-light: linear-gradient(135deg, #e6e6e6 55%, #c8c8c8 55%);
+  --fs-basemap-swatch-imagery: linear-gradient(135deg, #4b5d3a 0 40%, #6f7c5a 40% 62%, #3a4a5c 62%);
   /* No figures for the month (not yet published / before the snapshot): hatched, never a ramp colour. */
   --fs-hatch: repeating-linear-gradient(135deg, rgb(142 173 174 / 0.32) 0 1.5px, transparent 1.5px 5px);
   /* Comparison year in charts: de-emphasised grey beside the cyan selected year. */
@@ -108,4 +133,28 @@
 [data-motion="reduced"] {
   --fs-dur-fast: 0ms;
   --fs-dur: 0ms;
+}
+
+/*
+ * Light grey basemap (SH-08, ADR-0022): validated against #d6d6d6 and #f0f0f0. Panels stay dark
+ * glass but nearly opaque, so muted text keeps 4.5:1 over the light map (computed: 4.7:1).
+ */
+[data-map-style="light"] {
+  --fs-map-seq-0: #3b9ca7;
+  --fs-map-seq-1: #1e8691;
+  --fs-map-seq-2: #00717c;
+  --fs-map-seq-3: #005d68;
+  --fs-map-seq-4: #004954;
+  --fs-map-seq-5: #003641;
+  --fs-map-selection: #46821f;
+  --fs-map-connection: var(--fs-navy);
+  --fs-map-no-data: #5f7175;
+  --fs-map-store-supermarket: var(--fs-navy);
+  --fs-map-store-convenience: #a3410b;
+  --fs-map-store-other: #5a3fc0;
+  --fs-map-store-outline: #ffffff;
+  --fs-map-cluster-fill: var(--fs-navy);
+  --fs-map-cluster-ring: #ffffff;
+  --fs-map-proximity: #00717c;
+  --fs-glass: color-mix(in oklab, var(--fs-emerald) 97%, transparent);
 }

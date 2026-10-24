@@ -8,15 +8,22 @@ import { useEffect, useMemo } from "react";
 import { ErrorState } from "@/components/states/ErrorState";
 import { MapController } from "@/map/MapController";
 import { BASEMAP_STATUS_ID, REFERENCE_DATASET_ID } from "@/map/layerIds";
+import { AccessLayersController } from "@/map/layers/access";
 import { BasemapStatusController } from "@/map/layers/basemapStatus";
 import { OriginsLayersController } from "@/map/layers/origins";
 import { ReferenceOutlinesController } from "@/map/layers/referenceOutlines";
+import { ViewStateController } from "@/map/layers/viewState";
 import { GO_TO_TARGETS, type ViewLike } from "@/map/types";
 import { createBasemap } from "@/services/arcgis/basemap";
 import { readArcgisEnv } from "@/services/arcgis/env";
 import { detectWebGL2 } from "@/services/arcgis/webgl";
 import { datasetUrl, findDataset, useManifest } from "@/services/data/queries";
-import { selectReducedMotion, useAppStore } from "@/state/store";
+import {
+  selectMapColourStyle,
+  selectReducedMotion,
+  selectRequestedMapStyle,
+  useAppStore,
+} from "@/state/store";
 
 const MAP_LOAD_TIMEOUT_MS = 30_000;
 const NAVY = "#071923";
@@ -32,14 +39,42 @@ export default function MapHost() {
   const setMapStatus = useAppStore((s) => s.setMapStatus);
   const basemapStatus = useAppStore((s) => s.layerStatus[BASEMAP_STATUS_ID]?.status);
   const reducedMotion = useAppStore(selectReducedMotion);
+  const colourStyle = useAppStore(selectMapColourStyle);
+  const setBasemapChoice = useAppStore((s) => s.setBasemapChoice);
   const manifest = useManifest();
 
   const env = useMemo(() => readArcgisEnv(), []);
   const webgl = useMemo(() => detectWebGL2(), []);
-  const basemap = useMemo(() => createBasemap(env.apiKey), [env.apiKey]);
+  // The first style comes from the URL (bm); imagery waits until the map is at local scale (SH-08).
+  const initialStyle = useMemo(
+    () => selectRequestedMapStyle({ ...useAppStore.getState(), basemapChoice: env.apiKey !== null }),
+    [env.apiKey],
+  );
+  const basemap = useMemo(() => createBasemap(env.apiKey, initialStyle), [env.apiKey, initialStyle]);
   const map = useMemo(() => new EsriMap(basemap ? { basemap } : {}), [basemap]);
   const referenceLayer = useMemo(() => new ReferenceOutlinesController(basemap !== null), [basemap]);
-  const basemapWatcher = useMemo(() => new BasemapStatusController(basemap), [basemap]);
+  const basemapWatcher = useMemo(
+    () =>
+      new BasemapStatusController((style) => createBasemap(env.apiKey, style), {
+        style: initialStyle,
+        basemap,
+      }),
+    [env.apiKey, initialStyle, basemap],
+  );
+  const viewState = useMemo(
+    () => new ViewStateController((rest) => useAppStore.getState().setMapView(rest)),
+    [],
+  );
+  const accessLayers = useMemo(
+    () =>
+      new AccessLayersController({
+        selectStore: (id) => useAppStore.getState().selectStore(id),
+        selectCouncil: (code) => useAppStore.getState().selectCouncil(code),
+        setHoverAccess: (hover) => useAppStore.getState().setHoverAccess(hover),
+        setProximityPoint: (point) => useAppStore.getState().setProximityPoint(point),
+      }),
+    [],
+  );
   const originsLayers = useMemo(
     () =>
       new OriginsLayersController({
@@ -49,9 +84,19 @@ export default function MapHost() {
     [],
   );
   const controller = useMemo(
-    () => new MapController(useAppStore, [referenceLayer, originsLayers, basemapWatcher]),
-    [referenceLayer, originsLayers, basemapWatcher],
+    () =>
+      new MapController(useAppStore, [
+        referenceLayer,
+        originsLayers,
+        accessLayers,
+        basemapWatcher,
+        viewState,
+      ]),
+    [referenceLayer, originsLayers, accessLayers, basemapWatcher, viewState],
   );
+
+  // The basemap choice exists only with an API key (SH-08); without one the outline map is used.
+  useEffect(() => setBasemapChoice(env.apiKey !== null), [env.apiKey, setBasemapChoice]);
   const spatialReference = useMemo(() => SpatialReference.WebMercator, []);
   const background = useMemo(() => new ColorBackground({ color: NAVY }), []);
   // Without a basemap the view has no tiling scheme, so zoom levels must be supplied explicitly
@@ -120,6 +165,7 @@ export default function MapHost() {
       data-map-state={status}
       data-basemap={basemap ? "esri" : "offline"}
       data-basemap-status={basemap ? (basemapStatus ?? "loading") : "none"}
+      data-map-style={colourStyle}
     >
       {webgl && (
         <arcgis-map
@@ -129,7 +175,7 @@ export default function MapHost() {
           spatialReference={spatialReference}
           constraints={constraints}
           background={background}
-          attributionMode="dark"
+          attributionMode={colourStyle === "light" ? "light" : "dark"}
           animationsDisabled={reducedMotion}
           popupDisabled
           onarcgisViewReadyChange={handleReadyChange}

@@ -13,7 +13,7 @@ function stubFetch({ failManifest = false } = {}) {
   vi.stubGlobal(
     "fetch",
     vi.fn(async (url: string) => {
-      const path = url.replace(/^.*?\/(data\/.*)$/, "$1");
+      const path = url.replace(/^.*?\/(data\/.*|config\.json)$/, "$1");
       calls.push(path);
       inFlight += 1;
       maxInFlight = Math.max(maxInFlight, inFlight);
@@ -55,10 +55,31 @@ describe("prefetchStartupData", () => {
     expect(c.getQueryData(["dataset", "trade.index", "static-snapshot", "validated"])).toBeDefined();
   });
 
-  it("only loads the data index for views without trade data", async () => {
+  it("only loads the data index for views without data yet", async () => {
     const f = stubFetch();
-    await prefetchStartupData(client(), { module: "access", commodity: "tomatoes" });
+    await prefetchStartupData(client(), { module: "risks", commodity: "tomatoes" });
     expect(f.calls).toEqual(["data/manifest.json"]);
+  });
+
+  it("UK Food Access: loads the stores and council figures, validated, under the hooks' keys", async () => {
+    const f = stubFetch();
+    const c = client();
+    await prefetchStartupData(c, { module: "access", commodity: "tomatoes" });
+    expect(f.calls.slice(0, 2)).toEqual(["data/manifest.json", "config.json"]);
+    expect(new Set(f.calls.slice(2))).toEqual(
+      new Set([
+        "data/snapshots/2026-10-24/local/stores.geojson",
+        "data/snapshots/2026-10-24/local/lad-indicators.json",
+      ]),
+    );
+    const stores = c.getQueryData<{ features: unknown[] }>([
+      "dataset",
+      "local.stores",
+      "static-snapshot",
+      "validated",
+    ]);
+    expect(stores?.features).toHaveLength(19_183);
+    expect(c.getQueryData(["dataset", "local.lad_indicators", "static-snapshot", "validated"])).toBeDefined();
   });
 
   it("skips an unknown commodity (the hooks fall back) and never throws", async () => {
