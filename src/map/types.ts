@@ -1,4 +1,4 @@
-import type { AppState } from "@/state/store";
+import type { AppState, MapCommand } from "@/state/store";
 import type { ViewPadding } from "./layoutMetrics";
 
 /**
@@ -37,6 +37,8 @@ export interface LayerController {
   activate(view: ViewLike, report: LayerStatusReporter): void;
   /** Called on every store change; must be idempotent. */
   update?(state: AppState): void;
+  /** Handles a map command the controller cannot (e.g. fit a council); returns true if handled. */
+  handleCommand?(command: MapCommand, context: { reducedMotion: boolean }): boolean;
   deactivate(view: ViewLike): void;
 }
 

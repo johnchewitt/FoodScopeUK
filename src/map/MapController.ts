@@ -106,6 +106,15 @@ export class MapController {
       return;
     }
     const options = reducedMotion ? { animate: false } : { animate: true, duration: FLIGHT_DURATION_MS };
+    if (command.type === "focusCouncil") {
+      // Councils are drawn (and their extents known) by a layer controller.
+      for (const layer of this.layers) if (layer.handleCommand?.(command, { reducedMotion })) return;
+      return;
+    }
+    if (command.type === "goToPoint") {
+      this.goTo({ center: command.center, zoom: command.zoom }, options);
+      return;
+    }
     let target: unknown;
     if (command.type === "goTo")
       target = command.target === "partners" ? null : GO_TO_TARGETS[command.target];
