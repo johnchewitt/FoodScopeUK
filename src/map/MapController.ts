@@ -1,6 +1,6 @@
 import type { StoreApi, UseBoundStore } from "zustand";
-import { fitBBox } from "@/analysis/frame";
-import { selectReducedMotion, type AppState, type MapCommand } from "@/state/store";
+import { fitBBox, type BBox, type FitOptions } from "@/analysis/frame";
+import { LOCAL_ZOOM, selectReducedMotion, type AppState, type MapCommand } from "@/state/store";
 import { getModule } from "@/app/modules";
 import {
   computeViewPadding,
@@ -14,7 +14,32 @@ import { FLIGHT_DURATION_MS, GO_TO_TARGETS, type LayerController, type ViewLike 
 type Store = UseBoundStore<StoreApi<AppState>>;
 
 /** Modules whose map frames the recorded partners (Food Origins, Seasonal Supply). */
-const FRAMED_MODULES: readonly string[] = ["origins", "seasonal"];
+const TRADE_MODULES: readonly string[] = ["origins", "seasonal"];
+
+/**
+ * Which frame a module uses: the trade views share one (switching between them keeps the camera
+ * while the commodity is the same); UK Food Access has its own; other modules none.
+ */
+function frameFamily(module: string): "trade" | "access" | null {
+  if (TRADE_MODULES.includes(module)) return "trade";
+  return module === "access" ? "access" : null;
+}
+
+/** The frame the current module asks for, if any. */
+function moduleFrame(state: AppState): { key: string; bbox: BBox } | null {
+  const family = frameFamily(state.module);
+  if (family === "trade") return state.originsMap?.frame ?? null;
+  if (family === "access") return state.accessMap?.frame ?? null;
+  return null;
+}
+
+/**
+ * Trade frames keep fitBBox's minimum span (a single nearby partner still shows context); UK Food
+ * Access fits the box around its stores as it is.
+ */
+const FIT_OPTIONS: Partial<Record<string, FitOptions>> = {
+  access: { minSpanLon: 0, minSpanLat: 0 },
+};
 
 /**
  * Owns the bridge between React state and the ArcGIS view (ADR-03):
@@ -24,13 +49,15 @@ const FRAMED_MODULES: readonly string[] = ["origins", "seasonal"];
  * Framing: when a trade view first draws a commodity (or the commodity changes), the camera fits
  * the UK and its drawn connections into the area left free by the panels. It never moves on a
  * month, year or measure change, so it does not fight a user who has panned or zoomed; "Fit to
- * recorded partners" re-applies the frame on request.
+ * recorded partners" re-applies the frame on request. UK Food Access fits its mapped stores once
+ * when it opens, unless the map is already at local scale (a store or postcode already chosen).
  */
 export class MapController {
   private view: ViewLike | null = null;
   private unsubscribe: (() => void) | null = null;
   private lastCommandId: number | null = null;
   private lastFrameKey: string | null = null;
+  private lastFrameFamily: ReturnType<typeof frameFamily> = null;
   private framedOnce = false;
   private syncing = false;
   private resync = false;
@@ -106,16 +133,22 @@ export class MapController {
       this.run(state.mapCommand, selectReducedMotion(state), state);
     }
 
-    const frame = FRAMED_MODULES.includes(state.module) ? (state.originsMap?.frame ?? null) : null;
-    if (!FRAMED_MODULES.includes(state.module)) this.lastFrameKey = null;
-    // The first frame replaces the default world view instantly; later ones fly (unless reduced).
-    if (
-      frame &&
-      frame.key !== this.lastFrameKey &&
-      this.fit(frame.bbox, !this.framedOnce || selectReducedMotion(state), state)
-    ) {
-      this.lastFrameKey = frame.key;
-      this.framedOnce = true;
+    const frame = moduleFrame(state);
+    const family = frameFamily(state.module);
+    // Each visit to a family is framed afresh (e.g. back from UK Food Access to Food Origins).
+    if (family !== this.lastFrameFamily) this.lastFrameKey = null;
+    this.lastFrameFamily = family;
+    if (frame && frame.key !== this.lastFrameKey) {
+      if (state.module === "access" && view.zoom >= LOCAL_ZOOM - 0.01) {
+        // Already looking at local detail: leave the camera where the visitor put it.
+        this.lastFrameKey = frame.key;
+      } else if (
+        // The first frame replaces the default world view instantly; later ones fly (unless reduced).
+        this.fit(frame.bbox, !this.framedOnce || selectReducedMotion(state), state, FIT_OPTIONS[state.module])
+      ) {
+        this.lastFrameKey = frame.key;
+        this.framedOnce = true;
+      }
     }
 
     for (const layer of this.layers) layer.update?.(state);
@@ -125,7 +158,7 @@ export class MapController {
     const view = this.view;
     if (!view) return;
     if (command.type === "goTo" && command.target === "partners") {
-      const frame = FRAMED_MODULES.includes(state.module) ? state.originsMap?.frame : null;
+      const frame = TRADE_MODULES.includes(state.module) ? state.originsMap?.frame : null;
       if (frame) this.fit(frame.bbox, reducedMotion, state);
       return;
     }
@@ -148,15 +181,19 @@ export class MapController {
   }
 
   /** Fits a [west, south, east, north] box into the unpadded part of the view; false if it cannot yet. */
-  private fit(bbox: [number, number, number, number], instant: boolean, state: AppState): boolean {
+  private fit(bbox: BBox, instant: boolean, state: AppState, options?: FitOptions): boolean {
     const view = this.view;
     if (!view || !view.width || !view.height) return false;
-    const target = fitBBox(bbox, {
-      width: view.width,
-      height: view.height,
-      padding: view.padding,
-      framePadding: framingPadding(view.padding, state.breakpoint),
-    });
+    const target = fitBBox(
+      bbox,
+      {
+        width: view.width,
+        height: view.height,
+        padding: view.padding,
+        framePadding: framingPadding(view.padding, state.breakpoint),
+      },
+      options,
+    );
     this.goTo(target, instant ? { animate: false } : { animate: true, duration: FLIGHT_DURATION_MS });
     return true;
   }

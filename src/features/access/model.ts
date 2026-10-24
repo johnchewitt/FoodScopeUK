@@ -2,6 +2,7 @@
  * UK Food Access view model (SM-01 – SM-09): pure functions over the validated store and council
  * datasets. No React or ArcGIS imports; the hook (useAccess.ts) memoises these.
  */
+import { pointsBBox } from "@/analysis/frame";
 import { gridCircle } from "@/analysis/projection";
 import { projectStore, proximity, type GridStore } from "@/analysis/proximity";
 import {
@@ -246,6 +247,20 @@ export function proximityView(
     ring: gridCircle(point[0], point[1], radiusM, r.circleCrs),
     crs: r.circleCrs,
   };
+}
+
+/** Frame key for UK Food Access (one frame: it never changes with filters or selections). */
+export const ACCESS_FRAME_KEY = "access:all-stores";
+
+/**
+ * The map frame for UK Food Access: the box around every mapped store, so the camera opens on the
+ * UK with the Crown Dependencies and Shetland in view. Null when there are no stores.
+ */
+export function storesFrame(
+  stores: readonly AccessStore[],
+): { key: string; bbox: [number, number, number, number] } | null {
+  const bbox = pointsBBox(stores);
+  return bbox ? { key: ACCESS_FRAME_KEY, bbox } : null;
 }
 
 export function accessPoint(s: AccessStore): AccessPoint {

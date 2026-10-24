@@ -127,6 +127,21 @@ test.describe("UK Food Access", () => {
     await expect(page.locator(".provision-note")).toHaveText(NOTE);
     await expect(page.getByRole("complementary", { name: "Insights" }).getByText(NOTE)).toBeVisible();
 
+    // Opens framed on the mapped stores, not the world view: Shetland, Jersey and Belfast in view.
+    await expect.poll(async () => (await mapLayers(page)).zoom, { timeout: 15_000 }).toBeGreaterThan(4);
+    const size = page.viewportSize()!;
+    for (const [lon, lat] of [
+      [-1.145, 60.155], // Lerwick
+      [-2.105, 49.185], // St Helier
+      [-5.93, 54.597], // Belfast
+    ] as [number, number][]) {
+      const p = await toScreen(page, lon, lat);
+      expect(p.x).toBeGreaterThan(0);
+      expect(p.x).toBeLessThan(size.width);
+      expect(p.y).toBeGreaterThan(0);
+      expect(p.y).toBeLessThan(size.height);
+    }
+
     const m = await mapLayers(page);
     expect(m.where).toBe("layer IN ('supermarket')");
     expect(m.shown).toBe(7_193); // the layer itself holds what the card says

@@ -13,6 +13,7 @@ import {
   proximityView,
   reconcile,
   shownStores,
+  storesFrame,
   storesGeoJson,
 } from "./model";
 import { validateLadIndicators, validateStores } from "./validate";
@@ -29,6 +30,23 @@ describe("validation (ADR-06)", () => {
     const broken = structuredClone(storesDoc);
     (broken.features[0]!.properties as { storeClass: string }).storeClass = "hypermarket";
     expect(validateStores(broken).ok).toBe(false);
+  });
+});
+
+describe("map frame", () => {
+  it("covers every mapped store, Crown Dependencies and Shetland included", () => {
+    const frame = storesFrame(stores)!;
+    expect(frame.key).toBe("access:all-stores");
+    const [w, s, e, n] = frame.bbox;
+    for (const st of stores) {
+      expect(st.lon >= w && st.lon <= e && st.lat >= s && st.lat <= n).toBe(true);
+    }
+    // Northern Ireland to East Anglia, the Channel Islands to Shetland (published store file).
+    expect(w).toBeLessThan(-8);
+    expect(e).toBeGreaterThan(1.5);
+    expect(s).toBeLessThan(49.5);
+    expect(n).toBeGreaterThan(60);
+    expect(storesFrame([])).toBeNull();
   });
 });
 

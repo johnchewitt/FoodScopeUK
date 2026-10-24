@@ -1,7 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fitBBox } from "@/analysis/frame";
 import { framingPadding } from "./layoutMetrics";
-import { resetAppStore, useAppStore, type OriginsMapModel } from "@/state/store";
+import {
+  LOCAL_ZOOM,
+  resetAppStore,
+  useAppStore,
+  type AccessMapModel,
+  type OriginsMapModel,
+} from "@/state/store";
 import { MapController } from "./MapController";
 import {
   FLIGHT_DURATION_MS,
@@ -223,6 +229,74 @@ describe("MapController", () => {
       // Returning to a trade view frames it again.
       useAppStore.getState().setModule("origins");
       expect(view.goTo).toHaveBeenCalledTimes(3);
+    });
+
+    describe("UK Food Access", () => {
+      /** Obviously synthetic access model: only the frame matters here. */
+      const access = (bbox: [number, number, number, number], storeWhere = "1=1"): AccessMapModel => ({
+        storesUrl: "blob:synthetic",
+        storeWhere,
+        storesCopyright: "synthetic",
+        frame: { key: "access:all-stores", bbox },
+        councilsUrl: "synthetic.geojson",
+        councilsCopyright: "synthetic",
+        choropleth: null,
+        selectedStore: null,
+        selectedCouncil: null,
+        proximity: null,
+      });
+      const STORES: [number, number, number, number] = [-8, 49, 2, 61];
+      const tight = (view: ViewLike) =>
+        fitBBox(
+          STORES,
+          {
+            width: view.width!,
+            height: view.height!,
+            padding: view.padding,
+            framePadding: framingPadding(view.padding, useAppStore.getState().breakpoint),
+          },
+          { minSpanLon: 0, minSpanLat: 0 },
+        );
+
+      it("fits the mapped stores once when it opens, not on filter changes", () => {
+        const view = fakeView();
+        new MapController(useAppStore, []).attach(view);
+        useAppStore.getState().setModule("access");
+        useAppStore.getState().setAccessMap(access(STORES));
+        expect(view.goTo).toHaveBeenCalledOnce();
+        expect(view.goTo).toHaveBeenCalledWith(tight(view), { animate: false });
+        useAppStore.getState().setAccessMap(access(STORES, "layer = 'A'"));
+        expect(view.goTo).toHaveBeenCalledOnce();
+      });
+
+      it("flies to it from a trade view, and back to the partners on return", () => {
+        const view = fakeView();
+        new MapController(useAppStore, []).attach(view);
+        useAppStore.getState().setOriginsMap(model("A", BOX_A));
+        useAppStore.getState().setModule("access");
+        useAppStore.getState().setAccessMap(access(STORES));
+        expect(view.goTo).toHaveBeenLastCalledWith(tight(view), {
+          animate: true,
+          duration: FLIGHT_DURATION_MS,
+        });
+        useAppStore.getState().setModule("origins");
+        expect(view.goTo).toHaveBeenLastCalledWith(expected(view, BOX_A), {
+          animate: true,
+          duration: FLIGHT_DURATION_MS,
+        });
+      });
+
+      it("leaves the camera alone when the map is already at local scale", () => {
+        const view = fakeView();
+        view.zoom = LOCAL_ZOOM + 2;
+        new MapController(useAppStore, []).attach(view);
+        useAppStore.getState().setModule("access");
+        useAppStore.getState().setAccessMap(access(STORES));
+        expect(view.goTo).not.toHaveBeenCalled();
+        view.zoom = 3; // zooming out later does not trigger the opening frame
+        useAppStore.getState().setAccessMap(access(STORES, "layer = 'A'"));
+        expect(view.goTo).not.toHaveBeenCalled();
+      });
     });
 
     it("waits for a view with a size", () => {
