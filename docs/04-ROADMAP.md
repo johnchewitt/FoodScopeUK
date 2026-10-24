@@ -16,7 +16,7 @@
 | **1** | **Application foundation** ✅ merged (PR #1) and deployed | R1 | 0, decisions D1–D2 | Branded shell, live dark map, empty module panels, CI + Pages deploy |
 | **2** | **Food Origins explorer + HMRC trade pipeline** ✅ merged (PR #3) and deployed | R1 | 1, gates G1, G2, G4 | Pick tomatoes, step Jan→Jul, watch partners, connections, cards and charts change — real HMRC data for five commodities |
 | **3** | **Seasonal Supply Explorer** ✅ merged (PR #5) and deployed | R1 | 2 | Play tomatoes January → December 2025; compare January with July; partner-by-month heatmap; year-on-year change — the same real HMRC data as Food Origins |
-| 4 | Supermarket network | R1 | 3, G7 ✅, and the LAD/GEOLYTIX data built in the pre-Stage 4 data step (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth; basemap choice: dark grey, light grey, imagery (SH-08) |
+| **4** | **Supermarket network** ✅ merged (PR #9) and deployed | R1 | 3, G7 ✅, and the LAD/GEOLYTIX data built in the pre-Stage 4 data step (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth; basemap choice: dark grey, light grey, imagery (SH-08) |
 | 5 | Local Authority Profiles (Belfast, Manchester deep) | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
 | 6 | Scenario Lab (import disruption, store closure) | R1 | 3, 5 | Spanish tomato preset; close a store and see the access change |
 | 7 | Consulting Insights + PDF export | R1 | 5, 6, D3, D7 | One-click profile PDF that matches the screen |
@@ -223,6 +223,8 @@ Exit criteria:
   - axe passes in both dark and light grey.
 - **Live checks:** each style seen on the live site with a real GPU. Attribution changes with the style and is never hidden.
 - **Usage note:** basemap request usage under the key is recorded in the stage report, since each style counts towards it (risk R8).
+
+Status on 24 October 2026 (evidence in `docs/stage-reports/stage-4.md`): merged as PR #9 and deployed. The colour checks, E2E tests and live checks are done. The live checks led to a follow-up fix of the proximity colours, the opening view and the header at tablet width. The usage note waits for John's dashboard reading.
 
 ## 7. Stage 5 — Local Authority Profiles
 

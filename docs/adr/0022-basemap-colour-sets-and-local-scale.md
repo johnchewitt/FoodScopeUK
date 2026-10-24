@@ -44,3 +44,8 @@ Stage 4 also adds the first map with local detail: about 19,000 stores and 361 c
 - **Request usage:** switching styles requests a new style, so each visitor's choice counts towards basemap usage under the key (risk R8). The stage report records the count.
 - **E2E without Esri:** CI cannot reach Esri. The basemap tests use a build with a placeholder key (`.env.e2e-basemap`) and stub the styles service: one flat tile per style, with a stub attribution. How the real styles look, and their real attribution, are checked on the live site.
 - **Map sync is never nested:** `MapController` defers a store change made during a sync (for example a layer reporting "loading" while it is created) until the sync ends, then runs it with the latest state. This was found when the store data arrived after the map was ready.
+
+## Amendment (24 Oct 2026, after the live checks)
+- **Measured land colour:** light grey's land is `#f4f4f4` below zoom 7 and `#efefef` from zoom 7 (water `#cfd3d4`). The light set passes against all three.
+- **Proximity colour:** the all-pairs check of the overlays failed the normal-vision floor: proximity against selection measured ΔE 11.8 on dark grey and 14.8 on light grey. On dark grey the proximity cyan also equalled the council outlines. Proximity is now pink `#f184c0` on dark grey and imagery, and magenta `#9c0a73` on light grey. On light grey the legend ring is drawn on the light land colour (`--fs-map-sample-ground`), because the legend sits on dark glass.
+- **Opening view:** UK Food Access frames the box around all mapped stores once per visit (`accessMap.frame`). It skips the frame when the map is already at local scale.
