@@ -117,7 +117,7 @@ The brief asks for a complete, tested first release over an extensive unfinished
 - **SH-08** Curated basemap choice (added 23 Oct 2026, scheduled for Stage 4), not a full gallery:
   - **Dark grey:** the default.
   - **Light grey:** for presentations, bright rooms and print.
-  - **Imagery with labels:** offered only at local scales (supermarkets, food access, authority profiles).
+  - **Imagery with labels:** offered only at local scales (supermarkets, food access, authority profiles). Local scale is zoom 12 and closer (about 1:144,000; ADR-0022), the same scale from which stores are drawn individually and councils outlined.
 
   Rules:
   - Each style has its own colour set for the data layers (share classes, connections, panels), checked with the dataviz validator against that style's land colour measured on the live site. A style without a checked colour set is not offered.

@@ -16,7 +16,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 
 ## Current stage
 
-**Stage 3 — Seasonal Supply Explorer: merged (PR #5, 23 Oct 2026) and deployed** (report: `docs/stage-reports/stage-3.md`). Stages 1 and 2 are merged and deployed. A post-Stage 3 review (`docs/reviews/2026-10-23-review.md`, ADR-0018/0019) is on branch `improve/review-top-five` (PR #6). The pre-Stage 4 data step (branch `data/stage-4-inputs`, report `docs/stage-reports/pre-stage-4-data.md`, ADR-0020) built council boundaries, classified stores (D5) and mid-2025 population in `pipeline/derived/2026-10-24/`; they are not in the app's manifest yet. The other data-pipeline items in roadmap §5.3 are still to be scheduled. Do not start Stage 4 until John asks. Update this line when a stage is merged.
+**Stage 4 — Supermarket network (UK Food Access) and the basemap choice: built on branch `stage/4-supermarket-network`, PR open, stacked on PR #7 (`data/stage-4-inputs`), which is stacked on PR #6 (`improve/review-top-five`)** (report: `docs/stage-reports/stage-4.md`; ADR-0021, ADR-0022). Stages 1–3 are merged and deployed. Live checks of the light grey and imagery styles and the basemap usage count wait for the deploy. The other data-pipeline items in roadmap §5.3 are still to be scheduled. Do not start Stage 5 until John asks. Update this line when a stage is merged.
 
 ## How to work
 
@@ -60,11 +60,16 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 - **CIM symbol animations do not render in our view** (any `animations` entry, including `CIMSymbolAnimationMoveAlongLine`, makes the whole symbol disappear — ADR-0015). Flow motion is drawn by `src/map/layers/flowParticles.ts` on a canvas overlay; keep the static lines as ordinary graphics.
 - Food Origins and Seasonal Supply map state reaches the map only through `state.originsMap` (built by `buildOriginsModel`; Seasonal builds its selected month with it); do not compute shares in `src/map/`.
 - Seasonal transitions (ADR-0017): only connection widths ease, ≤ 320 ms, via `src/analysis/transition.ts`, ending at the exact model widths. Never interpolate numbers, classes or missing months. Reduced motion means no transition. Seasonal uses a fixed width scale (largest monthly partner value in the snapshot) and fixed heatmap classes (`src/analysis/seasonal.ts`).
-- `src/features/seasonal/` is lazy-loaded through `lazy.tsx` (chunk loader in `load.ts`). The shell imports only those wrappers, never the Seasonal components directly.
-- **Share colours** (ADR-0019): map fills, legend swatches and the Seasonal heatmap use the opaque `--fs-seq-*` tokens. ArcGIS code takes them from `src/styles/palette.ts`; `palette.test.ts` keeps the three in sync. Do not reintroduce transparency or a separate map ramp.
+- `src/features/seasonal/` and `src/features/access/` are lazy-loaded through their `lazy.tsx` (chunk loader in `load.ts`). The shell imports only those wrappers (and `access/note.ts`, the SM-10 text), never the feature components directly. UK Food Access compiles its own validators (stores, council indicators) inside its chunk.
+- **Share colours** (ADR-0019, ADR-0022): map fills and legend swatches use the opaque `--fs-map-seq-*` tokens of the active basemap style (on dark grey these are the `--fs-seq-*` ramp the Seasonal heatmap uses). ArcGIS code takes them from `MAP_COLOURS` in `src/styles/palette.ts`; `palette.test.ts` keeps them in sync. Do not reintroduce transparency.
 - **Hover** uses the view's named highlight (`fs-hover`), never a renderer rebuild. Rebuild the partner renderer only when data or selection changes.
 - **Framing** (ADR-0018): the camera fits `originsMap.frame` only when its `key` (commodity) changes, or on the `goTo partners` command (map control, F key). Never move the camera on month/year/measure changes. Framing maths lives in `src/analysis/frame.ts`. MapView's `padding` is an Accessor: read its sides explicitly, never spread it.
 - **Start-up** (ADR-0019): `main.tsx` prefetches the first view's data (`src/app/prefetch.ts`) and requests the map chunk (`loadMapHost`). The prefetch must use the hooks' query options (`manifestQuery`, `validatedDatasetQuery`) so the cache keys and validation match.
+- **Basemap choice** (SH-08, ADR-0022): `BasemapStatusController` is the only code that sets `map.basemap`; it swaps styles from `selectRequestedMapStyle` and reports their health. Style IDs live in `src/services/arcgis/basemap.ts` (`BASEMAP_STYLE_IDS`, S25). Imagery is requested only at local scale in `IMAGERY_MODULES`; the choice stays in the URL (`bm`) meanwhile. The control is hidden without a key.
+- **Colour sets per style** (ADR-0022): map colours come from `MAP_COLOURS[style]` (`src/styles/palette.ts`), legends from the `--fs-map-*` tokens switched by `data-map-style` on `.app`; `palette.test.ts` keeps them in sync. Use `selectMapColourStyle` (dark when there is no key or the basemap failed). A new map colour needs a value for every style and a validator run. The Seasonal heatmap (panel) keeps `--fs-seq-*`.
+- **Local scale** is `LOCAL_ZOOM` (12) in `src/state/store.ts`: stores individual (cluster `maxScale`), councils outlined, imagery offered. The map reports its resting zoom and centre through `ViewStateController` → `setMapView`.
+- **UK Food Access map** (Stage 4): `state.accessMap` (built by `useAccess`) is the only input of `AccessLayersController` (`src/map/layers/access.ts`); the stores layer reads a compact blob GeoJSON (id, layer, retailer) and filters with `filterWhereClause`; rates, classes and distances are computed in `src/analysis/` and `src/features/access/model.ts`, never in `src/map/`. Straight-line distances use the national grids (`src/analysis/projection.ts`): BNG, or ITM for Northern Ireland stores.
+- **Map sync is never nested**: a store change made during `MapController.sync` (e.g. a layer reporting "loading") runs after the sync with the latest state. Still assign a layer to its field before reporting its status.
 - **Without a basemap the view has no tiling scheme**: keep the Web Mercator `constraints.lods` that `MapHost` passes, or the view never becomes ready (ADR-0004).
 - Asset hosting (ADR-0014): production uses the Esri CDN; `VITE_ARCGIS_ASSETS=local` copies ArcGIS/Calcite assets into the build for offline/sandboxed runs. `src/app/bootstrapAssets.ts` must stay the first import in `main.tsx`.
 - Component tests never load the SDK: `MapHost` is mocked with `vi.mock`, and Calcite elements are registered only in `src/app/registerComponents.ts` (imported by `main.tsx`). Keep UI modules free of `@arcgis/core` imports (shared ids live in `src/map/layerIds.ts`).
@@ -110,7 +115,8 @@ npm run check:banned       # no widgets / map-components-react / __esri / AMD
 npm test                   # vitest: unit + component tests (jsdom)
 npm run build              # typecheck + production build (BASE_PATH, VITE_ARCGIS_ASSETS)
 npm run preview            # serve dist/ at http://localhost:4173/FoodScopeUK/
-npm run e2e                # playwright against `vite preview` of an existing build
+npm run e2e                # playwright against `vite preview` of an existing build (+ dist-basemap if built)
+npm run build:e2e-basemap  # second build with a placeholder key (.env.e2e-basemap) → dist-basemap/, for basemap.spec.ts
 npm run gen:types          # schemas/*.json -> src/types/generated (commit the output)
 npm run build:reference    # rebuild Natural Earth v5.1.2 outlines + label points (pinned SHA-256) + sidecars
 

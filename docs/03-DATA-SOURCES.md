@@ -52,7 +52,7 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S22 | Journey time statistics | DfT | 🔴 (England only) | Access context | R2 |
 | S23 | Port freight annual statistics 2025 | DfT | 🟡 | Risks, Scenario B | R2 |
 | S24 | Natural Earth Admin 0 countries (v5.1.2) | Natural Earth | ✅ (1:110m outlines, 1:50m label points, ISO crosswalk) | Map reference layer; Origins map | R1 |
-| S25 | Basemap styles service | Esri (ArcGIS Location Platform) | ✅ (live site, API key) | Map | R1 |
+| S25 | Basemap styles service: dark grey, light grey, imagery | Esri (ArcGIS Location Platform) | ✅ dark grey (live site); 🟡 light grey and imagery (Esri style list, live check pending) | Map | R1 |
 | S26 | ArcGIS Living Atlas items | Esri and contributors | 🔴 per item | Optional reference layers | R2 |
 | S27 | Consumer price inflation — food (CPIH) | ONS (via Defra pocketbook CSV) | 🟡 | National context | R1 |
 | S28 | HMRC port reference and port-level OTS detail | HMRC | 🟡 | Risks, Scenario B | R2 |
@@ -234,7 +234,7 @@ Published 7 March 2024, OGL v3.0. URL: https://www.ons.gov.uk/peoplepopulationan
   - Table 4: ONS retailer type (Convenience, Discounter, Freezer Centre, Petrol Forecourt, Specialist, Symbol Group, Traditional, Travel, Wholesaler, Other). The fascias in each type are listed in the Notes worksheet.
   - The four tables agree for every council (checked by the reader).
 - **Councils:** those of the time, before the 2023 mergers (Cumbria, North Yorkshire, Somerset) and before the 2025 Barnsley and Sheffield codes. The pipeline maps them to May 2025 councils with the S14 lookup and `config/lad_code_changes.json`.
-- **Use:** a validation benchmark for our council counts (spec §6.3), never displayed as a second value. Expect differences from vintage and class definition; report them, don't force agreement. First comparison: `pipeline/reports/ons-s12-comparison-2026-10-24.json` (our 19,174 stores against S12's 18,069 in UK councils, +6.1 %; explained in `docs/stage-reports/pre-stage-4-data.md`).
+- **Use:** a validation benchmark for our council counts (spec §6.3), never displayed as a second value. Expect differences from vintage and class definition; report them, don't force agreement. First comparison: `pipeline/reports/ons-s12-comparison-2026-10-24.json` (our 19,174 stores against S12's 18,069 in UK councils, +6.1 %; explained in `docs/stage-reports/pre-stage-4-data.md`). Stage 4 adds the counts the app displays to the same report (`displayed`): every type shown 19,058 against 18,069 (+5.5 %); supermarkets 7,171 against S12's 280 m² and over bands 7,420 (−3.4 %); convenience stores 10,622 against S12's under 280 m² band 10,649 (−0.3 %). Explained in `docs/stage-reports/stage-4.md`.
 
 ---
 
@@ -356,7 +356,27 @@ Published 29 July 2026 (accredited official statistics); data tables as a 39.9 M
 
 ### S25 — Esri basemap styles ✅
 
-ArcGIS dark grey style (`arcgis/dark-gray`) through the Basemap styles service, authorised by a referrer-restricted API key (decision D2) registered as `esriConfig.apiKeys.basemapStyles` (ADR-0011). Verified on the live site on 23 Oct 2026: style and tiles load, post-deploy smoke test requires `data-basemap-status="ready"`. Not reachable from the build sandbox. Attribution is rendered automatically by the map component; do not hide it. **Stage 4 (SH-08):** a light grey and an imagery-with-labels style are planned. Their style IDs and attribution are **not yet verified**; verify them on the live site before use (roadmap §6.1).
+ArcGIS dark grey style (`arcgis/dark-gray`) through the Basemap styles service, authorised by a referrer-restricted API key (decision D2) registered as `esriConfig.apiKeys.basemapStyles` (ADR-0011). Verified on the live site on 23 Oct 2026: style and tiles load, post-deploy smoke test requires `data-basemap-status="ready"`. Not reachable from the build sandbox. Attribution is rendered automatically by the map component; do not hide it.
+
+**Stage 4 (SH-08, ADR-0022): three styles.**
+
+| App choice | Style ID | What Esri's style list says (read 24 Oct 2026) |
+|---|---|---|
+| Dark grey (default) | `arcgis/dark-gray` | Vector tiles; Reference group, "minimal geographic features such as boundaries and place labels" |
+| Light grey | `arcgis/light-gray` | Vector tiles; same group; base and labels also available separately (`/base`, `/labels`) |
+| Imagery | `arcgis/imagery` | Map tiles and vector tiles: satellite imagery with labels (`arcgis/imagery/standard` would be imagery without labels) |
+
+- **Source of the IDs:** the Esri developer page "arcgis styles" (https://developers.arcgis.com/documentation/mapping-and-location-services/mapping/basemaps/arcgis-styles), read 24 Oct 2026.
+- **How SDK 5.1 loads a style:** read from `Basemap._loadFromStylesService` in the installed package. It makes two requests to `https://basemapstyles-api.arcgis.com/arcgis/rest/services/styles/v2/`:
+  - `styles/<id>/self`: metadata;
+  - `webmaps/<id>`: a web map whose `baseMap` holds the layers.
+
+  The E2E stub (`tests/e2e/support/basemapStub.ts`) imitates these two responses.
+- **Still to verify on the live site** (stage 4 report):
+  - each style loads with the site's key;
+  - attribution changes with the style;
+  - light grey's land colour (the colour set was validated against #d6d6d6–#f0f0f0);
+  - basemap request usage under the key (risk R8).
 
 ### S26 — ArcGIS Living Atlas 🔴
 
@@ -388,7 +408,7 @@ Defra pocketbook CSV of CPIH food and non-alcoholic beverages since 2020 (S05) f
 
 - Contains public sector information licensed under the Open Government Licence v3.0 (HMRC, Defra, ONS, DfT, NISRA, NRS, Welsh Government, MHCLG, as applicable).
 - Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right [year] (exact wording to be taken from the ONS boundary metadata in Stage 2).
-- Contains GEOLYTIX Retail Points data (courtesy acknowledgement).
+- Contains GEOLYTIX Grocery Retail Points data (v46, June 2026) (courtesy acknowledgement; on the store layer and the Evidence page from Stage 4).
 - Priority Places for Food Index © CDRC / Leeds HASP, OGL v3.0 (wording to confirm).
 - Made with Natural Earth.
 - Basemap © Esri and its data providers (rendered by the SDK).

@@ -1,0 +1,173 @@
+# Stage 4 report — Supermarket network (UK Food Access) and the basemap choice
+
+| | |
+|---|---|
+| **Branch** | `stage/4-supermarket-network`, stacked on PR #7 (`data/stage-4-inputs`), which is stacked on PR #6 (`improve/review-top-five`) |
+| **Date** | 24 October 2026 |
+| **Scope** | Roadmap §6: SM-01 – SM-10 and the curated basemap switcher (SH-08, §6.1). Includes John's three decisions of 24 Oct 2026: wholesale and mainly non-food stores are left out; each kind of data keeps its own newest date; the 125 Channel Islands and Isle of Man stores are on the map without a council. Stage 5 not started. |
+| **Data** | Trade snapshot **2026-10-23** (unchanged). Stores and population snapshot **2026-10-24**: GEOLYTIX v46 (June 2026), ONS mid-2025 population and land area, May 2025 councils. No new downloads; one offline rebuild to add the displayed-count comparison to the S12 report. |
+| **Result** | All checks pass locally (below). Still open: the live checks of light grey and imagery on a real GPU, their attribution, light grey's land colour, and the basemap request count. These need the deploy and John's dashboard. |
+
+## What was built
+
+| Requirement | Built |
+|---|---|
+| **SM-01** stores via adapter | `useAccess` loads `local.stores` through `adapterFor()`: the static snapshot by default, or a hosted FeatureLayer when `config.json` lists one under `hostedLayers["local.stores"]`. `featureLayerAdapter` pages through `query?f=geojson` with `resultOffset` (at most 50 pages) and renames fields with `fieldMap`. Either way the result is validated against `stores.schema.json` before use; a layer that does not match is rejected. Tested with a mock service (unit tests), as the roadmap allows; no public layer with this schema exists. The store and council files load in parallel with the map SDK at start-up (`prefetch.ts`), and the Food Access code is a lazy chunk |
+| **SM-02** clustering | Clustered below local scale (zoom 12, about 1:144,000) and drawn individually from it. Clusters: navy disc, light ring, store count. Clicking a cluster zooms in two levels (at most to local scale) |
+| **SM-03** filters | Store types with counts: supermarkets (default), convenience, and forecourt, travel and hospital. Retailers: multi-select with counts for the types shown (All / None / each). The map filters with an SQL where clause built in `src/analysis/retail.ts`. All of it is in the URL (`sl`, `rt`) |
+| **SM-04** symbols | Brand-neutral: class by colour **and** shape (supermarket circle, convenience square, other formats triangle), in a validated colour set per basemap. No logos |
+| **SM-05** search and cards | Search by name, town or postcode within the data; a result flies to the store at street level. Clicking a store or picking a result opens its card, which shows only fields present in the data: retailer, fascia, address, type and size band, council or Crown Dependency, with source and snapshot date. The card offers "Zoom to store" and "Measure from here", and says when the store is hidden by the filters (with a one-click fix) |
+| **SM-06** council counts and choropleth | Councils shaded by supermarkets, convenience stores or all stores per 10,000 residents (or off), with fixed, documented class breaks. The no-data class is a hatch with its own legend entry (empty for this edition: every council has a population). Councils are shaded at national and regional scale and outlined at local scale. The selected council has a selection outline. The legend gives the count of councils per class |
+| **SM-07** proximity | Choose a point on the map, use the map centre (keyboard route: pan with the arrow keys), or measure from a store. Results show the nearest *N* (1–20) of the stores shown, and how many lie within a radius (0.5–20 km). Distances are straight-line in the national grid (BNG; ITM in Northern Ireland). On the map: the ring is drawn in the same grid, with dashed straight lines to the nearest stores. Labelled "straight-line", never walking or driving |
+| **SM-08** density | Council table: stores, per 10,000 residents, per km² of land. Sortable, filterable by nation, 15 rows then "show all". Choosing a row selects the council and fits the map to it |
+| **SM-09** comparison | Bar chart: the selected council (if any), the four nations and the UK, for the chosen measure, with a numerator and denominator table underneath |
+| **SM-10** note | "Store counts and distances describe physical provision only; they do not measure affordability, choice or nutritional access." It is always on the map while UK Food Access is open (also on phones) and at the top of the insights panel. The shell draws it, so it shows before the module's code arrives |
+| **SH-08** basemap choice | A map control (keyboard operable, labelled) offering dark grey (default), light grey, and imagery with labels, in the URL as `bm`. Imagery is offered only at local scale in UK Food Access; elsewhere the control says why. Without a key the control is hidden. Each style has its own validated colour set: legends follow it, and attribution follows the style. A style that fails falls back to the outline map with the dark colour set (ADR-0022) |
+
+**Cards.** Mapped stores (with the filters); per 10,000 residents and per km² of land, for the selected council or the UK, for the chosen measure. "Population beyond threshold (straight-line)" stays a planned card: it needs small-area population, which arrives with Local Authority Profiles (Stage 5).
+
+**Wording and dates (ADR-0021).** The header reads "Trade 2026-10-23 · Stores and population 2026-10-24". The Evidence page and Insights status list name each family's snapshot. Food Origins and Seasonal Supply cite the trade snapshot.
+
+**Pipeline.** `build-local` writes into `public/data/snapshots/<date>/local/`, and `publish` takes each family from its newest snapshot (ADR-0021). The S12 comparison report gains a `displayed` section (below), and its CSV gains the displayed counts per council. The data files are byte-identical after the rebuild.
+
+**Map plumbing found in testing.** When the store data arrived after the map was ready, a layer's "loading" report inside its own update re-entered the update: "Maximum call stack size exceeded". This happened once in E2E. `MapController` now defers a store change made during a sync until the sync ends (unit test), and the layer is assigned before it reports. An E2E test delays the stores file by 6 s to cover this order.
+
+## Exit criteria
+
+### Filter counts match the pipeline
+
+| Check | Result |
+|---|---|
+| Stores on the map by type (unit test on the published file) | supermarkets **7,193** (7,171 in councils + 22 in the Crown Dependencies), convenience **10,722**, forecourt/travel/hospital **1,268**; total **19,183** = pipeline `published`; 19,058 in councils = pipeline `assigned`; Crown Dependencies 125 (Guernsey 30, Jersey 51, Isle of Man 44) |
+| Same counts recomputed from the store file and the council indicator file, by type | Equal for all three types (`reconcile()`, unit test) |
+| The map layer itself (E2E, `queryFeatureCount` with the layer's own where clause) | Default 7,193; supermarkets + convenience 17,915; supermarkets + convenience for Aldi only 1,085 (1,084 + 1). Each equals the card |
+| UK supermarkets per 10,000 residents | 7,171 ÷ 69,483,939 × 10,000 = **1.03** (card, unit test, Python) |
+
+### Choropleth classes for three councils (hand-computed, then checked on the map)
+
+| Council | Supermarkets | Residents (mid-2025) | Per 10,000 | Class | Fill on the map (E2E) |
+|---|---|---|---|---|---|
+| Hartlepool `E06000001` | 12 | 99,656 | 1.204 | 4: 1.15 to under 1.30 | `#3fd1c3` (dark grey set, class 4) |
+| Manchester `E08000003` | 55 | 588,256 | 0.935 | 2: 0.85 to under 1.00 | `#2ea39c` |
+| Belfast `N09000003` | 39 | 351,927 | 1.108 | 3: 1.00 to under 1.15 | `#37baaf` |
+
+The breaks are 0.70 / 0.85 / 1.00 / 1.15 / 1.30. They put 30, 43, 90, 80, 59 and 59 councils in the six classes. They are round numbers near this edition's deciles, fixed for later editions (`PROVISION` in `src/analysis/retail.ts`). Convenience: 1.0 / 1.2 / 1.4 / 1.6 / 2.0. All stores: 2.0 / 2.3 / 2.6 / 2.9 / 3.3. Every class of every measure holds at least 20 councils (unit test).
+
+### LAD totals reconciled with ONS S12
+
+S12 (ONS, March 2024) counts GEOLYTIX stores of its time per council, in all formats including wholesalers, plus 52 stores from retailers GEOLYTIX lacked. The like-for-like comparison of every store is in the pre-Stage 4 report: 19,174 against 18,069, +6.1 %. What the app **displays** (from `pipeline/reports/ons-s12-comparison-2026-10-24.json`, section `displayed`):
+
+| Displayed | App | S12 (comparable part) | Difference | Median council difference | Within ±10 % |
+|---|---|---|---|---|---|
+| All store types (wholesale and non-food left out) | 19,058 | 18,069 (all) | +989 (+5.5 %) | 6.2 % | 270 of 361 |
+| Supermarkets (standard format, 280 m² and over) | 7,171 | 7,420 (280 m² and over, all formats) | −249 (−3.4 %) | 6.2 % | 273 |
+| Convenience (standard format, under 280 m²) | 10,622 | 10,649 (under 280 m², all formats) | −27 (−0.3 %) | 7.3 % | 225 |
+
+By nation, all types: England +5.3 %, Wales +2.7 %, Scotland +5.6 %, Northern Ireland +14.2 % (722 against 632).
+
+**Why they differ:**
+1. **Vintage.** S12 was published in March 2024 and the app uses June 2026. Grouped by ONS's retailer types, the convenience growth shows: ONS's "Convenience" type is +1,064 stores. Retailers ONS did not group (Centra, Cook and one other) add 221. Together these explain most of the "all types" difference.
+2. **Definitions in the supermarket and convenience rows.**
+   - The app's supermarket and convenience layers hold standard-format stores only. Forecourt, motorway, station, airport and hospital stores (1,265 in councils) form a separate layer, while S12's size bands include them. That is why the app's supermarkets are 3.4 % below S12's 280 m² and over bands.
+   - Wholesale (52) and mainly non-food (64) stores are left out by John's decision; S12 includes its 56 wholesalers.
+3. **Northern Ireland.** The largest relative differences: Lisburn and Castlereagh +40.5 %, Mid Ulster +23.1 %, Belfast +11.1 %. Centra's 102 stores are all in Northern Ireland and appear in none of S12's groupings (pre-Stage 4 report). Centra alone is more than NI's displayed difference (+90). This is not a boundary problem: every NI store is in a council, two of them by the 50 m nearest-council rule.
+4. **Councils of the time.** S12 counts are on pre-2023 councils, mapped to May 2025 councils by the S14 lookup (17 merged, 2 recoded). These add, never split, so they cannot move stores between councils.
+
+No figure is adjusted to agree with S12; S12 stays a check, not a second value on screen (spec §6.3).
+
+### E2E for the switcher, live checks and usage
+See "Commands run" and "Not verified" below.
+
+## Colour checks (dataviz palette validator)
+
+| Set | Surface | Result |
+|---|---|---|
+| Dark grey ramp `#1e7877 … #49ead8` (ordinal) | `#3d3d3d` (dark grey land) | PASS: monotone, ΔL ≥ 0.06, single hue (10°), lowest class 2.07:1 |
+| Light grey ramp `#3b9ca7 #1e8691 #00717c #005d68 #004954 #003641` (ordinal) | `#d6d6d6` and `#f0f0f0` | PASS both: monotone, ΔL ≥ 0.06, single hue (10°), lightest class 2.22:1 / 2.84:1 |
+| Dark grey stores `#edf7f5 #eb6834 #9085e9` | `#3d3d3d` | CVD worst ΔE 25.5 (protan), normal 26.9, all ≥ 3:1. Lightness band and chroma flag the near-white supermarket symbol (intended: achromatic, with shape as the second cue) |
+| Light grey stores `#071923 #a3410b #5a3fc0` | `#d6d6d6`, `#f0f0f0` | CVD worst ΔE 25.0, normal 28.6, all ≥ 3:1. Same intended flag for the navy symbol |
+| Imagery (dark set) | `#2f3a24` (vegetation) | All ≥ 3:1 |
+| Imagery (dark set) | `#6b6b6b` (roofs, roads) | WARN: orange 1.67:1, violet 1.70:1. Relief: on imagery the navy outline is 0.6 px wider, shapes differ, and every store has a card and tooltip |
+| Light grey connections and selection `#071923 #46821f` | `#d6d6d6` | CVD ΔE 36.9, both ≥ 3:1 |
+| Light grey proximity `#00717c` | `#d6d6d6` | ≥ 3:1 (chroma flag only) |
+
+Panels stay dark glass on light grey but near-opaque (97 %). Muted text then computes to 4.7:1 over light map content, against 2.7:1 at the dark style's 76 %. The dark style's figure over the brightest share class is a separate, existing issue (B33).
+
+Light grey's land colour could not be read from the sandbox, so the light set was validated against both ends of the plausible range. **Live check needed:** sample the land colour on the deployed site and record it here.
+
+## Commands run and results (sandbox, 24 Oct 2026)
+
+| Command | Result |
+|---|---|
+| `npm run check:banned` | OK |
+| `npm run format` | All files formatted |
+| `npm run typecheck` | 0 errors |
+| `npm run lint` | 0 errors, 0 warnings |
+| `npm test` | **361 passed** (28 files). New since PR #7:
+<br>- analysis: national grids, provision, filters, search, proximity;
+<br>- the hosted-layer adapter;
+<br>- URL state;
+<br>- store actions and basemap rules;
+<br>- per-style palette parity;
+<br>- basemap swapping;
+<br>- nested-sync deferral;
+<br>- the Food Access view model on the real files (counts, reconciliation, three councils' classes, pyproj distances);
+<br>- 5 Food Access component tests |
+| `cd pipeline && uv run pytest` | **105 passed** (104 earlier + displayed-count comparison) |
+| `uv run foodscope-pipeline build-local --snapshot 2026-10-24` | Rebuilt offline; data files byte-identical (`git diff` shows only the two S12 report files) |
+| `VITE_ARCGIS_ASSETS=local npm run build` and `npm run build:e2e-basemap` | Both succeed |
+| `npm run e2e` | **Final run in progress** (61 tests: 47 earlier, 8 Food Access, 6 basemap). An earlier run of this branch passed all 13 new tests, and 38 of the earlier tests before it was stopped for a code change. The result will be recorded here |
+| Bundle | - **Start-up JS** (local-assets build, same chunks as CDN): 864.4 kB, 273.6 kB gzip, over 37 files. The Stage 3 report measured 842.4 kB / 265.0 kB on `main`; PRs #6 and #7 are in between, so this is not a like-for-like delta.
+- **Food Access chunk:** 45.0 kB (13.4 kB gzip), loaded only when the module opens. Its validators and store model are inside it. |
+
+New E2E tests:
+- **UK Food Access (`access.spec.ts`):**
+  - real counts and choropleth classes on the map;
+  - filters → where clause → layer counts = cards;
+  - shading at national scale and outlines at local scale;
+  - store click → card; picking a point → five straight-line lines in ITM;
+  - density table → council selected and fitted;
+  - no basemap control without a key; axe;
+  - mobile 390 × 844: the SM-10 note visible, no sideways scroll;
+  - stores arriving after the map.
+- **Basemap choice (`basemap.spec.ts`, placeholder-key build, stubbed styles service):**
+  - light grey changes the basemap, the attribution, the legend swatches (painted colour) and the map fills, and survives a module change;
+  - deep link `bm=light`;
+  - imagery disabled at world scale and in Food Origins, offered at zoom 13 in UK Food Access, back to dark grey when zoomed out and to imagery when zoomed in;
+  - a failing style falls back to outlines and dark colours;
+  - axe on dark and light grey;
+  - no console errors.
+
+Screenshots (offline outline map; the live site adds the Esri basemap): [national](stage-4/access-national-1600.png), [local scale](stage-4/access-local-1600.png), [light grey with the stub basemap](stage-4/origins-light-stub-1920.png).
+
+## Not verified, and why
+
+- **Light grey and imagery on the live site.** The sandbox cannot reach Esri, and E2E stubs the styles service (one flat tile per style). Still to check on the deployed site with a real GPU:
+  - each style loads with the site's key;
+  - real attribution follows the style;
+  - legibility of stores, clusters and the choropleth over the real styles;
+  - light grey's land colour.
+
+  This needs the deploy, then a session in John's browser.
+- **Basemap request usage (risk R8).** Each style switch requests a new style under the key. Only John's ArcGIS Location Platform dashboard shows the count.
+- **Cluster counts on the live site.** Cluster labels need glyphs from `static.arcgis.com/fonts`, which the sandbox cannot reach. There, clusters draw without numbers (B30). The live site uses the Esri CDN and should show them.
+- **Transfer size of `stores.geojson` (8.5 MB).** Whether GitHub Pages serves `.geojson` with gzip is unchecked (B34). The prefetch starts it with the map SDK.
+- **Hosted FeatureLayer (SM-01).** Tested with a mock service only: there is no public layer with this schema, and `config.json` lists none.
+- **Firefox, Safari, real phones, screen readers:** as in Stage 3, only Chromium (with touch emulation for mobile) and axe.
+- **Performance on real hardware:** clustering 19,183 points and switching filters were exercised only with software WebGL.
+
+## Decisions and deviations
+
+- **Local scale = zoom 12** for individual stores, council outlines and imagery: one rule, not three (ADR-0022).
+- **Light grey is offered in every module;** imagery only in UK Food Access at local scale (later also Local Authority Profiles). An imagery choice waits in the URL while the map is zoomed out.
+- **Rates ignore the retailer filter.** The fixed breaks are for store types, not single chains. The legend and panels say so.
+- **The choropleth is drawn on the display boundaries** (BGC, coastline-clipped); counts come from the full-extent BFE assignment (ADR-0020).
+- **Cards:** "per 10,000 residents" and "per km² of land" are labelled by denominator, with the measure and area in the detail line, because the full measure name did not fit the card.
+- **Top bar:** a long module question (UK Food Access) overlapped the tools at 1600 px. The question now shortens with an ellipsis inside its column.
+- **Kernel density** stays in Release 2 (SM-08).
+
+## Open questions
+
+1. **Merges:** please merge PR #6, then PR #7, then this PR, in that order. I will retarget each PR to `main` as the one below it merges. After the deploy I can do the live checks with you.
+2. **Basemap usage:** after a few style switches on the live site, could you read the basemap request count from your ArcGIS Location Platform dashboard? I will record it here.
+3. **Proximity:** is a typed postcode for the proximity point worth adding (B31)? It needs a postcode lookup verified first.

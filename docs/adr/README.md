@@ -25,3 +25,4 @@ MADR-style records. Status values: Proposed · Accepted · Superseded. Summaries
 | [0019](0019-one-share-ramp-and-data-first-startup.md) | One opaque share ramp; hover by highlight; figures before the map | Accepted (post-Stage 3 review) |
 | [0020](0020-local-data-boundaries-stores-population.md) | Local data: two boundary editions, D5 store classes, built offline and published in Stage 4 | Accepted (pre-Stage 4 data step) |
 | [0021](0021-snapshot-families.md) | Each data family (trade, local) comes from its own newest snapshot | Accepted (Stage 4) |
+| [0022](0022-basemap-colour-sets-and-local-scale.md) | A colour set per basemap style; one local-scale rule (zoom 12) for stores, councils and imagery | Accepted (Stage 4) |
