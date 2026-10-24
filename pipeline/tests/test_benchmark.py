@@ -47,3 +47,29 @@ def test_compare_adds_merged_councils_and_counts_every_store() -> None:
     assert out["crownDependencies"][0] == {"s12Code": "L99999999", "name": "Channel Islands", "s12": 7,
                                            "oursRejected": 1, "postcodeAreas": ["GY", "JE"]}
     assert {t["type"]: t["ours"] for t in out["byRetailerType"]}["Discounter"] == 10
+
+
+def test_compare_reports_what_the_app_displays() -> None:
+    s12 = {"A": row("A", 4), "X1": row("X1", 2), "X2": row("X2", 3), "OLD": row("OLD", 5)}
+    code_map = map_codes(list(s12), LAD25, LOOKUP, CHANGES)
+    lads = ["A", "A", "A", "M", "M", None]
+    layers = ["supermarket", "convenience", None, "other", "convenience", "supermarket"]  # None: left out
+    out = compare(s12, code_map, {"A": "A", "M": "M", "N": "N"}, store_lad=lads,
+                  store_band_value=[SIZE_BANDS[0]] * len(lads), store_fascia=["Aldi"] * len(lads),
+                  crown_by_area={}, population={"A": 10_000, "M": 20_000, "N": None}, store_layer=layers)
+    by = {r["code"]: r for r in out["councils"]}
+    assert by["A"]["displayed"] == {"supermarket": 1, "convenience": 1, "other": 0}
+    assert by["A"]["displayedAll"] == 2 and by["A"]["ours"] == 3  # the left-out store is compared, not displayed
+    d = out["displayed"]
+    assert d["all"]["ours"] == 4 and d["all"]["s12"] == 14
+    # Synthetic S12 rows put every store in the smallest band: supermarkets meet 0, convenience 14.
+    assert (d["supermarkets"]["ours"], d["supermarkets"]["s12"]) == (1, 0)
+    assert (d["convenience"]["ours"], d["convenience"]["s12"]) == (2, 14)
+    assert d["other"] == 1
+    assert d["byNation"]["Northern Ireland"]["s12"] == 5  # the synthetic code "N" sorts as an N… council
+    # Largest absolute difference first: N 0 vs 5, M 2 vs 5, A 2 vs 4.
+    assert [r["code"] for r in d["largestDifferences"]] == ["N", "M", "A"]
+    assert "displayed" not in compare(s12, code_map, {"A": "A", "M": "M", "N": "N"}, store_lad=lads,
+                                      store_band_value=[SIZE_BANDS[0]] * len(lads),
+                                      store_fascia=["Aldi"] * len(lads), crown_by_area={},
+                                      population={"A": 1, "M": 1, "N": None})

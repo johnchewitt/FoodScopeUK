@@ -110,6 +110,14 @@ def _validate(doc: object, schema_dir: Path, name: str) -> None:
 # Build
 
 
+def _map_layer(klass: tuple[str, str, str], left_out: dict) -> str | None:
+    """The app's map layer (src/analysis/retail.ts storeLayer); None for a store left out of the app."""
+    _, store_class, fmt = klass
+    if fmt in left_out:
+        return None
+    return "other" if fmt != "standard" else store_class
+
+
 def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir: Path,
                 schema_dir: Path) -> list[Path]:
     acc = Accounting()
@@ -224,6 +232,7 @@ def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir:
         store_fascia=[s.point.fascia for s in located],
         crown_by_area=dict(crown_by_area),
         population={c: v[0] for c, v in council_pop.items()},
+        store_layer=[_map_layer(klass[s.point.id], left_out) for s in located],
     )
 
     # ------------------------------------------------------------------------------------------
@@ -457,13 +466,17 @@ def _comparison_csv(comparison: dict) -> str:
     buf = io.StringIO()
     writer = csv.writer(buf, lineterminator="\n")
     writer.writerow(["code", "name", "ours", "s12", "difference", "difference_pct", "s12_codes", "mapping",
-                     "ours_per_10k_mid2025", "s12_per_10k_census"])
+                     "ours_per_10k_mid2025", "s12_per_10k_census", "displayed_all", "displayed_supermarkets",
+                     "displayed_convenience", "displayed_other", "s12_under_280m2", "s12_280m2_and_over"])
     for r in comparison["councils"]:
+        shown = r.get("displayed", {})
         writer.writerow([r["code"], r["name"], r["ours"], r["s12"], r["difference"],
                          "" if r["differencePct"] is None else r["differencePct"],
                          " ".join(r["s12Codes"]), " ".join(r["mapping"]),
                          "" if r["oursPer10k"] is None else r["oursPer10k"],
-                         "" if r["s12Per10k"] is None else r["s12Per10k"]])
+                         "" if r["s12Per10k"] is None else r["s12Per10k"],
+                         r.get("displayedAll", ""), shown.get("supermarket", ""), shown.get("convenience", ""),
+                         shown.get("other", ""), r["s12BySizeBand"][0], sum(r["s12BySizeBand"][1:])])
     return buf.getvalue()
 
 
