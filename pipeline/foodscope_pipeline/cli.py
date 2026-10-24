@@ -14,7 +14,11 @@ from foodscope_pipeline.publish import DATA_DIR, REPO_ROOT, ManifestError, publi
 
 PIPELINE_DIR = REPO_ROOT / "pipeline"
 RAW_HMRC = PIPELINE_DIR / "raw" / "hmrc"
+RAW_ONS = PIPELINE_DIR / "raw" / "ons"
 REPORTS = PIPELINE_DIR / "reports"
+RAW = PIPELINE_DIR / "raw"
+DERIVED = PIPELINE_DIR / "derived"
+SCHEMAS = REPO_ROOT / "schemas"
 CONFIG = PIPELINE_DIR / "foodscope_pipeline" / "config"
 POINTS = DATA_DIR / "reference" / "world-country-points.json"
 
@@ -31,8 +35,13 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("publish", help="build and validate public/data/manifest.json")
     ingest = sub.add_parser("ingest-hmrc", help="ONLINE: fetch HMRC OTS responses into pipeline/raw/hmrc/<snapshot>/")
     ingest.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
+    ons = sub.add_parser("fetch-ons", help="ONLINE: download ONS population, lookup and boundary files into pipeline/raw/ons/<snapshot>/ (incremental)")
+    ons.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
     build = sub.add_parser("build-trade", help="OFFLINE: raw HMRC cache → public/data/snapshots/<snapshot>/trade/")
     build.add_argument("--snapshot", required=True, help="snapshot id YYYY-MM-DD (must exist in the raw cache)")
+
+    local = sub.add_parser("build-local", help="OFFLINE: raw boundaries, stores and population → pipeline/derived/<snapshot>/")
+    local.add_argument("--snapshot", required=True, help="ONS raw snapshot id YYYY-MM-DD (pipeline/raw/ons/<snapshot>/)")
 
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(levelname)s %(name)s: %(message)s")
@@ -49,6 +58,18 @@ def main(argv: list[str] | None = None) -> int:
         print(f"cached {len(cache.entries)} responses in {cache.root}")
         return 0
 
+    if args.command == "fetch-ons":
+        from foodscope_pipeline.sources.ons_files import OnsFetchError, fetch
+
+        snapshot = args.snapshot or _today()
+        try:
+            folder = fetch(snapshot, RAW_ONS)
+        except OnsFetchError as exc:
+            logging.error("fetch-ons failed: %s", exc)
+            return 1
+        print(f"cached ONS files in {folder}")
+        return 0
+
     if args.command == "build-trade":
         from foodscope_pipeline.sources.hmrc_ots import load_baskets
         from foodscope_pipeline.trade import TradeBuildError, build_trade
@@ -61,6 +82,17 @@ def main(argv: list[str] | None = None) -> int:
             logging.error("build-trade failed: %s", exc)
             return 1
         print(f"wrote {len(written)} trade files for snapshot {args.snapshot}")
+        return 0
+
+    if args.command == "build-local":
+        from foodscope_pipeline.local import build_local, default_inputs
+
+        try:
+            written = build_local(args.snapshot, default_inputs(RAW, CONFIG, args.snapshot), DERIVED, REPORTS, SCHEMAS)
+        except Exception as exc:  # noqa: BLE001 (report any input problem and fail the step)
+            logging.error("build-local failed: %s", exc)
+            return 1
+        print(f"wrote {len(written)} files for local snapshot {args.snapshot}")
         return 0
 
     if args.command == "publish":

@@ -1,0 +1,67 @@
+[
+  {
+    "step": "boundaries.read_bfe",
+    "rows_in": 361,
+    "rows_out": 361,
+    "rejects": {}
+  },
+  {
+    "step": "boundaries.read_bgc",
+    "rows_in": 361,
+    "rows_out": 361,
+    "rejects": {}
+  },
+  {
+    "step": "boundaries.display",
+    "rows_in": 361,
+    "rows_out": 361,
+    "rejects": {}
+  },
+  {
+    "step": "stores.read",
+    "rows_in": 19299,
+    "rows_out": 19299,
+    "rejects": {}
+  },
+  {
+    "step": "stores.classify",
+    "rows_in": 19299,
+    "rows_out": 19299,
+    "rejects": {}
+  },
+  {
+    "step": "stores.locate",
+    "rows_in": 19299,
+    "rows_out": 19299,
+    "rejects": {}
+  },
+  {
+    "step": "stores.assign_council",
+    "rows_in": 19299,
+    "rows_out": 19299,
+    "rejects": {}
+  },
+  {
+    "step": "stores.leave_out_formats",
+    "rows_in": 19299,
+    "rows_out": 19183,
+    "rejects": {
+      "left out of the app (John, 24 Oct 2026): mainly non-food": 64,
+      "left out of the app (John, 24 Oct 2026): wholesale and membership": 52
+    }
+  },
+  {
+    "step": "population.councils",
+    "rows_in": 361,
+    "rows_out": 361,
+    "rejects": {}
+  },
+  {
+    "step": "benchmark.s12_councils",
+    "rows_in": 376,
+    "rows_out": 374,
+    "rejects": {
+      "Channel Islands and Isle of Man: no UK council": 2
+    }
+  }
+]

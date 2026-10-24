@@ -6,6 +6,10 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "jsonschema==4.25.1",
+    "openpyxl==3.1.5",
+    "pyogrio==0.13.0",
+    "pyproj==3.8.0",
+    "shapely==2.2.0",
 ]
 
 [project.scripts]
@@ -15,6 +19,11 @@ foodscope-pipeline = "foodscope_pipeline.cli:main"
 dev = [
     "pytest==8.4.2",
 ]
+
+[tool.uv]
+# Resolve only releases published before this date (supply-chain guard: no packages younger than
+# about two weeks when the lock was last changed). Move it forward deliberately when updating.
+exclude-newer = "2026-10-11T00:00:00Z"
 
 [build-system]
 requires = ["hatchling==1.27.0"]

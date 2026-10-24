@@ -16,7 +16,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 
 ## Current stage
 
-**Stage 3 — Seasonal Supply Explorer: merged (PR #5, 23 Oct 2026) and deployed** (report: `docs/stage-reports/stage-3.md`). Stages 1 and 2 are merged and deployed. A post-Stage 3 review (`docs/reviews/2026-10-23-review.md`, ADR-0018/0019) is on branch `improve/review-top-five`. The data-pipeline items moved out of Stage 3 (roadmap §5.3) are still to be scheduled. Do not start Stage 4 until John asks. Update this line when a stage is merged.
+**Stage 3 — Seasonal Supply Explorer: merged (PR #5, 23 Oct 2026) and deployed** (report: `docs/stage-reports/stage-3.md`). Stages 1 and 2 are merged and deployed. A post-Stage 3 review (`docs/reviews/2026-10-23-review.md`, ADR-0018/0019) is on branch `improve/review-top-five` (PR #6). The pre-Stage 4 data step (branch `data/stage-4-inputs`, report `docs/stage-reports/pre-stage-4-data.md`, ADR-0020) built council boundaries, classified stores (D5) and mid-2025 population in `pipeline/derived/2026-10-24/`; they are not in the app's manifest yet. The other data-pipeline items in roadmap §5.3 are still to be scheduled. Do not start Stage 4 until John asks. Update this line when a stage is merged.
 
 ## How to work
 
@@ -93,6 +93,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 - Log rows in/out at every step; write rejects with reasons; deterministic sort before writing; reruns must be idempotent.
 - HMRC API: ≤ 50 requests/minute, follow `@odata.nextLink`, cache raw responses, keep suppressed rows separate.
 - Outputs go to `public/data/snapshots/<date>/` with `manifest.json`; data refreshes arrive by pull request, never direct to `main`.
+- ONS (S14, S18): the sandbox cannot reach ONS either. `fetch-ons` runs in `.github/workflows/refresh-reference-data.yml` on push to a `data/**` branch and is incremental; files provided by hand live in `pipeline/raw/<source>/<edition>/` with an `index.json` of checksums. Store classes (D5) and council code changes are config in `foodscope_pipeline/config/`; stores are assigned on the BFE boundaries in EPSG:27700, councils are drawn from the clipped BGC edition (ADR-0020).
 - HMRC (S01): the sandbox cannot reach `api.uktradeinfo.com`. Run the online step through `.github/workflows/refresh-trade-data.yml` (push a `data-refresh/<date>` branch or run it manually); raw responses are committed in `pipeline/raw/hmrc/<snapshot>/` and everything after ingest runs offline from them (ADR-0016). Never hand-edit raw responses or snapshot files.
 
 ## Commands
@@ -117,10 +118,12 @@ npm run build:reference    # rebuild Natural Earth v5.1.2 outlines + label point
 VITE_ARCGIS_ASSETS=local npm run build
 PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome npm run e2e   # only if Playwright's browser is not installed
 
-cd pipeline && uv sync && uv run pytest              # pipeline tests (incl. offline rebuild of the committed HMRC snapshot)
+cd pipeline && uv sync && uv run pytest              # pipeline tests (incl. offline rebuilds of the HMRC snapshot and the local datasets)
 cd pipeline && uv run foodscope-pipeline publish     # rebuild public/data/manifest.json
 cd pipeline && uv run foodscope-pipeline build-trade --snapshot 2026-10-23   # offline: raw HMRC cache -> trade snapshot
 cd pipeline && uv run foodscope-pipeline ingest-hmrc --snapshot <date>       # ONLINE: only on GitHub Actions (refresh-trade-data.yml)
+cd pipeline && uv run foodscope-pipeline fetch-ons --snapshot <date>         # ONLINE: only on GitHub Actions (refresh-reference-data.yml, push to data/**)
+cd pipeline && uv run foodscope-pipeline build-local --snapshot 2026-10-24   # offline: boundaries, stores, population -> pipeline/derived/<date>/ + reports
 ```
 
 ## Definition of done (every task)

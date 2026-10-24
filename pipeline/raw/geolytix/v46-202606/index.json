@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "id": "geolytix.retail_points_v46",
+      "file": "geolytix_retailpoints_v46_202606.xlsx",
+      "sourceId": "S11",
+      "description": "GEOLYTIX Grocery Retail Points, version 46 (June 2026): one sheet, 19,299 store rows, 17 columns",
+      "publisherUrl": "https://geolytix.com/blog/grocery-retail-points-2026q1/",
+      "licence": "GEOLYTIX open data, no named licence (described by GEOLYTIX as \"completely free and open to use data\", blog page read 24 Oct 2026)",
+      "attribution": "Contains GEOLYTIX Grocery Retail Points data (v46, June 2026)",
+      "providedBy": "John Hewitt (project owner), attached to the build session",
+      "originalName": "geolytix_retailpoints_v46_202606.xlsx",
+      "receivedAt": "2026-10-24T07:52:53Z",
+      "notes": "Downloaded by John from GEOLYTIX. Stored byte-for-byte; never edited.",
+      "bytes": 2893888,
+      "sha256": "093ba30b12e820442ad149cce74c5d8c04c92a0619bfb72ff18a7e45f0b41cb1"
+    }
+  ]
+}

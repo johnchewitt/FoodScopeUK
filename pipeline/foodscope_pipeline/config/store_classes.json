@@ -1,0 +1,88 @@
+{
+  "decision": "D5 store classes, agreed with John on 24 Oct 2026 (spec §11 D5; docs/03-DATA-SOURCES.md S11)",
+  "notes": [
+    "Store class comes from the delivered size_band only: convenience under 280 m², supermarket 280 m² and over in three bands. 280 m² is the Sunday Trading Act threshold that ONS also uses (S12, note 5).",
+    "Format flags come from the delivered fascia. Forecourt, travel and wholesale fascias follow the GEOLYTIX groupings that ONS lists in S12 (Notes worksheet: Petrol Forecourt, Travel, Wholesaler, Other).",
+    "Formats marked leftOut are not published: John decided on 24 Oct 2026 to leave wholesale and mainly non-food stores out of the app. They are still counted in the comparison with ONS S12, which includes them.",
+    "A fascia not listed here is 'standard'. A size_band not listed here stops the build (unknown value)."
+  ],
+  "sizeBands": [
+    { "id": "lt280", "value": "< 3,013 ft2 (280m2)", "label": "Under 280 m²", "storeClass": "convenience" },
+    { "id": "280to1400", "value": "3,013 < 15,069 ft2 (280 < 1,400 m2)", "label": "280 to 1,400 m²", "storeClass": "supermarket" },
+    { "id": "1400to2800", "value": "15,069 < 30,138 ft2 (1,400 < 2,800 m2)", "label": "1,400 to 2,800 m²", "storeClass": "supermarket" },
+    { "id": "ge2800", "value": "30,138 ft2 > (2,800 m2)", "label": "2,800 m² and over", "storeClass": "supermarket" }
+  ],
+  "storeClasses": [
+    { "id": "supermarket", "label": "Supermarket (280 m² and over)" },
+    { "id": "convenience", "label": "Convenience (under 280 m²)" }
+  ],
+  "formats": [
+    {
+      "id": "standard",
+      "label": "High street and out of town",
+      "inDefaultView": true,
+      "fascias": []
+    },
+    {
+      "id": "forecourt",
+      "label": "Petrol forecourt",
+      "inDefaultView": false,
+      "fascias": [
+        "Asda PFS",
+        "Eurospar PFS",
+        "Little Waitrose Shell",
+        "Marks and Spencer BP",
+        "Morrisons Select",
+        "Spar PFS",
+        "Tesco Express Esso",
+        "The Co-operative Food PFS"
+      ]
+    },
+    {
+      "id": "motorway",
+      "label": "Motorway services",
+      "inDefaultView": false,
+      "fascias": [
+        "Marks and Spencer MSA",
+        "Waitrose MSA"
+      ]
+    },
+    {
+      "id": "travel",
+      "label": "Station and airport",
+      "inDefaultView": false,
+      "fascias": [
+        "Marks and Spencer Travel SF"
+      ]
+    },
+    {
+      "id": "hospital",
+      "label": "Hospital",
+      "inDefaultView": false,
+      "fascias": [
+        "Marks and Spencer Hospital"
+      ]
+    },
+    {
+      "id": "wholesale",
+      "label": "Wholesale and membership",
+      "fascias": [
+        "Costco",
+        "Makro"
+      ],
+      "leftOut": true,
+      "leftOutReason": "left out of the app (John, 24 Oct 2026): wholesale and membership"
+    },
+    {
+      "id": "nonfood",
+      "label": "Mainly non-food",
+      "fascias": [
+        "Asda Living",
+        "Marks and Spencer Clothing",
+        "Marks and Spencer Outlet"
+      ],
+      "leftOut": true,
+      "leftOutReason": "left out of the app (John, 24 Oct 2026): mainly non-food"
+    }
+  ]
+}

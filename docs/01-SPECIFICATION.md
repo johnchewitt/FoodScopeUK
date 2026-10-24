@@ -472,7 +472,7 @@ Mapped from brief §19, with how each is verified.
 | D2 | ArcGIS API key: John creates API key credentials in ArcGIS Location Platform (steps in `docs/setup/arcgis-api-key.md`) and stores the key as the GitHub Actions secret `ARCGIS_API_KEY` | Stage 1 (fallback map until then) |
 | D3 | Brand assets and permission for "Powered by ConsultingWhere" and PDF branding | Stage 1 (placeholder) / Stage 7 (final) |
 | D4 | Retailer logos: use or not (default: no logos) | Stage 4 |
-| D5 | Store class definition (which GEOLYTIX size bands/formats count as "supermarket") | Stage 2 gate |
+| D5 | ~~Store class definition (which GEOLYTIX size bands/formats count as "supermarket")~~ **Resolved 24 Oct 2026** (John): class from `size_band` (convenience under 280 m²; supermarket 280 m² and over in three bands); forecourt, motorway, travel and hospital stores flagged as formats; default view supermarkets in the standard format; wholesale and mainly non-food stores left out; Crown Dependency stores shown with no council (S11, ADR-0020) | — |
 | D6 | Default straight-line thresholds (proposed 1 / 2 / 5 km) | Stage 5 |
 | D7 | "About ConsultingWhere" approved copy | Stage 7 |
 | D8 | Whether to publish curated layers to a ConsultingWhere ArcGIS Online org (Release 3) | Release 3 |

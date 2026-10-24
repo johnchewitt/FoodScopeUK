@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "id": "ons.chain_supermarkets_2024",
+      "file": "accesstoamenitiessupermarkets.xlsx",
+      "sourceId": "S12",
+      "description": "ONS: Number of chain supermarkets across Local Authority Districts (LAD) and smaller geographical areas in the UK (published 7 March 2024), Tables 1-13",
+      "publisherUrl": "https://www.ons.gov.uk/peoplepopulationandcommunity/wellbeing/datasets/1numberofchainsupermarketsacrosslocalauthoritydistrictsladandsmallergeographicalareasintheuk",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0",
+      "providedBy": "John Hewitt (project owner), attached to the build session",
+      "originalName": "accesstoamenitiessupermarkets.xlsx",
+      "receivedAt": "2026-10-24T08:00:06Z",
+      "notes": "Validation benchmark only, never displayed as a second value (spec 6.3). Stored byte-for-byte; never edited.",
+      "bytes": 1107420,
+      "sha256": "d1a333520364b8932bcf18737932b58cd597c3aa1181acbbcc5ada0552e64468"
+    }
+  ]
+}

@@ -23,3 +23,4 @@ MADR-style records. Status values: Proposed · Accepted · Superseded. Summaries
 | [0017](0017-seasonal-transitions-and-fixed-scales.md) | Seasonal Supply: eased widths only, fixed scales, nothing interpolated | Accepted (Stage 3) |
 | [0018](0018-map-framing-on-the-data.md) | Map framing on the UK and the drawn connections | Accepted (post-Stage 3 review) |
 | [0019](0019-one-share-ramp-and-data-first-startup.md) | One opaque share ramp; hover by highlight; figures before the map | Accepted (post-Stage 3 review) |
+| [0020](0020-local-data-boundaries-stores-population.md) | Local data: two boundary editions, D5 store classes, built offline and published in Stage 4 | Accepted (pre-Stage 4 data step) |

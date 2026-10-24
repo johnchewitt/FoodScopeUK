@@ -22,7 +22,9 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   retries: process.env.CI ? 1 : 0,
-  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : [["list"]],
+  // On CI the "github" reporter also turns each failure into a check-run annotation, readable through
+  // the GitHub API when the job log and report artifact cannot be downloaded.
+  reporter: process.env.CI ? [["list"], ["github"], ["html", { open: "never" }]] : [["list"]],
   use: {
     baseURL: remoteBaseUrl ?? `http://localhost:${port}${basePath}`,
     trace: "retain-on-failure",

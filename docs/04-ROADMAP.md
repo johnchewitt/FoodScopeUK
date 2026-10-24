@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | 04 — Staged delivery plan |
-| **Version** | 0.3 — 23 October 2026 (Stage 3 re-scoped to the Seasonal Supply Explorer at John's instruction) |
+| **Version** | 0.4 — 24 October 2026 (pre-Stage 4 data step: council boundaries, stores and population built; gates G5 and G7 cleared; D5 agreed) |
 | **Approach** | Small, demonstrable stages. Each stage ends with working software, passing checks and a short stage report. No stage starts while its verification gates are open. |
 
 ---
@@ -16,7 +16,7 @@
 | **1** | **Application foundation** ✅ merged (PR #1) and deployed | R1 | 0, decisions D1–D2 | Branded shell, live dark map, empty module panels, CI + Pages deploy |
 | **2** | **Food Origins explorer + HMRC trade pipeline** ✅ merged (PR #3) and deployed | R1 | 1, gates G1, G2, G4 | Pick tomatoes, step Jan→Jul, watch partners, connections, cards and charts change — real HMRC data for five commodities |
 | **3** | **Seasonal Supply Explorer** ✅ merged (PR #5) and deployed | R1 | 2 | Play tomatoes January → December 2025; compare January with July; partner-by-month heatmap; year-on-year change — the same real HMRC data as Food Origins |
-| 4 | Supermarket network | R1 | 3, G7, and the LAD/GEOLYTIX ingest moved out of Stage 3 (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth; basemap choice: dark grey, light grey, imagery (SH-08) |
+| 4 | Supermarket network | R1 | 3, G7 ✅, and the LAD/GEOLYTIX data built in the pre-Stage 4 data step (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth; basemap choice: dark grey, light grey, imagery (SH-08) |
 | 5 | Local Authority Profiles (Belfast, Manchester deep) | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
 | 6 | Scenario Lab (import disruption, store closure) | R1 | 3, 5 | Spanish tomato preset; close a store and see the access change |
 | 7 | Consulting Insights + PDF export | R1 | 5, 6, D3, D7 | One-click profile PDF that matches the screen |
@@ -24,7 +24,7 @@
 | 9 | Release 2 | R2 | 8 | National access layers, Risk Explorer, Scenarios B/C, Ask FOODSCOPE, 3D globe |
 | 10 | Release 3 | R3 | 9 | Network travel times, secure LLM assistant, AGOL publishing |
 
-The data-pipeline items moved out of Stage 3 (§5.3) are still to be scheduled; Stage 4 cannot start without its LAD and GEOLYTIX parts.
+The LAD, population and GEOLYTIX items moved out of Stage 3 were built in the pre-Stage 4 data step (24 Oct 2026, `docs/stage-reports/pre-stage-4-data.md`); the other items in §5.3 are still to be scheduled.
 
 **Re-scope (23 Oct 2026).** John defined Stage 2 as "the global food origins explorer" with real HMRC data for tomatoes, strawberries, bananas, potatoes and wheat. Stage 2 therefore combines the HMRC part of the former "Data pipeline v1" with the core of the former Food Origins slice. Everything else from those two stages moved to Stage 3 (table above; §5).
 
@@ -42,9 +42,9 @@ Each gate must be cleared (evidence recorded in `docs/stage-reports/`) before th
 | G2 ✅ | What is the API `Value` basis and HMRC revision policy? | HMRC methodology pages | 2 — **cleared**: CIF statistical value (Intrastat invoice value); provisional for up to 18 months |
 | G3 🟡 | Are commodity baskets aligned with Defra trade codes? | Compare spec §6.1 with Defra trade codes ODS (S05) and `/Commodity` | 2 — **partly**: five baskets verified against `/Commodity`; Defra ODS comparison moved out of Stage 3, to schedule (§5.3) |
 | G4 ✅ | HMRC `CountryCodeAlpha` ↔ Natural Earth crosswalk complete? | Generate crosswalk; list unmapped codes | 2 — **cleared**: all partners crosswalked; Gibraltar has no geometry at 1:110m/1:50m |
-| G5 | ONS/OS attribution wording for boundaries | ONS metadata | LAD ingest (§5.3) |
+| G5 ✅ | ONS/OS attribution wording for boundaries | ONS metadata | LAD ingest (§5.3) — **cleared 24 Oct 2026**: "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025" in every boundary provenance record |
 | G6 | UKFSR 2024 ODS table IDs for Short Straits figures | Download Theme 3 ODS | Defra context file (§5.3) |
-| G7 | GEOLYTIX current schema, store-class values, **NI coverage**, `bng_*` for NI | Download latest file; inspect `size_band`/`fascia` values; count `BT` postcodes | Clear with the GEOLYTIX ingest (§5.3); blocks 4 |
+| G7 ✅ | GEOLYTIX current schema, store-class values, **NI coverage**, `bng_*` for NI | Download latest file; inspect `size_band`/`fascia` values; count `BT` postcodes | 4 — **cleared 24 Oct 2026** on v46: the same 17 columns as v31; 4 size bands, 53 fascias; 627 `BT` postcodes (725 stores in NI councils); in NI `bng_*` are BNG values derived from WGS84, not Irish Grid |
 | G8 | **PPFI v2.1 NI coverage** and column names | Download HASP LSOA CSV | Clear before Stage 5 (early warning for Belfast); blocks 5 |
 | G9 | NISRA DZ2021 CRS, licence, centroids; DZ2021↔SOA2011 lookup | NISRA downloads | 5 |
 | G10 | Census car availability tables (E&W TS045?; NI table ID) | Nomis / NISRA | 5 |
@@ -177,7 +177,7 @@ Evidence: `docs/stage-reports/stage-3.md`.
 ### 5.3 Moved out of Stage 3 (to schedule with John)
 
 - Remaining 11 baskets, after the Defra trade-code comparison (gate G3, B10), and commodity search (B11).
-- LAD boundaries (national, generalised) and LAD population (G5); GEOLYTIX snapshot (G7). Stage 4 needs both.
+- ~~LAD boundaries (national, generalised) and LAD population (G5); GEOLYTIX snapshot (G7). Stage 4 needs both.~~ **Done** in the pre-Stage 4 data step (24 Oct 2026): `foodscope-pipeline build-local` → `pipeline/derived/2026-10-24/` (ADR-0020). Publishing them in the app's data index is part of Stage 4.
 - Defra context file (UKFSR, pocketbook CSVs; G6); `catalogue.json` generated from the inventory.
 - FO-08 supplier pattern changes; FO-09 UK production context (needs S09/S10 verified).
 - Scheduled `refresh-trade-data` runs opening PRs (B14).
@@ -188,6 +188,8 @@ Evidence: `docs/stage-reports/stage-3.md`.
 Deliverables: stores layer via adapter (SM-01); clustering and symbols (SM-02/04); retailer and class filters (SM-03); search and detail cards (SM-05); LAD counts and per-10k choropleth with fixed breaks (SM-06); proximity tool (SM-07); density table (SM-08); comparison chart (SM-09); provision caveat (SM-10). Hosted-layer config tested against a public sample FeatureLayer with the same schema (or a mock server).
 
 Exit: filter counts match pipeline counts; LAD totals reconciled and differences from ONS S12 explained in the stage report.
+
+Inputs ready (pre-Stage 4 data step, ADR-0020): `pipeline/derived/2026-10-24/` holds the display boundaries, the classified stores and per-council population, land area and store counts, each with a provenance record; a first all-format comparison with S12 is in `pipeline/reports/`. Stage 4 decides how they enter `public/data/manifest.json` (the newest-snapshot rule in `publish` would otherwise hide the trade snapshot) and records it in an ADR.
 
 ### 6.1 Curated basemap switcher (SH-08; added at John's request, 23 Oct 2026)
 
@@ -313,3 +315,7 @@ Rules of engagement:
 | 2026-10-23 | UK seasonal production not shown for the five baskets: no verified monthly series (S06–S08 cover meat and milk; S09/S10 annual, unverified) | SS-07, S05–S10 |
 | 2026-10-23 | Post-Stage 3 review (John's request): trade views framed on the data; one opaque share ramp for map, legend and heatmap; series-break and current-price cautions in Food Origins; data before the map on first load; KPI cards never hidden | ADR-0018, ADR-0019, `docs/reviews/2026-10-23-review.md` |
 | 2026-10-23 | Curated basemap switcher (dark grey, light grey, imagery at local scales) scheduled for Stage 4 (John's decision); each style needs its own checked colour set; no switcher for the trade views before then | SH-08, §6.1 |
+| 2026-10-24 | D5 store classes (John's decision): convenience under 280 m²; supermarket 280 m² and over in three bands; forecourt, motorway, travel and hospital stores flagged as their own formats; default view supermarkets in the standard format; wholesale and non-food left out (decided later the same day) | Spec §11 D5, S11 |
+| 2026-10-24 | Population: ONS mid-2025 estimates for all four nations, fetched by the pipeline on GitHub Actions (John's decision) | S18 |
+| 2026-10-24 | Council boundaries: BGC clipped edition for display, BFE full-extent edition for store assignment; local data built offline and published in Stage 4 | ADR-0020, S14 |
+| 2026-10-24 | John's decisions: leave out wholesale and mainly non-food stores; show the 125 Crown Dependency stores on the map without a council; each kind of data keeps its own newest date, so trade and stores refresh on their own schedules | ADR-0020, Stage 4 |
