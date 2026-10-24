@@ -131,6 +131,7 @@ cd pipeline && uv run foodscope-pipeline ingest-hmrc --snapshot <date>       # O
 cd pipeline && uv run foodscope-pipeline fetch-ons --snapshot <date>         # ONLINE: only on GitHub Actions (refresh-reference-data.yml, push to data/**)
 cd pipeline && uv run foodscope-pipeline fetch-reference --snapshot <date>   # ONLINE: fetch-ons + Nomis, MHCLG, NISRA Stage 5 files (the workflow runs this)
 cd pipeline && uv run foodscope-pipeline build-local --snapshot 2026-10-24   # offline: boundaries, stores, population -> public/data/snapshots/<date>/local/ + reports
+cd pipeline && uv run foodscope-pipeline build-areas --snapshot 2026-10-24   # offline: deep-profile small areas -> public/data/snapshots/<date>/areas/ (--out to write elsewhere) + reports
 ```
 
 ## Definition of done (every task)
