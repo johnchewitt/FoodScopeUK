@@ -1,0 +1,36 @@
+{
+  "notes": [
+    "Council codes that changed after the boundaries a source was published on. Each entry maps an older code to its May 2025 successor and says what the change was; used only where the source itself is on older boundaries.",
+    "The 2023 mergers (Cumbria, North Yorkshire, Somerset) come from the ONS LAD 2022 to LAD 2023 lookup (pipeline/raw/ons/), not from this file."
+  ],
+  "changes": [
+    {
+      "from": "E08000016",
+      "to": "E08000038",
+      "name": "Barnsley",
+      "effective": "2025",
+      "kind": "boundary change",
+      "detail": "The Barnsley and Sheffield (Boundary Change) Order 2024 (SI 2024/1328) moved a small area, the Oughtibridge Mill housing development, from Barnsley to Sheffield. ONS gave both councils new codes in 2025.",
+      "evidence": [
+        "https://www.legislation.gov.uk/uksi/2024/1328/introduction/made",
+        "https://consultation.lgbce.org.uk/all-reviews/pabr-barnsley-and-sheffield",
+        "https://www.ons.gov.uk/explore-local-statistics/areas/E08000038",
+        "ONS mid-2025 population tables (S18), Notes worksheet, note 18"
+      ]
+    },
+    {
+      "from": "E08000019",
+      "to": "E08000039",
+      "name": "Sheffield",
+      "effective": "2025",
+      "kind": "boundary change",
+      "detail": "The Barnsley and Sheffield (Boundary Change) Order 2024 (SI 2024/1328) moved a small area, the Oughtibridge Mill housing development, from Barnsley to Sheffield. ONS gave both councils new codes in 2025.",
+      "evidence": [
+        "https://www.legislation.gov.uk/uksi/2024/1328/introduction/made",
+        "https://consultation.lgbce.org.uk/all-reviews/pabr-barnsley-and-sheffield",
+        "https://www.ons.gov.uk/explore-local-statistics/areas/E08000039",
+        "ONS mid-2025 population tables (S18), Notes worksheet, note 18"
+      ]
+    }
+  ]
+}

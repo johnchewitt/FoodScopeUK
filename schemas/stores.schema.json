@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/stores.schema.json",
+  "title": "StoreCollection",
+  "description": "GEOLYTIX grocery retail points (S11) with the D5 size band, class and format and the May 2025 council (S14) each store falls in. Written by `foodscope-pipeline build-local`; coordinates WGS84 (EPSG:4326), 6 decimal places.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "features"],
+  "properties": {
+    "type": { "const": "FeatureCollection" },
+    "features": { "type": "array", "items": { "$ref": "#/definitions/StoreFeature" } }
+  },
+  "definitions": {
+    "StoreFeature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "geometry", "properties"],
+      "properties": {
+        "type": { "const": "Feature" },
+        "id": { "type": "integer", "description": "GEOLYTIX id" },
+        "geometry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "coordinates"],
+          "properties": {
+            "type": { "const": "Point" },
+            "coordinates": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": { "type": "number", "minimum": -90, "maximum": 90 }
+            }
+          }
+        },
+        "properties": { "$ref": "#/definitions/StoreProperties" }
+      }
+    },
+    "StoreProperties": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "retailer",
+        "fascia",
+        "name",
+        "address",
+        "town",
+        "postcode",
+        "sizeBand",
+        "storeClass",
+        "format",
+        "lad",
+        "councilMatch",
+        "coordinateSource"
+      ],
+      "properties": {
+        "id": { "type": "integer" },
+        "retailer": { "type": "string", "description": "GEOLYTIX retailer, as delivered" },
+        "fascia": { "type": "string", "description": "GEOLYTIX fascia (store brand), as delivered" },
+        "name": { "type": "string", "description": "GEOLYTIX store_name, as delivered" },
+        "address": { "type": ["string", "null"], "description": "GEOLYTIX add_one, as delivered" },
+        "town": { "type": ["string", "null"] },
+        "postcode": { "type": ["string", "null"] },
+        "sizeBand": { "$ref": "#/definitions/SizeBand" },
+        "storeClass": { "$ref": "#/definitions/StoreClass" },
+        "format": { "$ref": "#/definitions/StoreFormat" },
+        "lad": {
+          "type": "string",
+          "pattern": "^[EWSN]\\d{8}$",
+          "description": "May 2025 council code (LAD25CD)"
+        },
+        "councilMatch": {
+          "type": "string",
+          "enum": ["inside", "nearest"],
+          "description": "inside = the point is inside the council boundary; nearest = the point is just outside every council (within 50 m, e.g. a harbour-front store) and takes the nearest one"
+        },
+        "coordinateSource": {
+          "type": "string",
+          "enum": ["wgs84", "bng"],
+          "description": "wgs84 = long_wgs/lat_wgs as delivered; bng = derived from bng_e/bng_n because WGS84 was missing"
+        }
+      }
+    },
+    "SizeBand": { "type": "string", "enum": ["lt280", "280to1400", "1400to2800", "ge2800"] },
+    "StoreClass": { "type": "string", "enum": ["supermarket", "convenience"] },
+    "StoreFormat": {
+      "type": "string",
+      "enum": ["standard", "forecourt", "motorway", "travel", "hospital", "wholesale", "nonfood"]
+    }
+  }
+}
