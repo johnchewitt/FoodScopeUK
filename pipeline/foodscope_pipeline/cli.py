@@ -36,6 +36,8 @@ def main(argv: list[str] | None = None) -> int:
     ingest.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
     ons = sub.add_parser("fetch-ons", help="ONLINE: download ONS population, lookup and boundary files into pipeline/raw/ons/<snapshot>/ (incremental)")
     ons.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
+    ref = sub.add_parser("fetch-reference", help="ONLINE: fetch-ons plus the Stage 5 small-area files from Nomis, MHCLG and NISRA into pipeline/raw/<publisher>/<snapshot>/ (incremental)")
+    ref.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
     build = sub.add_parser("build-trade", help="OFFLINE: raw HMRC cache → public/data/snapshots/<snapshot>/trade/")
     build.add_argument("--snapshot", required=True, help="snapshot id YYYY-MM-DD (must exist in the raw cache)")
 
@@ -68,6 +70,28 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         print(f"cached ONS files in {folder}")
         return 0
+
+    if args.command == "fetch-reference":
+        from foodscope_pipeline.sources import mhclg_iod, nisra_files, nomis_census
+        from foodscope_pipeline.sources.ons_files import OnsFetchError, fetch
+
+        snapshot = args.snapshot or _today()
+        publishers = [
+            ("ons", None, None),
+            ("nomis", nomis_census.FILES, ()),
+            ("mhclg", mhclg_iod.FILES, ()),
+            ("nisra", nisra_files.FILES, ()),
+        ]
+        failed = []
+        # Each publisher's folder is complete or unchanged; one failure does not stop the others.
+        for name, files, queries in publishers:
+            try:
+                folder = fetch(snapshot, RAW / name, files=files, queries=queries)
+                print(f"cached {name} files in {folder}")
+            except (OnsFetchError, OSError) as exc:
+                logging.error("fetch %s failed: %s", name, exc)
+                failed.append(name)
+        return 1 if failed else 0
 
     if args.command == "build-trade":
         from foodscope_pipeline.sources.hmrc_ots import load_baskets

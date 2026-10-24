@@ -320,3 +320,7 @@ Rules of engagement:
 | 2026-10-24 | Population: ONS mid-2025 estimates for all four nations, fetched by the pipeline on GitHub Actions (John's decision) | S18 |
 | 2026-10-24 | Council boundaries: BGC clipped edition for display, BFE full-extent edition for store assignment; local data built offline and published in Stage 4 | ADR-0020, S14 |
 | 2026-10-24 | John's decisions: leave out wholesale and mainly non-food stores; show the 125 Crown Dependency stores on the map without a council; each kind of data keeps its own newest date, so trade and stores refresh on their own schedules | ADR-0020, Stage 4 |
+| 2026-10-24 | Stage 5: Northern Ireland deprivation (NIMDM 2017) is shown on its own 2011 Super Output Areas, never reallocated to Data Zones | John (decision); spec P12, P11 |
+| 2026-10-24 | Stage 5: if PPFI v2.1 has no Northern Ireland rows, the Belfast profile says it is not available and uses Northern Ireland's own measures (no PPFI v1 reference) | John (decision); S13 |
+| 2026-10-24 | Stage 5: small-area data is published for the two deep profiles only (Belfast, Manchester), as planned for Release 1 | John (decision); LP-10 |
+| 2026-10-24 | Stage 5: NI car availability by Data Zone and the PPFI v2.1 LSOA file are provided by John (the NISRA table builder disallows automated access; HASP downloads go through a basket) | John |

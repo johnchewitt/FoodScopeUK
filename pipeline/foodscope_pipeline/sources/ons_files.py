@@ -21,6 +21,12 @@ Sources (URLs verified on the publisher pages, 24 Oct 2026; docs/03-DATA-SOURCES
   so it is the display geometry; store assignment uses the full-extent BFE file (see
   `ons_lad.py`). Fetched in pages of `page_size` features with the total checked against a
   `returnCountOnly` query.
+- S15 (Stage 5, Manchester deep profile): the LSOA (2021) to Ward (2025) to LAD (2025) best-fit
+  lookup (LSOA21_WD25_LAD25_EW_LU_v2) for Manchester, and the LSOA (December 2021) BGC V5
+  boundaries and V4 population-weighted centroids inside a box around Manchester.
+
+`fetch` also serves the other publishers' registries (`nomis_census`, `mhclg_iod`,
+`nisra_files`) through `fetch-reference`: same checks, same index format, one folder each.
 """
 
 from __future__ import annotations
@@ -55,7 +61,10 @@ class OnsFile:
 
 @dataclass(frozen=True)
 class OnsQuery:
-    """An ArcGIS feature-service query fetched in pages (`resultOffset`/`resultRecordCount`)."""
+    """An ArcGIS feature-service query fetched in pages (`resultOffset`/`resultRecordCount`).
+
+    `count_filter` must select the same features as `params` (default: every feature).
+    """
 
     id: str
     stem: str
@@ -65,9 +74,10 @@ class OnsQuery:
     source_id: str
     licence: str
     description: str
+    count_filter: str = "where=1%3D1"
 
     def count_url(self) -> str:
-        return f"{self.layer_url}/query?where=1%3D1&returnCountOnly=true&f=json"
+        return f"{self.layer_url}/query?{self.count_filter}&returnCountOnly=true&f=json"
 
     def page_url(self, offset: int) -> str:
         return f"{self.layer_url}/query?{self.params}&resultOffset={offset}&resultRecordCount={self.page_size}"
@@ -87,6 +97,21 @@ LAD22_LAD23_URL = (
     "&resultRecordCount=2000&f=json"
 )
 LAD25_BGC_LAYER = f"{ONS_SERVICES}/LAD_MAY_2025_UK_BGC_V2/FeatureServer/0"
+
+# Stage 5 (LP-10 deep profile for Manchester, E08000003; gate G11). Service names from their
+# data.gov.uk records, read 24 Oct 2026 (docs/03-DATA-SOURCES.md, S15).
+DEEP_PROFILE_LAD_EW = "E08000003"
+LSOA21_LAD25_LAYER = f"{ONS_SERVICES}/LSOA21_WD25_LAD25_EW_LU_v2/FeatureServer/0"
+LSOA21_BGC_LAYER = f"{ONS_SERVICES}/Lower_layer_Super_Output_Areas_December_2021_Boundaries_EW_BGC_V5/FeatureServer/0"
+LSOA21_PWC_LAYER = f"{ONS_SERVICES}/LSOA_PopCentroids_EW_2021_V4/FeatureServer/0"
+# Manchester's extent in EPSG:27700 (from LAD_MAY_2025_UK_BGC_V2, 378,832–390,348 E and
+# 382,621–405,358 N) widened by about 500 m. Small areas and centroids are fetched for this box
+# (Manchester and slivers of its neighbours); the build keeps the LSOAs the lookup assigns to
+# Manchester and checks that every one of them was fetched.
+MANCHESTER_BOX = (
+    "geometry=378300%2C382100%2C390900%2C405900&geometryType=esriGeometryEnvelope&inSR=27700"
+    "&spatialRel=esriSpatialRelIntersects"
+)
 
 FILES: tuple[OnsFile, ...] = (
     OnsFile(
@@ -121,6 +146,48 @@ QUERIES: tuple[OnsQuery, ...] = (
         licence=OGL,
         description="Local Authority Districts (May 2025) Boundaries UK BGC (V2), EPSG:27700",
     ),
+    OnsQuery(
+        id="ons.lsoa21_lad25_manchester",
+        stem="lsoa21-wd25-lad25-ew-lu-v2-e08000003",
+        layer_url=LSOA21_LAD25_LAYER,
+        params=(
+            f"where=LAD25CD%3D%27{DEEP_PROFILE_LAD_EW}%27&outFields=*&returnGeometry=false"
+            "&orderByFields=LSOA21CD&f=json"
+        ),
+        count_filter=f"where=LAD25CD%3D%27{DEEP_PROFILE_LAD_EW}%27",
+        page_size=1000,
+        source_id="S15",
+        licence=OGL,
+        description="LSOA (2021) to Electoral Ward (2025) to LAD (2025) Best Fit Lookup in EW (V2), Manchester",
+    ),
+    OnsQuery(
+        id="ons.lsoa21_bgc_manchester_box",
+        stem="lsoa-dec-2021-ew-bgc-v5-manchester-box",
+        layer_url=LSOA21_BGC_LAYER,
+        params=(
+            f"where=1%3D1&{MANCHESTER_BOX}&outFields=*&returnGeometry=true&outSR=27700"
+            "&orderByFields=LSOA21CD&f=json"
+        ),
+        count_filter=f"where=1%3D1&{MANCHESTER_BOX}",
+        page_size=100,
+        source_id="S15",
+        licence=OGL,
+        description="Lower layer Super Output Areas (December 2021) Boundaries EW BGC (V5), Manchester box, EPSG:27700",
+    ),
+    OnsQuery(
+        id="ons.lsoa21_pwc_manchester_box",
+        stem="lsoa-dec-2021-ew-pwc-v4-manchester-box",
+        layer_url=LSOA21_PWC_LAYER,
+        params=(
+            f"where=1%3D1&{MANCHESTER_BOX}&outFields=*&returnGeometry=true&outSR=27700"
+            "&orderByFields=LSOA21CD&f=json"
+        ),
+        count_filter=f"where=1%3D1&{MANCHESTER_BOX}",
+        page_size=1000,
+        source_id="S15",
+        licence=OGL,
+        description="LSOA (December 2021) EW Population Weighted Centroids (V4), Manchester box, EPSG:27700",
+    ),
 )
 
 
@@ -147,11 +214,21 @@ def _json_doc(item_id: str, body: bytes) -> dict:
     return doc
 
 
+# First bytes of each binary format (a blocked download usually returns an HTML page instead).
+SIGNATURES = {".xlsx": b"PK", ".zip": b"PK", ".xls": b"\xd0\xcf\x11\xe0"}
+
+
 def _check(file: OnsFile, status: int, body: bytes) -> None:
     if status != 200:
         raise OnsFetchError(f"{file.id}: HTTP {status} from {file.url}")
-    if file.filename.endswith(".xlsx") and not body.startswith(b"PK"):
-        raise OnsFetchError(f"{file.id}: response is not an .xlsx file ({body[:40]!r})")
+    suffix = Path(file.filename).suffix
+    article = "an" if suffix.startswith(".x") else "a"
+    if suffix in SIGNATURES and not body.startswith(SIGNATURES[suffix]):
+        raise OnsFetchError(f"{file.id}: response is not {article} {suffix} file ({body[:40]!r})")
+    if suffix == ".csv":
+        head = body[:512].lstrip().lower()
+        if not body.strip() or head.startswith((b"<!doctype", b"<html")):
+            raise OnsFetchError(f"{file.id}: response is not a .csv file ({body[:40]!r})")
     if file.filename.endswith(".json"):
         doc = _json_doc(file.id, body)
         if not isinstance(doc.get("features"), list):
@@ -233,26 +310,34 @@ def _existing(folder: Path) -> list[dict]:
 
 
 def fetch(snapshot: str, raw_root: Path, transport: Transport = urllib_transport,
-          now: Callable[[], datetime] = lambda: datetime.now(UTC)) -> Path:
+          now: Callable[[], datetime] = lambda: datetime.now(UTC),
+          files: tuple[OnsFile, ...] | None = None, queries: tuple[OnsQuery, ...] | None = None) -> Path:
     """Download every item not yet cached into raw_root/<snapshot>/ and write index.json.
 
     Items already listed in index.json are verified against their checksums and kept as they
     are. index.json is written only after every new item has downloaded and passed its checks.
-    Returns the folder.
+    `files` and `queries` default to this module's ONS items; other publishers' modules pass
+    their own (the same checks and index format apply). Returns the folder.
     """
     folder = raw_root / snapshot
     folder.mkdir(parents=True, exist_ok=True)
     entries = _existing(folder)
     cached = {e["id"] for e in entries}
     new: list[dict] = []
-    for file in FILES:
-        if file.id not in cached:
-            new += _fetch_file(file, folder, transport, now)
-    for query in QUERIES:
-        if query.id not in cached:
-            new += _fetch_query(query, folder, transport, now)
+    try:
+        for file in FILES if files is None else files:
+            if file.id not in cached:
+                new += _fetch_file(file, folder, transport, now)
+        for query in QUERIES if queries is None else queries:
+            if query.id not in cached:
+                new += _fetch_query(query, folder, transport, now)
+    except Exception:
+        # Leave the folder as it was: no file without an index entry is ever committed.
+        for entry in new:
+            (folder / entry["file"]).unlink(missing_ok=True)
+        raise
     if not new and entries:
-        logger.info("all ONS items for %s already cached", snapshot)
+        logger.info("all items for %s in %s already cached", snapshot, raw_root.name)
         return folder
     index = {"schemaVersion": 1, "snapshot": snapshot, "files": entries + new}
     (folder / "index.json").write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
