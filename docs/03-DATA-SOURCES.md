@@ -3,8 +3,8 @@
 | | |
 |---|---|
 | **Document** | 03 — Verified data catalogue and manifest |
-| **Version** | 0.3 — 23 October 2026 (Stage 3: commodity-code history derived; UK seasonal production status recorded) |
-| **Verification date** | 23 October 2026 (all "Verified" statements refer to checks made on this date) |
+| **Version** | 0.4 — 24 October 2026 (pre-Stage 4 data step: S11, S12, S14 and S18 verified from the delivered files; gates G5 and G7 cleared) |
+| **Verification date** | 23 October 2026; S11, S12, S14 and S18 re-verified 24 October 2026 |
 | **Machine-readable form** | Generated into `public/data/snapshots/<date>/catalogue.json` by the pipeline from Stage 2 |
 
 ## How to read this document
@@ -38,14 +38,14 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S08 | Milk utilisation by dairies (monthly) | Defra | 🟡 | Seasonal (production) | R2 |
 | S09 | Horticulture statistics (annual) | Defra | 🔴 | Origins production context | R1 |
 | S10 | Cereal and oilseed production (annual) | Defra | 🔴 | Origins context, Scenario C | R1/R2 |
-| S11 | Grocery / Supermarket Retail Points | GEOLYTIX | 🟡 | Supermarkets, Profiles, Access, Scenario D | R1 |
-| S12 | Number of chain supermarkets across LADs and smaller areas in the UK | ONS | 🟡 | Validation of store counts | R1 |
+| S11 | Grocery / Supermarket Retail Points (v46, June 2026) | GEOLYTIX | ✅ | Supermarkets, Profiles, Access, Scenario D | R1 |
+| S12 | Number of chain supermarkets across LADs and smaller areas in the UK | ONS | ✅ (LAD tables 1–4) | Validation of store counts | R1 |
 | S13 | Priority Places for Food Index (v2.1) | CDRC / Leeds HASP | 🟡 (NI coverage ⚠️) | Access, Profiles | R1 (demo LADs) |
-| S14 | Local Authority Districts (May 2025) Boundaries UK BGC (V2) | ONS | ✅ | All UK views, Profiles | R1 |
+| S14 | Local Authority Districts (May 2025) Boundaries UK, BGC (display) and BFE (store assignment) | ONS | ✅ | All UK views, Profiles | R1 |
 | S15 | LSOA 2021 boundaries and population-weighted centroids (E&W) | ONS | 🔴 | Access, Profiles (Manchester) | R1 |
 | S16 | Data Zones 2021 (and Super Data Zones) | NISRA | 🟡 | Access, Profiles (Belfast) | R1 |
 | S17 | Data Zones 2022 | Scottish Government / NRS | 🔴 | Access (Scotland) | R2 |
-| S18 | Mid-year population estimates | ONS / NRS / NISRA | 🟡 | All per-capita indicators | R1 |
+| S18 | Mid-year population estimates (ONS UK tables, mid-2025) | ONS (with NRS and NISRA) | ✅ (council level) | All per-capita indicators | R1 |
 | S19 | Deprivation indices (IoD 2025, WIMD 2025, SIMD, NIMDM 2017) | MHCLG / Welsh Gov / Scottish Gov / NISRA | 🟡 | Access, Profiles, Scenario D | R1 (Eng, NI) |
 | S20 | Car or van availability (Census 2021 / Scotland's Census 2022) | ONS / NISRA / NRS | 🔴 | Access, Profiles | R1 (Eng, NI) |
 | S21 | Rural–urban classifications | ONS / Scottish Gov / NISRA | 🟡 | Profiles, Access | R1 |
@@ -198,26 +198,43 @@ Horticulture statistics (tomatoes, strawberries, apples, potatoes) and cereal an
 
 ## 4. Retail
 
-### S11 — GEOLYTIX Grocery / Supermarket Retail Points 🟡
+### S11 — GEOLYTIX Grocery / Supermarket Retail Points ✅
 
 | Field | Detail |
 |---|---|
-| Official title | Supermarket Retail Points (recent releases described as "Grocery Retail Points") |
+| Official title | Grocery Retail Points (earlier releases: Supermarket Retail Points) |
 | Publisher | GEOLYTIX |
 | Info pages | https://geolytix.com/blog/supermarket-retail-points/ · Q1 2026 update: https://geolytix.com/blog/grocery-retail-points-2026q1/ |
-| Download | Via GEOLYTIX's data viewer (geolytixmapp.com/product, Grocery layer) or the Google Drive link on the info page |
-| Licence | Described by GEOLYTIX as fully open data with no licensing requirements and no cost; acknowledgement requested but not required. No named licence — **record the exact wording and retrieval date in the catalogue**; attribute "Contains GEOLYTIX Retail Points data" as courtesy. |
+| Download | Via GEOLYTIX's data viewer (geolytixmapp.com/product, Grocery layer) |
+| Edition in use | **v46, June 2026** (`geolytix_retailpoints_v46_202606.xlsx`), provided by John on 24 Oct 2026; committed with its SHA-256 in `pipeline/raw/geolytix/v46-202606/` |
+| Licence | No named licence. The Q1 2026 blog page (read 24 Oct 2026) calls it "completely free and open to use data" and says it has been open data for 12 years. Attribution used as a courtesy: "Contains GEOLYTIX Grocery Retail Points data (v46, June 2026)" |
 | Refresh | Quarterly |
-| Latest period seen | Data dated March 2026 (blog published 30 April 2026); 19,254 locations; 22 grocery retailers tracked |
-| Coverage | Described as UK. Tracks Northern Ireland-oriented chains (e.g. Centra, Dunnes Stores) — **NI coverage to confirm by checking `BT` postcodes** (Stage 2 gate) |
-| Formats included | Supermarkets **and** convenience formats (e.g. Tesco Express, Sainsbury's Local) — store-class filtering is essential |
-| Fields (v31, March 2024 file) | `id`, `retailer`, `fascia`, `store_name`, `add_one`, `add_two`, `town`, `suburb`, `postcode`, `long_wgs`, `lat_wgs`, `bng_e`, `bng_n`, `pqi`, `open_date`, `size_band`, `county` — **re-verify against the current download**; schema may have changed with the product rename |
-| Processing | Pipeline: load CSV with declared CRS (EPSG:4326 from `long_wgs`/`lat_wgs`); validate coordinates within UK bbox; point-in-polygon to LAD and small areas; derive `store_class` from `size_band`/`fascia` using a documented mapping (decision D5); trim to fields used |
-| Restrictions / cautions | Retail presence only — no turnover, prices or opening hours guarantees; `bng_e/bng_n` meaning for NI points to check (British National Grid does not normally cover NI); `pqi` semantics to confirm from the user guide |
+| Verified fields (v46, 24 Oct 2026) | One sheet, 19,299 rows, unique integer `id`. Exactly these 17 columns: `id`, `retailer`, `fascia`, `store_name`, `add_one`, `add_two`, `town`, `suburb`, `postcode`, `long_wgs`, `lat_wgs`, `bng_e`, `bng_n`, `pqi`, `open_date`, `size_band`, `county`. The reader stops on any other header |
+| Retailers and fascias | 37 retailers, 53 fascias |
+| `size_band` values | `< 3,013 ft2 (280m2)` (11,988) · `3,013 < 15,069 ft2 (280 < 1,400 m2)` (4,503) · `15,069 < 30,138 ft2 (1,400 < 2,800 m2)` (1,226) · `30,138 ft2 > (2,800 m2)` (1,582); the same labels as S12 |
+| Coordinates | `long_wgs`/`lat_wgs` present for 19,298 rows. One store (id 1010001979, M&S Anlaby, HU10 6RJ) has BNG only and is placed from it, flagged |
+| `bng_e`/`bng_n` | Equal to the WGS84 point projected to British National Grid with PROJ's default OSGB36 transformation (median difference 0.00 m), **including in Northern Ireland**, where they are therefore BNG values derived from WGS84, not Irish Grid. Three GB stores differ by 48–67 m; the pipeline uses WGS84 |
+| `pqi` | Values Rooftop (19,254), Building (28), Third Party (17); read as a location-quality indicator (no user guide read) |
+| Coverage | UK including Northern Ireland (627 `BT` postcodes; 725 stores in the 11 NI councils) **plus the Crown Dependencies**: Guernsey 30, Jersey 51, Isle of Man 44. These are outside UK councils and are excluded from council figures |
+| Formats included | Supermarkets, convenience, petrol forecourts, motorway services, travel, hospital, wholesale and non-food outlets. Classes and formats per decision D5 (below) |
+| Processing | `foodscope-pipeline build-local`: read the .xlsx; classify by D5; council by point-in-polygon on the S14 BFE edition in EPSG:27700; a store up to 50 m outside every council (2 Northern Ireland shore-front stores) takes the nearest one and is flagged; Crown Dependency stores rejected with that reason; properties trimmed (`pipeline/derived/<snapshot>/stores.geojson`) |
+| Store classes (D5, agreed 24 Oct 2026) | Class from `size_band` only: convenience under 280 m²; supermarket 280 m² and over (three bands). Format from `fascia` (`pipeline/foodscope_pipeline/config/store_classes.json`): forecourt, motorway, travel and hospital, following the GEOLYTIX groupings ONS prints in S12; wholesale (Costco, Makro) and mainly non-food (M&S Outlet, Asda Living, M&S Clothing) flagged until John confirms. Default view: supermarkets in the standard format (7,171 stores) |
+| Restrictions / cautions | Retail presence only: no turnover, prices or opening hours. `open_date` is sparse and not used. Size band and fascia sometimes disagree (for example 94 Tesco Express stores in a band of 280 m² or more); the class follows the size band as delivered |
 
-### S12 — ONS: Number of chain supermarkets across LADs and smaller areas in the UK 🟡
+### S12 — ONS: Number of chain supermarkets across LADs and smaller areas in the UK ✅
 
-Published 7 March 2024; UK including NI; LAD, MSOA (E&W), Intermediate Zones (Scotland), Super Data Zones (NI); includes supermarkets per 10,000 people at LAD level; OGL v3.0. URL: https://www.ons.gov.uk/peoplepopulationandcommunity/wellbeing/datasets/1numberofchainsupermarketsacrosslocalauthoritydistrictsladandsmallergeographicalareasintheuk. **Use**: validation benchmark for our LAD counts (expect differences from vintage and class definition — report, don't force agreement). Underlying source not stated on the page.
+Published 7 March 2024, OGL v3.0. URL: https://www.ons.gov.uk/peoplepopulationandcommunity/wellbeing/datasets/1numberofchainsupermarketsacrosslocalauthoritydistrictsladandsmallergeographicalareasintheuk. John provided the file on 24 Oct 2026; it is committed in `pipeline/raw/ons-supermarkets/2024-03-07/`.
+
+- **Underlying source:** GEOLYTIX (cover sheet: "Supermarkets data source: Geolytix"), plus 52 stores from retailers not in the GEOLYTIX data (note 1).
+- **Populations used for per-capita figures:** Census 2021 for England, Wales and Northern Ireland; Census 2022 for Scotland (note 2).
+- **Verified tables (LAD level):**
+  - Table 1: `LAD code`, `LAD name`, `Counts`. 376 rows, including `L99999999` Channel Islands and `M99999999` Isle of Man; total 18,160.
+  - Table 2: `Supermarkets`, `People per Supermarket`, `Supermarkets per 10,000 people`.
+  - Table 3: the four GEOLYTIX size bands.
+  - Table 4: ONS retailer type (Convenience, Discounter, Freezer Centre, Petrol Forecourt, Specialist, Symbol Group, Traditional, Travel, Wholesaler, Other). The fascias in each type are listed in the Notes worksheet.
+  - The four tables agree for every council (checked by the reader).
+- **Councils:** those of the time, before the 2023 mergers (Cumbria, North Yorkshire, Somerset) and before the 2025 Barnsley and Sheffield codes. The pipeline maps them to May 2025 councils with the S14 lookup and `config/lad_code_changes.json`.
+- **Use:** a validation benchmark for our council counts (spec §6.3), never displayed as a second value. Expect differences from vintage and class definition; report them, don't force agreement. First comparison: `pipeline/reports/ons-s12-comparison-2026-10-24.json` (our 19,174 stores against S12's 18,069 in UK councils, +6.1 %; explained in `docs/stage-reports/pre-stage-4-data.md`).
 
 ---
 
@@ -266,19 +283,26 @@ England only; includes access to key services such as food stores in some editio
 
 ## 6. Geography and population
 
-### S14 — Local Authority Districts (May 2025) Boundaries UK BGC (V2) ✅
+### S14 — Local Authority Districts (May 2025) Boundaries UK ✅
 
-| Field | Detail |
-|---|---|
-| Publisher | Office for National Statistics (Open Geography Portal) |
-| FeatureServer | https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LAD_MAY_2025_UK_BGC_V2/FeatureServer/0 |
-| Downloads | GeoJSON, Shapefile, GeoPackage, FileGDB, CSV etc. via the ONS hub (item `0b8528fb4132495181d82bb65c5e370a`); WFS also available |
-| Verified fields | `FID`, `LAD25CD`, `LAD25NM`, `LAD25NMW`, `BNG_E`, `BNG_N`, `LONG`, `LAT`, `Shape__Area`, `Shape__Length`, `GlobalID` |
-| Service properties | `maxRecordCount` 2000; pagination supported; spatial reference WKID 27700; query formats JSON, geoJSON, PBF |
-| Demo authorities | `N09000003` Belfast · `E08000003` Manchester (verified by query) |
-| Licence | OGL v3.0 per data.gov.uk footer; metadata licence field not set; contains Ordnance Survey and ONS IP — include the ONS/OS attribution statement |
-| Generalisation | BGC = generalised (20 m) clipped to coastline; further simplified for the national web layer, original kept for point-in-polygon |
-| Note | `Shape__Area` is in the service CRS (BNG); for NI features compute area in ITM in the pipeline instead |
+Two editions of the same 361 councils, each used for what it is good at (ADR-0020):
+
+| Field | BGC (display) | BFE (store assignment) |
+|---|---|---|
+| Title | Local Authority Districts (May 2025) Boundaries UK BGC (V2) | Local Authority Districts (May 2025) Boundaries UK BFE (V2) |
+| Geometry | Generalised (20 m), clipped to the coastline | Full resolution, to the extent of the realm (low-water line): 248,695 km² against 242,494 km² of ONS land area |
+| How it arrives | Feature service `https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LAD_MAY_2025_UK_BGC_V2/FeatureServer/0`, fetched by `fetch-ons` on GitHub Actions in 8 pages of 50 (EPSG:27700, Esri JSON), total checked against `returnCountOnly` (361) | FileGDB from the ONS Open Geography Portal, provided by John (`LAD_MAY_2025_UK_BFE_V2_7705143053794342073.zip`, 32 MB), read from the zip |
+| Raw cache | `pipeline/raw/ons/2026-10-24/lad-may-2025-uk-bgc-v2.*.json` | `pipeline/raw/ons-lad-boundaries/may-2025-uk-bfe-v2/` |
+| Verified fields | Service: `FID`, `LAD25CD`, `LAD25NM`, `LAD25NMW`, `BNG_E`, `BNG_N`, `LONG`, `LAT`, `Shape__Area`, `Shape__Length`, `GlobalID`; `maxRecordCount` 2000, pagination and orderBy supported, WKID 27700 | Layer `LAD_MAY_2025_UK_BFE_V2`, MultiPolygon, EPSG:27700: `LAD25CD`, `LAD25NM`, `LAD25NMW`, `BNG_E`, `BNG_N`, `LONG`, `LAT`, `GlobalID`, `SHAPE_Length`, `SHAPE_Area` |
+| Checks | Valid coverage (no overlaps, edges matched); same codes and names as BFE | Valid geometries; 361 unique codes; E 296, W 22, S 32, N 11 |
+| Processing | Coverage clean (1 cm), coverage simplify at 150 m, island parts under 1 ha touching no other council dropped (3,379, 939 ha), WGS84 to 6 dp → `pipeline/derived/<snapshot>/lad-2025-uk.geojson` (2.7 MB, 0.87 MB gzip) | Point-in-polygon for stores, in EPSG:27700 |
+
+- **Demo authorities:** `N09000003` Belfast, `E08000003` Manchester.
+- **Licence:** OGL v3.0.
+- **Attribution (gate G5, cleared 24 Oct 2026):** "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025". Lookups and ONS tables carry the first sentence only.
+- **Lookup:** ONS "Local Authority District (2022) to Local Authority District (2023) Lookup in the UK" (feature service `LAD22_LAD23_UK_LU_v1`; fields `LAD22CD`, `LAD22NM`, `LAD22NMW`, `LAD23CD`, `LAD23NM`, `LAD23NMW`; 374 rows, 17 changed codes for the 2023 mergers). Used only to compare with S12.
+- **2025 code changes:** Barnsley E08000016 → E08000038 and Sheffield E08000019 → E08000039, after The Barnsley and Sheffield (Boundary Change) Order 2024 (SI 2024/1328) moved the Oughtibridge Mill development into Sheffield (`pipeline/foodscope_pipeline/config/lad_code_changes.json`, with sources).
+- **Areas:** for council areas use S18's land area. For a BFE or BGC area in Northern Ireland, compute in ITM (EPSG:2157), not BNG.
 
 ### S15 — LSOA 2021 boundaries and population-weighted centroids (E&W) 🔴
 
@@ -292,11 +316,20 @@ ONS Open Geography Portal; service URLs and fields to verify in Stage 5 (Manches
 
 Release 2 (national access layers).
 
-### S18 — Population 🟡
+### S18 — Population ✅ (council level, mid-2025)
 
-- ONS mid-2025 population estimates for England and Wales published; UK provisional mid-2025 published.
-- NRS (Scotland) and NISRA (NI) mid-year estimates: vintages and LAD/small-area availability to confirm.
-- Rule: per-capita indicators use the latest year available **for all nations being compared**; where vintages differ, the comparability warning appears.
+- **Edition in use:** ONS "Estimates of the population for the UK, England, Wales, Scotland and Northern Ireland", mid-2025 (`mye25tablesuk.xlsx`, released 1 October 2026; OGL v3.0, accredited official statistics). URL: https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationestimatesforukenglandandwalesscotlandandnorthernireland/mid2025/mye25tablesuk.xlsx
+- **Retrieval:** fetched by `fetch-ons` on GitHub Actions on 24 Oct 2026 and committed in `pipeline/raw/ons/2026-10-24/`.
+- **Reference date:** one date for all four nations, 30 June 2025. The figures were first published by ONS (England and Wales, 29 July 2026), NRS (Scotland, 14 July 2026) and NISRA (Northern Ireland, 24 September 2026).
+- **Verified tables (24 Oct 2026):**
+  - `MYE2 - Persons`: header row `Code`, `Name`, `Geography`, `All ages`, then single years of age.
+  - `MYE5`: `Code`, `Name`, `Geography`, `Area (sq km)`, `Estimated Population mid-2025`, … back to mid-2011.
+  - Council rows are those whose `Geography` is Non-metropolitan District, Unitary Authority, Metropolitan District, London Borough, Council Area or Local Government District: 361 rows, summing to the UK total of 69,483,939.
+- **Land area (MYE5):** land excluding inland water. It uses Standard Area Measurements (January 2025) for England, Wales and Scotland, and NISRA's estimate for Northern Ireland (notes 18 and 19).
+- **Boundaries:** April 2024 (note 10). Barnsley and Sheffield changed codes in 2025 after a small boundary change (S14). ONS's note 18 says the estimates do not account for it. The pipeline gives both councils their old-code figures with a note on each.
+- **Rounding:** Scotland's estimates involve some rounding to the nearest 10 (note 7); display LAD populations to the nearest 100 (spec §6.4).
+- **Rule:** per-capita indicators use the latest year available **for all nations being compared**. Mid-2025 meets this for all four. Where vintages differ, the comparability warning appears.
+- **Small areas:** the small-area estimates for Belfast and Manchester (Stage 5) are still to verify.
 
 ### S24 — Country geometries ✅
 
