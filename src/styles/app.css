@@ -78,6 +78,10 @@
   font-weight: 500;
 }
 .brand__sub {
+  /* Shortened, never drawn over the module title or the tools when the header is tight. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: var(--fs-text-xs);
   color: var(--fs-text-muted);
   white-space: nowrap;
@@ -1082,6 +1086,13 @@
   }
   .topbar {
     gap: 12px;
+  }
+}
+
+/* Narrow tablet: the tools leave no room for the subtitle (it ran into Search at 800 px). */
+@media (max-width: 1023px) {
+  .brand__sub {
+    display: none;
   }
 }
 
