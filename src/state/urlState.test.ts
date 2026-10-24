@@ -161,3 +161,50 @@ describe("Seasonal Supply URL state (SS-01, SS-05, SS-08)", () => {
     expect(historyModeFor(DEFAULT_URL_STATE, { ...DEFAULT_URL_STATE, compareMonth: 7 })).toBe("replace");
   });
 });
+
+describe("UK Food Access and basemap URL state (SM-03, SM-05, SM-06, SH-08)", () => {
+  it("reads store layers, retailers, council layer, store and basemap", () => {
+    expect(
+      parseUrlState("?m=access&sl=c,s&rt=Retailer%20B,Retailer%20A&cl=a&st=1010000001&bm=light"),
+    ).toMatchObject({
+      module: "access",
+      storeLayers: ["supermarket", "convenience"],
+      retailers: ["Retailer A", "Retailer B"],
+      councilLayer: "all",
+      store: 1010000001,
+      basemap: "light",
+    });
+    expect(parseUrlState("?sl=none&rt=&cl=off")).toMatchObject({
+      storeLayers: [],
+      retailers: [],
+      councilLayer: "off",
+    });
+  });
+
+  it("falls back on invalid values", () => {
+    expect(parseUrlState("?sl=x&rt=<script>,Retailer%20A&cl=zzz&st=abc&bm=neon")).toMatchObject({
+      storeLayers: [],
+      retailers: ["Retailer A"],
+      councilLayer: "supermarkets",
+      store: null,
+      basemap: "dark",
+    });
+  });
+
+  it("round-trips and omits defaults", () => {
+    expect(serializeUrlState({ ...DEFAULT_URL_STATE, module: "access" })).toBe("?m=access");
+    const state = {
+      ...DEFAULT_URL_STATE,
+      module: "access" as const,
+      storeLayers: ["supermarket" as const, "other" as const],
+      retailers: ["Retailer O'Brien", "Retailer A"],
+      councilLayer: "convenience" as const,
+      store: 42,
+      basemap: "imagery" as const,
+    };
+    const qs = serializeUrlState(state);
+    expect(qs).toBe("?m=access&sl=s%2Co&rt=Retailer+A%2CRetailer+O%27Brien&cl=c&st=42&bm=imagery");
+    expect(parseUrlState(qs)).toEqual({ ...state, retailers: ["Retailer A", "Retailer O'Brien"] });
+    expect(serializeUrlState({ ...DEFAULT_URL_STATE, storeLayers: [] })).toBe("?sl=none");
+  });
+});

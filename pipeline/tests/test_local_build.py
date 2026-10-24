@@ -20,16 +20,16 @@ SNAPSHOT = "2026-10-24"
 
 @pytest.fixture(scope="module")
 def rebuilt(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
-    out = tmp_path_factory.mktemp("derived")
+    out = tmp_path_factory.mktemp("data")
     reports = tmp_path_factory.mktemp("reports")
     build_local(SNAPSHOT, default_inputs(PIPELINE / "raw", PIPELINE / "foodscope_pipeline" / "config", SNAPSHOT),
                 out, reports, REPO / "schemas")
-    return out / SNAPSHOT, reports
+    return out / "snapshots" / SNAPSHOT / "local", reports
 
 
 def test_rebuild_matches_the_committed_outputs(rebuilt) -> None:
     out, reports = rebuilt
-    committed = PIPELINE / "derived" / SNAPSHOT
+    committed = REPO / "public" / "data" / "snapshots" / SNAPSHOT / "local"
     names = sorted(p.name for p in committed.iterdir())
     assert names == sorted(p.name for p in out.iterdir())
     for name in names:

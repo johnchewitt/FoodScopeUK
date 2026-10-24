@@ -22,6 +22,7 @@ export default tseslint.config(
   {
     ignores: [
       "dist",
+      "dist-basemap",
       "coverage",
       "playwright-report",
       "test-results",

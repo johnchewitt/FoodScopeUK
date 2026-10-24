@@ -177,7 +177,7 @@ Evidence: `docs/stage-reports/stage-3.md`.
 ### 5.3 Moved out of Stage 3 (to schedule with John)
 
 - Remaining 11 baskets, after the Defra trade-code comparison (gate G3, B10), and commodity search (B11).
-- ~~LAD boundaries (national, generalised) and LAD population (G5); GEOLYTIX snapshot (G7). Stage 4 needs both.~~ **Done** in the pre-Stage 4 data step (24 Oct 2026): `foodscope-pipeline build-local` → `pipeline/derived/2026-10-24/` (ADR-0020). Publishing them in the app's data index is part of Stage 4.
+- ~~LAD boundaries (national, generalised) and LAD population (G5); GEOLYTIX snapshot (G7). Stage 4 needs both.~~ **Done** in the pre-Stage 4 data step (24 Oct 2026): `foodscope-pipeline build-local` → `public/data/snapshots/2026-10-24/local/` (ADR-0020), published in the app's data index in Stage 4 (ADR-0021).
 - Defra context file (UKFSR, pocketbook CSVs; G6); `catalogue.json` generated from the inventory.
 - FO-08 supplier pattern changes; FO-09 UK production context (needs S09/S10 verified).
 - Scheduled `refresh-trade-data` runs opening PRs (B14).
@@ -189,7 +189,7 @@ Deliverables: stores layer via adapter (SM-01); clustering and symbols (SM-02/04
 
 Exit: filter counts match pipeline counts; LAD totals reconciled and differences from ONS S12 explained in the stage report.
 
-Inputs ready (pre-Stage 4 data step, ADR-0020): `pipeline/derived/2026-10-24/` holds the display boundaries, the classified stores and per-council population, land area and store counts, each with a provenance record; a first all-format comparison with S12 is in `pipeline/reports/`. Stage 4 decides how they enter `public/data/manifest.json` (the newest-snapshot rule in `publish` would otherwise hide the trade snapshot) and records it in an ADR.
+Inputs ready (pre-Stage 4 data step, ADR-0020): `public/data/snapshots/2026-10-24/local/` holds the display boundaries, the classified stores and per-council population, land area and store counts, each with a provenance record; a first all-format comparison with S12 is in `pipeline/reports/`. They enter `public/data/manifest.json` with each data family taken from its own newest snapshot (John's decision, ADR-0021).
 
 ### 6.1 Curated basemap switcher (SH-08; added at John's request, 23 Oct 2026)
 
@@ -199,7 +199,7 @@ Deliverables:
 - **Styles:**
   - dark grey: the default, unchanged;
   - light grey;
-  - imagery with labels, offered only at local zooms. The zoom threshold is set in the stage plan; the control explains why imagery is unavailable at world scale.
+  - imagery with labels, offered only at local zooms: zoom 12 and closer (about 1:144,000), set in the Stage 4 plan (ADR-0022); the control explains why imagery is unavailable at world scale.
 - **Verify the services first:** check the Basemap styles service style IDs and attribution on the live site (S25) and record them in `docs/03-DATA-SOURCES.md`. Do not assume IDs.
 - **Colour sets per style:**
   - share ramp, connection lines and casing, store symbols and choropleths, as tokens in `tokens.css` and `src/styles/palette.ts`;
@@ -315,6 +315,7 @@ Rules of engagement:
 | 2026-10-23 | UK seasonal production not shown for the five baskets: no verified monthly series (S06–S08 cover meat and milk; S09/S10 annual, unverified) | SS-07, S05–S10 |
 | 2026-10-23 | Post-Stage 3 review (John's request): trade views framed on the data; one opaque share ramp for map, legend and heatmap; series-break and current-price cautions in Food Origins; data before the map on first load; KPI cards never hidden | ADR-0018, ADR-0019, `docs/reviews/2026-10-23-review.md` |
 | 2026-10-23 | Curated basemap switcher (dark grey, light grey, imagery at local scales) scheduled for Stage 4 (John's decision); each style needs its own checked colour set; no switcher for the trade views before then | SH-08, §6.1 |
+| 2026-10-24 | Stage 4: local scale is zoom 12 (individual stores, council outlines, imagery offered); light grey is offered in every module, imagery only in UK Food Access (and later Local Authority Profiles); each style has its own validated colour set | SH-08, ADR-0022 |
 | 2026-10-24 | D5 store classes (John's decision): convenience under 280 m²; supermarket 280 m² and over in three bands; forecourt, motorway, travel and hospital stores flagged as their own formats; default view supermarkets in the standard format; wholesale and non-food left out (decided later the same day) | Spec §11 D5, S11 |
 | 2026-10-24 | Population: ONS mid-2025 estimates for all four nations, fetched by the pipeline on GitHub Actions (John's decision) | S18 |
 | 2026-10-24 | Council boundaries: BGC clipped edition for display, BFE full-extent edition for store assignment; local data built offline and published in Stage 4 | ADR-0020, S14 |

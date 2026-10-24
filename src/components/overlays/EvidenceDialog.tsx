@@ -4,7 +4,7 @@ import { ErrorState } from "@/components/states/ErrorState";
 import { SkeletonLines } from "@/components/states/Skeleton";
 import { PRINCIPLES } from "@/content/principles";
 import { describeDataError } from "@/services/data/errors";
-import { useManifest } from "@/services/data/queries";
+import { familySnapshots, useManifest } from "@/services/data/queries";
 import { useAppStore } from "@/state/store";
 import { PROVENANCE_CLASSES, PROVENANCE_DESCRIPTIONS } from "@/types/indicator";
 
@@ -89,9 +89,16 @@ export function EvidenceDialog() {
               <>
                 {manifest.data.snapshotId ? (
                   <p>
-                    Statistical snapshot <strong>{manifest.data.snapshotId}</strong>: every figure on screen
-                    comes from the datasets below, which the data pipeline retrieved, checksummed and
-                    validated.
+                    Statistical snapshots{" "}
+                    {familySnapshots(manifest.data).map((f, i, all) => (
+                      <span key={f.family}>
+                        {f.label.toLowerCase()} <strong>{f.id}</strong>
+                        {i < all.length - 1 ? ", " : ""}
+                      </span>
+                    ))}
+                    : every figure on screen comes from the datasets below, which the data pipeline retrieved,
+                    checksummed and validated. Each kind of data comes from its own latest snapshot, so trade
+                    and stores refresh on their own schedules.
                   </p>
                 ) : (
                   <EmptyState

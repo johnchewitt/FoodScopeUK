@@ -2,7 +2,7 @@
   "id": "local.lad_boundaries_2025",
   "title": "Council boundaries, May 2025 (display edition)",
   "role": "reference",
-  "path": "lad-2025-uk.geojson",
+  "path": "snapshots/2026-10-24/local/lad-2025-uk.geojson",
   "format": "geojson",
   "schemaId": "lad-boundaries",
   "sha256": "b5f857a2adbadf09660788d73caa8f2385452fa847231849d588f31e753f1cae",

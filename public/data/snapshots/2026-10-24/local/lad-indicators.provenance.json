@@ -2,7 +2,7 @@
   "id": "local.lad_indicators",
   "title": "Councils: population mid-2025, land area and store counts",
   "role": "statistical",
-  "path": "lad-indicators.json",
+  "path": "snapshots/2026-10-24/local/lad-indicators.json",
   "format": "json",
   "schemaId": "lad-indicators",
   "sha256": "002f8672d082855372ef2b1681f9c8940930787ee668cde1d7141482f65e50b2",

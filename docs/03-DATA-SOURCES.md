@@ -52,7 +52,7 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S22 | Journey time statistics | DfT | 🔴 (England only) | Access context | R2 |
 | S23 | Port freight annual statistics 2025 | DfT | 🟡 | Risks, Scenario B | R2 |
 | S24 | Natural Earth Admin 0 countries (v5.1.2) | Natural Earth | ✅ (1:110m outlines, 1:50m label points, ISO crosswalk) | Map reference layer; Origins map | R1 |
-| S25 | Basemap styles service | Esri (ArcGIS Location Platform) | ✅ (live site, API key) | Map | R1 |
+| S25 | Basemap styles service: dark grey, light grey, imagery | Esri (ArcGIS Location Platform) | ✅ dark grey (live site); 🟡 light grey and imagery (Esri style list, live check pending) | Map | R1 |
 | S26 | ArcGIS Living Atlas items | Esri and contributors | 🔴 per item | Optional reference layers | R2 |
 | S27 | Consumer price inflation — food (CPIH) | ONS (via Defra pocketbook CSV) | 🟡 | National context | R1 |
 | S28 | HMRC port reference and port-level OTS detail | HMRC | 🟡 | Risks, Scenario B | R2 |
@@ -217,7 +217,7 @@ Horticulture statistics (tomatoes, strawberries, apples, potatoes) and cereal an
 | `pqi` | Values Rooftop (19,254), Building (28), Third Party (17); read as a location-quality indicator (no user guide read) |
 | Coverage | UK including Northern Ireland (627 `BT` postcodes; 725 stores in the 11 NI councils) **plus the Crown Dependencies**: Guernsey 30, Jersey 51, Isle of Man 44. These have no UK council: they are on the map (John, 24 Oct 2026) but in no council figure |
 | Formats included | Supermarkets, convenience, petrol forecourts, motorway services, travel, hospital, wholesale and non-food outlets. Classes and formats per decision D5 (below) |
-| Processing | `foodscope-pipeline build-local`: read the .xlsx; classify by D5; council by point-in-polygon on the S14 BFE edition in EPSG:27700; a store up to 50 m outside every council (2 Northern Ireland shore-front stores) takes the nearest one and is flagged; Crown Dependency stores kept with no council (`lad: null`, `crownDependency` named); wholesale and mainly non-food stores left out (116); properties trimmed (`pipeline/derived/<snapshot>/stores.geojson`, 19,183 stores) |
+| Processing | `foodscope-pipeline build-local`: read the .xlsx; classify by D5; council by point-in-polygon on the S14 BFE edition in EPSG:27700; a store up to 50 m outside every council (2 Northern Ireland shore-front stores) takes the nearest one and is flagged; Crown Dependency stores kept with no council (`lad: null`, `crownDependency` named); wholesale and mainly non-food stores left out (116); properties trimmed (`public/data/snapshots/<snapshot>/local/stores.geojson`, 19,183 stores) |
 | Store classes (D5, agreed 24 Oct 2026) | Class from `size_band` only: convenience under 280 m²; supermarket 280 m² and over (three bands). Format from `fascia` (`pipeline/foodscope_pipeline/config/store_classes.json`): forecourt, motorway, travel and hospital, following the GEOLYTIX groupings ONS prints in S12; wholesale (Costco, Makro) and mainly non-food (M&S Outlet, Asda Living, M&S Clothing) left out of the app (John, 24 Oct 2026). Default view: supermarkets in the standard format (7,171 stores in UK councils, plus 22 in the Crown Dependencies) |
 | Restrictions / cautions | Retail presence only: no turnover, prices or opening hours. `open_date` is sparse and not used. Size band and fascia sometimes disagree (for example 94 Tesco Express stores in a band of 280 m² or more); the class follows the size band as delivered |
 
@@ -234,7 +234,7 @@ Published 7 March 2024, OGL v3.0. URL: https://www.ons.gov.uk/peoplepopulationan
   - Table 4: ONS retailer type (Convenience, Discounter, Freezer Centre, Petrol Forecourt, Specialist, Symbol Group, Traditional, Travel, Wholesaler, Other). The fascias in each type are listed in the Notes worksheet.
   - The four tables agree for every council (checked by the reader).
 - **Councils:** those of the time, before the 2023 mergers (Cumbria, North Yorkshire, Somerset) and before the 2025 Barnsley and Sheffield codes. The pipeline maps them to May 2025 councils with the S14 lookup and `config/lad_code_changes.json`.
-- **Use:** a validation benchmark for our council counts (spec §6.3), never displayed as a second value. Expect differences from vintage and class definition; report them, don't force agreement. First comparison: `pipeline/reports/ons-s12-comparison-2026-10-24.json` (our 19,174 stores against S12's 18,069 in UK councils, +6.1 %; explained in `docs/stage-reports/pre-stage-4-data.md`).
+- **Use:** a validation benchmark for our council counts (spec §6.3), never displayed as a second value. Expect differences from vintage and class definition; report them, don't force agreement. First comparison: `pipeline/reports/ons-s12-comparison-2026-10-24.json` (our 19,174 stores against S12's 18,069 in UK councils, +6.1 %; explained in `docs/stage-reports/pre-stage-4-data.md`). Stage 4 adds the counts the app displays to the same report (`displayed`): every type shown 19,058 against 18,069 (+5.5 %); supermarkets 7,171 against S12's 280 m² and over bands 7,420 (−3.4 %); convenience stores 10,622 against S12's under 280 m² band 10,649 (−0.3 %). Explained in `docs/stage-reports/stage-4.md`.
 
 ---
 
@@ -295,7 +295,7 @@ Two editions of the same 361 councils, each used for what it is good at (ADR-002
 | Raw cache | `pipeline/raw/ons/2026-10-24/lad-may-2025-uk-bgc-v2.*.json` | `pipeline/raw/ons-lad-boundaries/may-2025-uk-bfe-v2/` |
 | Verified fields | Service: `FID`, `LAD25CD`, `LAD25NM`, `LAD25NMW`, `BNG_E`, `BNG_N`, `LONG`, `LAT`, `Shape__Area`, `Shape__Length`, `GlobalID`; `maxRecordCount` 2000, pagination and orderBy supported, WKID 27700 | Layer `LAD_MAY_2025_UK_BFE_V2`, MultiPolygon, EPSG:27700: `LAD25CD`, `LAD25NM`, `LAD25NMW`, `BNG_E`, `BNG_N`, `LONG`, `LAT`, `GlobalID`, `SHAPE_Length`, `SHAPE_Area` |
 | Checks | Valid coverage (no overlaps, edges matched); same codes and names as BFE | Valid geometries; 361 unique codes; E 296, W 22, S 32, N 11 |
-| Processing | Coverage clean (1 cm), coverage simplify at 150 m, island parts under 1 ha touching no other council dropped (3,379, 939 ha), WGS84 to 6 dp → `pipeline/derived/<snapshot>/lad-2025-uk.geojson` (2.7 MB, 0.87 MB gzip) | Point-in-polygon for stores, in EPSG:27700 |
+| Processing | Coverage clean (1 cm), coverage simplify at 150 m, island parts under 1 ha touching no other council dropped (3,379, 939 ha), WGS84 to 6 dp → `public/data/snapshots/<snapshot>/local/lad-2025-uk.geojson` (2.7 MB, 0.87 MB gzip) | Point-in-polygon for stores, in EPSG:27700 |
 
 - **Demo authorities:** `N09000003` Belfast, `E08000003` Manchester.
 - **Licence:** OGL v3.0.
@@ -356,7 +356,27 @@ Published 29 July 2026 (accredited official statistics); data tables as a 39.9 M
 
 ### S25 — Esri basemap styles ✅
 
-ArcGIS dark grey style (`arcgis/dark-gray`) through the Basemap styles service, authorised by a referrer-restricted API key (decision D2) registered as `esriConfig.apiKeys.basemapStyles` (ADR-0011). Verified on the live site on 23 Oct 2026: style and tiles load, post-deploy smoke test requires `data-basemap-status="ready"`. Not reachable from the build sandbox. Attribution is rendered automatically by the map component; do not hide it. **Stage 4 (SH-08):** a light grey and an imagery-with-labels style are planned. Their style IDs and attribution are **not yet verified**; verify them on the live site before use (roadmap §6.1).
+ArcGIS dark grey style (`arcgis/dark-gray`) through the Basemap styles service, authorised by a referrer-restricted API key (decision D2) registered as `esriConfig.apiKeys.basemapStyles` (ADR-0011). Verified on the live site on 23 Oct 2026: style and tiles load, post-deploy smoke test requires `data-basemap-status="ready"`. Not reachable from the build sandbox. Attribution is rendered automatically by the map component; do not hide it.
+
+**Stage 4 (SH-08, ADR-0022): three styles.**
+
+| App choice | Style ID | What Esri's style list says (read 24 Oct 2026) |
+|---|---|---|
+| Dark grey (default) | `arcgis/dark-gray` | Vector tiles; Reference group, "minimal geographic features such as boundaries and place labels" |
+| Light grey | `arcgis/light-gray` | Vector tiles; same group; base and labels also available separately (`/base`, `/labels`) |
+| Imagery | `arcgis/imagery` | Map tiles and vector tiles: satellite imagery with labels (`arcgis/imagery/standard` would be imagery without labels) |
+
+- **Source of the IDs:** the Esri developer page "arcgis styles" (https://developers.arcgis.com/documentation/mapping-and-location-services/mapping/basemaps/arcgis-styles), read 24 Oct 2026.
+- **How SDK 5.1 loads a style:** read from `Basemap._loadFromStylesService` in the installed package. It makes two requests to `https://basemapstyles-api.arcgis.com/arcgis/rest/services/styles/v2/`:
+  - `styles/<id>/self`: metadata;
+  - `webmaps/<id>`: a web map whose `baseMap` holds the layers.
+
+  The E2E stub (`tests/e2e/support/basemapStub.ts`) imitates these two responses.
+- **Still to verify on the live site** (stage 4 report):
+  - each style loads with the site's key;
+  - attribution changes with the style;
+  - light grey's land colour (the colour set was validated against #d6d6d6–#f0f0f0);
+  - basemap request usage under the key (risk R8).
 
 ### S26 — ArcGIS Living Atlas 🔴
 
@@ -388,7 +408,7 @@ Defra pocketbook CSV of CPIH food and non-alcoholic beverages since 2020 (S05) f
 
 - Contains public sector information licensed under the Open Government Licence v3.0 (HMRC, Defra, ONS, DfT, NISRA, NRS, Welsh Government, MHCLG, as applicable).
 - Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right [year] (exact wording to be taken from the ONS boundary metadata in Stage 2).
-- Contains GEOLYTIX Retail Points data (courtesy acknowledgement).
+- Contains GEOLYTIX Grocery Retail Points data (v46, June 2026) (courtesy acknowledgement; on the store layer and the Evidence page from Stage 4).
 - Priority Places for Food Index © CDRC / Leeds HASP, OGL v3.0 (wording to confirm).
 - Made with Natural Earth.
 - Basemap © Esri and its data providers (rendered by the SDK).

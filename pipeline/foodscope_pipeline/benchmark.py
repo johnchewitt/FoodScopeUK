@@ -55,10 +55,39 @@ def _pct(ours: int, theirs: int) -> float | None:
     return round(100 * (ours - theirs) / theirs, 1) if theirs else None
 
 
+def _stats(pairs: list[tuple[int, int]]) -> dict:
+    """Totals and the spread of per-council differences for (ours, s12) pairs."""
+    o, t = sum(a for a, _ in pairs), sum(b for _, b in pairs)
+    abs_pcts = [abs(p) for p in (_pct(a, b) for a, b in pairs) if p is not None]
+    return {
+        "ours": o,
+        "s12": t,
+        "difference": o - t,
+        "differencePct": _pct(o, t),
+        "medianAbsDifferencePct": round(median(abs_pcts), 1) if abs_pcts else None,
+        "councilsWithin5Pct": sum(p <= 5 for p in abs_pcts),
+        "councilsWithin10Pct": sum(p <= 10 for p in abs_pcts),
+        "councilsWithin20Pct": sum(p <= 20 for p in abs_pcts),
+        "councilsMoreThan20Pct": sum(p > 20 for p in abs_pcts),
+    }
+
+
+#: Map layers in the app (D5): supermarket and convenience are standard-format stores by size;
+#: "other" holds forecourt, motorway, travel and hospital stores of any size.
+LAYERS = ("supermarket", "convenience", "other")
+
+
 def compare(s12: dict[str, S12Row], code_map: CodeMap, lad25_names: dict[str, str],
             store_lad: list[str | None], store_band_value: list[str], store_fascia: list[str],
-            crown_by_area: dict[str, int], population: dict[str, int | None]) -> dict:
-    """Per-council and national comparison. `store_*` lists describe every located store."""
+            crown_by_area: dict[str, int], population: dict[str, int | None],
+            store_layer: list[str | None] | None = None) -> dict:
+    """Per-council and national comparison. `store_*` lists describe every located store.
+
+    `store_layer` gives each store's map layer in the app (None for stores left out of it). With
+    it, a `displayed` section compares what the app shows with S12 (Stage 4 exit criterion):
+    every layer against S12's total, supermarkets against S12's 280 m² and over bands, and
+    convenience stores against S12's under 280 m² band.
+    """
     theirs: Counter[str] = Counter()
     theirs_bands: dict[str, Counter[str]] = {}
     sources: dict[str, list[str]] = {}
@@ -132,6 +161,39 @@ def compare(s12: dict[str, S12Row], code_map: CodeMap, lad25_names: dict[str, st
                       "oursRejected": sum(crown_by_area.get(a, 0) for a in areas), "postcodeAreas": areas})
 
     ranked = sorted(rows, key=lambda r: (-abs(r["difference"]), r["code"]))
+    displayed = None
+    if store_layer is not None:
+        shown: dict[str, Counter[str]] = {}
+        for lad, layer in zip(store_lad, store_layer, strict=True):
+            if lad is not None and layer is not None:
+                shown.setdefault(lad, Counter())[layer] += 1
+        for r in rows:
+            c = shown.get(r["code"], Counter())
+            r["displayed"] = {layer: c.get(layer, 0) for layer in LAYERS}
+            r["displayedAll"] = sum(c.values())
+        all_pairs = [(r["displayedAll"], r["s12"]) for r in rows]
+        displayed_ranked = sorted(rows, key=lambda r: (-abs(r["displayedAll"] - r["s12"]), r["code"]))
+        displayed = {
+            "note": (
+                "What the app shows (wholesale and mainly non-food stores left out) against S12. "
+                "Supermarkets are standard-format stores of 280 m² and over; S12's 280 m² and over "
+                "bands include every format. Convenience stores are standard-format stores under "
+                "280 m²; S12's under 280 m² band includes forecourt and travel stores."
+            ),
+            "all": _stats(all_pairs),
+            "supermarkets": _stats([(r["displayed"]["supermarket"], sum(r["s12BySizeBand"][1:])) for r in rows]),
+            "convenience": _stats([(r["displayed"]["convenience"], r["s12BySizeBand"][0]) for r in rows]),
+            "other": sum(r["displayed"]["other"] for r in rows),
+            "byNation": {
+                nation: _stats([(r["displayedAll"], r["s12"]) for r in rows if r["code"].startswith(prefix)])
+                for nation, prefix in (("England", "E"), ("Wales", "W"), ("Scotland", "S"), ("Northern Ireland", "N"))
+            },
+            "largestDifferences": [
+                {"code": r["code"], "name": r["name"], "displayed": r["displayedAll"], "s12": r["s12"],
+                 "difference": r["displayedAll"] - r["s12"], "differencePct": _pct(r["displayedAll"], r["s12"])}
+                for r in displayed_ranked[:15]
+            ],
+        }
     return {
         "summary": {
             "councils": len(rows),
@@ -152,5 +214,6 @@ def compare(s12: dict[str, S12Row], code_map: CodeMap, lad25_names: dict[str, st
         "crownDependencies": crown,
         "largestDifferences": [{k: r[k] for k in ("code", "name", "ours", "s12", "difference", "differencePct")}
                                for r in ranked[:15]],
+        **({"displayed": displayed} if displayed is not None else {}),
         "councils": rows,
     }

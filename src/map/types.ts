@@ -1,4 +1,4 @@
-import type { AppState } from "@/state/store";
+import type { AppState, MapCommand } from "@/state/store";
 import type { ViewPadding } from "./layoutMetrics";
 
 /**
@@ -13,7 +13,10 @@ export interface ViewLike {
   height?: number;
   goTo(target: unknown, options?: { animate?: boolean; duration?: number }): Promise<unknown>;
   whenLayerView(layer: unknown): Promise<unknown>;
-  map: { add(layer: unknown, index?: number): void; remove(layer: unknown): void } | null | undefined;
+  map:
+    | { add(layer: unknown, index?: number): void; remove(layer: unknown): void; basemap?: unknown }
+    | null
+    | undefined;
   /** MapView event registration (click, pointer-move, pointer-leave). Absent in unit-test fakes. */
   on?(name: string, handler: (event: ViewPointerEvent) => void): { remove(): void };
   /** MapView hit test. Absent in unit-test fakes. */
@@ -23,12 +26,20 @@ export interface ViewLike {
 export interface ViewPointerEvent {
   x: number;
   y: number;
+  /** Map location of a click (MapView `click` events), WGS84 via its longitude/latitude. */
+  mapPoint?: { longitude?: number | null; latitude?: number | null } | null;
   stopPropagation?(): void;
 }
 
 export interface HitResult {
   type: string;
-  graphic?: { attributes?: Record<string, unknown> | null; layer?: unknown } | null;
+  graphic?: {
+    attributes?: Record<string, unknown> | null;
+    layer?: unknown;
+    geometry?: unknown;
+    /** True for a cluster (an aggregate of features) from feature reduction. */
+    isAggregate?: boolean;
+  } | null;
 }
 
 /** Layer controllers own their layers end to end (ADR-03). */
@@ -37,6 +48,8 @@ export interface LayerController {
   activate(view: ViewLike, report: LayerStatusReporter): void;
   /** Called on every store change; must be idempotent. */
   update?(state: AppState): void;
+  /** Handles a map command the controller cannot (e.g. fit a council); returns true if handled. */
+  handleCommand?(command: MapCommand, context: { reducedMotion: boolean }): boolean;
   deactivate(view: ViewLike): void;
 }
 

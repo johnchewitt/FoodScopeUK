@@ -8,10 +8,9 @@ Inputs (all committed under pipeline/raw/, each checked against its recorded SHA
 - S12 ONS chain-supermarket counts (provided by John) and the ONS LAD 2022→2023 lookup, for the
   validation comparison only.
 
-Outputs go to `pipeline/derived/<snapshot>/`, each with a `*.provenance.json` record in the
-manifest's dataset shape (`path` relative to that folder). They are not in
-`public/data/manifest.json` yet: the app does not use them until Stage 4, which publishes them
-(see the data-step report). Reports go to `pipeline/reports/`.
+Outputs go to `public/data/snapshots/<snapshot>/local/` (the `local` dataset family, ADR-0021),
+each with a `*.provenance.json` sidecar that `publish` lists in the manifest (Stage 4). Reports go
+to `pipeline/reports/`.
 
 Everything is deterministic: the same raw files give byte-identical outputs.
 """
@@ -47,6 +46,7 @@ from foodscope_pipeline.stores import (
 logger = logging.getLogger(__name__)
 
 NATIONS = {"E": "England", "W": "Wales", "S": "Scotland", "N": "Northern Ireland"}
+FAMILY = "local"  # public/data/snapshots/<snapshot>/local/ (one dataset family; ADR-0021)
 UK_BOUNDS = (-9.0, 49.0, 2.0, 61.0)  # lon/lat box around the UK and the Crown Dependencies (Jersey is at 49.2° N)
 COORD_DECIMALS = 6
 GEOLYTIX_EDITION = "v46 (June 2026)"
@@ -108,6 +108,14 @@ def _validate(doc: object, schema_dir: Path, name: str) -> None:
 
 # ---------------------------------------------------------------------------------------------
 # Build
+
+
+def _map_layer(klass: tuple[str, str, str], left_out: dict) -> str | None:
+    """The app's map layer (src/analysis/retail.ts storeLayer); None for a store left out of the app."""
+    _, store_class, fmt = klass
+    if fmt in left_out:
+        return None
+    return "other" if fmt != "standard" else store_class
 
 
 def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir: Path,
@@ -224,11 +232,12 @@ def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir:
         store_fascia=[s.point.fascia for s in located],
         crown_by_area=dict(crown_by_area),
         population={c: v[0] for c, v in council_pop.items()},
+        store_layer=[_map_layer(klass[s.point.id], left_out) for s in located],
     )
 
     # ------------------------------------------------------------------------------------------
     # Outputs
-    out_dir = out_root / snapshot
+    out_dir = out_root / "snapshots" / snapshot / FAMILY
     out_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
@@ -363,7 +372,8 @@ def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir:
         path = out_dir / filename
         path.write_text(text, encoding="utf-8")
         sidecar = {
-            "id": record["id"], "title": record["title"], "role": record["role"], "path": filename,
+            "id": record["id"], "title": record["title"], "role": record["role"],
+            "path": f"snapshots/{snapshot}/{FAMILY}/{filename}",
             "format": record["format"], "schemaId": record["schemaId"], "sha256": _sha256(text),
             "bytes": len(text.encode("utf-8")),
             **({"featureCount": record["featureCount"]} if "featureCount" in record else {}),
@@ -456,13 +466,17 @@ def _comparison_csv(comparison: dict) -> str:
     buf = io.StringIO()
     writer = csv.writer(buf, lineterminator="\n")
     writer.writerow(["code", "name", "ours", "s12", "difference", "difference_pct", "s12_codes", "mapping",
-                     "ours_per_10k_mid2025", "s12_per_10k_census"])
+                     "ours_per_10k_mid2025", "s12_per_10k_census", "displayed_all", "displayed_supermarkets",
+                     "displayed_convenience", "displayed_other", "s12_under_280m2", "s12_280m2_and_over"])
     for r in comparison["councils"]:
+        shown = r.get("displayed", {})
         writer.writerow([r["code"], r["name"], r["ours"], r["s12"], r["difference"],
                          "" if r["differencePct"] is None else r["differencePct"],
                          " ".join(r["s12Codes"]), " ".join(r["mapping"]),
                          "" if r["oursPer10k"] is None else r["oursPer10k"],
-                         "" if r["s12Per10k"] is None else r["s12Per10k"]])
+                         "" if r["s12Per10k"] is None else r["s12Per10k"],
+                         r.get("displayedAll", ""), shown.get("supermarket", ""), shown.get("convenience", ""),
+                         shown.get("other", ""), r["s12BySizeBand"][0], sum(r["s12BySizeBand"][1:])])
     return buf.getvalue()
 
 

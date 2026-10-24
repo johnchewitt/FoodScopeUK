@@ -8,9 +8,22 @@ export function publicUrl(path: string): string {
   return `${base.endsWith("/") ? base : `${base}/`}${path.replace(/^\/+/, "")}`;
 }
 
+/**
+ * Time allowed for a file of `bytes`: the base timeout plus 1 s per 250 kB, so a large layer on a
+ * slow connection is not cut off while small files still fail fast.
+ */
+export function timeoutForBytes(bytes: number | undefined): number {
+  return FETCH_TIMEOUT_MS + Math.ceil((bytes ?? 0) / 250_000) * 1000;
+}
+
 /** Fetches and parses JSON with a timeout and typed errors. Validation is the caller's job. */
-export async function fetchJson(url: string, resource: string, signal?: AbortSignal): Promise<unknown> {
-  const timeout = AbortSignal.timeout(FETCH_TIMEOUT_MS);
+export async function fetchJson(
+  url: string,
+  resource: string,
+  signal?: AbortSignal,
+  timeoutMs: number = FETCH_TIMEOUT_MS,
+): Promise<unknown> {
+  const timeout = AbortSignal.timeout(timeoutMs);
   const combined = signal ? AbortSignal.any([signal, timeout]) : timeout;
   let response: Response;
   try {

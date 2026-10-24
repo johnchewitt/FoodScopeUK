@@ -7,13 +7,21 @@ import { PartialNotice } from "@/components/states/Notice";
 import { SkeletonLines } from "@/components/states/Skeleton";
 import { principlesById } from "@/content/principles";
 import { OriginsInsights } from "@/features/origins/OriginsInsights";
+import { AccessInsightsLazy } from "@/features/access/lazy";
 import { SeasonalInsightsLazy } from "@/features/seasonal/lazy";
 import { BASEMAP_STATUS_ID, REFERENCE_DATASET_ID, REFERENCE_LAYER_ID } from "@/map/layerIds";
 import { basemapMode, readArcgisEnv } from "@/services/arcgis/env";
 import { describeDataError } from "@/services/data/errors";
-import { findDataset, useAppConfig, useManifest } from "@/services/data/queries";
+import { familySnapshot, findDataset, useAppConfig, useManifest } from "@/services/data/queries";
 import { ErrorBoundary } from "@/app/ErrorBoundary";
-import { useAppStore } from "@/state/store";
+import { selectRequestedMapStyle, useAppStore } from "@/state/store";
+import type { MapStyle } from "@/styles/palette";
+
+const BASEMAP_TITLES: Record<MapStyle, string> = {
+  dark: "Esri dark grey basemap",
+  light: "Esri light grey basemap",
+  imagery: "Esri imagery with labels",
+};
 
 const KEY_GUIDE_URL = "https://github.com/johnchewitt/FoodScopeUK/blob/main/docs/setup/arcgis-api-key.md";
 
@@ -45,9 +53,13 @@ export function InsightsPanel() {
   const config = useAppConfig();
   const mod = getModule(module);
   const mode = basemapMode(readArcgisEnv().apiKey);
+  const requestedStyle = useAppStore(selectRequestedMapStyle);
   const reference = findDataset(manifest.data, REFERENCE_DATASET_ID);
   const statistical = manifest.data?.datasets.filter((d) => d.role === "statistical") ?? [];
   const tradeDatasets = statistical.filter((d) => d.id.startsWith("trade.") && d.id !== "trade.index");
+  const localDatasets = statistical.filter((d) => d.id.startsWith("local."));
+  const tradeSnapshot = familySnapshot(manifest.data, "trade");
+  const localSnapshot = familySnapshot(manifest.data, "local");
 
   const failed: string[] = [];
   if (config.isError) failed.push("app configuration (defaults used)");
@@ -81,6 +93,10 @@ export function InsightsPanel() {
           <ErrorBoundary region="Seasonal Supply insights">
             <SeasonalInsightsLazy />
           </ErrorBoundary>
+        ) : module === "access" ? (
+          <ErrorBoundary region="UK Food Access insights">
+            <AccessInsightsLazy />
+          </ErrorBoundary>
         ) : (
           <section className="panel-section" aria-labelledby="about-heading">
             <h3 id="about-heading" className="panel-section__title">
@@ -103,10 +119,10 @@ export function InsightsPanel() {
             <SkeletonLines label="Loading data status" />
           ) : (
             <ul className="status-list" style={{ marginTop: failed.length ? 12 : 0 }}>
-              {manifest.data?.snapshotId && tradeDatasets.length > 0 ? (
+              {tradeSnapshot && tradeDatasets.length > 0 ? (
                 <StatusItem
                   tone="ok"
-                  title={`Trade snapshot ${manifest.data.snapshotId}`}
+                  title={`Trade snapshot ${tradeSnapshot}`}
                   detail={`HMRC Overseas Trade Statistics for ${tradeDatasets.length} commodities, ${tradeDatasets[0]?.referencePeriod ?? ""}. Used by Food Origins and Seasonal Supply.`}
                 />
               ) : (
@@ -114,6 +130,13 @@ export function InsightsPanel() {
                   tone="pending"
                   title="No statistics loaded"
                   detail="Trade, retail and population data arrive from build stage 2 onward. Nothing on screen is a statistic yet."
+                />
+              )}
+              {localSnapshot && localDatasets.length > 0 && (
+                <StatusItem
+                  tone="ok"
+                  title={`Stores and population snapshot ${localSnapshot}`}
+                  detail="GEOLYTIX grocery stores (June 2026), ONS mid-2025 population and May 2025 council boundaries. Used by UK Food Access."
                 />
               )}
               {manifest.isError ? (
@@ -149,7 +172,7 @@ export function InsightsPanel() {
                         : "pending"
                     : "pending"
                 }
-                title={mode === "esri-dark-gray" ? "Esri dark grey basemap" : "Offline outline map"}
+                title={mode === "esri-dark-gray" ? BASEMAP_TITLES[requestedStyle] : "Offline outline map"}
                 detail={
                   mode === "esri-dark-gray" ? (
                     basemapLayer?.status === "error" ? (
@@ -173,7 +196,7 @@ export function InsightsPanel() {
           )}
         </section>
 
-        {module !== "origins" && module !== "seasonal" && (
+        {module !== "origins" && module !== "seasonal" && module !== "access" && (
           <section className="panel-section">
             <ChartFrame
               title="Trend"

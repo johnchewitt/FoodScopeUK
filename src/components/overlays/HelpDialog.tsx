@@ -8,6 +8,10 @@ const SHORTCUTS: [string, string][] = [
   ["PgUp PgDn", "Next or previous year (Seasonal Supply timeline)"],
   ["Space", "Play or pause the months (Seasonal Supply timeline)"],
   ["F", "Fit the map to the UK and its recorded import partners (Food Origins, Seasonal Supply)"],
+  [
+    "Arrows",
+    "Pan the map (when it has focus); then “Map centre” measures straight-line distances from there",
+  ],
   ["?", "Open this help"],
   ["Esc", "Close a dialog"],
 ];
@@ -53,8 +57,10 @@ export function HelpDialog() {
             <h3>What this build contains</h3>
             <p>
               Food Origins and Seasonal Supply show recorded UK imports from HMRC for tomatoes, strawberries,
-              bananas, potatoes and wheat (monthly from January 2019). The other views do not load statistics
-              yet: each panel says which build stage adds its data, and no placeholder figures are shown.
+              bananas, potatoes and wheat (monthly from January 2019). UK Food Access maps GEOLYTIX grocery
+              stores (June 2026) with stores per 10,000 residents by council (ONS mid-2025) and straight-line
+              distances from a point you choose. The other views do not load statistics yet: each panel says
+              which build stage adds its data, and no placeholder figures are shown.
             </p>
           </section>
         </div>

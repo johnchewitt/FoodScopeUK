@@ -45,7 +45,7 @@ The constraints were:
 4. **Population: ONS mid-2025 estimates (S18) for all four nations.**
    - The figures come from MYE2 "All ages", with land area from MYE5.
    - The estimates are on April 2024 boundaries. For Barnsley and Sheffield, whose codes changed in 2025 after a small boundary change, the figures are carried to the new codes with a note on each council.
-5. **Built offline, published later.** `build-local` writes to `pipeline/derived/<snapshot>/`. Each output carries a provenance record in the manifest's dataset shape, validated against it. Nothing enters `public/data/manifest.json` until Stage 4 shows the data, so the Evidence page never lists data that is not on screen.
+5. **Built offline, published with Stage 4.** `build-local` first wrote to `pipeline/derived/<snapshot>/` so nothing entered `public/data/manifest.json` before the app showed the data. Stage 4 moves the outputs to `public/data/snapshots/<snapshot>/local/` and publishes them (ADR-0021). Each output carries a provenance sidecar in the manifest's dataset shape, validated against it.
 
 ## Consequences
 - **Coverage:** every store in a UK council is assigned. The map shows coastlines, not low-water extents.

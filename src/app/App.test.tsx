@@ -138,8 +138,11 @@ describe("App shell", () => {
     expect(await within(insights).findByText("Country outlines")).toBeInTheDocument();
     expect(within(insights).getByText(/Natural Earth v5.1.2, 1:110m, 176 countries/)).toBeInTheDocument();
     expect(within(insights).getByText("Trade snapshot 2026-10-23")).toBeInTheDocument();
+    expect(within(insights).getByText("Stores and population snapshot 2026-10-24")).toBeInTheDocument();
     expect(
-      await screen.findByRole("button", { name: /Data freshness: Snapshot 2026-10-23/ }),
+      await screen.findByRole("button", {
+        name: /Data freshness: Trade 2026-10-23 · Stores and population 2026-10-24/,
+      }),
     ).toBeInTheDocument();
   });
 

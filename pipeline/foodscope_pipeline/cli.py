@@ -17,7 +17,6 @@ RAW_HMRC = PIPELINE_DIR / "raw" / "hmrc"
 RAW_ONS = PIPELINE_DIR / "raw" / "ons"
 REPORTS = PIPELINE_DIR / "reports"
 RAW = PIPELINE_DIR / "raw"
-DERIVED = PIPELINE_DIR / "derived"
 SCHEMAS = REPO_ROOT / "schemas"
 CONFIG = PIPELINE_DIR / "foodscope_pipeline" / "config"
 POINTS = DATA_DIR / "reference" / "world-country-points.json"
@@ -40,7 +39,7 @@ def main(argv: list[str] | None = None) -> int:
     build = sub.add_parser("build-trade", help="OFFLINE: raw HMRC cache → public/data/snapshots/<snapshot>/trade/")
     build.add_argument("--snapshot", required=True, help="snapshot id YYYY-MM-DD (must exist in the raw cache)")
 
-    local = sub.add_parser("build-local", help="OFFLINE: raw boundaries, stores and population → pipeline/derived/<snapshot>/")
+    local = sub.add_parser("build-local", help="OFFLINE: raw boundaries, stores and population → public/data/snapshots/<snapshot>/local/")
     local.add_argument("--snapshot", required=True, help="ONS raw snapshot id YYYY-MM-DD (pipeline/raw/ons/<snapshot>/)")
 
     args = parser.parse_args(argv)
@@ -88,7 +87,7 @@ def main(argv: list[str] | None = None) -> int:
         from foodscope_pipeline.local import build_local, default_inputs
 
         try:
-            written = build_local(args.snapshot, default_inputs(RAW, CONFIG, args.snapshot), DERIVED, REPORTS, SCHEMAS)
+            written = build_local(args.snapshot, default_inputs(RAW, CONFIG, args.snapshot), DATA_DIR, REPORTS, SCHEMAS)
         except Exception as exc:  # noqa: BLE001 (report any input problem and fail the step)
             logging.error("build-local failed: %s", exc)
             return 1

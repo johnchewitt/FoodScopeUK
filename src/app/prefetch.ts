@@ -1,8 +1,14 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { TRADE_INDEX_ID } from "@/features/origins/useOrigins";
+import { loadAccess } from "@/features/access/load";
 import { preloadSeasonal } from "@/features/seasonal/load";
-import { REFERENCE_POINTS_DATASET_ID } from "@/map/layerIds";
-import { findDataset, manifestQuery } from "@/services/data/queries";
+import {
+  LOCAL_INDICATORS_DATASET_ID,
+  LOCAL_STORES_DATASET_ID,
+  REFERENCE_POINTS_DATASET_ID,
+} from "@/map/layerIds";
+import { adapterFor } from "@/services/data/featureLayerAdapter";
+import { configQuery, findDataset, manifestQuery } from "@/services/data/queries";
 import { validatedDatasetQuery } from "@/services/data/useDataset";
 import { validateCountryPoints, validateTradeIndex, validateTradeSnapshot } from "@/services/data/validate";
 import type { UrlState } from "@/state/urlState";
@@ -23,6 +29,7 @@ export async function prefetchStartupData(
   client: QueryClient,
   url: Pick<UrlState, "module" | "commodity">,
 ): Promise<void> {
+  if (url.module === "access") return prefetchAccess(client);
   if (!TRADE_MODULES.includes(url.module)) {
     await client.prefetchQuery(manifestQuery);
     return;
@@ -42,5 +49,37 @@ export async function prefetchStartupData(
     findDataset(manifest, snapshotId)
       ? client.prefetchQuery(validatedDatasetQuery(manifest, snapshotId, validateTradeSnapshot))
       : Promise.resolve(),
+  ]);
+}
+
+/**
+ * UK Food Access: the chunk (with its validators), the data index and config.json load together;
+ * then the stores (8.5 MB, the long pole) and the council indicators, through the same query
+ * options and adapter as useAccess, so the panels find them in the cache.
+ */
+async function prefetchAccess(client: QueryClient): Promise<void> {
+  let manifest, config, chunk;
+  try {
+    [manifest, chunk] = await Promise.all([client.fetchQuery(manifestQuery), loadAccess()]);
+  } catch {
+    return;
+  }
+  try {
+    config = await client.fetchQuery(configQuery);
+  } catch {
+    config = undefined;
+  }
+  await Promise.all([
+    client.prefetchQuery(
+      validatedDatasetQuery(
+        manifest,
+        LOCAL_STORES_DATASET_ID,
+        chunk.validateStores,
+        adapterFor(config, LOCAL_STORES_DATASET_ID, chunk.STORE_FIELDS),
+      ),
+    ),
+    client.prefetchQuery(
+      validatedDatasetQuery(manifest, LOCAL_INDICATORS_DATASET_ID, chunk.validateLadIndicators),
+    ),
   ]);
 }

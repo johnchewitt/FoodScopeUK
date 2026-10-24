@@ -177,6 +177,12 @@ test.describe("Share colours", () => {
   });
 
   test("hovering highlights a partner without rebuilding the renderer", async ({ page }) => {
+    // Page errors are recorded so a failure here says why (B29: this test failed only on CI).
+    const pageErrors: string[] = [];
+    page.on("pageerror", (err) => pageErrors.push(err.message));
+    page.on("console", (msg) => {
+      if (msg.type() === "error") pageErrors.push(msg.text());
+    });
     await page.goto("./");
     await ready(page);
     const builds = () =>
@@ -193,7 +199,36 @@ test.describe("Share colours", () => {
     await page.mouse.move(pts.TR!.x, pts.TR!.y);
     await expect(page.locator(".map-tooltip")).toContainText("Turkey", { timeout: 10_000 });
     await page.mouse.move(pts.MA!.x, pts.MA!.y);
-    await expect(page.locator(".map-tooltip")).toContainText("Morocco", { timeout: 10_000 });
+    try {
+      await expect(page.locator(".map-tooltip")).toContainText("Morocco", { timeout: 10_000 });
+    } catch (err) {
+      // What the map sees at Morocco's point: the camera, the element on top and the hit test.
+      const after = await onScreen(page, ["TR", "MA"]);
+      const probe = await page
+        .locator("arcgis-map")
+        .evaluate(async (el: HTMLArcgisMapElement, p: { x: number; y: number }) => {
+          const box = el.getBoundingClientRect();
+          const top = document.elementFromPoint(p.x, p.y);
+          const hits = await el.view.hitTest({ x: p.x - box.left, y: p.y - box.top });
+          return {
+            zoom: el.view.zoom,
+            center: [el.view.center.longitude, el.view.center.latitude],
+            stationary: el.view.stationary,
+            top: top ? `${top.tagName}.${String(top.className)}` : null,
+            hits: hits.results.map((r) => {
+              const g = (r as { graphic?: { layer?: { id?: string }; attributes?: Record<string, unknown> } })
+                .graphic;
+              return `${g?.layer?.id ?? "?"}:${String(g?.attributes?.key ?? g?.attributes?.iso_a2 ?? "")}`;
+            }),
+          };
+        }, pts.MA!);
+      throw new Error(
+        `${(err as Error).message}\n\nDiagnostics: points before ${JSON.stringify(pts)}, after ${JSON.stringify(
+          after,
+        )}; map ${JSON.stringify(probe)}; page errors ${JSON.stringify(pageErrors)}`,
+        { cause: err },
+      );
+    }
     expect(await builds()).toBe(before);
   });
 });

@@ -21,7 +21,7 @@ import { CommodityIcon } from "@/features/origins/CommodityIcon";
 import { formatMeasure } from "@/features/origins/model";
 import { NonCountryList, PartnerTable } from "@/features/origins/PartnerTable";
 import { describeDataError } from "@/services/data/errors";
-import { findDataset, useManifest } from "@/services/data/queries";
+import { familySnapshot, findDataset, useManifest } from "@/services/data/queries";
 import { useAppStore } from "@/state/store";
 import { hhiOption, monthCompareOption, partnerMonthsOption, trendOption, yoyOption } from "./charts";
 import { likeForLikeText, type MonthSummary, type SeasonalModel } from "./model";
@@ -293,9 +293,9 @@ function DataHandling({ model }: { model: SeasonalModel }) {
       </details>
       {dataset && (
         <p className="control-hint">
-          HMRC Overseas Trade Statistics (S01), retrieved {dataset.retrieval.retrievedAt.slice(0, 10)};
-          snapshot {manifest.data?.snapshotId}. Code history derived by the pipeline from the same cached
-          responses.
+          HMRC Overseas Trade Statistics (S01), retrieved {dataset.retrieval.retrievedAt.slice(0, 10)}; trade
+          snapshot {familySnapshot(manifest.data, "trade")}. Code history derived by the pipeline from the
+          same cached responses.
         </p>
       )}
       <button type="button" className="text-btn" onClick={() => openOverlay("evidence")}>

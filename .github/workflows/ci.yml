@@ -42,6 +42,11 @@ jobs:
         env:
           VITE_ARCGIS_ASSETS: local
 
+      # Second build with a placeholder key (.env.e2e-basemap) for the basemap choice tests, which
+      # stub the Esri styles service; the real key is never used in CI tests.
+      - name: Build for basemap tests
+        run: npm run build:e2e-basemap
+
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 

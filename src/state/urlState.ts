@@ -1,4 +1,10 @@
 import { DEFAULT_MODULE, isModuleId, type ModuleId } from "@/app/modules";
+import {
+  DEFAULT_STORE_LAYERS,
+  STORE_LAYERS,
+  type ProvisionMeasure,
+  type StoreLayer,
+} from "@/analysis/retail";
 
 /** Overlays that can be deep-linked (SH-06 Evidence page, Help). */
 export const OVERLAYS = ["none", "evidence", "help"] as const;
@@ -11,6 +17,11 @@ export const DEFAULT_COMMODITY = "tomatoes";
 /** Seasonal heatmap colour (SS-04/SS-05): share of the month, amount, or change vs the comparison year. */
 export const HEATMAP_MODES = ["share", "amount", "change"] as const;
 export type HeatmapMode = (typeof HEATMAP_MODES)[number];
+/** Council layer in UK Food Access (SM-06): a provision measure, or off. */
+export type CouncilLayer = ProvisionMeasure | "off";
+/** Curated basemaps (SH-08). */
+export const BASEMAP_IDS = ["dark", "light", "imagery"] as const;
+export type BasemapId = (typeof BASEMAP_IDS)[number];
 
 /** State mirrored in the query string (ADR-13, SH-04). */
 export interface UrlState {
@@ -30,6 +41,13 @@ export interface UrlState {
   compareYear: number | null;
   compareMonth: number | null;
   heatmap: HeatmapMode;
+  /** UK Food Access (SM-03): store layers shown, retailers shown (null = all), council layer, selected store. */
+  storeLayers: StoreLayer[];
+  retailers: string[] | null;
+  councilLayer: CouncilLayer;
+  store: number | null;
+  /** Basemap style (SH-08). */
+  basemap: BasemapId;
 }
 
 export const DEFAULT_URL_STATE: UrlState = {
@@ -45,7 +63,42 @@ export const DEFAULT_URL_STATE: UrlState = {
   compareYear: null,
   compareMonth: null,
   heatmap: "share",
+  storeLayers: [...DEFAULT_STORE_LAYERS],
+  retailers: null,
+  councilLayer: "supermarkets",
+  store: null,
+  basemap: "dark",
 };
+
+const LAYER_PARAM: Record<StoreLayer, string> = { supermarket: "s", convenience: "c", other: "o" };
+const COUNCIL_PARAM: Record<CouncilLayer, string> = {
+  supermarkets: "s",
+  convenience: "c",
+  all: "a",
+  off: "off",
+};
+const RETAILER_NAME = /^[\p{L}\p{N} &'.()-]{1,60}$/u;
+const MAX_RETAILERS = 60;
+
+function parseStoreLayers(v: string | null): StoreLayer[] {
+  if (v === null) return [...DEFAULT_STORE_LAYERS];
+  if (v === "none") return [];
+  const codes = v.split(",");
+  return STORE_LAYERS.filter((l) => codes.includes(LAYER_PARAM[l]));
+}
+
+function serialiseStoreLayers(layers: readonly StoreLayer[]): string | null {
+  const sorted = STORE_LAYERS.filter((l) => layers.includes(l));
+  if (sorted.join() === [...DEFAULT_STORE_LAYERS].join()) return null;
+  return sorted.length ? sorted.map((l) => LAYER_PARAM[l]).join(",") : "none";
+}
+
+function parseRetailers(v: string | null): string[] | null {
+  if (v === null) return null;
+  if (v === "") return [];
+  const names = [...new Set(v.split(",").map((s) => s.trim()))].filter((s) => RETAILER_NAME.test(s));
+  return names.slice(0, MAX_RETAILERS).sort();
+}
 
 const PERIOD_PARAM: Record<PeriodMode, string> = { rolling12: "r12", month: "m", year: "y" };
 const COMMODITY_ID = /^[a-z][a-z0-9-]{0,39}$/;
@@ -73,6 +126,11 @@ export function parseUrlState(search: string): UrlState {
   const cy = params.get("cy");
   const cm = params.get("cm");
   const hm = params.get("hm");
+  const sl = params.get("sl");
+  const rt = params.get("rt");
+  const cl = params.get("cl");
+  const st = params.get("st");
+  const bm = params.get("bm");
 
   const monthNum = mo !== null && /^\d{1,2}$/.test(mo) ? Number(mo) : NaN;
   const yearNum = y !== null && /^\d{4}$/.test(y) ? Number(y) : NaN;
@@ -99,6 +157,13 @@ export function parseUrlState(search: string): UrlState {
         ? compareMonthNum
         : null,
     heatmap: (HEATMAP_MODES as readonly string[]).includes(hm ?? "") ? (hm as HeatmapMode) : "share",
+    storeLayers: parseStoreLayers(sl),
+    retailers: parseRetailers(rt),
+    councilLayer:
+      (Object.keys(COUNCIL_PARAM) as CouncilLayer[]).find((k) => COUNCIL_PARAM[k] === cl) ??
+      DEFAULT_URL_STATE.councilLayer,
+    store: st !== null && /^\d{1,12}$/.test(st) ? Number(st) : null,
+    basemap: (BASEMAP_IDS as readonly string[]).includes(bm ?? "") ? (bm as BasemapId) : "dark",
   };
 }
 
@@ -115,6 +180,13 @@ export function serializeUrlState(state: UrlState): string {
   if (state.compareYear !== null) params.set("cy", String(state.compareYear));
   if (state.compareMonth !== null) params.set("cm", String(state.compareMonth));
   if (state.heatmap !== DEFAULT_URL_STATE.heatmap) params.set("hm", state.heatmap);
+  const sl = serialiseStoreLayers(state.storeLayers);
+  if (sl !== null) params.set("sl", sl);
+  if (state.retailers !== null) params.set("rt", [...state.retailers].sort().join(","));
+  if (state.councilLayer !== DEFAULT_URL_STATE.councilLayer)
+    params.set("cl", COUNCIL_PARAM[state.councilLayer]);
+  if (state.store !== null) params.set("st", String(state.store));
+  if (state.basemap !== DEFAULT_URL_STATE.basemap) params.set("bm", state.basemap);
   if (state.lad !== null) params.set("lad", state.lad);
   if (state.overlay !== "none") params.set("view", state.overlay);
   const qs = params.toString();

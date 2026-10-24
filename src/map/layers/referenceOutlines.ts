@@ -2,7 +2,9 @@ import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer";
 import UniqueValueRenderer from "@arcgis/core/renderers/UniqueValueRenderer";
 import UniqueValueInfo from "@arcgis/core/renderers/support/UniqueValueInfo";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
-import type { AppState } from "@/state/store";
+import { hexToRgb } from "@/analysis/colour";
+import { selectMapColourStyle, type AppState } from "@/state/store";
+import { MAP_COLOURS, type MapStyle } from "@/styles/palette";
 import { BASEMAP_STATUS_ID, REFERENCE_LAYER_ID } from "../layerIds";
 import type { LayerController, LayerStatusReporter, ViewLike } from "../types";
 
@@ -11,16 +13,23 @@ const TEAL: [number, number, number] = [10, 68, 74];
 const CYAN: [number, number, number] = [73, 234, 216];
 const GREEN: [number, number, number] = [161, 235, 131];
 
-function buildRenderer(withBasemap: boolean): UniqueValueRenderer {
+/** "offline" = no Esri basemap (no key, or the basemap failed): the outlines are the map. */
+type OutlineMode = MapStyle | "offline";
+
+function buildRenderer(mode: OutlineMode): UniqueValueRenderer {
+  const offline = mode === "offline";
+  const colours = MAP_COLOURS[offline ? "dark" : mode];
+  const line = offline ? CYAN : hexToRgb(colours.countryLine);
+  const uk = offline ? GREEN : hexToRgb(colours.ukLine);
   const countryFill = new SimpleFillSymbol({
-    color: [...TEAL, withBasemap ? 0 : 0.55],
-    outline: { color: [...CYAN, withBasemap ? 0.22 : 0.42], width: 0.6 },
+    color: [...TEAL, offline ? 0.55 : 0],
+    outline: { color: [...line, offline ? 0.42 : colours.countryLineAlpha], width: 0.6 },
   });
-  // The UK is the focal geography of every module, so it is outlined in green.
+  // The UK is the focal geography of every module, so it is outlined (green on dark styles).
   // This is emphasis for orientation, not a data encoding.
   const ukFill = new SimpleFillSymbol({
-    color: [...TEAL, withBasemap ? 0.12 : 0.85],
-    outline: { color: [...GREEN, 0.95], width: 1.3 },
+    color: [...TEAL, offline ? 0.85 : mode === "light" ? 0.06 : 0.12],
+    outline: { color: [...uk, 0.95], width: 1.3 },
   });
   return new UniqueValueRenderer({
     field: "name",
@@ -35,9 +44,9 @@ const OFFLINE_GLOW = "bloom(0.9, 0.4px, 0.2)";
 
 /**
  * Natural Earth 1:110m country outlines (S24) used as the offline base map, and as subtle
- * outlines over the Esri basemap when a key is configured. If the Esri basemap fails to
- * load, the outlines switch to the offline style so the map is still legible.
- * Display-only reference geometry.
+ * outlines over the Esri basemap when a key is configured, coloured for the basemap style
+ * (SH-08). If the Esri basemap fails to load, the outlines switch to the offline style so the
+ * map is still legible, and back when another style loads. Display-only reference geometry.
  */
 export class ReferenceOutlinesController implements LayerController {
   readonly id = REFERENCE_LAYER_ID;
@@ -47,10 +56,11 @@ export class ReferenceOutlinesController implements LayerController {
   private url: string | null = null;
   private failure: string | null = null;
   private readonly withBasemap: boolean;
-  private basemapFailed = false;
+  private mode: OutlineMode;
 
   constructor(withBasemap: boolean) {
     this.withBasemap = withBasemap;
+    this.mode = withBasemap ? "dark" : "offline";
   }
 
   activate(view: ViewLike, report: LayerStatusReporter): void {
@@ -75,12 +85,14 @@ export class ReferenceOutlinesController implements LayerController {
   }
 
   update(state: AppState): void {
-    if (!this.withBasemap || this.basemapFailed) return;
-    if (state.layerStatus[BASEMAP_STATUS_ID]?.status !== "error") return;
-    this.basemapFailed = true;
+    if (!this.withBasemap) return;
+    const failed = state.layerStatus[BASEMAP_STATUS_ID]?.status === "error";
+    const mode: OutlineMode = failed ? "offline" : selectMapColourStyle(state);
+    if (mode === this.mode) return;
+    this.mode = mode;
     if (this.layer) {
-      this.layer.renderer = buildRenderer(false);
-      this.layer.effect = OFFLINE_GLOW;
+      this.layer.renderer = buildRenderer(mode);
+      this.layer.effect = mode === "offline" ? OFFLINE_GLOW : null;
     }
   }
 
@@ -92,11 +104,6 @@ export class ReferenceOutlinesController implements LayerController {
     this.layer = null;
     this.view = null;
     this.report = null;
-  }
-
-  /** True while the outlines are drawn over a working Esri basemap. */
-  private get overBasemap(): boolean {
-    return this.withBasemap && !this.basemapFailed;
   }
 
   private addLayer(): void {
@@ -114,8 +121,8 @@ export class ReferenceOutlinesController implements LayerController {
       title: "Country outlines (Natural Earth 1:110m)",
       copyright: "Made with Natural Earth",
       definitionExpression: "name <> 'Antarctica'",
-      renderer: buildRenderer(this.overBasemap),
-      effect: this.overBasemap ? null : OFFLINE_GLOW,
+      renderer: buildRenderer(this.mode),
+      effect: this.mode === "offline" ? OFFLINE_GLOW : null,
       popupEnabled: false,
       legendEnabled: false,
       listMode: "hide",

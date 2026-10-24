@@ -16,9 +16,10 @@ import {
   useSystemReducedMotion,
   useUrlSync,
 } from "@/state/hooks";
-import { selectReducedMotion, useAppStore } from "@/state/store";
+import { selectMapColourStyle, selectReducedMotion, useAppStore } from "@/state/store";
 import { MapLoading } from "@/components/maps/MapLoading";
 import { OriginsLegend, OriginsMapSync, OriginsTooltip } from "@/features/origins/OriginsMapExtras";
+import { AccessMapExtrasLazy } from "@/features/access/lazy";
 import { SeasonalMapExtrasLazy } from "@/features/seasonal/lazy";
 import { ErrorBoundary } from "./ErrorBoundary";
 
@@ -39,9 +40,10 @@ export function App() {
   const mobileNavOpen = useAppStore((s) => s.mobileNavOpen);
   const closeMobileNav = useAppStore((s) => s.toggleMobileNav);
   const module = useAppStore((s) => s.module);
+  const mapStyle = useAppStore(selectMapColourStyle);
 
   return (
-    <div className="app" data-motion={reduced ? "reduced" : "full"}>
+    <div className="app" data-motion={reduced ? "reduced" : "full"} data-map-style={mapStyle}>
       <a className="skip-link" href="#module-nav">
         Skip to navigation
       </a>
@@ -79,6 +81,11 @@ export function App() {
         {module === "seasonal" && (
           <ErrorBoundary region="Map legend">
             <SeasonalMapExtrasLazy />
+          </ErrorBoundary>
+        )}
+        {module === "access" && (
+          <ErrorBoundary region="Map legend">
+            <AccessMapExtrasLazy />
           </ErrorBoundary>
         )}
         <ErrorBoundary region="Timeline">

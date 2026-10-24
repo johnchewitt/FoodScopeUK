@@ -47,6 +47,38 @@ beforeEach(() => {
 });
 
 describe("MapController", () => {
+  it("never updates a layer inside another layer's update; nested store changes run afterwards", () => {
+    const view = fakeView();
+    let report: LayerStatusReporter = () => undefined;
+    let depth = 0;
+    let maxDepth = 0;
+    const order: string[] = [];
+    const reporting: LayerController = {
+      id: "reporting",
+      activate: (_v, r) => (report = r),
+      deactivate: () => undefined,
+      update: (state) => {
+        depth++;
+        maxDepth = Math.max(maxDepth, depth);
+        order.push(`a:${state.layerStatus.reporting?.status ?? "none"}`);
+        // Reports once its module opens, as a layer does when it creates its layer inside update().
+        if (state.module === "access" && !state.layerStatus.reporting) report("loading");
+        depth--;
+      },
+    };
+    const after: LayerController = {
+      id: "after",
+      activate: () => undefined,
+      deactivate: () => undefined,
+      update: (state) => order.push(`b:${state.layerStatus.reporting?.status ?? "none"}`),
+    };
+    new MapController(useAppStore, [reporting, after]).attach(view);
+    order.length = 0;
+    useAppStore.getState().setModule("access");
+    expect(maxDepth).toBe(1);
+    expect(order).toEqual(["a:none", "b:none", "a:loading", "b:loading"]);
+  });
+
   it("activates layers and applies padding on attach", () => {
     const layer = fakeLayer();
     const view = fakeView();
