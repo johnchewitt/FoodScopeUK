@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "id": "ons.lad25_bfe",
+      "file": "LAD_MAY_2025_UK_BFE_V2_7705143053794342073.zip",
+      "sourceId": "S14",
+      "description": "Local Authority Districts (May 2025) Boundaries UK BFE (V2): FileGDB, layer LAD_MAY_2025_UK_BFE_V2, 361 MultiPolygons, EPSG:27700, full resolution to the extent of the realm",
+      "publisherUrl": "https://geoportal.statistics.gov.uk/",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025",
+      "providedBy": "John Hewitt (project owner), attached to the build session",
+      "originalName": "LAD_MAY_2025_UK_BFE_V2_7705143053794342073.zip",
+      "receivedAt": "2026-10-24T07:52:16Z",
+      "notes": "Downloaded by John from the ONS Open Geography Portal (FileGDB). Used to assign stores to councils; display geometry is the clipped BGC edition fetched from ONS (pipeline/raw/ons/). Stored byte-for-byte; never edited.",
+      "bytes": 31973514,
+      "sha256": "1d1e35faf0037d5a95e1124761adb49346c64257c05feb5fcbc2850a6451d9ed"
+    }
+  ]
+}
