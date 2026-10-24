@@ -116,7 +116,7 @@ Light grey's land colour could not be read from the sandbox, so the light set wa
 | `cd pipeline && uv run pytest` | **105 passed** (104 earlier + displayed-count comparison) |
 | `uv run foodscope-pipeline build-local --snapshot 2026-10-24` | Rebuilt offline; data files byte-identical (`git diff` shows only the two S12 report files) |
 | `VITE_ARCGIS_ASSETS=local npm run build` and `npm run build:e2e-basemap` | Both succeed |
-| `npm run e2e` | **Final run in progress** (61 tests: 47 earlier, 8 Food Access, 6 basemap). An earlier run of this branch passed all 13 new tests, and 38 of the earlier tests before it was stopped for a code change. The result will be recorded here |
+| `npm run e2e` | **61 passed** (11.3 min): the 47 earlier tests, 8 Food Access tests and 6 basemap tests (project `basemap`, placeholder-key build) |
 | Bundle | - **Start-up JS** (local-assets build, same chunks as CDN): 864.4 kB, 273.6 kB gzip, over 37 files. The Stage 3 report measured 842.4 kB / 265.0 kB on `main`; PRs #6 and #7 are in between, so this is not a like-for-like delta.
 - **Food Access chunk:** 45.0 kB (13.4 kB gzip), loaded only when the module opens. Its validators and store model are inside it. |
 
@@ -138,7 +138,12 @@ New E2E tests:
   - axe on dark and light grey;
   - no console errors.
 
-Screenshots (offline outline map; the live site adds the Esri basemap): [national](stage-4/access-national-1600.png), [local scale](stage-4/access-local-1600.png), [light grey with the stub basemap](stage-4/origins-light-stub-1920.png).
+Screenshots:
+- [national scale, offline outline map](stage-4/access-national-1600.png);
+- [local scale with a store card and straight-line proximity](stage-4/access-local-proximity-1600.png);
+- [light grey colour set over the stub basemap, Manchester selected](stage-4/access-light-stub-1600.png).
+
+The stub basemap is one flat tile; the live site shows the real Esri styles.
 
 ## Not verified, and why
 
