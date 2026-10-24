@@ -32,6 +32,8 @@
 
 **Map plumbing found in testing.** When the store data arrived after the map was ready, a layer's "loading" report inside its own update re-entered the update: "Maximum call stack size exceeded". This happened once in E2E. `MapController` now defers a store change made during a sync until the sync ends (unit test), and the layer is assigned before it reports. An E2E test delays the stores file by 6 s to cover this order.
 
+**Hover fix found on CI.** The Food Origins hover test (from the post-Stage 3 review) failed twice on CI for this PR: after the pointer moved from Turkey to Morocco, the tooltip stayed on Turkey. It passed locally in Chrome and in the headless shell. Diagnostics added to the test showed the camera unchanged, nothing covering the map, and the map's own hit test at Morocco's point returning Morocco. Hover hit tests run asynchronously and can resolve out of order, so a slower one for the earlier position overwrote the newer result. Each hover hit test now carries a sequence number, so only the latest can set the hover, and leaving the map cancels any in flight. This applies to the trade and Food Access layers. CI then passed: **61 of 61 E2E** (19.1 min), with typecheck, lint, unit tests, build and the pipeline all green. This is a likely cause of the intermittent CI failures in B29.
+
 ## Exit criteria
 
 ### Filter counts match the pipeline
