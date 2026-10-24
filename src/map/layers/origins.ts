@@ -151,6 +151,8 @@ export class OriginsLayersController implements LayerController {
   private style: MapStyle = "dark";
   private visible = false;
   private hoverFrame = 0;
+  /** Hit tests can resolve out of order: only the latest one may set the hover (see onPointerMove). */
+  private hoverSeq = 0;
   private lastHover: string | null = null;
   /** One graphic per connection, reused across months so widths can ease. */
   private flowGraphics = new Map<string, Graphic>();
@@ -184,7 +186,12 @@ export class OriginsLayersController implements LayerController {
     if (view.on && view.hitTest) {
       this.handles.push(view.on("click", (e) => void this.onClick(e)));
       this.handles.push(view.on("pointer-move", (e) => this.onPointerMove(e)));
-      this.handles.push(view.on("pointer-leave", () => this.clearHover()));
+      this.handles.push(
+        view.on("pointer-leave", () => {
+          this.hoverSeq++;
+          this.clearHover();
+        }),
+      );
     }
   }
 
@@ -496,7 +503,11 @@ export class OriginsLayersController implements LayerController {
     const { x, y } = e;
     this.hoverFrame = requestAnimationFrame(() => {
       this.hoverFrame = 0;
+      // A slower hit test for an earlier position must not overwrite a newer one (seen on CI: the
+      // tooltip stayed on the previous partner after the pointer moved on).
+      const seq = ++this.hoverSeq;
       void view.hitTest!({ x, y }, { include: this.hitLayers() }).then(({ results }) => {
+        if (seq !== this.hoverSeq || !this.visible) return;
         const hit = partnerFromHits(results, this.hitLayers());
         if (!hit || hit.key === "__uk") return this.clearHover();
         this.lastHover = hit.key;

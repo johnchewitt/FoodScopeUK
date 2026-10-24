@@ -266,6 +266,8 @@ export class AccessLayersController implements LayerController {
   private hoverHighlight: { remove(): void } | null = null;
   private highlightedKey: string | null = null;
   private hoverFrame = 0;
+  /** Hit tests can resolve out of order: only the latest one may set the hover (see onPointerMove). */
+  private hoverSeq = 0;
   private lastHover: string | null = null;
   private visible = false;
   private picking = false;
@@ -284,7 +286,12 @@ export class AccessLayersController implements LayerController {
     if (view.on && view.hitTest) {
       this.handles.push(view.on("click", (e) => void this.onClick(e)));
       this.handles.push(view.on("pointer-move", (e) => this.onPointerMove(e)));
-      this.handles.push(view.on("pointer-leave", () => this.clearHover()));
+      this.handles.push(
+        view.on("pointer-leave", () => {
+          this.hoverSeq++;
+          this.clearHover();
+        }),
+      );
     }
   }
 
@@ -529,7 +536,11 @@ export class AccessLayersController implements LayerController {
     const { x, y } = e;
     this.hoverFrame = requestAnimationFrame(() => {
       this.hoverFrame = 0;
+      // A slower hit test for an earlier position must not overwrite a newer one (seen on CI: the
+      // tooltip stayed on the previous partner after the pointer moved on).
+      const seq = ++this.hoverSeq;
       void view.hitTest!({ x, y }, { include: this.hitLayers() }).then(({ results }) => {
+        if (seq !== this.hoverSeq || !this.visible) return;
         const hit = this.hitFrom(results);
         if (!hit) return this.clearHover();
         const id =
