@@ -2303,6 +2303,7 @@
   margin-right: 2px;
   border: 1.5px dashed var(--fs-map-proximity);
   border-radius: 50%;
+  background: var(--fs-map-sample-ground);
   vertical-align: -2px;
 }
 

@@ -75,6 +75,8 @@ export interface MapColours {
  * Light grey basemap sequential ramp: one teal hue (OKLCH h ≈ 205°), lightness 0.64 → 0.29.
  * Dataviz validator, ordinal, against #d6d6d6 and #f0f0f0 (bracketing the light grey land):
  * monotone lightness, adjacent ΔL ≥ 0.06, single hue (spread 10°), lightest class 2.22:1 / 2.84:1.
+ * Rechecked against the land measured from the live style (24 Oct 2026): #f4f4f4 below zoom 7
+ * (2.94:1), #efefef from zoom 7 (2.81:1), water #cfd3d4 (2.14:1).
  */
 export const LIGHT_SEQ = ["#3b9ca7", "#1e8691", "#00717c", "#005d68", "#004954", "#003641"] as const;
 
@@ -100,7 +102,10 @@ const DARK: MapColours = {
   clusterFill: BRAND.navy,
   clusterRing: BRAND.text,
   clusterText: BRAND.text,
-  proximity: BRAND.cyan,
+  // Pink, not cyan: cyan matched the council outlines and was too close to the green selection
+  // (normal-vision ΔE 11.8). Against every overlay colour, the store symbols and the ramp ends:
+  // normal ΔE ≥ 16.8, CVD ≥ 8.9, 4.55:1 on #3d3d3d (live check, 24 Oct 2026).
+  proximity: "#f184c0",
   proximityPoint: BRAND.text,
   proximityPointOutline: BRAND.navy,
 };
@@ -134,7 +139,9 @@ export const MAP_COLOURS: Record<MapStyle, MapColours> = {
     clusterFill: BRAND.navy,
     clusterRing: "#ffffff",
     clusterText: "#ffffff",
-    proximity: "#00717c",
+    // Magenta (was ramp teal #00717c: ΔE 14.8 from the green selection, and the same as class 2).
+    // Normal ΔE ≥ 17.5, CVD ≥ 9.2 against overlays, symbols and ramp ends; 6.75:1 on #efefef.
+    proximity: "#9c0a73",
     proximityPoint: BRAND.navy,
     proximityPointOutline: "#ffffff",
   },
