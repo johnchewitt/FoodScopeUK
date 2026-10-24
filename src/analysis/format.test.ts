@@ -5,6 +5,8 @@ import {
   formatGbp,
   formatHhi,
   formatKm,
+  formatPer10k,
+  formatPerKm2,
   formatPercentagePoints,
   formatPopulation,
   formatShare,
@@ -66,5 +68,22 @@ describe("other formats", () => {
     expect(formatByUnit("Belfast", "name")).toBe("Belfast");
     expect(formatByUnit(null, "t")).toBe("—");
     expect(formatByUnit(177, "features")).toBe("177");
+  });
+});
+
+describe("retail provision formats (spec §6.3, §6.4)", () => {
+  it("shows per-10,000 rates to two decimals and land density with a floor", () => {
+    expect(formatPer10k(1.0321)).toBe("1.03");
+    expect(formatPer10k(0)).toBe("0.00");
+    expect(formatPer10k(null)).toBe("—");
+    expect(formatPerKm2(0.004)).toBe("< 0.01");
+    expect(formatPerKm2(0)).toBe("0.00");
+    expect(formatPerKm2(12.114)).toBe("12.11");
+  });
+
+  it("formats by the new units, residents to the nearest 100", () => {
+    expect(formatByUnit(1.0321, "stores per 10,000 residents")).toBe("1.03");
+    expect(formatByUnit(0.4, "stores per km²")).toBe("0.40");
+    expect(formatByUnit(351_927, "residents")).toBe("351,900");
   });
 });

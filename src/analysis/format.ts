@@ -78,6 +78,19 @@ export function formatPopulation(n: number | null | undefined, scale: "small_are
   return nf(0).format(Math.round(n / step) * step);
 }
 
+/** Stores per 10,000 residents: two decimal places (the fixed class breaks are at 0.05 steps). */
+export function formatPer10k(v: number | null | undefined): string {
+  if (!isFiniteNumber(v)) return "—";
+  return nf(2, 2).format(v);
+}
+
+/** Stores per km² of land: two decimal places; positive values below 0.01 show "< 0.01". */
+export function formatPerKm2(v: number | null | undefined): string {
+  if (!isFiniteNumber(v)) return "—";
+  if (v > 0 && v < 0.005) return "< 0.01";
+  return nf(2, 2).format(v);
+}
+
 /** Plain integer counts. */
 export function formatCount(n: number | null | undefined): string {
   if (!isFiniteNumber(n)) return "—";
@@ -103,6 +116,12 @@ export function formatByUnit(value: number | string | null, unit: string): strin
       return formatHhi(value);
     case "km (straight-line)":
       return formatKm(value);
+    case "stores per 10,000 residents":
+      return formatPer10k(value);
+    case "stores per km²":
+      return formatPerKm2(value);
+    case "residents":
+      return formatPopulation(value, "authority");
     default:
       return formatCount(value);
   }
