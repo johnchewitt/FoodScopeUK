@@ -9,6 +9,10 @@
 
   His reply to the proposed approach: "i agree with your suggestions and let the pipeline fetch the mid-year estimates".
 - Scope: the LAD and GEOLYTIX items moved out of Stage 3 (roadmap §5.3), gates G5 and G7, and decision D5. **Stage 4 itself is not started**: no app code changes. The outputs are built and committed, but they are not yet in the app's data index.
+- **John's decisions on the open questions (24 Oct 2026)**, applied to the outputs in this report:
+  - "leave out wholesale stores and non-food stores": 116 stores (Costco 29, Makro 23, M&S Outlet 33, Asda Living 30, M&S Clothing 1) are not published;
+  - "show the 125 Channel Islands and Isle of Man stores on the map without a council": they are in the store layer with no council (`lad: null`, `councilMatch: "none"`, `crownDependency` named) and in no council count;
+  - "each kind of data keep its own newest date, so trade and stores refresh on their own schedules": recorded for Stage 4, which changes `publish` to take each dataset family from its newest snapshot (ADR in Stage 4).
 
 ## What was built
 
@@ -40,7 +44,7 @@ The outputs come from `foodscope-pipeline build-local --snapshot 2026-10-24`, wh
 | File | Contents | Size (gzip) |
 |---|---|---|
 | `lad-2025-uk.geojson` | 361 councils for display. Steps: BGC → coverage clean (1 cm) → coverage simplify at 150 m (EPSG:27700) → WGS84 at 6 dp. Properties: `code`, `name`, `nameWelsh`, `nation` | 2.7 MB (0.87 MB) |
-| `stores.geojson` | 19,174 stores in UK councils. Properties: GEOLYTIX `id`, `retailer`, `fascia`, `name`, `address`, `town` and `postcode`, plus `sizeBand`, `storeClass`, `format`, `lad`, `councilMatch` and `coordinateSource` | 8.1 MB (0.96 MB) |
+| `stores.geojson` | 19,183 stores: 19,058 in UK councils and 125 in the Crown Dependencies (no council). Properties: GEOLYTIX `id`, `retailer`, `fascia`, `name`, `address`, `town` and `postcode`, plus `sizeBand`, `storeClass`, `format`, `lad`, `councilMatch`, `crownDependency` and `coordinateSource` | 8.1 MB (0.96 MB) |
 | `lad-indicators.json` | Per council: mid-2025 population, land area, a comparability note, and store counts for each size band × format pair (28 columns) | 71 kB (12 kB) |
 | `*.provenance.json` | One record per output in the manifest's dataset shape, validated against `schemas/manifest.schema.json` | — |
 
@@ -61,7 +65,8 @@ Every lost row has a reason.
 | Read GEOLYTIX rows | 19,299 | 19,299 | — |
 | Classify (D5) | 19,299 | 19,299 | — (an unknown size band would stop the build) |
 | Locate | 19,299 | 19,299 | — (1 store placed from British National Grid) |
-| Assign to a council | 19,299 | 19,174 | 125 Crown Dependency stores (Guernsey 30, Jersey 51, Isle of Man 44) |
+| Assign to a council | 19,299 | 19,299 | — (19,174 in a council; 125 in the Crown Dependencies, kept with no council: Guernsey 30, Jersey 51, Isle of Man 44) |
+| Leave out formats (John's decision) | 19,299 | 19,183 | 116: wholesale and membership 52, mainly non-food 64 |
 | Population rows → councils | 361 | 361 | — |
 | S12 councils → May 2025 councils | 376 | 374 | 2 (Channel Islands, Isle of Man) |
 
@@ -80,10 +85,12 @@ Stores in UK councils:
 | Motorway services | 86 | — |
 | Station and airport | 47 | — |
 | Hospital | 64 | — |
-| Wholesale and membership (Costco 29, Makro 23): **to confirm** | — | 52 |
-| Mainly non-food (M&S Outlet 33, Asda Living 30, M&S Clothing 1): **to confirm** | — | 64 |
+| Wholesale and membership (Costco 29, Makro 23): **left out** (John, 24 Oct 2026) | — | (52) |
+| Mainly non-food (M&S Outlet 33, Asda Living 30, M&S Clothing 1): **left out** (John, 24 Oct 2026) | — | (64) |
 
-Size bands in UK councils:
+The Crown Dependencies add 125 published stores with no council: 100 convenience and 3 forecourt stores under 280 m², and 22 supermarkets.
+
+Size bands in UK councils, before leaving out the 116 stores:
 
 | Band | Stores |
 |---|---|
@@ -131,7 +138,7 @@ The class follows the size band as delivered; the QA report lists these cases.
 
 ## Checks on the outputs
 
-- **Independent re-assignment.** I re-assigned every store with GEOLYTIX's own BNG coordinates (no reprojection) and `contains_xy` on the BFE polygons, in a separate script outside the pipeline (not committed). 19,172 of the 19,174 assignments agree. The other 2 are the two shore-front stores below, which a strict inside test leaves unassigned. Belfast has 142 stores and Manchester 152 by both methods.
+- **Independent re-assignment.** I re-assigned every store with GEOLYTIX's own BNG coordinates (no reprojection) and `contains_xy` on the BFE polygons, in a separate script outside the pipeline (not committed). 19,172 of the 19,174 assignments agree. The other 2 are the two shore-front stores below, which a strict inside test leaves unassigned. Belfast has 142 stores and Manchester 152 by both methods (140 and 150 published, after leaving out wholesale and non-food stores).
 - **Population by nation.** Equal to ONS MYE1: England 58,834,812, Wales 3,175,181, Scotland 5,545,500, Northern Ireland 1,928,446.
 - **Shore-front stores.** Two Northern Ireland stores lie 14 m and 20 m outside every council boundary line: Spar Carnlough (Harbour Road) and Spar Whiteabbey (Shore Road). They take the nearest council (Mid and East Antrim; Antrim and Newtownabbey) and are flagged `councilMatch: "nearest"`. The rule allows up to 50 m.
 - **Boundaries for display:**
@@ -149,7 +156,7 @@ The class follows the size band as delivered; the QA report lists these cases.
 
 S12 counts every GEOLYTIX format of its time, plus 52 stores from retailers GEOLYTIX did not track, on the councils of the time. To compare like with like:
 - S12 councils were mapped to May 2025 councils: 355 have the same code, 17 merged in 2023 (via the ONS lookup), and 2 changed code in 2025.
-- Our side counts every store in each council.
+- Our side counts every store in each council, including the wholesale and non-food stores the app leaves out, because S12 counts them too.
 
 | | Ours (v46, June 2026) | S12 (March 2024) | Difference |
 |---|---|---|---|
@@ -205,10 +212,8 @@ This report compares all-format totals and size bands, the levels at which S12 a
 
 ## Open questions for John
 
-1. **Wholesale (Costco, Makro) and mainly non-food (M&S Outlet, Asda Living, M&S Clothing).** Should these appear in any supermarket view? They are flagged and outside the default view until you decide.
-2. **Publishing in Stage 4 (ADR-0020).** `publish` takes only the newest snapshot folder, so a local snapshot dated after the trade snapshot would hide the trade data. The options are:
-   - rebuild trade into each new snapshot; or
-   - compose the manifest from the newest snapshot of each dataset family (recommended, since the sources refresh on different cadences).
+All three were answered on 24 Oct 2026 (top of this report):
 
-   Either way it needs an ADR, and the Evidence page and header wording change with it.
-3. **Crown Dependency stores (125).** These are outside every UK council and excluded. Should Stage 4 show them on the map, unassigned, or leave them out?
+1. Wholesale and mainly non-food stores: left out of the app.
+2. Publishing: each kind of data keeps its own newest date; Stage 4 implements it with an ADR.
+3. Crown Dependency stores: shown on the map without a council.

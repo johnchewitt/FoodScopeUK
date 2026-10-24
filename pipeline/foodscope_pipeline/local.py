@@ -40,7 +40,8 @@ from foodscope_pipeline.sources.ons_mye import read_population
 from foodscope_pipeline.sources.ons_supermarkets import NOTES_GROUP_LABELS, RETAILER_TYPES, read_s12
 from foodscope_pipeline.sources.provided import load_provided
 from foodscope_pipeline.stores import (
-    REJECT_NO_LOCATION, assign, bng_residuals, classify, load_store_classes, locate, postcode_area,
+    CROWN_DEPENDENCY_AREAS, REJECT_CROWN, REJECT_NO_LOCATION, assign, bng_residuals, classify, load_store_classes,
+    locate, postcode_area,
 )
 
 logger = logging.getLogger(__name__)
@@ -149,10 +150,23 @@ def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir:
     if outside_bounds:
         raise LocalBuildError(f"stores outside the UK box {UK_BOUNDS}: {outside_bounds[:10]}")
     assignment = assign(located, codes, bfe.geoms)
-    rejects = Counter(r for r in assignment.reasons if r is not None)
-    assigned = [(s, lad, m) for s, lad, m in zip(located, assignment.council, assignment.match, strict=True)
-                if lad is not None]
-    acc.record("stores.assign_council", len(located), len(assigned), dict(rejects))
+    # Crown Dependency stores stay on the map without a council (John, 24 Oct 2026); any other store
+    # outside every council is rejected.
+    on_map = []  # (store, council or None, councilMatch, Crown Dependency or None)
+    for s, lad, m, reason in zip(located, assignment.council, assignment.match, assignment.reasons, strict=True):
+        if lad is not None:
+            on_map.append((s, lad, m, None))
+        elif reason == REJECT_CROWN:
+            on_map.append((s, None, "none", CROWN_DEPENDENCY_AREAS[postcode_area(s.point.postcode)]))
+    rejects = Counter(r for r in assignment.reasons if r is not None and r != REJECT_CROWN)
+    acc.record("stores.assign_council", len(located), len(on_map), dict(rejects))
+    # Formats left out of the app (decision D5): wholesale and mainly non-food.
+    left_out = classes.left_out
+    published = [x for x in on_map if klass[x[0].point.id][2] not in left_out]
+    acc.record("stores.leave_out_formats", len(on_map), len(published),
+               dict(Counter(left_out[klass[x[0].point.id][2]] for x in on_map if klass[x[0].point.id][2] in left_out)))
+    assigned = [(s, lad, m) for s, lad, m, _ in published if lad is not None]
+    crown_on_map = Counter(cd for _, _, _, cd in published if cd is not None)
 
     # Population and land area (mid-2025, April 2024 boundaries) for May 2025 councils.
     population, uk_total = read_population(inputs.ons / mye_entry["file"])
@@ -229,7 +243,7 @@ def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir:
     boundaries_text = _feature_collection(boundary_features)
 
     store_features = []
-    for store, lad, match in sorted(assigned, key=lambda x: x[0].point.id):
+    for store, lad, match, crown in sorted(published, key=lambda x: x[0].point.id):
         p = store.point
         band, store_class, fmt = klass[p.id]
         store_features.append({
@@ -240,7 +254,7 @@ def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir:
                 "id": p.id, "retailer": p.retailer, "fascia": p.fascia, "name": p.store_name,
                 "address": p.add_one, "town": p.town, "postcode": p.postcode,
                 "sizeBand": band, "storeClass": store_class, "format": fmt, "lad": lad,
-                "councilMatch": match, "coordinateSource": store.source,
+                "councilMatch": match, "crownDependency": crown, "coordinateSource": store.source,
             },
         })
     stores_doc = {"type": "FeatureCollection", "features": store_features}
@@ -265,7 +279,7 @@ def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir:
             "edition": GEOLYTIX_EDITION,
             "sizeBands": [{k: b[k] for k in ("id", "label", "value", "storeClass")} for b in classes.size_bands],
             "storeClasses": classes.store_classes,
-            "formats": classes.formats,
+            "formats": [{k: f[k] for k in ("id", "label", "inDefaultView", "fascias")} for f in classes.published_formats],
             "groups": [{"sizeBand": b, "format": f} for b, f in classes.groups],
         },
         "councils": [
@@ -273,7 +287,8 @@ def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir:
              "landAreaKm2": council_pop[code][1], "note": council_pop[code][2], "stores": counts[code]}
             for code, name in zip(codes, bfe.names, strict=True)
         ],
-        "outsideCouncils": [{"reason": r, "stores": n} for r, n in sorted(rejects.items())],
+        "outsideCouncils": [{"reason": f"{name}: Crown Dependency, on the map with no UK council", "stores": n}
+                            for name, n in sorted(crown_on_map.items())],
     }
     _validate(indicators_doc, schema_dir, "lad-indicators")
     indicators_text = _compact(indicators_doc) + "\n"
@@ -305,7 +320,8 @@ def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir:
             "title": f"Grocery stores, GEOLYTIX {GEOLYTIX_EDITION}",
             "role": "statistical", "format": "geojson", "schemaId": "stores",
             "featureCount": len(store_features), "sourceIds": ["S11", "S14"],
-            "referencePeriod": "June 2026 (GEOLYTIX v46)", "coverage": "United Kingdom (Crown Dependency stores excluded)",
+            "referencePeriod": "June 2026 (GEOLYTIX v46)",
+            "coverage": "United Kingdom, plus Guernsey, Jersey and the Isle of Man (no UK council)",
             "provenance": "measured", "licence": geolytix_entry["licence"],
             "attribution": f"{geolytix_entry['attribution']}. Councils: {OGL_ONS}. {OS_NOTICE}",
             "expectedCadence": "quarterly",
@@ -313,10 +329,11 @@ def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir:
                 "method": "Files provided by the project owner, committed in pipeline/raw/ with checksums",
                 "source": f"{src(geolytix_path, geolytix_entry['sha256'])}; {src(bfe_path, bfe_entry['sha256'])}",
                 "retrievedAt": max(geolytix_entry["receivedAt"], bfe_entry["receivedAt"]),
-                "notes": ("Size band, class and format by decision D5 (pipeline config/store_classes.json). Council by "
-                          "point-in-polygon on the BFE edition in EPSG:27700; a store just outside every council "
-                          "(within 50 m) takes the nearest one and is flagged. Store positions are GEOLYTIX's; a "
-                          "store without WGS84 coordinates is placed from its British National Grid reference."),
+                "notes": ("Size band, class and format by decision D5 (pipeline config/store_classes.json); wholesale and "
+                          "mainly non-food stores left out. Council by point-in-polygon on the BFE edition in "
+                          "EPSG:27700; a store just outside every council (within 50 m) takes the nearest one and is "
+                          "flagged; Crown Dependency stores have no council. Store positions are GEOLYTIX's; a store "
+                          "without WGS84 coordinates is placed from its British National Grid reference."),
             },
         }),
         ("lad-indicators.json", indicators_text, {
@@ -334,8 +351,8 @@ def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir:
                            f"{src(geolytix_path, geolytix_entry['sha256'])}; {src(bfe_path, bfe_entry['sha256'])}"),
                 "retrievedAt": max(mye_entry["retrievedAt"], geolytix_entry["receivedAt"], bfe_entry["receivedAt"]),
                 "notes": ("Population: ONS MYE2 'All ages'; land area: ONS MYE5. Store counts per council by size band × "
-                          "format. Barnsley and Sheffield population and land area are on their boundaries before the "
-                          "2025 change (see each council's note)."),
+                          "format, wholesale and mainly non-food stores left out. Barnsley and Sheffield population and "
+                          "land area are on their boundaries before the 2025 change (see each council's note)."),
             },
         }),
     ]
@@ -392,6 +409,10 @@ def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir:
                                for s in located if s.source == "bng"],
             "assigned": len(assigned),
             "rejected": dict(rejects),
+            "published": len(published),
+            "crownDependencyOnMap": dict(sorted(crown_on_map.items())),
+            "leftOutByFascia": dict(sorted(Counter(x[0].point.fascia for x in on_map
+                                                   if klass[x[0].point.id][2] in left_out).items())),
             "crownDependencyByPostcodeArea": dict(sorted(crown_by_area.items())),
             "crownPostcodesInsideACouncil": assignment.crown_inside,
             "nearestCouncil": assignment.nearest,
@@ -400,7 +421,7 @@ def build_local(snapshot: str, inputs: LocalInputs, out_root: Path, reports_dir:
             "bngVersusWgs84": bng_residuals(located, assignment.council),
             "bySizeBand": {b["id"]: sum(klass[p.id][0] == b["id"] for p in points) for b in classes.size_bands},
             "byFormat": {f["id"]: sum(klass[p.id][2] == f["id"] for p in points) for f in classes.formats},
-            "defaultView": sum(1 for s, _, _ in assigned
+            "defaultView": sum(1 for s, _, _, _ in published
                                if klass[s.point.id][1] == "supermarket"
                                and next(f for f in classes.formats if f["id"] == klass[s.point.id][2])["inDefaultView"]),
             "onsConvenienceFasciasIn280PlusBands": {

@@ -95,9 +95,20 @@
         "postcode": "HU10 6RJ"
       }
     ],
-    "assigned": 19174,
-    "rejected": {
-      "Crown Dependency (Guernsey, Jersey or Isle of Man): outside UK councils": 125
+    "assigned": 19058,
+    "rejected": {},
+    "published": 19183,
+    "crownDependencyOnMap": {
+      "Guernsey": 30,
+      "Isle of Man": 44,
+      "Jersey": 51
+    },
+    "leftOutByFascia": {
+      "Asda Living": 30,
+      "Costco": 29,
+      "Makro": 23,
+      "Marks and Spencer Clothing": 1,
+      "Marks and Spencer Outlet": 33
     },
     "crownDependencyByPostcodeArea": {
       "GY": 30,
@@ -158,7 +169,7 @@
       "wholesale": 52,
       "nonfood": 64
     },
-    "defaultView": 7171,
+    "defaultView": 7193,
     "onsConvenienceFasciasIn280PlusBands": {
       "Aldi Local (280to1400)": 12,
       "Budgens (280to1400)": 17,

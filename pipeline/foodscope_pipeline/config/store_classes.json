@@ -3,7 +3,7 @@
   "notes": [
     "Store class comes from the delivered size_band only: convenience under 280 m², supermarket 280 m² and over in three bands. 280 m² is the Sunday Trading Act threshold that ONS also uses (S12, note 5).",
     "Format flags come from the delivered fascia. Forecourt, travel and wholesale fascias follow the GEOLYTIX groupings that ONS lists in S12 (Notes worksheet: Petrol Forecourt, Travel, Wholesaler, Other).",
-    "Wholesale, non-food and outlet stores are flagged for John to confirm whether they belong in any supermarket view; until then the default view leaves them out.",
+    "Formats marked leftOut are not published: John decided on 24 Oct 2026 to leave wholesale and mainly non-food stores out of the app. They are still counted in the comparison with ONS S12, which includes them.",
     "A fascia not listed here is 'standard'. A size_band not listed here stops the build (unknown value)."
   ],
   "sizeBands": [
@@ -17,7 +17,12 @@
     { "id": "convenience", "label": "Convenience (under 280 m²)" }
   ],
   "formats": [
-    { "id": "standard", "label": "High street and out of town", "inDefaultView": true, "fascias": [] },
+    {
+      "id": "standard",
+      "label": "High street and out of town",
+      "inDefaultView": true,
+      "fascias": []
+    },
     {
       "id": "forecourt",
       "label": "Petrol forecourt",
@@ -37,31 +42,47 @@
       "id": "motorway",
       "label": "Motorway services",
       "inDefaultView": false,
-      "fascias": ["Marks and Spencer MSA", "Waitrose MSA"]
+      "fascias": [
+        "Marks and Spencer MSA",
+        "Waitrose MSA"
+      ]
     },
     {
       "id": "travel",
       "label": "Station and airport",
       "inDefaultView": false,
-      "fascias": ["Marks and Spencer Travel SF"]
+      "fascias": [
+        "Marks and Spencer Travel SF"
+      ]
     },
     {
       "id": "hospital",
       "label": "Hospital",
       "inDefaultView": false,
-      "fascias": ["Marks and Spencer Hospital"]
+      "fascias": [
+        "Marks and Spencer Hospital"
+      ]
     },
     {
       "id": "wholesale",
-      "label": "Wholesale and membership (to confirm)",
-      "inDefaultView": false,
-      "fascias": ["Costco", "Makro"]
+      "label": "Wholesale and membership",
+      "fascias": [
+        "Costco",
+        "Makro"
+      ],
+      "leftOut": true,
+      "leftOutReason": "left out of the app (John, 24 Oct 2026): wholesale and membership"
     },
     {
       "id": "nonfood",
-      "label": "Mainly non-food (to confirm)",
-      "inDefaultView": false,
-      "fascias": ["Asda Living", "Marks and Spencer Clothing", "Marks and Spencer Outlet"]
+      "label": "Mainly non-food",
+      "fascias": [
+        "Asda Living",
+        "Marks and Spencer Clothing",
+        "Marks and Spencer Outlet"
+      ],
+      "leftOut": true,
+      "leftOutReason": "left out of the app (John, 24 Oct 2026): mainly non-food"
     }
   ]
 }

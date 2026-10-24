@@ -76,8 +76,9 @@ def test_config_rejects_a_fascia_in_two_formats(tmp_path: Path) -> None:
         load_store_classes(path)
 
 
-def test_groups_cover_every_band_and_format(classes) -> None:
-    assert len(classes.groups) == len(classes.size_bands) * len(classes.formats)
+def test_groups_cover_every_band_and_published_format(classes) -> None:
+    assert len(classes.groups) == len(classes.size_bands) * len(classes.published_formats)
+    assert not any(fmt in classes.left_out for _, fmt in classes.groups)
     assert classes.groups[0] == ("lt280", "standard")
 
 
@@ -149,4 +150,5 @@ def test_config_matches_the_published_schema(classes) -> None:
     enums = {k: schema["definitions"][k]["enum"] for k in ("SizeBand", "StoreClass", "StoreFormat")}
     assert enums["SizeBand"] == [b["id"] for b in classes.size_bands]
     assert sorted(enums["StoreClass"]) == sorted(c["id"] for c in classes.store_classes)
-    assert enums["StoreFormat"] == [f["id"] for f in classes.formats]
+    assert enums["StoreFormat"] == [f["id"] for f in classes.published_formats]
+    assert set(classes.left_out) == {"wholesale", "nonfood"}

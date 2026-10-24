@@ -32,13 +32,13 @@ The constraints were:
 
    **Format** comes from the fascia:
    - forecourt, motorway services, travel and hospital: following the GEOLYTIX groupings that ONS lists;
-   - wholesale and non-food: flagged until John confirms.
+   - wholesale and mainly non-food: **left out of the app** (John, 24 Oct 2026). They stay in the comparison with ONS S12, which counts them.
 
    **Default view:** supermarkets in the standard format.
 
    **Unknown values:** an unknown size band stops the build.
 3. **Council assignment rules:**
-   - Stores in the Crown Dependencies (GY, JE, IM postcodes) are rejected with that reason.
+   - Stores in the Crown Dependencies (GY, JE, IM postcodes) have no UK council. They stay on the map with `lad: null` and their Crown Dependency named, and are in no council count (John, 24 Oct 2026).
    - A store up to 50 m outside every council takes the nearest one and is flagged `nearest`.
    - Anything further out is rejected.
    - Every rule is counted in the accounting report.
@@ -50,5 +50,5 @@ The constraints were:
 ## Consequences
 - **Coverage:** every store in a UK council is assigned. The map shows coastlines, not low-water extents.
 - **Projection slivers:** two pairs of neighbours overlap by slivers of 0.04 m² and 3.9 m² after projection and rounding, at points where simplified edges are almost collinear. Both are measured in the QA report; they are invisible at any display scale.
-- **Publishing in Stage 4:** Stage 4 must choose how to publish. `publish` currently takes only the newest snapshot folder, so a local snapshot dated after the trade snapshot would hide the trade data. The options are to rebuild trade into the same snapshot, or to compose the manifest from the newest snapshot of each dataset family. That choice needs its own ADR.
+- **Publishing in Stage 4:** `publish` currently takes only the newest snapshot folder, so a local snapshot dated after the trade snapshot would hide the trade data. John decided (24 Oct 2026) that each kind of data keeps its own newest date, so trade and stores refresh on their own schedules; Stage 4 implements this and records it in its own ADR.
 - **Repository size:** the raw inputs add about 50 MB to the repository. The BFE zip is 32 MB of that and is needed to rebuild offline.

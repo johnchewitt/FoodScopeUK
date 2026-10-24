@@ -50,9 +50,19 @@ class StoreClasses:
     format_by_fascia: dict[str, str]
 
     @property
+    def published_formats(self) -> list[dict]:
+        """Formats the app shows (decision D5): every format not marked `leftOut`."""
+        return [f for f in self.formats if not f.get("leftOut")]
+
+    @property
+    def left_out(self) -> dict[str, str]:
+        """Format id → reason, for formats left out of the app."""
+        return {f["id"]: f["leftOutReason"] for f in self.formats if f.get("leftOut")}
+
+    @property
     def groups(self) -> list[tuple[str, str]]:
-        """Every (size band id, format id) pair, in config order: the LAD count columns."""
-        return [(b["id"], f["id"]) for b in self.size_bands for f in self.formats]
+        """Every (size band id, published format id) pair, in config order: the LAD count columns."""
+        return [(b["id"], f["id"]) for b in self.size_bands for f in self.published_formats]
 
 
 def load_store_classes(path: Path) -> StoreClasses:
@@ -65,8 +75,10 @@ def load_store_classes(path: Path) -> StoreClasses:
             raise StoreClassError(f"duplicate {kind} ids: {ids}")
     if any(b["storeClass"] not in class_ids for b in bands):
         raise StoreClassError("a size band names an unknown store class")
-    if formats[0]["id"] != "standard" or formats[0]["fascias"]:
-        raise StoreClassError("the first format must be 'standard' with no fascias")
+    if formats[0]["id"] != "standard" or formats[0]["fascias"] or formats[0].get("leftOut"):
+        raise StoreClassError("the first format must be 'standard', published, with no fascias")
+    if any(f.get("leftOut") and not f.get("leftOutReason") for f in formats):
+        raise StoreClassError("a format left out needs a leftOutReason")
     by_fascia: dict[str, str] = {}
     for fmt in formats:
         for fascia in fmt["fascias"]:
