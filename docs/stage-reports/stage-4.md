@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Branch** | `stage/4-supermarket-network` (PR #8), stacked on PR #7 (`data/stage-4-inputs`), which is stacked on PR #6 (`improve/review-top-five`). Merged to `main` as PR #6, PR #10 (the data) and PR #9 (the stage) on 24 Oct 2026; PRs #7 and #8 were closed. Fixes from the live checks: PR from `fix/stage-4-live-checks` |
+| **Branch** | `stage/4-supermarket-network` (PR #8), stacked on PR #7 (`data/stage-4-inputs`), which is stacked on PR #6 (`improve/review-top-five`). Merged to `main` as PR #6, PR #10 (the data) and PR #9 (the stage) on 24 Oct 2026; PRs #7 and #8 were closed. Fixes from the live checks: PR #11 (`fix/stage-4-live-checks`) |
 | **Date** | 24 October 2026 |
 | **Scope** | Roadmap §6: SM-01 – SM-10 and the curated basemap switcher (SH-08, §6.1). Includes John's three decisions of 24 Oct 2026: wholesale and mainly non-food stores are left out; each kind of data keeps its own newest date; the 125 Channel Islands and Isle of Man stores are on the map without a council. Stage 5 not started. |
 | **Data** | Trade snapshot **2026-10-23** (unchanged). Stores and population snapshot **2026-10-24**: GEOLYTIX v46 (June 2026), ONS mid-2025 population and land area, May 2025 councils. No new downloads; one offline rebuild to add the displayed-count comparison to the S12 report. |
