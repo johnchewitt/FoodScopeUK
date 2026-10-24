@@ -6,6 +6,7 @@
 # Node / build
 node_modules/
 dist/
+dist-basemap/
 coverage/
 playwright-report/
 test-results/
