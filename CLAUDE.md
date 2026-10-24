@@ -16,7 +16,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 
 ## Current stage
 
-**Stage 4 — Supermarket network (UK Food Access) and the basemap choice: built on branch `stage/4-supermarket-network`, PR open, stacked on PR #7 (`data/stage-4-inputs`), which is stacked on PR #6 (`improve/review-top-five`)** (report: `docs/stage-reports/stage-4.md`; ADR-0021, ADR-0022). Stages 1–3 are merged and deployed. Live checks of the light grey and imagery styles and the basemap usage count wait for the deploy. The other data-pipeline items in roadmap §5.3 are still to be scheduled. Do not start Stage 5 until John asks. Update this line when a stage is merged.
+**Stage 4 — Supermarket network (UK Food Access) and the basemap choice: built on branch `stage/4-supermarket-network`, PR #8, stacked on PR #7 (`data/stage-4-inputs`), which is stacked on PR #6 (`improve/review-top-five`)** (report: `docs/stage-reports/stage-4.md`; ADR-0021, ADR-0022). Stages 1–3 are merged and deployed. Live checks of the light grey and imagery styles and the basemap usage count wait for the deploy. The other data-pipeline items in roadmap §5.3 are still to be scheduled. Do not start Stage 5 until John asks. Update this line when a stage is merged.
 
 ## How to work
 
