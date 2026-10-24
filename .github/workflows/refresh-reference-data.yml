@@ -1,0 +1,77 @@
+name: Fetch reference data (ONS)
+
+# Downloads ONS files the app needs before Stage 4 (mid-year population estimates, S18; the LAD
+# 2022→2023 lookup, S14) into pipeline/raw/ons/<snapshot>/ and commits them to the branch. The
+# build sandbox cannot reach ONS; everything after this download runs offline from the cache
+# (same pattern as the HMRC ingest, ADR-0016). Data reaches `main` only through a pull request.
+#
+# Trigger: push to a `data/**` branch. Runs only when the snapshot's raw cache is missing, so the
+# commit it pushes back does not start another download.
+
+on:
+  push:
+    branches: ["data/**"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-reference-data-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    name: Fetch ONS files
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SNAPSHOT: "2026-10-24"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+
+      - name: Skip if already cached
+        id: existing
+        run: |
+          if [ -f "pipeline/raw/ons/$SNAPSHOT/index.json" ]; then
+            echo "cached=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::ONS files for $SNAPSHOT already committed."
+          fi
+
+      - name: Install pipeline
+        if: steps.existing.outputs.cached != 'true'
+        working-directory: pipeline
+        run: uv sync --locked
+
+      - name: Download from ONS
+        if: steps.existing.outputs.cached != 'true'
+        working-directory: pipeline
+        run: uv run foodscope-pipeline fetch-ons --snapshot "$SNAPSHOT"
+
+      - name: Summary
+        if: steps.existing.outputs.cached != 'true'
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json, os, pathlib
+          snap = os.environ["SNAPSHOT"]
+          idx = json.loads(pathlib.Path(f"pipeline/raw/ons/{snap}/index.json").read_text())
+          print(f"### ONS files {snap}\n")
+          for f in idx["files"]:
+              print(f"- {f['id']}: {f['bytes']:,} bytes, sha256 {f['sha256'][:12]}…, {f['url']}")
+          PY
+
+      - name: Commit to the branch
+        if: steps.existing.outputs.cached != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pipeline/raw/ons
+          if git diff --cached --quiet; then
+            echo "::notice::No changes."
+            exit 0
+          fi
+          git commit -m "data(ons): raw ONS files $SNAPSHOT (population mid-2025, LAD22-LAD23 lookup)" \
+            -m "Downloaded by $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          git push origin "HEAD:$GITHUB_REF_NAME"
