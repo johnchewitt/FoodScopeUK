@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-24",
+  "files": [
+    {
+      "id": "nomis.census2021_ts001",
+      "file": "census2021-ts001.zip",
+      "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts001.zip",
+      "sourceId": "S18",
+      "licence": "Open Government Licence v3.0",
+      "description": "Census 2021 TS001 Number of usual residents in households and communal establishments (E&W)",
+      "httpStatus": 200,
+      "bytes": 1870128,
+      "sha256": "b724c1208b7628c7c558156fcc619446486353a12d0b6e0bf388add225653dc6",
+      "retrievedAt": "2026-10-24T22:15:30Z"
+    },
+    {
+      "id": "nomis.census2021_ts045",
+      "file": "census2021-ts045.zip",
+      "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts045.zip",
+      "sourceId": "S20",
+      "licence": "Open Government Licence v3.0",
+      "description": "Census 2021 TS045 Car or van availability (households, E&W)",
+      "httpStatus": 200,
+      "bytes": 2657395,
+      "sha256": "95593dcd53247d4458e97edd7454577a63e47fd43be957f0a2460e872efdc070",
+      "retrievedAt": "2026-10-24T22:15:33Z"
+    }
+  ]
+}

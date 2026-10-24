@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-24",
+  "files": [
+    {
+      "id": "nisra.dz2021_boundaries",
+      "file": "geography-dz2021-esri-shapefile.zip",
+      "url": "https://www.nisra.gov.uk/files/nisra/publications/geography-dz2021-esri-shapefile.zip",
+      "sourceId": "S16",
+      "licence": "Open Government Licence v3.0 (contains Ordnance Survey of Northern Ireland information)",
+      "description": "Data Zone (2021) boundaries, ESRI Shapefile",
+      "httpStatus": 200,
+      "bytes": 14795669,
+      "sha256": "869dc163977373ff69a7daf028a5ba1dac35d3316e769eaa7292df68f3c945aa",
+      "retrievedAt": "2026-10-24T22:15:37Z"
+    },
+    {
+      "id": "nisra.dz2021_pwc",
+      "file": "geography-census-2021-population-weighted-centroids-csv.zip",
+      "url": "https://www.nisra.gov.uk/system/files/statistics/geography-census-2021-population-weighted-centroids-csv.zip",
+      "sourceId": "S16",
+      "licence": "Open Government Licence v3.0 (Source: NISRA)",
+      "description": "Census 2021 population weighted centroids for Data Zones and Super Data Zones (CSV)",
+      "httpStatus": 200,
+      "bytes": 56971,
+      "sha256": "4822e20b4284458c692ece7e218f6924d6efa23b1cbd9571a416aa98c53b477d",
+      "retrievedAt": "2026-10-24T22:15:38Z"
+    },
+    {
+      "id": "nisra.census2021_ms_a01",
+      "file": "census-2021-ms-a01.xlsx",
+      "url": "https://www.nisra.gov.uk/system/files/statistics/census-2021-ms-a01.xlsx",
+      "sourceId": "S18",
+      "licence": "Open Government Licence v3.0 (Source: NISRA)",
+      "description": "Census 2021 MS-A01 Usual resident population (incl. Data Zones)",
+      "httpStatus": 200,
+      "bytes": 479055,
+      "sha256": "75256392409cb30e7b7dc0a2929e17bc1174edf5b7ee97829d2b72079aeeb2bf",
+      "retrievedAt": "2026-10-24T22:15:39Z"
+    },
+    {
+      "id": "nisra.soa2011_boundaries",
+      "file": "SOA2011_Esri_Shapefile_0.zip",
+      "url": "https://www.nisra.gov.uk/files/nisra/publications/SOA2011_Esri_Shapefile_0.zip",
+      "sourceId": "S19",
+      "licence": "Open Government Licence v3.0 (OpenDataNI record of the NISRA SOA 2011 boundaries)",
+      "description": "Super Output Area (2011) boundaries, ESRI Shapefile",
+      "httpStatus": 200,
+      "bytes": 17830076,
+      "sha256": "c7ae56402032b645b5bb61375c4428e53e4939550b95d60adc32b0eb902eebd3",
+      "retrievedAt": "2026-10-24T22:15:40Z"
+    },
+    {
+      "id": "nisra.nimdm2017_soa",
+      "file": "NIMDM17_SOAresults.xls",
+      "url": "https://www.nisra.gov.uk/files/nisra/publications/NIMDM17_SOAresults.xls",
+      "sourceId": "S19",
+      "licence": "Open Government Licence v3.0 (Source: NISRA)",
+      "description": "Northern Ireland Multiple Deprivation Measure 2017, SOA level results",
+      "httpStatus": 200,
+      "bytes": 1772032,
+      "sha256": "3738edf2d264491301b41cc7b64967373d49b09a6f5719225a0e4f7d789af9d3",
+      "retrievedAt": "2026-10-24T22:15:41Z"
+    }
+  ]
+}
