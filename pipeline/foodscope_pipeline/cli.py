@@ -32,7 +32,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("publish", help="build and validate public/data/manifest.json")
     ingest = sub.add_parser("ingest-hmrc", help="ONLINE: fetch HMRC OTS responses into pipeline/raw/hmrc/<snapshot>/")
     ingest.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
-    ons = sub.add_parser("fetch-ons", help="ONLINE: download ONS population and lookup files into pipeline/raw/ons/<snapshot>/")
+    ons = sub.add_parser("fetch-ons", help="ONLINE: download ONS population, lookup and boundary files into pipeline/raw/ons/<snapshot>/ (incremental)")
     ons.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
     build = sub.add_parser("build-trade", help="OFFLINE: raw HMRC cache → public/data/snapshots/<snapshot>/trade/")
     build.add_argument("--snapshot", required=True, help="snapshot id YYYY-MM-DD (must exist in the raw cache)")
