@@ -194,7 +194,7 @@ This report compares all-format totals and size bands, the levels at which S12 a
 | `npm test` | **279 passed** (no app change) |
 | `npm run build` | OK |
 | `VITE_ARCGIS_ASSETS=local npm run build` + `npm run e2e` (sandbox) | **47 passed** (no app change) |
-| CI on PR #7 (run 40080616364) | Data pipeline job passed, including the byte-identical rebuild on Python 3.12. The web job's E2E step failed on the first attempt and passed on a rerun of the failed job. Which test failed is unknown: the job log and Playwright report could not be downloaded from the sandbox (backlog B29) |
+| CI on PR #7 | The data pipeline job passed on every run, including the byte-identical rebuild on Python 3.12. The web job's E2E step failed intermittently with no app change: it failed in run 40080616364 (then passed on a rerun) and in run 40083044884. Run 40084267992 passed, 47 of 47, with no flaky tests. The failing test is unknown because the job log and Playwright report could not be downloaded from the sandbox. Playwright now also reports to GitHub annotations on CI, so the next failure names its test (backlog B29) |
 
 ## Not verified, and why
 
