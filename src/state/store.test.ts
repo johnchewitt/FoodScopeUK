@@ -270,4 +270,13 @@ describe("Local Authority Profiles selection (LP-01, LP-06, LP-07)", () => {
       niGrocers: true,
     });
   });
+
+  it("back/forward to another council or measure drops the chart outline", () => {
+    s().setLad("N09000003");
+    s().setAreaHighlight({ label: "Synthetic class", codes: ["95GG35S1"] });
+    s().hydrateFromUrl({ ...selectUrlState(s()) });
+    expect(s().areaHighlight).not.toBeNull(); // same council and measure: kept
+    s().hydrateFromUrl({ ...selectUrlState(s()), lad: "E08000003" });
+    expect(s().areaHighlight).toBeNull();
+  });
 });

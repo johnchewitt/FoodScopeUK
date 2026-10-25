@@ -383,7 +383,15 @@ export const useAppStore = create<AppState>()((set, get) => ({
   playbackStep: (year, month) => set({ year, month: Math.min(12, Math.max(1, Math.round(month))) }),
   openOverlay: (overlay) => set({ overlay, mobileNavOpen: false }),
   closeOverlay: () => set({ overlay: "none" }),
-  hydrateFromUrl: (state) => set({ ...state, playing: false }),
+  hydrateFromUrl: (state) =>
+    set((s) => ({
+      ...state,
+      playing: false,
+      // A chart outline and hover belong to the council and measure they were made on (back/forward).
+      ...(state.lad !== s.lad || state.areaMeasure !== s.areaMeasure
+        ? { areaHighlight: null, hoverArea: null }
+        : {}),
+    })),
 
   toggleStoreLayer: (layer) =>
     set((s) => ({

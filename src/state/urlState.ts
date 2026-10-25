@@ -143,7 +143,8 @@ export function isGssCode(value: string): boolean {
 }
 
 /** Small-area codes: LSOA 2021 (E01/W01), NI Data Zone 2021 (N20), NI SOA 2011 (e.g. 95GG01S1). */
-const SMALL_AREA_CODE = /^([EW]01\d{6}|N20\d{6}|95[A-Z]{2}\d{2}S\d)$/;
+/** LSOA 2021, NI Data Zone 2021, NI SOA (2011: ending S, W or C and a digit, e.g. 95GG01S1, 95II07W1). */
+const SMALL_AREA_CODE = /^([EW]01\d{6}|N20\d{6}|95[A-Z]{2}\d{2}[SWC]\d)$/;
 
 export function isSmallAreaCode(value: string): boolean {
   return SMALL_AREA_CODE.test(value);

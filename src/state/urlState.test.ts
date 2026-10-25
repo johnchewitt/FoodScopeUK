@@ -223,6 +223,8 @@ describe("Local Authority Profiles URL state (LP-01, LP-06, LP-07)", () => {
     });
     expect(parseUrlState("?sa=E01005063").area).toBe("E01005063");
     expect(parseUrlState("?sa=N20000001").area).toBe("N20000001");
+    // Whole-ward SOAs end in W (10 of Belfast's 174 SOAs).
+    expect(parseUrlState("?sa=95II07W1").area).toBe("95II07W1");
   });
 
   it("falls back on invalid values; comparison drops the selected council, repeats and extras", () => {
