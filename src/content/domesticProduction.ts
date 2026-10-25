@@ -3,34 +3,43 @@
  *
  * Domestic production is shown only where a verified monthly series exists. Defra's monthly
  * production statistics (S06–S08) cover meat, poultry and milk, none of the Food Origins baskets;
- * the annual sources for these baskets (S09, S10) are still "to verify". So nothing is shown, and
- * FOODSCOPE never estimates domestic supply from imports or divides one series by the other.
+ * the sources for these baskets (S09, S10; verified 25 Oct 2026) are annual. So Seasonal Supply
+ * shows no monthly production; the annual figures appear as national context in Local Authority
+ * Profiles. FOODSCOPE never estimates domestic supply from imports or divides one series by the other.
  */
 export interface DomesticProductionStatus {
-  /** "not_verified": a source is identified but not yet verified; "none_identified": no source in the inventory. */
-  status: "not_verified" | "none_identified";
+  /**
+   * "annual_only": a verified source exists but publishes annual figures only; "none_identified":
+   * no source in the inventory.
+   */
+  status: "annual_only" | "none_identified";
   sourceIds: string[];
   /** One or two sentences for the panel. */
   detail: string;
 }
 
 const HORTICULTURE =
-  "The identified source is Defra's horticulture statistics (S09), which are annual, not monthly, and not yet verified for this build.";
+  "Defra's horticulture statistics (S09) publish UK production once a year, not monthly. The 2025 figure is shown as national context in Local Authority Profiles.";
 
 const STATUS: Record<string, DomesticProductionStatus> = {
-  tomatoes: { status: "not_verified", sourceIds: ["S09"], detail: HORTICULTURE },
-  strawberries: { status: "not_verified", sourceIds: ["S09"], detail: HORTICULTURE },
-  potatoes: { status: "not_verified", sourceIds: ["S09"], detail: HORTICULTURE },
-  wheat: {
-    status: "not_verified",
+  tomatoes: { status: "annual_only", sourceIds: ["S09"], detail: HORTICULTURE },
+  strawberries: { status: "annual_only", sourceIds: ["S09"], detail: HORTICULTURE },
+  potatoes: {
+    status: "annual_only",
     sourceIds: ["S10"],
     detail:
-      "The identified source is Defra's cereal and oilseed production statistics (S10), which are annual (harvest), not monthly, and not yet verified for this build.",
+      "Defra's Agriculture in the UK (S10) publishes potato production and supply once a year, not monthly. The 2025 figure is shown as national context in Local Authority Profiles.",
+  },
+  wheat: {
+    status: "annual_only",
+    sourceIds: ["S10"],
+    detail:
+      "Defra's Agriculture in the UK (S10) publishes wheat production and supply once a year (harvest), not monthly. The 2025 figure is shown as national context in Local Authority Profiles.",
   },
   bananas: {
     status: "none_identified",
     sourceIds: [],
-    detail: "The data inventory lists no UK production source for this commodity.",
+    detail: "Defra publishes no UK production statistics for this commodity.",
   },
 };
 

@@ -165,7 +165,7 @@ The brief asks for a complete, tested first release over an extensive unfinished
 - SS-04: share or amount view, with fixed classes the same for every year and commodity.
 - SS-05: as a difference view in percentage points, with five fixed classes. Side-by-side years come from the year selector (identical classes), not two heatmaps in one panel.
 - SS-06: monthly HHI line.
-- SS-07: "Imports" only. "UK production" and "Combined" are shown as unavailable, with the reason: no verified monthly series for these baskets, and S09/S10 annual figures are not yet verified, so no annual figure is shown either.
+- SS-07: "Imports" only. "UK production" and "Combined" are shown as unavailable, with the reason: Defra publishes production of these baskets annually, not monthly (S09, S10, verified 25 Oct 2026). The annual figures appear as national context in Local Authority Profiles (LP-05), never combined with monthly trade.
 - SS-08: an example button sets tomatoes, January and July of the latest complete year.
 
 ### 5.3 UK Supermarket Network (SM) — Release 1
@@ -206,6 +206,15 @@ The brief asks for a complete, tested first release over an extensive unfinished
 - **LP-08 G. ConsultingWhere Food Security Opportunity Assessment**: key findings, potential vulnerabilities, evidence, uncertainty/limitations, recommended follow-up analysis, opportunities for investigation, possible work packages. Generated deterministically from templates and computed indicators (no free-text model output in Release 1).
 - **LP-09 H. Export to PDF** (EX-01..05).
 - **LP-10** Initial deep profiles: **Belfast (N09000003)** and **Manchester (E08000003)** — codes verified against the ONS LAD May 2025 boundary service.
+
+**As built (Stage 5, 25 Oct 2026; ADR-0023):**
+- LP-01: search by name or GSS code, a list with a nation filter, shortcuts to the deep profiles, or a click on the map. The map fits the council (up to zoom 13) and outlines it; the council stays selected in every module and in the URL (`lad`).
+- LP-02: name, nation, code, mid-2025 population, land area, density, urban/rural class where the nation publishes one at council level (ONS 2021 RUC for England and Wales; "Data unavailable" for Northern Ireland and Scotland), Census 2021 car availability (not Scotland), and the date of each source.
+- LP-03: stores by type and retailer (donut, table and store list), supermarkets and all stores per 10,000 residents, retailers represented and concentration (§6.3). Underserved neighbourhoods are in the deep profiles (LP-04).
+- LP-04 and LP-06 (deep profiles): straight-line accessibility (§6.3) at 1, 2 and 5 km with the underserved areas listed (car availability beside them); PPFI v2.1 (combined and the seven domains) and the nation's deprivation index, each on its own geography and ranked within the nation; a small-area map with fixed classes (deciles in five classes, deciles 1–2 most salient; no car or van 15/30/45/60 %; straight-line distance 0.5/1/2/5 km; no data hatched). Clicking an area opens its card; clicking a chart bar (or its keyboard button) outlines the areas of that class on the map.
+- LP-05: recorded imports (largest partner's share over the latest 12 months, HMRC) and UK production share of supply (Defra, annual) for the Food Origins baskets, labelled National context. CPIH food prices, Short Straits dependence and climate risks are not included yet (sources not verified in this stage).
+- LP-07: the selected council and up to three others, in the order chosen, never ranked. Each row says how far it compares: UK-wide definitions; Census 2021 (not Scotland); ranked within each nation; each nation's own classification. A banner appears when the councils are in different nations. Benchmarks against authorities of a similar type follow in Release 2.
+- LP-08: provisional "Consulting opportunities" prompts from transparent rules on the figures shown, with "why am I seeing this?"; expanded in Stage 7 (Consulting Insights). No requirement, budget or procurement is implied.
 
 ### 5.6 Supply Chain Risk Explorer (RK) — Release 2
 
@@ -338,6 +347,8 @@ Baskets map the 16 commodities to HMRC commodity codes. The table below is the *
 - Store count by class within LAD (point-in-polygon on LAD May 2025 boundaries). *Derived.*
 - Stores per 10,000 residents: `count / population × 10,000` using the mid-year estimate for the same nation and the latest available year (year shown). *Derived.* Cross-checked against ONS's own LAD supermarket counts (§S12) as a validation step, not displayed as a second value.
 - Stores per km²: count / LAD land area where available (else total area, stated). *Derived.*
+- Retail concentration (Stage 5): over a council's mapped supermarkets (280 m² and over, standard format), the largest retailer's share of stores and the Herfindahl–Hirschman index `HHI = 10,000 × Σ sᵢ²`, where `sᵢ` is retailer *i*'s share of those stores. Store counts, not floorspace or sales: it describes the store network, not market share. *Derived.*
+- Straight-line proximity (Stage 5, deep profiles): for each small area, the straight-line distance from its Census 2021 population-weighted centroid to the nearest mapped supermarket in the same national grid (EPSG:27700; EPSG:2157 in Northern Ireland). Population beyond `T` km: `Σ population of areas with distance > T / Σ population of the council's areas`, Census 2021 usual residents, `T` ∈ {1, 2, 5}. Whole areas are counted; it is not a count of people, nor a travel time. *Derived.*
 
 ### 6.4 Rounding and display
 

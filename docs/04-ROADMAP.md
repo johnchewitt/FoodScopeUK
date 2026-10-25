@@ -236,6 +236,13 @@ Added at John's request (25 Oct 2026, with his Stage 5 brief): urban/rural conte
 
 Exit: both deep profiles render every section with provenance; a hand-checked sample of five small areas per LAD matches source values; nation comparability banner appears in Belfast–Manchester comparison.
 
+Status on 25 October 2026 (evidence in `docs/stage-reports/stage-5.md`): built on `stage/5-local-authority-profiles` (ADR-0023). Every exit criterion is met in the sandbox:
+- both deep profiles render every section with provenance;
+- five small areas per council, the store counts and the populations match the raw sources, checked independently;
+- the banner appears in the Belfast–Manchester comparison.
+
+Not yet done: the live checks with a real GPU and basemap, after merge. LP-05 food prices, Short Straits and climate risks are not included (sources not verified). LP-07 benchmarks and FA-04 attention flags wait for Release 2.
+
 ## 8. Stage 6 — Scenario Lab
 
 Deliverables: scenario framework (SC-01..05); SC-A/E import disruption with Spanish tomato preset; SC-D store closure. Formula tests from spec §6.5; assumptions panel; baseline vs scenario views; URL-reproducible runs.
@@ -332,3 +339,4 @@ Rules of engagement:
 | 2026-10-24 | Stage 5: NI car availability by Data Zone and the PPFI v2.1 LSOA file are provided by John (the NISRA table builder disallows automated access; HASP downloads go through a basket) | John |
 | 2026-10-25 | Northern Ireland shops: make the GEOLYTIX NI stores easier to see, and add the NI grocers GEOLYTIX misses from the FSA food hygiene register (S29) as a separate, labelled layer that is never part of a store count or rate | John (request); Stage 5 |
 | 2026-10-25 | Stage 5 (John's brief and decision): fetch urban/rural context (ONS 2021 RUC, England and Wales) and Defra annual production context (tomatoes, strawberries, potatoes, wheat) before building; council car availability added from the cached Census files; Scotland's and NI's council-level urban/rural shown as not available | S09, S10, S20, S21 |
+| 2026-10-25 | Stage 5 built: profiles for all 361 councils, deep profiles for Belfast and Manchester, comparison never ranked; small areas drawn as graphics; the camera fits each selected council (up to zoom 13); the 1:110m outlines stop at about zoom 8; the NI grocers layer draws from zoom 7.5; profile figures use all mapped stores, whatever the map filters show | ADR-0023, LP-01–LP-08, LP-10 |

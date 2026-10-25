@@ -20,10 +20,20 @@ interface Props {
    * amber marker beside the label; the full sentence is the marker's accessible name and tooltip.
    */
   caution?: string | null;
+  /** Text of the empty state (default "No data loaded"), e.g. "Data unavailable" for a figure not published. */
+  emptyText?: string;
 }
 
 /** Floating KPI card. Shows a value only when a provenance-complete indicator is supplied. */
-export function KpiCard({ label, state, indicator, note, detail, caution }: Props) {
+export function KpiCard({
+  label,
+  state,
+  indicator,
+  note,
+  detail,
+  caution,
+  emptyText = "No data loaded",
+}: Props) {
   const showCaution = state === "ready" && Boolean(indicator) && Boolean(caution);
   return (
     <article
@@ -62,7 +72,7 @@ export function KpiCard({ label, state, indicator, note, detail, caution }: Prop
         <>
           <div className="kpi-card__empty">
             <span className="kpi-card__empty-bar" aria-hidden="true" />
-            No data loaded
+            {emptyText}
           </div>
           {note && <p className="kpi-card__meta">{note}</p>}
         </>

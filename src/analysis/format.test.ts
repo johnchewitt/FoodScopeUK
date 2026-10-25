@@ -87,3 +87,16 @@ describe("retail provision formats (spec §6.3, §6.4)", () => {
     expect(formatByUnit(351_927, "residents")).toBe("351,900");
   });
 });
+
+describe("profile units (Stage 5)", () => {
+  it("formats area, density and small-area population", async () => {
+    const { formatByUnit, formatDensity, formatKm2 } = await import("./format");
+    expect(formatKm2(115.62)).toBe("115.6 km²".replace("115.6", "116"));
+    expect(formatKm2(42.345)).toBe("42.3 km²");
+    expect(formatKm2(null)).toBe("—");
+    expect(formatDensity(4774)).toBe("4,770");
+    expect(formatDensity(57.4)).toBe("57");
+    expect(formatByUnit(1234, "residents (small areas)")).toBe("1,230");
+    expect(formatByUnit(1234, "residents per km²")).toBe("1,230");
+  });
+});

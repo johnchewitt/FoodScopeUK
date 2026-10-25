@@ -87,6 +87,8 @@ function StoreSearch({ stores }: { stores: readonly AccessStore[] }) {
 function StoreTypes({ counts }: { counts: NonNullable<ReturnType<typeof useAccess>["counts"]> }) {
   const storeLayers = useAppStore((s) => s.storeLayers);
   const toggle = useAppStore((s) => s.toggleStoreLayer);
+  const niGrocers = useAppStore((s) => s.niGrocers);
+  const setNiGrocers = useAppStore((s) => s.setNiGrocers);
   return (
     <section className="panel-section" aria-labelledby="store-types-heading">
       <h3 id="store-types-heading" className="panel-section__title">
@@ -108,6 +110,18 @@ function StoreTypes({ counts }: { counts: NonNullable<ReturnType<typeof useAcces
             </label>
           </li>
         ))}
+        <li>
+          <label className="check-row">
+            <input type="checkbox" checked={niGrocers} onChange={() => setNiGrocers(!niGrocers)} />
+            <span className="grocer-symbol" aria-hidden="true" />
+            <span className="check-row__text">
+              <span>Other NI grocers (FSA register)</span>
+              <span className="check-row__hint">
+                Northern Ireland grocers GEOLYTIX does not map; never counted in any rate
+              </span>
+            </span>
+          </label>
+        </li>
       </ul>
       <p className="control-hint">
         Size bands and formats from the GEOLYTIX fields (decision D5). Wholesale and mainly non-food stores

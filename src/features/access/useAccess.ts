@@ -10,6 +10,7 @@ import {
   LOCAL_BOUNDARIES_DATASET_ID,
   LOCAL_INDICATORS_DATASET_ID,
   LOCAL_STORES_DATASET_ID,
+  REGISTER_GROCERS_DATASET_ID,
 } from "@/map/layerIds";
 import { adapterFor } from "@/services/data/featureLayerAdapter";
 import { datasetUrl, familySnapshot, findDataset, useAppConfig, useManifest } from "@/services/data/queries";
@@ -19,6 +20,7 @@ import type { Dataset } from "@/types/generated/manifest";
 import {
   accessPoint,
   areaTotals,
+  grocerPoints,
   choroplethFor,
   councilDetail,
   indexStores,
@@ -30,7 +32,7 @@ import {
   STORE_FIELDS,
   type AccessStore,
 } from "./model";
-import { validateLadIndicators, validateStores } from "./validate";
+import { validateLadIndicators, validateNiGrocers, validateStores } from "./validate";
 
 /**
  * Every panel, card and the map call useAccess; these module-level caches make them share one
@@ -84,6 +86,8 @@ export interface AccessSources {
   stores: Dataset | undefined;
   indicators: Dataset | undefined;
   boundaries: Dataset | undefined;
+  /** NI grocers from the FSA register (S29), when listed. */
+  grocers: Dataset | undefined;
   snapshot: string | null;
   /** "static-snapshot" or "arcgis-feature-layer" (SM-01). */
   storesFrom: string;
@@ -104,6 +108,7 @@ export function useAccess() {
   const proximityPoint = useAppStore((s) => s.proximityPoint);
   const proximityCount = useAppStore((s) => s.proximityCount);
   const proximityRadiusKm = useAppStore((s) => s.proximityRadiusKm);
+  const niGrocers = useAppStore((s) => s.niGrocers);
 
   const manifest = useManifest();
   const config = useAppConfig();
@@ -118,11 +123,14 @@ export function useAccess() {
     adapter,
   );
   const indicatorsQuery = useValidatedDataset(LOCAL_INDICATORS_DATASET_ID, validateLadIndicators);
+  // The FSA register layer (S29) is loaded only when it is switched on.
+  const grocersQuery = useValidatedDataset(niGrocers ? REGISTER_GROCERS_DATASET_ID : null, validateNiGrocers);
 
   const sources: AccessSources = {
     stores: findDataset(manifest.data, LOCAL_STORES_DATASET_ID),
     indicators: findDataset(manifest.data, LOCAL_INDICATORS_DATASET_ID),
     boundaries: findDataset(manifest.data, LOCAL_BOUNDARIES_DATASET_ID),
+    grocers: findDataset(manifest.data, REGISTER_GROCERS_DATASET_ID),
     snapshot: familySnapshot(manifest.data, "local"),
     storesFrom: adapter.kind,
   };
@@ -155,10 +163,20 @@ export function useAccess() {
     () => (shown ? nearbyFor(shown, proximityPoint, proximityCount, proximityRadiusKm) : null),
     [shown, proximityPoint, proximityCount, proximityRadiusKm],
   );
+  const grocers = useMemo(
+    () =>
+      niGrocers && grocersQuery.data && sources.grocers
+        ? { points: grocerPoints(grocersQuery.data), copyright: sources.grocers.attribution }
+        : null,
+    [niGrocers, grocersQuery.data, sources.grocers],
+  );
 
   const map = useMemo<AccessMapModel | null>(() => {
     if (!stores || !storesQuery.data || !provision || !sources.boundaries || !sources.stores) return null;
     return {
+      mode: "access",
+      compareCouncils: [],
+      grocers,
       storesUrl: blobUrlFor(storesQuery.data, stores),
       storeWhere: filterWhereClause(filter),
       storesCopyright: sources.stores.attribution,
@@ -190,6 +208,7 @@ export function useAccess() {
     selected,
     council,
     nearby,
+    grocers,
   ]);
 
   const error = storesQuery.error ?? indicatorsQuery.error ?? (manifest.isError ? manifest.error : null);
@@ -211,6 +230,15 @@ export function useAccess() {
     selected,
     nearby,
     map,
+    grocers,
+    grocersDoc: grocersQuery.data ?? null,
+    grocersStatus: !niGrocers
+      ? ("off" as const)
+      : grocersQuery.isError
+        ? ("error" as const)
+        : grocersQuery.data
+          ? ("ready" as const)
+          : ("loading" as const),
   };
 }
 

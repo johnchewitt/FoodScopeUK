@@ -7,7 +7,7 @@ const MISSING_TEXT: Record<NonNullable<Indicator["missingReason"]>, string> = {
   suppressed: "Suppressed by the publisher",
   not_published: "Not published",
   not_applicable: "Not applicable",
-  not_covered: "Not covered by this source",
+  not_covered: "Data unavailable (not covered by this source)",
   small_base: "Base too small to show",
 };
 

@@ -208,3 +208,53 @@ describe("UK Food Access and basemap URL state (SM-03, SM-05, SM-06, SH-08)", ()
     expect(serializeUrlState({ ...DEFAULT_URL_STATE, storeLayers: [] })).toBe("?sl=none");
   });
 });
+
+describe("Local Authority Profiles URL state (LP-01, LP-06, LP-07)", () => {
+  it("reads the small-area measure, small area, comparison councils and NI grocers layer", () => {
+    expect(
+      parseUrlState("?m=profiles&lad=N09000003&am=distance&sa=95GG35S1&cmp=E08000003,w06000015&ng=1"),
+    ).toMatchObject({
+      module: "profiles",
+      lad: "N09000003",
+      areaMeasure: "distance",
+      area: "95GG35S1",
+      compare: ["E08000003", "W06000015"],
+      niGrocers: true,
+    });
+    expect(parseUrlState("?sa=E01005063").area).toBe("E01005063");
+    expect(parseUrlState("?sa=N20000001").area).toBe("N20000001");
+    // Whole-ward SOAs end in W (10 of Belfast's 174 SOAs).
+    expect(parseUrlState("?sa=95II07W1").area).toBe("95II07W1");
+  });
+
+  it("falls back on invalid values; comparison drops the selected council, repeats and extras", () => {
+    expect(parseUrlState("?am=composite&sa=<x>&ng=yes")).toMatchObject({
+      areaMeasure: "ppfi",
+      area: null,
+      niGrocers: false,
+    });
+    expect(
+      parseUrlState("?lad=E08000003&cmp=E08000003,N09000003,n09000003,X1,S12000036,W06000015,E06000001")
+        .compare,
+    ).toEqual(["N09000003", "S12000036", "W06000015"]);
+  });
+
+  it("round-trips and omits defaults", () => {
+    const state = {
+      ...DEFAULT_URL_STATE,
+      module: "profiles" as const,
+      lad: "E08000003",
+      areaMeasure: "ppfi-family-food" as const,
+      area: "E01005063",
+      compare: ["N09000003"],
+      niGrocers: true,
+      overlay: "compare" as const,
+    };
+    const qs = serializeUrlState(state);
+    expect(qs).toBe(
+      "?m=profiles&am=ppfi-family-food&ng=1&lad=E08000003&sa=E01005063&cmp=N09000003&view=compare",
+    );
+    expect(parseUrlState(qs)).toEqual(state);
+    expect(serializeUrlState({ ...DEFAULT_URL_STATE, module: "profiles" })).toBe("?m=profiles");
+  });
+});

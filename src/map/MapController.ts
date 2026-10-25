@@ -18,27 +18,34 @@ const TRADE_MODULES: readonly string[] = ["origins", "seasonal"];
 
 /**
  * Which frame a module uses: the trade views share one (switching between them keeps the camera
- * while the commodity is the same); UK Food Access has its own; other modules none.
+ * while the commodity is the same); UK Food Access and Local Authority Profiles have their own;
+ * other modules none.
  */
-function frameFamily(module: string): "trade" | "access" | null {
+function frameFamily(module: string): "trade" | "access" | "profile" | null {
   if (TRADE_MODULES.includes(module)) return "trade";
-  return module === "access" ? "access" : null;
+  if (module === "access") return "access";
+  return module === "profiles" ? "profile" : null;
 }
 
 /** The frame the current module asks for, if any. */
 function moduleFrame(state: AppState): { key: string; bbox: BBox } | null {
   const family = frameFamily(state.module);
   if (family === "trade") return state.originsMap?.frame ?? null;
-  if (family === "access") return state.accessMap?.frame ?? null;
+  if (family === "access") return state.accessMap?.mode === "access" ? state.accessMap.frame : null;
+  if (family === "profile") return state.accessMap?.mode === "profile" ? state.accessMap.frame : null;
   return null;
 }
 
 /**
  * Trade frames keep fitBBox's minimum span (a single nearby partner still shows context); UK Food
- * Access fits the box around its stores as it is.
+ * Access fits the box around its stores as it is. Local Authority Profiles fits one council, so it
+ * may zoom past the national cap (a city council fills the map at about zoom 11); the cap stops a
+ * very small council (City of London) being framed at street level.
  */
+export const PROFILE_MAX_ZOOM = 13;
 const FIT_OPTIONS: Partial<Record<string, FitOptions>> = {
   access: { minSpanLon: 0, minSpanLat: 0 },
+  profiles: { minSpanLon: 0, minSpanLat: 0, maxZoom: PROFILE_MAX_ZOOM },
 };
 
 /**
@@ -51,6 +58,8 @@ const FIT_OPTIONS: Partial<Record<string, FitOptions>> = {
  * month, year or measure change, so it does not fight a user who has panned or zoomed; "Fit to
  * recorded partners" re-applies the frame on request. UK Food Access fits its mapped stores once
  * when it opens, unless the map is already at local scale (a store or postcode already chosen).
+ * Local Authority Profiles fits the selected council (or the UK) on opening and whenever the
+ * council changes (LP-01 fly-to), whatever the scale.
  */
 export class MapController {
   private view: ViewLike | null = null;

@@ -1,0 +1,27 @@
+{
+  "id": "areas.e08000003.boundaries",
+  "title": "Small areas of the deep profile — Manchester: LSOAs (2021)",
+  "role": "reference",
+  "path": "snapshots/2026-10-25/areas/E08000003/small-areas.geojson",
+  "format": "geojson",
+  "schemaId": "small-areas",
+  "sha256": "adaf20be8d7d75223fea48c997eac02c870f5651e8757bbfafc9bfe54f0ab028",
+  "bytes": 279594,
+  "featureCount": 295,
+  "sourceIds": [
+    "S15",
+    "S21"
+  ],
+  "referencePeriod": "LSOAs of Census 2021 (December 2021 boundaries)",
+  "coverage": "Manchester (295 LSOAs)",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025",
+  "expectedCadence": "irregular",
+  "retrieval": {
+    "method": "ONS feature services and NISRA shapefiles (fetch-ons, fetch-reference), cached in pipeline/raw/",
+    "source": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Lower_layer_Super_Output_Areas_December_2021_Boundaries_EW_BGC_V5/FeatureServer/0 (8 pages, combined sha256 0e0add88a59e…)",
+    "retrievedAt": "2026-10-24T22:15:27Z",
+    "notes": "LSOA BGC (20 m) coverage-simplified at 5 m in EPSG:27700; WGS84 to 6 decimal places."
+  }
+}

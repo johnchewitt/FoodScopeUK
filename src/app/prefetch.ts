@@ -1,6 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { TRADE_INDEX_ID } from "@/features/origins/useOrigins";
 import { loadAccess } from "@/features/access/load";
+import { preloadProfiles } from "@/features/profiles/load";
 import { preloadSeasonal } from "@/features/seasonal/load";
 import {
   LOCAL_INDICATORS_DATASET_ID,
@@ -30,6 +31,11 @@ export async function prefetchStartupData(
   url: Pick<UrlState, "module" | "commodity">,
 ): Promise<void> {
   if (url.module === "access") return prefetchAccess(client);
+  // Local Authority Profiles reads the same stores and council indicators, plus its own chunk.
+  if (url.module === "profiles") {
+    preloadProfiles();
+    return prefetchAccess(client);
+  }
   if (!TRADE_MODULES.includes(url.module)) {
     await client.prefetchQuery(manifestQuery);
     return;

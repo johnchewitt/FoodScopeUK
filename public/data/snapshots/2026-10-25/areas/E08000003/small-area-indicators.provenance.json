@@ -1,0 +1,30 @@
+{
+  "id": "areas.e08000003.indicators",
+  "title": "Small-area indicators of the deep profile — Manchester: Census 2021 population, households and car availability; urban/rural class; deprivation and the Priority Places for Food Index within the nation",
+  "role": "statistical",
+  "path": "snapshots/2026-10-25/areas/E08000003/small-area-indicators.json",
+  "format": "json",
+  "schemaId": "small-area-indicators",
+  "sha256": "6069a9044276c2b64ad46316f20a00682eb77bf61688d705612a52ee4f1178a2",
+  "bytes": 204133,
+  "sourceIds": [
+    "S13",
+    "S15",
+    "S18",
+    "S19",
+    "S20",
+    "S21"
+  ],
+  "referencePeriod": "Census 2021 (21 March 2021); IoD 2025; PPFI v2.1 (July 2024); RUC 2021",
+  "coverage": "Manchester (295 LSOAs)",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Source: Ministry of Housing, Communities and Local Government, English Indices of Deprivation 2025 (OGL v3.0). Priority Places for Food Index v2.1, Healthy & Sustainable Places Data Service (HASP) / CDRC, DOI 10.82147/003 (OGL v3.0)",
+  "expectedCadence": "irregular",
+  "retrieval": {
+    "method": "Derived offline from the committed raw files (fetch-reference)",
+    "source": "census2021-ts001.zip (sha256 b724c1208b76…); census2021-ts045.zip (sha256 95593dcd5324…); hasp_ppfi_v2.1.csv (provided, sha256 51f96ce7a792…); File_7_IoD2025_All_Ranks_Scores_Deciles_Population_Denominators.csv (sha256 b1b716aa2e47…); LSOA centroids (1 page, combined sha256 e3aa54bdfbe9…); LSOA lookup (1 page, combined sha256 9e360885b10b…); urban/rural (36 pages, combined sha256 9f9c6670723c…)",
+    "retrievedAt": "2026-10-25T11:49:17Z",
+    "notes": "Values as published. IoD 2025 deciles as published, within England only. PPFI v2.1 from Leeds HASP (downloaded by John): ranks and deciles within England as published."
+  }
+}

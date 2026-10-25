@@ -43,7 +43,20 @@ const TRADE_CAVEATS = [
   "Seasonal Supply: months HMRC has not yet published are shown hatched and are never estimated or interpolated. Partial years are compared like for like, and annual figures need all 12 months.",
   "Seasonal Supply: connection widths use one fixed scale for every month and year (12 px = the largest monthly value from one partner), and heatmap classes are the same for every year, so months and years compare directly.",
   "Commodity codes change over time (e.g. tomatoes split into three codes from January 2025). Each basket includes every current and discontinued code, so its totals are continuous; the Seasonal panel lists when each code was recorded.",
-  "UK seasonal production is not shown: no verified monthly series exists for these five commodities. Imports are never used to estimate domestic production.",
+  "UK seasonal production is not shown: Defra publishes production of these commodities once a year, not monthly (S09, S10). Imports are never used to estimate domestic production.",
+];
+
+const LOCAL_CAVEATS = [
+  "Stores are GEOLYTIX Grocery Retail Points (June 2026). Each store is counted in the council it falls in on the ONS May 2025 full-resolution boundaries; a coastal store just outside every boundary goes to the nearest council within 50 m. Stores in the Crown Dependencies are mapped but belong to no council.",
+  "Store counts and distances describe physical provision only; they do not measure affordability, choice or nutritional access.",
+  "Distances are straight-line, from each small area's Census 2021 population-weighted centroid to the nearest store in the same national grid (British National Grid; Irish Transverse Mercator in Northern Ireland). They are not road-network, walking or public transport times. 'Residents beyond 1 km' adds up whole small areas whose centroid is beyond 1 km.",
+  "Rates per 10,000 residents use ONS mid-2025 population; small-area shares use Census 2021 counts. The two are never combined in one figure.",
+  "Priority Places for Food Index v2.1: decile 1 = highest priority, ranked within each nation. The publisher does not state the direction; FOODSCOPE checked it against the deprivation indices. Northern Ireland is published on the 2011 Super Output Areas and three of its seven domains have no Northern Ireland data.",
+  "Deprivation: English Indices of Deprivation 2025 (LSOAs) and the Northern Ireland Multiple Deprivation Measure 2017 (SOAs). Each ranks areas within its own nation and they are never compared or combined across nations.",
+  "Urban/rural: the ONS 2021 classification covers England and Wales; Northern Ireland's 2015 class is shown for small areas only; Scotland's classification is not included in this release.",
+  "Car or van availability is from Census 2021 (England, Wales and Northern Ireland). Scotland's census was held in 2022 and is not included.",
+  "In Northern Ireland GEOLYTIX maps ten retailers. Other grocers from the Food Standards Agency register are an optional map layer, never counted in a rate or distance.",
+  "Local Authority Profiles: national supply context (recorded imports, UK production) is the same for every council and is labelled as national; it says nothing about a council's own supply chains. Small-area figures are published for Belfast and Manchester only in this release.",
 ];
 
 /** Evidence & Limitations (SH-06, EV-03), generated from the data manifest. */
@@ -148,6 +161,17 @@ export function EvidenceDialog() {
               <h3>Reading the trade figures (Food Origins and Seasonal Supply)</h3>
               <ul className="evidence-caveats">
                 {TRADE_CAVEATS.map((c) => (
+                  <li key={c}>{c}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {manifest.data?.datasets.some((d) => d.id.startsWith("local.")) && (
+            <section>
+              <h3>Reading the local figures (UK Food Access and Local Authority Profiles)</h3>
+              <ul className="evidence-caveats">
+                {LOCAL_CAVEATS.map((c) => (
                   <li key={c}>{c}</li>
                 ))}
               </ul>

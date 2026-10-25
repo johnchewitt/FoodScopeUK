@@ -6,8 +6,8 @@ import {
   type StoreLayer,
 } from "@/analysis/retail";
 
-/** Overlays that can be deep-linked (SH-06 Evidence page, Help). */
-export const OVERLAYS = ["none", "evidence", "help"] as const;
+/** Overlays that can be deep-linked (SH-06 Evidence page, Help, LP-07 council comparison). */
+export const OVERLAYS = ["none", "evidence", "help", "compare"] as const;
 export type Overlay = (typeof OVERLAYS)[number];
 
 export const PERIOD_MODES = ["rolling12", "month", "year"] as const;
@@ -22,6 +22,27 @@ export type CouncilLayer = ProvisionMeasure | "off";
 /** Curated basemaps (SH-08). */
 export const BASEMAP_IDS = ["dark", "light", "imagery"] as const;
 export type BasemapId = (typeof BASEMAP_IDS)[number];
+/**
+ * Small-area map measure in a deep profile (LP-04, LP-06): the Priority Places for Food Index
+ * (combined, or one domain), deprivation within the nation, households without a car or van, or
+ * straight-line distance to the nearest supermarket.
+ */
+export const AREA_MEASURES = [
+  "ppfi",
+  "ppfi-supermarket-proximity",
+  "ppfi-supermarket-accessibility",
+  "ppfi-online",
+  "ppfi-nonsupermarket-proximity",
+  "ppfi-socio-economic",
+  "ppfi-family-food",
+  "ppfi-fuel-poverty",
+  "deprivation",
+  "no-car",
+  "distance",
+] as const;
+export type AreaMeasure = (typeof AREA_MEASURES)[number];
+/** Councils compared with the selected one (LP-07: 2–4 councils in all). */
+export const MAX_COMPARE = 3;
 
 /** State mirrored in the query string (ADR-13, SH-04). */
 export interface UrlState {
@@ -48,6 +69,12 @@ export interface UrlState {
   store: number | null;
   /** Basemap style (SH-08). */
   basemap: BasemapId;
+  /** Local Authority Profiles (LP-04, LP-06, LP-07): small-area measure, selected small area, comparison councils. */
+  areaMeasure: AreaMeasure;
+  area: string | null;
+  compare: string[];
+  /** Northern Ireland grocers from the FSA register that GEOLYTIX does not map (supplementary layer, S29). */
+  niGrocers: boolean;
 }
 
 export const DEFAULT_URL_STATE: UrlState = {
@@ -68,6 +95,10 @@ export const DEFAULT_URL_STATE: UrlState = {
   councilLayer: "supermarkets",
   store: null,
   basemap: "dark",
+  areaMeasure: "ppfi",
+  area: null,
+  compare: [],
+  niGrocers: false,
 };
 
 const LAYER_PARAM: Record<StoreLayer, string> = { supermarket: "s", convenience: "c", other: "o" };
@@ -111,6 +142,25 @@ export function isGssCode(value: string): boolean {
   return GSS_CODE.test(value);
 }
 
+/** Small-area codes: LSOA 2021 (E01/W01), NI Data Zone 2021 (N20), NI SOA 2011 (e.g. 95GG01S1). */
+/** LSOA 2021, NI Data Zone 2021, NI SOA (2011: ending S, W or C and a digit, e.g. 95GG01S1, 95II07W1). */
+const SMALL_AREA_CODE = /^([EW]01\d{6}|N20\d{6}|95[A-Z]{2}\d{2}[SWC]\d)$/;
+
+export function isSmallAreaCode(value: string): boolean {
+  return SMALL_AREA_CODE.test(value);
+}
+
+/** Comparison councils: valid, distinct, not the selected council, at most MAX_COMPARE. */
+export function cleanCompare(codes: readonly string[], lad: string | null): string[] {
+  const out: string[] = [];
+  for (const c of codes) {
+    const code = c.trim().toUpperCase();
+    if (isGssCode(code) && code !== lad && !out.includes(code)) out.push(code);
+    if (out.length === MAX_COMPARE) break;
+  }
+  return out;
+}
+
 /** Parse a query string. Invalid values fall back to defaults rather than throwing. */
 export function parseUrlState(search: string): UrlState {
   const params = new URLSearchParams(search);
@@ -131,6 +181,10 @@ export function parseUrlState(search: string): UrlState {
   const cl = params.get("cl");
   const st = params.get("st");
   const bm = params.get("bm");
+  const am = params.get("am");
+  const sa = params.get("sa");
+  const cmp = params.get("cmp");
+  const ng = params.get("ng");
 
   const monthNum = mo !== null && /^\d{1,2}$/.test(mo) ? Number(mo) : NaN;
   const yearNum = y !== null && /^\d{4}$/.test(y) ? Number(y) : NaN;
@@ -138,11 +192,12 @@ export function parseUrlState(search: string): UrlState {
   const compareMonthNum = cm !== null && /^\d{1,2}$/.test(cm) ? Number(cm) : NaN;
   const period = (Object.keys(PERIOD_PARAM) as PeriodMode[]).find((k) => PERIOD_PARAM[k] === pm);
 
+  const ladCode = lad && isGssCode(lad.toUpperCase()) ? lad.toUpperCase() : null;
   return {
     module: isModuleId(m) ? m : DEFAULT_URL_STATE.module,
     month: Number.isInteger(monthNum) && monthNum >= 1 && monthNum <= 12 ? monthNum : null,
-    lad: lad && isGssCode(lad.toUpperCase()) ? lad.toUpperCase() : null,
-    overlay: view === "evidence" || view === "help" ? view : "none",
+    lad: ladCode,
+    overlay: (OVERLAYS as readonly string[]).includes(view ?? "") ? (view as Overlay) : "none",
     commodity: c && COMMODITY_ID.test(c) ? c : DEFAULT_URL_STATE.commodity,
     period: period ?? DEFAULT_URL_STATE.period,
     year: Number.isInteger(yearNum) && yearNum >= 1990 && yearNum <= 2100 ? yearNum : null,
@@ -164,6 +219,10 @@ export function parseUrlState(search: string): UrlState {
       DEFAULT_URL_STATE.councilLayer,
     store: st !== null && /^\d{1,12}$/.test(st) ? Number(st) : null,
     basemap: (BASEMAP_IDS as readonly string[]).includes(bm ?? "") ? (bm as BasemapId) : "dark",
+    areaMeasure: (AREA_MEASURES as readonly string[]).includes(am ?? "") ? (am as AreaMeasure) : "ppfi",
+    area: sa && isSmallAreaCode(sa) ? sa : null,
+    compare: cmp ? cleanCompare(cmp.split(","), ladCode) : [],
+    niGrocers: ng === "1",
   };
 }
 
@@ -187,7 +246,11 @@ export function serializeUrlState(state: UrlState): string {
     params.set("cl", COUNCIL_PARAM[state.councilLayer]);
   if (state.store !== null) params.set("st", String(state.store));
   if (state.basemap !== DEFAULT_URL_STATE.basemap) params.set("bm", state.basemap);
+  if (state.areaMeasure !== DEFAULT_URL_STATE.areaMeasure) params.set("am", state.areaMeasure);
+  if (state.niGrocers) params.set("ng", "1");
   if (state.lad !== null) params.set("lad", state.lad);
+  if (state.area !== null) params.set("sa", state.area);
+  if (state.compare.length) params.set("cmp", state.compare.join(","));
   if (state.overlay !== "none") params.set("view", state.overlay);
   const qs = params.toString();
   return qs ? `?${qs}` : "";

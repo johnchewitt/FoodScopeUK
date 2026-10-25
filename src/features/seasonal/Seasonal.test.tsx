@@ -126,10 +126,14 @@ describe("Seasonal Supply explorer", { timeout: 20_000 }, () => {
     expect(within(section).getByText("Netherlands 63.8 %")).toBeInTheDocument();
   });
 
-  it("states that UK seasonal production is not verified and shows none", async () => {
+  it("states that UK seasonal production is not published monthly and shows none", async () => {
     renderAt("?m=seasonal");
     expect(
-      await screen.findByText("UK seasonal production: not verified, not shown.", {}, { timeout: 8000 }),
+      await screen.findByText(
+        "UK seasonal production: not published monthly, not shown.",
+        {},
+        { timeout: 8000 },
+      ),
     ).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "UK production" })).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByRole("radio", { name: "Combined" })).toHaveAttribute("aria-disabled", "true");

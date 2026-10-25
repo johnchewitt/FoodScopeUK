@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { hexToRgb, mixOklab, rgbToHex, rgbToOklab } from "@/analysis/colour";
 import { readRepoFile } from "@/test/files";
-import { BRAND, LIGHT_SEQ, MAP_COLOURS, MAP_TOKENS, SEQ_MIX_PERCENT, SHARE_CLASS_HEX } from "./palette";
+import {
+  BRAND,
+  CATEGORICAL,
+  LIGHT_SEQ,
+  MAP_COLOURS,
+  MAP_TOKENS,
+  SEQ_MIX_PERCENT,
+  SHARE_CLASS_HEX,
+} from "./palette";
 
 const tokens = readRepoFile("src/styles/tokens.css");
 const css = readRepoFile("src/styles/app.css");
@@ -90,5 +98,12 @@ describe("per-basemap colour sets (SH-08, ADR-0022)", () => {
   it("the light ramp reads light to dark (OKLab lightness strictly decreasing)", () => {
     const lightness = LIGHT_SEQ.map((hex) => rgbToOklab(hexToRgb(hex))[0]);
     for (let i = 1; i < lightness.length; i++) expect(lightness[i]! - lightness[i - 1]!).toBeLessThan(-0.06);
+  });
+});
+
+describe("categorical chart colours (Stage 5)", () => {
+  it("tokens.css mirrors CATEGORICAL", () => {
+    CATEGORICAL.forEach((hex, i) => expect(tokens).toContain(`--fs-cat-${i + 1}: ${hex};`));
+    expect(tokens).toContain("--fs-cat-other: var(--fs-text-muted);");
   });
 });

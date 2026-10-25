@@ -1,8 +1,10 @@
 import Ajv, { type ValidateFunction } from "ajv";
 import ladIndicatorsSchema from "../../../schemas/lad-indicators.schema.json";
+import grocersSchema from "../../../schemas/ni-other-grocers.schema.json";
 import storesSchema from "../../../schemas/stores.schema.json";
 import type { ValidationResult } from "@/services/data/validate";
 import type { CouncilIndicators } from "@/types/generated/lad-indicators";
+import type { NiOtherGrocers } from "@/types/generated/ni-other-grocers";
 import type { StoreCollection } from "@/types/generated/stores";
 
 /**
@@ -12,6 +14,7 @@ import type { StoreCollection } from "@/types/generated/stores";
 const ajv = new Ajv({ allErrors: false, strict: true, allowUnionTypes: true });
 const stores = ajv.compile<StoreCollection>(storesSchema);
 const indicators = ajv.compile<CouncilIndicators>(ladIndicatorsSchema);
+const grocers = ajv.compile<NiOtherGrocers>(grocersSchema);
 
 function run<T>(fn: ValidateFunction<T>, data: unknown): ValidationResult<T> {
   if (fn(data)) return { ok: true, value: data, errors: [] };
@@ -26,4 +29,9 @@ export function validateStores(data: unknown): ValidationResult<StoreCollection>
 
 export function validateLadIndicators(data: unknown): ValidationResult<CouncilIndicators> {
   return run(indicators, data);
+}
+
+/** NI grocers from the FSA register that GEOLYTIX does not map (S29; supplementary layer). */
+export function validateNiGrocers(data: unknown): ValidationResult<NiOtherGrocers> {
+  return run(grocers, data);
 }

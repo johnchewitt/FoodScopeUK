@@ -2,11 +2,13 @@
 
 **Food Security & Supply Chain Intelligence** — a map-centred demonstrator showing where the UK's recorded food imports come from, how sourcing changes through the year, where supermarket provision and food-access vulnerability sit, and how exposed the system is to plausible disruptions. Built for ConsultingWhere with React 19, TypeScript, Vite and the ArcGIS Maps SDK for JavaScript 5.1.
 
-> **Status:** Stage 3 — the **Food Origins explorer** (Stage 2) and the **Seasonal Supply Explorer** (Stage 3), with real HMRC Overseas Trade Statistics for tomatoes, strawberries, bananas, potatoes and wheat (monthly, January 2019 – August 2026; snapshot 2026-10-23).
-> - Seasonal Supply plays through January–December and has a partner-by-month heatmap, monthly trend, year-on-year change and month-against-month comparison.
+> **Status:** Stage 5 built (awaiting review). Four modules use real data:
+> - **Food Origins** (Stage 2) and **Seasonal Supply** (Stage 3): HMRC Overseas Trade Statistics for tomatoes, strawberries, bananas, potatoes and wheat, monthly from January 2019 (snapshot 2026-10-23).
+> - **UK Food Access** (Stage 4): about 19,000 GEOLYTIX grocery stores (June 2026), stores per 10,000 residents for the 361 councils (ONS mid-2025), straight-line proximity, and a basemap choice (dark grey, light grey, imagery at local scale).
+> - **Local Authority Profiles** (Stage 5): a profile for any UK council, deep profiles for Belfast and Manchester (small-area accessibility, Priority Places for Food Index, deprivation within each nation, car availability), national supply context and a side-by-side comparison that never ranks across nations.
 > - Other modules still show what they will contain and when.
 >
-> See `docs/stage-reports/stage-3.md`, and `docs/reviews/2026-10-23-review.md` for the review after Stage 3 (map framing, legend-true colours, comparability cautions, faster figures, KPI cards never hidden).
+> See `docs/stage-reports/` (stage 5 is the latest) and `docs/reviews/2026-10-23-review.md`.
 >
 > Site: https://johnchewitt.github.io/FoodScopeUK/
 
@@ -55,6 +57,16 @@ The snapshot holds Natural Earth v5.1.2 reference geometry and the HMRC trade ba
 
 To rebuild an existing snapshot offline: `uv run foodscope-pipeline build-trade --snapshot 2026-10-23`.
 
+Local data (stores, councils, population, small areas, context) is built offline from raw files committed in `pipeline/raw/` (ADR-0020, ADR-0021, ADR-0023). The online fetches run on GitHub Actions when a `data/**` branch is pushed (`refresh-reference-data.yml`). Then:
+
+```bash
+uv run foodscope-pipeline build-local --snapshot 2026-10-24          # councils, stores, population
+uv run foodscope-pipeline build-ni-grocers --snapshot 2026-10-24 --local-snapshot 2026-10-24
+uv run foodscope-pipeline build-context --snapshot 2026-10-25 --reference-snapshot 2026-10-24 --local-snapshot 2026-10-24
+uv run foodscope-pipeline build-areas --snapshot 2026-10-24 --context-snapshot 2026-10-25   # deep profiles
+uv run foodscope-pipeline publish
+```
+
 ## Deployment
 
 GitHub Pages via `.github/workflows/deploy-pages.yml` on every push to `main`:
@@ -79,13 +91,24 @@ GitHub Pages via `.github/workflows/deploy-pages.yml` on every push to `main`:
 
 ## Licensing and attribution
 
-Code licence: to be confirmed by ConsultingWhere. Data shown in this build: Natural Earth (public domain; "Made with Natural Earth"); Esri basemap when a key is configured (attribution rendered by the map). Full source terms: `docs/03-DATA-SOURCES.md`.
+Code licence: to be confirmed by ConsultingWhere. Data shown in this build:
+- Natural Earth (public domain; "Made with Natural Earth");
+- HMRC Overseas Trade Statistics; ONS, NISRA, MHCLG and Defra statistics and boundaries (Open Government Licence v3.0; boundaries contain OS data © Crown copyright and database right);
+- GEOLYTIX Grocery Retail Points (free open data with no named licence; attributed on the map as a courtesy);
+- the Priority Places for Food Index v2.1 (CDRC / Leeds HASP, OGL v3.0);
+- the Food Standards Agency food hygiene register for Northern Ireland (OGL v3.0);
+- the Esri basemap when a key is configured (attribution rendered by the map).
 
-## Known limitations (Stage 3)
+Full source terms: `docs/03-DATA-SOURCES.md`; every dataset's licence and attribution is also on the app's Evidence page.
+
+## Known limitations (Stage 5)
 
 - Food Origins and Seasonal Supply cover five of the 16 planned commodities; the others and the remaining modules follow in later stages.
-- Seasonal Supply shows imports only. No verified monthly UK production series exists for these five commodities, so none is shown and none is estimated from imports.
-- Months HMRC has not yet published (September–December 2026 in this snapshot) are shown as missing, never estimated.
+- Seasonal Supply shows imports only: Defra publishes UK production of these commodities annually, not monthly, so none is shown and none is estimated from imports. The annual figures are national context in the profiles.
+- Months HMRC has not yet published are shown as missing, never estimated.
 - Recorded import partner = HMRC's country of dispatch, not where food was grown. Connections on the map are symbolic, not shipping routes.
-- The Esri basemap and the HMRC API cannot be reached from the development sandbox; the post-deploy smoke test checks the basemap on the live site, and HMRC data is fetched by GitHub Actions.
-- The initial JavaScript bundle (184 kB gzip) is above the 350 kB-uncompressed budget in the architecture; reduction is in `docs/backlog.md`.
+- Store counts and distances describe physical provision only, not affordability, choice or nutritional access. Distances are straight-line, not travel times.
+- Small-area figures are published for Belfast and Manchester only; other councils follow in Release 2. Deprivation and the Priority Places for Food Index rank areas within each nation and are never compared across nations. Scotland's census (2022) and urban/rural classification are not included yet.
+- In Northern Ireland GEOLYTIX maps ten retailers; other grocers from the FSA register are an optional layer, never counted.
+- The Esri basemap and the HMRC API cannot be reached from the development sandbox; the live site is checked after each deploy, and HMRC and reference data are fetched by GitHub Actions.
+- The initial JavaScript bundle is above the architecture budget; reduction is in `docs/backlog.md`.

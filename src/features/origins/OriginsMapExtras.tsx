@@ -66,7 +66,13 @@ export function OriginsTooltip() {
   const partner = model.map.partners.find((p) => p.key === hover.key || p.iso2 === hover.key);
   const row = partner ? model.rows.find((r) => r.key === partner.key) : undefined;
   return (
-    <div className="map-tooltip glass" style={{ left: hover.x + 14, top: hover.y + 14 }} role="status">
+    <div
+      className="map-tooltip glass"
+      style={{ left: hover.x + 14, top: hover.y + 14 }}
+      role="status"
+      data-hover-key={hover.key}
+      data-partner-key={partner?.key ?? ""}
+    >
       {partner && row ? (
         <>
           <strong>{partner.name}</strong>

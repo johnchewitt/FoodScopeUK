@@ -1677,6 +1677,15 @@
   margin-top: 8px;
   line-height: 1.45;
 }
+.map-legend__sub {
+  display: block;
+  color: var(--fs-text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+li[data-hidden-at-scale] .grocer-symbol {
+  opacity: 0.45;
+}
 .map-tooltip {
   position: absolute;
   z-index: 30;
@@ -2491,6 +2500,31 @@
   opacity: 0.45;
   cursor: default;
 }
+.chip-btn--small {
+  height: 26px;
+  padding: 0 8px;
+  gap: 5px;
+}
+/* Keyboard alternative to clicking a chart bar (profiles). */
+.outline-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+}
+.outline-buttons__label {
+  margin-right: 2px;
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.outline-buttons__count {
+  color: var(--fs-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.chip-btn[aria-pressed="true"] .outline-buttons__count {
+  color: inherit;
+}
 .link-btn {
   padding: 0;
   margin-right: 8px;
@@ -2648,4 +2682,249 @@
 .basemap-control__note {
   margin: 4px 0 0;
   line-height: 1.4;
+}
+
+/* ───────────────────────── Local Authority Profiles (Stage 5) ───────────────────────── */
+.nation-filter {
+  margin-top: 10px;
+}
+.council-list {
+  display: grid;
+  gap: 2px;
+  margin: 10px 0 6px;
+  padding: 0;
+  list-style: none;
+  max-height: 260px;
+  overflow-y: auto;
+}
+.council-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--fs-radius-sm);
+  background: none;
+  color: var(--fs-text);
+  font: inherit;
+  font-size: var(--fs-text-sm);
+  text-align: left;
+  cursor: pointer;
+}
+.council-list__item:hover {
+  background: var(--fs-surface-hover);
+}
+.council-list__item[aria-current="true"] {
+  border-color: var(--fs-line-strong);
+  background: var(--fs-cyan-soft);
+}
+.council-list__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--fs-font-mono);
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.profile-header__title {
+  font-size: var(--fs-text-xl);
+  font-weight: 600;
+  color: var(--fs-text);
+}
+.profile-header__meta,
+.freshness-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 0;
+}
+.profile-section > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  list-style: none;
+  cursor: pointer;
+}
+.profile-section > summary::-webkit-details-marker {
+  display: none;
+}
+.profile-section > summary::after {
+  content: "▾";
+  margin-left: auto;
+  color: var(--fs-text-muted);
+  transition: transform var(--fs-dur) var(--fs-ease);
+}
+.profile-section:not([open]) > summary::after {
+  transform: rotate(-90deg);
+}
+.profile-section > summary .panel-section__title {
+  margin: 0;
+}
+.profile-section__body {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+.profile-rows {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+.profile-row {
+  display: grid;
+  gap: 2px;
+}
+.profile-row dt {
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.profile-row dd {
+  margin: 0;
+}
+.profile-row__hint {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.national-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgb(232 183 107 / 0.35);
+  border-radius: var(--fs-radius-sm);
+  background: var(--fs-amber-soft);
+  font-size: var(--fs-text-xs);
+  line-height: 1.5;
+}
+.unavailable {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px dashed var(--fs-line-strong);
+  border-radius: var(--fs-radius-sm);
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.unavailable strong,
+.unavailable-cell {
+  color: var(--fs-amber);
+  font-weight: 500;
+}
+.table-sub {
+  display: block;
+  font-size: var(--fs-text-xs);
+  font-weight: 400;
+  color: var(--fs-text-muted);
+}
+.legend-dot {
+  display: inline-block;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  margin-right: 6px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.retailer-table tr[data-selected] th,
+.retailer-table tr[data-selected] td {
+  background: var(--fs-cyan-soft);
+}
+.store-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+.highlight-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 8px 6px 12px;
+  border: 1px solid var(--fs-map-proximity);
+  border-radius: var(--fs-radius-pill);
+  font-size: var(--fs-text-xs);
+}
+.opportunity-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding-left: 18px;
+}
+.opportunity-list h4 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-size: var(--fs-text-sm);
+  font-weight: 600;
+}
+.opportunity-list p {
+  font-size: var(--fs-text-xs);
+  line-height: 1.5;
+}
+.grocer-symbol {
+  display: inline-block;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  margin: 0 2px;
+  border: 1.6px solid var(--fs-map-register-grocer);
+  transform: rotate(45deg);
+}
+.council-sample {
+  display: inline-block;
+  flex: none;
+  width: 16px;
+  height: 11px;
+  border-radius: 2px;
+  /* Unselected councils: the council line colour of the style (cyan on dark, navy on light). */
+  border: 1.5px solid color-mix(in oklab, var(--fs-map-connection) 60%, transparent);
+  background: var(--fs-map-sample-ground);
+}
+.council-sample--selected {
+  border: 3px solid var(--fs-map-selection);
+  background: color-mix(in oklab, var(--fs-map-selection) 10%, transparent);
+}
+.council-sample--compare {
+  border: 2px dashed var(--fs-map-selection);
+}
+.compare-table th[scope="col"] {
+  min-width: 140px;
+  color: var(--fs-text);
+}
+.compare-table__group th {
+  padding-top: 14px;
+  font-size: var(--fs-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fs-cyan);
+}
+.compare-table tr[data-comparability="within-nation"] th[scope="row"],
+.compare-table tr[data-comparability="nation-specific"] th[scope="row"] {
+  border-left: 3px solid var(--fs-amber);
+}
+.mix {
+  display: grid;
+  gap: 4px;
+  min-width: 140px;
+}
+.mix__bar {
+  display: flex;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 3px;
+}
+.mix__seg {
+  display: block;
+  height: 100%;
+  border-right: 2px solid var(--fs-navy);
+}
+.mix__seg:last-child {
+  border-right: 0;
 }

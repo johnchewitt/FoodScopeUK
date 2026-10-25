@@ -225,8 +225,8 @@ describe("Seasonal model: missing, partial and comparison handling", () => {
   });
 
   it("UK production is never shown for these baskets (SS-07)", () => {
-    expect(build().domestic).toMatchObject({ status: "not_verified", sourceIds: ["S09"] });
-    expect(build({}, wheat).domestic).toMatchObject({ status: "not_verified", sourceIds: ["S10"] });
+    expect(build().domestic).toMatchObject({ status: "annual_only", sourceIds: ["S09"] });
+    expect(build({}, wheat).domestic).toMatchObject({ status: "annual_only", sourceIds: ["S10"] });
     expect(build({}, bananas).domestic).toMatchObject({ status: "none_identified", sourceIds: [] });
   });
 

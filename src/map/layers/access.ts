@@ -24,11 +24,21 @@ import {
   type AccessMapModel,
   type AppState,
   type HoverAccess,
+  type HoverArea,
   type MapCommand,
+  type ProfileMapModel,
 } from "@/state/store";
 import { MAP_COLOURS, type MapColours, type MapStyle } from "@/styles/palette";
 import { ensureHoverHighlight, HOVER_HIGHLIGHT } from "../highlight";
-import { ACCESS_COUNCILS_LAYER_ID, ACCESS_OVERLAY_LAYER_ID, ACCESS_STORES_LAYER_ID } from "../layerIds";
+import {
+  ACCESS_COUNCILS_LAYER_ID,
+  ACCESS_GROCERS_LAYER_ID,
+  ACCESS_OVERLAY_LAYER_ID,
+  ACCESS_STORES_LAYER_ID,
+  PROFILE_AREAS_LAYER_ID,
+  REGISTER_GROCERS_MIN_ZOOM,
+} from "../layerIds";
+import { areaGraphics, areaState, areaSymbol, grocerGraphics } from "./profileAreas";
 import {
   FLIGHT_DURATION_MS,
   type HitResult,
@@ -39,7 +49,7 @@ import {
 } from "../types";
 
 /**
- * UK Food Access map layers (SM-02, SM-04, SM-06, SM-07):
+ * UK Food Access and Local Authority Profiles map layers (SM-02, SM-04, SM-06, SM-07; LP-01, LP-06):
  * - councils shaded by stores per 10,000 residents in fixed classes at national and regional
  *   scale, with a hatched no-data class (P12); outlines only at local scale, where the stores
  *   are drawn individually and a fill would only hide them;
@@ -47,6 +57,10 @@ import {
  *   colour and shape (supermarket circle, convenience square, other formats triangle);
  * - the selected store, and the straight-line proximity overlay (radius ring drawn in the national
  *   grid, straight lines to the nearest stores, the chosen point).
+ * - in Local Authority Profiles (`mode: "profile"`): councils outlined, the selected council
+ *   emphasised and comparison councils dashed, the stores, and in a deep profile the small areas
+ *   shaded by the chosen measure (`state.profileMap`), drawn as graphics so hit tests stay fast;
+ * - NI grocers from the FSA register (S29), a supplementary layer of hollow diamonds.
  * Everything comes from `state.accessMap` (built by the feature from validated data); this
  * controller only draws it and turns pointer events into store actions (ADR-03). Colours follow
  * the basemap style (SH-08, ADR-0022).
@@ -64,8 +78,13 @@ const rgba = (hex: string, alpha = 1): Rgba => [...hexToRgb(hex), alpha];
 
 export interface AccessActions {
   selectStore(id: number | null): void;
+  /** UK Food Access: toggles the council selection. */
   selectCouncil(code: string | null): void;
+  /** Local Authority Profiles: opens the council's profile (never clears it). */
+  pickCouncil(code: string): void;
+  selectArea(code: string | null): void;
   setHoverAccess(hover: HoverAccess | null): void;
+  setHoverArea(hover: HoverArea | null): void;
   setProximityPoint(point: [number, number] | null): void;
 }
 
@@ -153,6 +172,35 @@ function councilRenderer(
   const outlineOnly = (outline: { color: Rgba; width: number }) =>
     new SimpleFillSymbol({ color: [0, 0, 0, 0], outline });
   const infos: UniqueValueInfo[] = [];
+  if (m.mode === "profile") {
+    // Profiles: every council outlined; the selected one emphasised (outline and a light tint) and
+    // comparison councils dashed in the same colour.
+    for (const code of m.compareCouncils)
+      infos.push(
+        new UniqueValueInfo({
+          value: code,
+          symbol: outlineOnly({ ...selection, width: 2, style: "dash" } as { color: Rgba; width: number }),
+        }),
+      );
+    if (m.selectedCouncil)
+      infos.push(
+        new UniqueValueInfo({
+          value: m.selectedCouncil,
+          symbol: new SimpleFillSymbol({
+            color: rgba(c.selection, 0.08),
+            outline: { ...selection, width: 3 },
+          }),
+        }),
+      );
+    return {
+      renderer: new UniqueValueRenderer({
+        field: "code",
+        defaultSymbol: outlineOnly(line),
+        uniqueValueInfos: infos,
+      }),
+      mode: "outlines",
+    };
+  }
   const fills = !local && m.choropleth !== null;
   if (fills) {
     const separator = { color: rgba(c.separator, c.separatorAlpha * 0.7), width: 0.4 };
@@ -250,6 +298,8 @@ function overlayGraphics(m: AccessMapModel, style: MapStyle): Graphic[] {
 type Hit =
   | { kind: "store"; id: number; graphic: NonNullable<HitResult["graphic"]> }
   | { kind: "cluster"; count: number; graphic: NonNullable<HitResult["graphic"]> }
+  | { kind: "grocer"; id: number; graphic: NonNullable<HitResult["graphic"]> }
+  | { kind: "area"; code: string; graphic: NonNullable<HitResult["graphic"]> }
   | { kind: "council"; code: string; graphic: NonNullable<HitResult["graphic"]> };
 
 export class AccessLayersController implements LayerController {
@@ -259,6 +309,11 @@ export class AccessLayersController implements LayerController {
   private councils: GeoJSONLayer | null = null;
   private stores: GeoJSONLayer | null = null;
   private overlay: GraphicsLayer | null = null;
+  /** Deep-profile small areas (graphics, below the councils) and NI grocers (above the stores). */
+  private areas: GraphicsLayer | null = null;
+  private grocers: GraphicsLayer | null = null;
+  private areaGraphicsByCode = new Map<string, Graphic>();
+  private areaModel: ProfileMapModel | null = null;
   private storesUrl: string | null = null;
   private councilsUrl: string | null = null;
   private handles: { remove(): void }[] = [];
@@ -270,11 +325,22 @@ export class AccessLayersController implements LayerController {
   private hoverSeq = 0;
   private lastHover: string | null = null;
   private visible = false;
+  private profile = false;
+  private areaClassOf: ProfileMapModel["classOf"] | null = null;
+  private areaClassVersion = 0;
   private picking = false;
   private local = false;
   private reducedMotion = false;
   private style: MapStyle = "dark";
-  private signature = { councils: "", storesStyle: "", where: "", overlay: "" };
+  private signature = {
+    councils: "",
+    storesStyle: "",
+    where: "",
+    overlay: "",
+    areas: "",
+    areaStyle: "",
+    grocers: "",
+  };
   /** Council renderer rebuilds so far (exposed on the view container for tests). */
   private councilBuilds = 0;
 
@@ -297,9 +363,11 @@ export class AccessLayersController implements LayerController {
 
   update(state: AppState): void {
     const m = state.accessMap;
-    const visible = state.module === "access" && m !== null;
+    const visible = (state.module === "access" || state.module === "profiles") && m !== null;
+    this.profile = visible && m?.mode === "profile";
     this.reducedMotion = selectReducedMotion(state);
-    this.picking = visible && state.proximityPicking;
+    // Point picking belongs to UK Food Access; a pick left open there never captures profile clicks.
+    this.picking = visible && m?.mode === "access" && state.proximityPicking;
     const container = this.view?.container;
     if (container) container.style.cursor = this.picking ? "crosshair" : "";
     if (visible !== this.visible) {
@@ -325,7 +393,7 @@ export class AccessLayersController implements LayerController {
     const choropleth = m.choropleth
       ? `${m.choropleth.measure}:${m.choropleth.classes.map((c) => c.join(",")).join("/")}:${m.choropleth.noData.join(",")}`
       : "off";
-    const councils = `${style}|${this.local}|${choropleth}|${m.selectedCouncil ?? ""}`;
+    const councils = `${m.mode}|${style}|${this.local}|${choropleth}|${m.selectedCouncil ?? ""}|${m.compareCouncils.join(",")}`;
     if (councils !== this.signature.councils && this.councils) {
       const { renderer, mode } = councilRenderer(m, style, this.local);
       this.councils.renderer = renderer;
@@ -352,6 +420,94 @@ export class AccessLayersController implements LayerController {
       this.overlay.addMany(overlayGraphics(m, style));
       this.signature.overlay = overlay;
     }
+    this.updateGrocers(m, style);
+    this.updateAreas(this.profile ? state.profileMap : null, style);
+  }
+
+  /** NI grocers from the FSA register (S29): drawn while the layer is on; never part of a rate. */
+  private updateGrocers(m: AccessMapModel, style: MapStyle): void {
+    const view = this.view;
+    if (!view) return;
+    // Visibility is set on every update: the module-wide visibility loop also touches this layer.
+    if (this.grocers) this.grocers.visible = this.visible && m.grocers !== null;
+    const sig = m.grocers ? `${style}|${m.grocers.points.length}|${m.grocers.points[0]?.id ?? ""}` : "";
+    if (sig === this.signature.grocers) return;
+    this.signature.grocers = sig;
+    if (!m.grocers) {
+      this.grocers?.removeAll();
+      if (view.container) delete view.container.dataset.accessGrocers;
+      return;
+    }
+    if (!this.grocers) {
+      this.grocers = new GraphicsLayer({
+        id: ACCESS_GROCERS_LAYER_ID,
+        title: "Other NI grocers (FSA register)",
+        listMode: "hide",
+        minScale: ZOOM0_SCALE / 2 ** REGISTER_GROCERS_MIN_ZOOM,
+      });
+      view.map?.add(this.grocers, this.overlay ? this.insertIndex(this.overlay) : undefined);
+    }
+    this.grocers.visible = this.visible;
+    this.grocers.removeAll();
+    this.grocers.addMany(grocerGraphics(m.grocers.points, style));
+    const container = view.container;
+    if (container) container.dataset.accessGrocers = String(m.grocers.points.length);
+  }
+
+  /**
+   * Deep-profile small areas: graphics rebuilt when the areas change (council or geography),
+   * re-symbolised in place when classes, selection, chart highlight or basemap style change.
+   */
+  private updateAreas(pm: ProfileMapModel | null, style: MapStyle): void {
+    const view = this.view;
+    if (!view) return;
+    const container = view.container;
+    if (!pm) {
+      if (this.areas) this.areas.visible = false;
+      this.areaModel = null;
+      if (container) delete container.dataset.profileAreas;
+      return;
+    }
+    if (!this.areas) {
+      this.areas = new GraphicsLayer({ id: PROFILE_AREAS_LAYER_ID, title: "Small areas", listMode: "hide" });
+      // Below the council outlines and the stores.
+      view.map?.add(this.areas, this.councils ? this.insertIndex(this.councils) : 0);
+      this.watchLayerView(this.areas);
+    }
+    this.areas.visible = this.visible;
+    if (pm.key !== this.signature.areas) {
+      this.areas.removeAll();
+      const graphics = areaGraphics(pm, style);
+      this.areaGraphicsByCode = new Map(graphics.map((g) => [String(g.attributes.code), g]));
+      this.areas.addMany(graphics);
+      this.signature.areas = pm.key;
+      this.signature.areaStyle = this.areaStyleKey(pm, style);
+    } else {
+      const sig = this.areaStyleKey(pm, style);
+      if (sig !== this.signature.areaStyle) {
+        for (const [code, g] of this.areaGraphicsByCode)
+          g.symbol = areaSymbol(pm, pm.classOf[code] ?? null, areaState(pm, code), style);
+        this.signature.areaStyle = sig;
+      }
+    }
+    this.areaModel = pm;
+    if (container) {
+      container.dataset.profileAreas = `${pm.lad}:${pm.measure}:${pm.areas.length}`;
+      container.dataset.profileSelectedArea = pm.selected ?? "";
+      container.dataset.profileHighlighted = String(pm.highlighted.length);
+    }
+  }
+
+  /**
+   * What the symbols depend on. `classOf` is compared by identity (a new object whenever the
+   * profile's area model is rebuilt), so a pointer move does not serialise every class.
+   */
+  private areaStyleKey(pm: ProfileMapModel, style: MapStyle): string {
+    if (pm.classOf !== this.areaClassOf) {
+      this.areaClassOf = pm.classOf;
+      this.areaClassVersion += 1;
+    }
+    return `${style}|${pm.measure}|${pm.firstColour}|${pm.selected ?? ""}|${pm.highlighted.join(",")}|${this.areaClassVersion}`;
   }
 
   /** Fits a council (focusCouncil); false when the councils are not drawn. */
@@ -382,15 +538,25 @@ export class AccessLayersController implements LayerController {
       view.map?.remove(l);
       l.destroy();
     }
-    this.councils = this.stores = this.overlay = null;
+    this.councils = this.stores = this.overlay = this.areas = this.grocers = null;
+    this.areaGraphicsByCode.clear();
+    this.areaModel = null;
     this.storesUrl = this.councilsUrl = null;
-    this.signature = { councils: "", storesStyle: "", where: "", overlay: "" };
+    this.signature = {
+      councils: "",
+      storesStyle: "",
+      where: "",
+      overlay: "",
+      areas: "",
+      areaStyle: "",
+      grocers: "",
+    };
     this.view = null;
     this.report = null;
   }
 
   private layers(): (GeoJSONLayer | GraphicsLayer)[] {
-    return [this.councils, this.stores, this.overlay].filter(
+    return [this.areas, this.councils, this.stores, this.grocers, this.overlay].filter(
       (l): l is GeoJSONLayer | GraphicsLayer => l !== null,
     );
   }
@@ -466,7 +632,7 @@ export class AccessLayersController implements LayerController {
     return i >= 0 ? i : undefined;
   }
 
-  private watchLayerView(layer: GeoJSONLayer, reports = false): void {
+  private watchLayerView(layer: GeoJSONLayer | GraphicsLayer, reports = false): void {
     const view = this.view;
     if (!view) return;
     view
@@ -485,11 +651,17 @@ export class AccessLayersController implements LayerController {
   private hitLayers(): unknown[] {
     const layers: unknown[] = [];
     if (this.stores) layers.push(this.stores);
-    if (this.councils && !this.local) layers.push(this.councils);
+    if (this.grocers?.visible) layers.push(this.grocers);
+    if (this.areas?.visible && this.areaModel) layers.push(this.areas);
+    // Profiles keep councils clickable at local scale (to move to a neighbour); UK Food Access does not.
+    if (this.councils && (!this.local || this.profile)) layers.push(this.councils);
     return layers;
   }
 
+  /** What is under the pointer, by priority: a store or cluster, an NI grocer, a small area, a council. */
   private hitFrom(results: HitResult[]): Hit | null {
+    let grocer: Hit | null = null;
+    let area: Hit | null = null;
     let council: Hit | null = null;
     for (const r of results) {
       const g = r.graphic;
@@ -498,11 +670,15 @@ export class AccessLayersController implements LayerController {
       if (g.layer === this.stores) {
         if (g.isAggregate) return { kind: "cluster", count: Number(a.cluster_count ?? 0), graphic: g };
         if (typeof a.id === "number") return { kind: "store", id: a.id, graphic: g };
+      } else if (g.layer === this.grocers && !grocer && typeof a.id === "number") {
+        grocer = { kind: "grocer", id: a.id, graphic: g };
+      } else if (g.layer === this.areas && !area && typeof a.code === "string") {
+        area = { kind: "area", code: a.code, graphic: g };
       } else if (g.layer === this.councils && !council && typeof a.code === "string") {
         council = { kind: "council", code: a.code, graphic: g };
       }
     }
-    return council;
+    return grocer ?? area ?? council;
   }
 
   private async onClick(e: ViewPointerEvent): Promise<void> {
@@ -517,7 +693,10 @@ export class AccessLayersController implements LayerController {
     const hit = this.hitFrom(results);
     if (!hit) return this.actions.selectStore(null);
     if (hit.kind === "store") return this.actions.selectStore(hit.id);
-    if (hit.kind === "council") return this.actions.selectCouncil(hit.code);
+    if (hit.kind === "grocer") return;
+    if (hit.kind === "area") return this.actions.selectArea(hit.code);
+    if (hit.kind === "council")
+      return this.profile ? this.actions.pickCouncil(hit.code) : this.actions.selectCouncil(hit.code);
     // A cluster: zoom in towards it (at most to local scale, where stores are drawn individually).
     const view = this.view;
     const zoom = Math.min(view.zoom + 2, LOCAL_ZOOM + 0.5);
@@ -544,11 +723,21 @@ export class AccessLayersController implements LayerController {
         const hit = this.hitFrom(results);
         if (!hit) return this.clearHover();
         const id =
-          hit.kind === "store" ? String(hit.id) : hit.kind === "council" ? hit.code : String(hit.count);
+          hit.kind === "store" || hit.kind === "grocer"
+            ? String(hit.id)
+            : hit.kind === "council" || hit.kind === "area"
+              ? hit.code
+              : String(hit.count);
         const key = `${hit.kind}:${id}`;
         this.lastHover = key;
         this.setHoverHighlight(hit.kind === "cluster" ? null : hit.graphic, key);
-        this.actions.setHoverAccess({ kind: hit.kind, id, x, y });
+        if (hit.kind === "area") {
+          this.actions.setHoverAccess(null);
+          this.actions.setHoverArea({ code: id, x, y });
+        } else {
+          this.actions.setHoverArea(null);
+          this.actions.setHoverAccess({ kind: hit.kind, id, x, y });
+        }
       });
     });
   }
@@ -558,6 +747,7 @@ export class AccessLayersController implements LayerController {
     if (this.lastHover === null) return;
     this.lastHover = null;
     this.actions.setHoverAccess(null);
+    this.actions.setHoverArea(null);
   }
 
   private setHoverHighlight(

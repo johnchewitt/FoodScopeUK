@@ -1,0 +1,27 @@
+{
+  "id": "areas.n09000003.boundaries",
+  "title": "Small areas of the deep profile — Belfast: Data Zones (2021) and Super Output Areas (2011)",
+  "role": "reference",
+  "path": "snapshots/2026-10-25/areas/N09000003/small-areas.geojson",
+  "format": "geojson",
+  "schemaId": "small-areas",
+  "sha256": "c4cd5f36fd8f2509f6fe1f2c3268aed33be60572f2d82249a8aebd57d7dfb772",
+  "bytes": 861645,
+  "featureCount": 909,
+  "sourceIds": [
+    "S16",
+    "S19"
+  ],
+  "referencePeriod": "Data Zones of Census 2021; SOAs of Census 2011",
+  "coverage": "Belfast (735 Data Zones, 174 SOAs)",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: NISRA, licensed under the Open Government Licence v3.0. Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0",
+  "expectedCadence": "irregular",
+  "retrieval": {
+    "method": "ONS feature services and NISRA shapefiles (fetch-ons, fetch-reference), cached in pipeline/raw/",
+    "source": "https://www.nisra.gov.uk/files/nisra/publications/geography-dz2021-esri-shapefile.zip (sha256 869dc1639773…); https://www.nisra.gov.uk/files/nisra/publications/SOA2011_Esri_Shapefile_0.zip (sha256 c7ae56402032…)",
+    "retrievedAt": "2026-10-24T22:15:40Z",
+    "notes": "NISRA Data Zones and SOAs (Irish Grid, EPSG:29902) coverage-simplified at 10 m; WGS84 to 6 decimal places. SOAs (2011) carry NIMDM 2017, PPFI v2.1 and NISRA's 2015 urban/rural class."
+  }
+}

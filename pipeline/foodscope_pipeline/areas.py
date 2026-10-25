@@ -8,15 +8,17 @@ Inputs (all committed under pipeline/raw/ by `fetch-reference`, each checked aga
 - S16 / S18 / S19 NISRA: Data Zone 2021 boundaries and population-weighted centroids, Census 2021
   MS-A01 usual residents, SOA 2011 boundaries and NIMDM 2017.
 
-Outputs go to `<out_root>/snapshots/<snapshot>/areas/` (the `areas` family, ADR-0021), each with a
-`*.provenance.json` sidecar:
-- `small-areas.geojson`: Manchester's LSOAs and Belfast's Data Zones (the indicator geographies)
-  and Belfast's 2011 SOAs (the geography NIMDM 2017 is published on; John's decision, 24 Oct 2026:
-  shown on its own areas, never reallocated);
+Outputs go to `<out_root>/snapshots/<out_snapshot>/areas/<council code>/` (the `areas` family,
+ADR-0021), one folder per deep-profile council so the app loads only the council it shows (Stage
+5, ADR-0023), each file with a `*.provenance.json` sidecar:
+- `small-areas.geojson`: the council's indicator geography (Manchester: LSOAs 2021; Belfast: Data
+  Zones 2021) and, for Belfast, the 2011 SOAs that NIMDM 2017 and PPFI are published on (John's
+  decision, 24 Oct 2026: shown on their own areas, never reallocated);
 - `small-area-indicators.json`: per small area, Census 2021 usual residents, households and
-  households without a car or van, the population-weighted centroid, and deprivation within its
+  households without a car or van, the population-weighted centroid, the urban/rural class
+  (England and Wales: ONS 2021; Northern Ireland: NISRA 2015 on the SOAs), deprivation within its
   own nation (England: IoD 2025 rank and decile; Northern Ireland: NIMDM 2017 rank, and a decile
-  derived from it, on the SOAs).
+  derived from it, on the SOAs) and the Priority Places for Food Index v2.1.
 
 Values are as published. Small-area census counts are not adjusted to council totals: the ONS and
 NISRA protect confidentiality by perturbing counts, so small areas need not sum exactly to the
@@ -44,6 +46,7 @@ from pyproj import Transformer
 from foodscope_pipeline.boundaries import display_geometry
 from foodscope_pipeline.sources.ons_files import files_for, load_index
 from foodscope_pipeline.sources.provided import load_provided
+from foodscope_pipeline.sources.ruc21 import LSOA_CODES, read_ruc21
 from foodscope_pipeline.sources.small_areas import (
     TS001_TOTAL, TS045_NO_CAR, TS045_TOTAL, read_census_lsoa, read_data_zones, read_dz_centroids,
     read_car_van_dz, read_car_van_lgd, read_iod_file7, read_ppfi, read_lsoa_boundaries, read_lsoa_centroids, read_lsoa_lookup, read_ms_a01, read_nimdm2017,
@@ -73,10 +76,13 @@ PPFI_SOURCE = ("Priority Places for Food Index v2.1, Healthy & Sustainable Place
 PPFI_NOT_IN_NI = ["ecommerce_access", "fuel_poverty", "supermarket_accessibility"]
 PPFI_META = {
     "index": "Priority Places for Food Index v2.1", "sourceId": "S13", "decile": "published",
-    "orientation": ("Rank 1 and decile 1 = highest priority. Not stated in the publisher's text; shown by the data "
-                    "(the socio-demographic domain ranks with IoD 2025 and NIMDM 2017, where 1 = most deprived)"),
+    "orientation": ("Rank 1 and decile 1 = highest priority. The publisher's documentation (HASP data dictionary, "
+                    "CDRC pages, IJPDS article; checked 25 Oct 2026) does not state the direction; the data shows "
+                    "it: the socio-economic barriers domain ranks with IoD 2025 and NIMDM 2017, where 1 = most "
+                    "deprived"),
     "referencePeriod": "v2.1, released July 2024 (indicators 2016–2023)",
 }
+OGL = "Open Government Licence v3.0"
 
 
 def _ppfi_value(row: dict) -> dict:
@@ -90,6 +96,7 @@ class AreasBuildError(RuntimeError):
 @dataclass(frozen=True)
 class AreasInputs:
     ons: Path  # pipeline/raw/ons/<snapshot>/
+    ons_context: Path  # pipeline/raw/ons/<context snapshot>/ (2021 urban/rural classification of LSOAs)
     nomis: Path  # pipeline/raw/nomis/<snapshot>/
     mhclg: Path  # pipeline/raw/mhclg/<snapshot>/
     nisra: Path  # pipeline/raw/nisra/<snapshot>/
@@ -98,9 +105,10 @@ class AreasInputs:
     profiles: Path  # config/deep_profiles.json
 
 
-def default_inputs(raw_root: Path, config_dir: Path, snapshot: str) -> AreasInputs:
+def default_inputs(raw_root: Path, config_dir: Path, snapshot: str, context_snapshot: str) -> AreasInputs:
     return AreasInputs(
         ons=raw_root / "ons" / snapshot,
+        ons_context=raw_root / "ons" / context_snapshot,
         nomis=raw_root / "nomis" / snapshot,
         mhclg=raw_root / "mhclg" / snapshot,
         nisra=raw_root / "nisra" / snapshot,
@@ -162,7 +170,10 @@ def _pages(folder: Path, index: dict, item_id: str) -> tuple[list[Path], list[di
 
 
 def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir: Path,
-                schema_dir: Path) -> list[Path]:
+                schema_dir: Path, out_snapshot: str | None = None) -> list[Path]:
+    """Build the deep-profile small areas from raw snapshot `snapshot` (and the context set in
+    `inputs.ons_context`) into `snapshots/<out_snapshot>/areas/` (default: `snapshot`)."""
+    out_snapshot = out_snapshot or snapshot
     profiles = json.loads(inputs.profiles.read_text(encoding="utf-8"))["profiles"]
     by_kind = {p["smallAreas"]: p for p in profiles}
     if set(by_kind) != {"lsoa21", "dz21"}:
@@ -187,8 +198,12 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
     cars_lgd_path, cars_lgd_e = load_provided(inputs.nisra_cars, "nisra.lgd14_car_van_tc5")
     ppfi_path, ppfi_e = load_provided(inputs.hasp, "hasp.ppfi_v21_lsoa")
     ppfi = read_ppfi(ppfi_path)
+    ctx_index = load_index(inputs.ons_context)
+    ruc_paths, ruc_entries = _pages(inputs.ons_context, ctx_index, "ons.ruc21_lsoa21")
+    ruc = read_ruc21(ruc_paths, "LSOA21CD", LSOA_CODES)
 
-    qa: dict = {"snapshot": snapshot, "manchester": {}, "belfast": {}}
+    qa: dict = {"snapshot": out_snapshot, "rawSnapshots": {"stage5": snapshot, "context": inputs.ons_context.name},
+                "manchester": {}, "belfast": {}}
 
     # --- Manchester: LSOAs (2021) -----------------------------------------------------------
     lookup = read_lsoa_lookup(lookup_paths)
@@ -215,7 +230,7 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
     iod = read_iod_file7(inputs.mhclg / iod_e["file"])
     if len(iod) != IOD_LSOAS or sorted(v["rank"] for v in iod.values()) != list(range(1, IOD_LSOAS + 1)):
         raise AreasBuildError(f"IoD 2025 File 7 does not rank {IOD_LSOAS} LSOAs 1…{IOD_LSOAS}")
-    for name, table in (("TS001", ts001), ("TS045", ts045), ("IoD 2025", iod)):
+    for name, table in (("TS001", ts001), ("TS045", ts045), ("IoD 2025", iod), ("RUC 2021", ruc)):
         absent = sorted(set(lsoa_codes) - set(table))
         if absent:
             raise AreasBuildError(f"{name} has no row for Manchester LSOAs {absent[:5]}")
@@ -233,6 +248,7 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
             "population": ts001[c][TS001_TOTAL], "households": ts045[c][TS045_TOTAL],
             "noCarHouseholds": ts045[c][TS045_NO_CAR],
             "centroid": _lonlat(bng_to_wgs, *centroids_bng[c]),
+            "urbanRural": ruc[c],
             "deprivation": {"rank": iod[c]["rank"], "decile": iod[c]["decile"]},
             "ppfi": _ppfi_value(ppfi[c]),
         })
@@ -248,6 +264,8 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
         "difference": {k: man_sum[k] - man_lad[k] for k in man_sum},
         "iodLad2024": sorted({iod[c]["lad2024"] for c in lsoa_codes}),
         "iodDeciles": {str(d): sum(a["deprivation"]["decile"] == d for a in man_areas) for d in range(1, 11)},
+        "urbanRural2021": {k: sum(a["urbanRural"]["code"] == k for a in man_areas)
+                           for k in LSOA_CODES if any(a["urbanRural"]["code"] == k for a in man_areas)},
         "boundaries": {k: v for k, v in lsoa_display.stats.items() if k not in ("repairedAfterRounding",)},
     }
 
@@ -277,7 +295,7 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
         "code": c, "name": dz.names[i],
         "population": dz_pop[c], "households": dz_cars[c]["households"], "noCarHouseholds": dz_cars[c]["noCar"],
         "centroid": _lonlat(ig_to_wgs, *dz_centroids[c]),
-        "deprivation": None, "ppfi": None,
+        "urbanRural": None, "deprivation": None, "ppfi": None,
     } for c, i in zip(bel_codes, bel_idx, strict=True)]
 
     # Belfast: SOAs (2011) with NIMDM 2017.
@@ -352,151 +370,175 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
         "irishGridToWgs84": ig_to_wgs.description,
     }
 
-    # --- Outputs ------------------------------------------------------------------------------
-    features = []
-    for kind, lad, codes, geoms in (("lsoa21", man["lad"], lsoa_codes, lsoa_display.geoms),
-                                    ("dz21", bel["lad"], bel_codes, dz_display.geoms),
-                                    ("soa2011", bel["lad"], [a["code"] for a in soa_areas], soa_display.geoms)):
-        for code, geom in zip(codes, geoms, strict=True):
-            features.append({"type": "Feature", "geometry": json.loads(shapely.to_geojson(geom)),
-                             "properties": {"code": code, "kind": kind, "lad": lad}})
-    geo_doc = {"type": "FeatureCollection", "features": features}
-    _validate(geo_doc, schema_dir, "small-areas")
-    geo_text = _feature_collection(features)
-
-    indicators = {
-        "schemaVersion": 1,
-        "census": {"sourceIds": ["S18", "S20"], "referenceDate": CENSUS_DATE,
-                   "population": "Usual residents (Census 2021: ONS TS001; NISRA MS-A01)",
-                   "households": "Households (Census 2021: ONS TS045; NISRA HH_CAR_VAN_TC5, sum of its six categories)",
-                   "noCarHouseholds": ("Households with no cars or vans available (Census 2021: ONS TS045; NISRA "
-                                       "HH_CAR_VAN_TC5 category 0)"),
-                   "note": ("Census counts for small areas are perturbed for confidentiality and need not add up "
-                            "to council totals.")},
-        "centroids": {"sourceIds": ["S15", "S16"],
-                      "definition": ("Census 2021 population-weighted centroid (ONS LSOA V4; NISRA Data Zones), "
-                                     "WGS84; straight-line distances are measured from these points")},
-        "profiles": [
-            {
-                "lad": man["lad"], "name": man["name"], "nation": man["nation"],
-                "geography": {"kind": "lsoa21", "label": "Lower layer Super Output Areas (2021)",
-                              "count": len(man_areas)},
-                "deprivation": {"index": "English Indices of Deprivation 2025", "sourceId": "S19",
-                                "measure": "Index of Multiple Deprivation", "geography": "lsoa21",
-                                "ranked": IOD_LSOAS, "within": "England", "decile": "published",
-                                "referencePeriod": "IoD 2025 (most indicators 2022/23)"},
-                "ppfi": {**PPFI_META, "geography": "lsoa21", "ranked": 33_755, "within": "England",
-                         "domainsWithoutData": []},
-                "areas": man_areas, "deprivationAreas": None,
-                "missing": [],
-            },
-            {
-                "lad": bel["lad"], "name": bel["name"], "nation": bel["nation"],
-                "geography": {"kind": "dz21", "label": "Data Zones (2021)", "count": len(bel_areas)},
-                "deprivation": {"index": "Northern Ireland Multiple Deprivation Measure 2017", "sourceId": "S19",
-                                "measure": "Multiple Deprivation Measure", "geography": "soa2011",
-                                "ranked": NIMDM_SOAS, "within": "Northern Ireland",
-                                "decile": "derived from the rank: 89 SOAs per decile",
-                                "referencePeriod": "NIMDM 2017 (most indicators 2015/16)"},
-                "ppfi": {**PPFI_META, "geography": "soa2011", "ranked": 890, "within": "Northern Ireland",
-                         "domainsWithoutData": PPFI_NOT_IN_NI},
-                "areas": bel_areas, "deprivationAreas": soa_areas,
-                "missing": [],
-            },
-        ],
+    # --- Outputs: one folder per council -------------------------------------------------------
+    census_meta = {
+        "sourceIds": ["S18", "S20"], "referenceDate": CENSUS_DATE,
+        "population": "Usual residents (Census 2021: ONS TS001; NISRA MS-A01)",
+        "households": "Households (Census 2021: ONS TS045; NISRA HH_CAR_VAN_TC5, sum of its six categories)",
+        "noCarHouseholds": ("Households with no cars or vans available (Census 2021: ONS TS045; NISRA "
+                            "HH_CAR_VAN_TC5 category 0)"),
+        "note": "Census counts for small areas are perturbed for confidentiality and need not add up to council totals.",
     }
-    _validate(indicators, schema_dir, "small-area-indicators")
-    indicators_text = _compact(indicators) + "\n"
-
-    out_dir = out_root / "snapshots" / snapshot / FAMILY
-    out_dir.mkdir(parents=True, exist_ok=True)
+    centroid_meta = {"sourceIds": ["S15", "S16"],
+                     "definition": ("Census 2021 population-weighted centroid (ONS LSOA V4; NISRA Data Zones), "
+                                    "WGS84; straight-line distances are measured from these points")}
+    man_profile = {
+        "lad": man["lad"], "name": man["name"], "nation": man["nation"],
+        "geography": {"kind": "lsoa21", "label": "Lower layer Super Output Areas (2021)", "count": len(man_areas)},
+        "urbanRural": {"sourceId": "S21", "geography": "lsoa21",
+                       "classification": "ONS 2021 Rural Urban Classification of LSOAs (England and Wales)",
+                       "referencePeriod": "Census 2021 populations (published 9 March 2025)"},
+        "deprivation": {"index": "English Indices of Deprivation 2025", "sourceId": "S19",
+                        "measure": "Index of Multiple Deprivation", "geography": "lsoa21",
+                        "ranked": IOD_LSOAS, "within": "England", "decile": "published",
+                        "referencePeriod": "IoD 2025 (most indicators 2022/23)"},
+        "ppfi": {**PPFI_META, "geography": "lsoa21", "ranked": 33_755, "within": "England", "domainsWithoutData": []},
+        "areas": man_areas, "deprivationAreas": None, "missing": [],
+    }
+    bel_profile = {
+        "lad": bel["lad"], "name": bel["name"], "nation": bel["nation"],
+        "geography": {"kind": "dz21", "label": "Data Zones (2021)", "count": len(bel_areas)},
+        "urbanRural": {"sourceId": "S21", "geography": "soa2011",
+                       "classification": "NISRA 2015 default urban/rural classification (as in the NIMDM 2017 file)",
+                       "referencePeriod": "Settlement Development Limits 2015 (2011 Census counts); the latest NISRA edition"},
+        "deprivation": {"index": "Northern Ireland Multiple Deprivation Measure 2017", "sourceId": "S19",
+                        "measure": "Multiple Deprivation Measure", "geography": "soa2011",
+                        "ranked": NIMDM_SOAS, "within": "Northern Ireland",
+                        "decile": "derived from the rank: 89 SOAs per decile",
+                        "referencePeriod": "NIMDM 2017 (most indicators 2015/16)"},
+        "ppfi": {**PPFI_META, "geography": "soa2011", "ranked": 890, "within": "Northern Ireland",
+                 "domainsWithoutData": PPFI_NOT_IN_NI},
+        "areas": bel_areas, "deprivationAreas": soa_areas, "missing": [],
+    }
 
     def combined(entries: list[dict]) -> str:
         return hashlib.sha256("".join(e["sha256"] for e in entries).encode()).hexdigest()[:12]
 
-    datasets = [
-        ("small-areas.geojson", geo_text, {
-            "id": "areas.small_area_boundaries",
-            "title": "Small areas of the deep profiles: Manchester LSOAs (2021), Belfast Data Zones (2021) and SOAs (2011)",
-            "role": "reference", "format": "geojson", "schemaId": "small-areas",
-            "featureCount": len(features), "sourceIds": ["S15", "S16", "S19"],
-            "referencePeriod": "LSOAs and Data Zones of Census 2021; SOAs of Census 2011",
-            "coverage": (f"Manchester ({len(man_areas)} LSOAs) and Belfast ({len(bel_areas)} Data Zones, "
-                         f"{len(soa_areas)} SOAs)"),
-            "provenance": "measured", "licence": "Open Government Licence v3.0",
-            "attribution": f"{OGL_ONS}. {OS_NOTICE}. {NISRA_SOURCE}. {OSNI_NOTICE}",
-            "expectedCadence": "irregular",
-            "retrieval": {
-                "method": "ONS feature services (fetch-ons) and NISRA shapefiles (fetch-reference), cached in pipeline/raw/",
-                "source": (f"{bgc_entries[0]['url'].split('/query')[0]} ({len(bgc_entries)} pages, combined sha256 "
-                           f"{combined(bgc_entries)}…); {dz_e['url']} (sha256 {dz_e['sha256'][:12]}…); "
-                           f"{soa_e['url']} (sha256 {soa_e['sha256'][:12]}…)"),
-                "retrievedAt": max(bgc_entries[-1]["retrievedAt"], dz_e["retrievedAt"], soa_e["retrievedAt"]),
-                "notes": (f"LSOA BGC (20 m) coverage-simplified at {LSOA_TOLERANCE_M:.0f} m in EPSG:27700; NISRA Data "
-                          f"Zones and SOAs (Irish Grid, EPSG:29902) coverage-simplified at {NI_TOLERANCE_M:.0f} m; "
-                          f"WGS84 to {COORD_DECIMALS} decimal places. SOAs (2011) carry NIMDM 2017 and PPFI v2.1."),
-            },
-        }),
-        ("small-area-indicators.json", indicators_text, {
-            "id": "areas.small_area_indicators",
-            "title": ("Small areas of the deep profiles: Census 2021 population, households, car availability; deprivation "
-                      "and Priority Places for Food Index within each nation"),
-            "role": "statistical", "format": "json", "schemaId": "small-area-indicators",
-            "sourceIds": ["S13", "S15", "S16", "S18", "S19", "S20"],
-            "referencePeriod": "Census 2021 (21 March 2021); IoD 2025; NIMDM 2017; PPFI v2.1 (July 2024)",
-            "coverage": "Manchester (LSOAs) and Belfast (Data Zones; deprivation and PPFI on SOAs 2011)",
-            "provenance": "measured", "licence": "Open Government Licence v3.0",
-            "attribution": f"{OGL_ONS}. {MHCLG_SOURCE}. {NISRA_SOURCE}. {PPFI_SOURCE}",
-            "expectedCadence": "irregular",
-            "retrieval": {
-                "method": "Derived offline from the committed raw files (fetch-reference)",
-                "source": (f"{ts001_e['file']} (sha256 {ts001_e['sha256'][:12]}…); {ts045_e['file']} (sha256 "
-                           f"{ts045_e['sha256'][:12]}…); {iod_e['file']} (sha256 {iod_e['sha256'][:12]}…); "
-                           f"{msa01_e['file']} (sha256 {msa01_e['sha256'][:12]}…); {cars_dz_e['file']} (provided, sha256 "
-                           f"{cars_dz_e['sha256'][:12]}…); {ppfi_e['file']} (provided, sha256 {ppfi_e['sha256'][:12]}…); "
-                           f"{nimdm_e['file']} (sha256 "
-                           f"{nimdm_e['sha256'][:12]}…); {dzc_e['file']} (sha256 {dzc_e['sha256'][:12]}…); LSOA "
-                           f"centroids ({len(pwc_entries)} page, combined sha256 {combined(pwc_entries)}…); LSOA lookup "
-                           f"({len(lookup_entries)} page, combined sha256 {combined(lookup_entries)}…)"),
-                "retrievedAt": max([e["retrievedAt"] for e in (ts001_e, ts045_e, iod_e, msa01_e, nimdm_e, dzc_e,
-                                                               pwc_entries[-1], lookup_entries[-1])]
-                                   + [cars_dz_e["receivedAt"], ppfi_e["receivedAt"]]),
-                "notes": ("Values as published. NIMDM 2017 deciles are derived from the ranks (89 SOAs per decile); "
-                          "IoD 2025 deciles are as published. Deprivation is ranked within each nation and is never "
-                          "compared across nations. Northern Ireland households and car availability: NISRA's flexible "
-                          "table builder (HH_CAR_VAN_TC5 by Data Zone), downloaded by John. PPFI v2.1 from Leeds HASP "
-                          "(downloaded by John): ranks and deciles within each nation as published; three domains have no "
-                          "Northern Ireland data."),
-            },
-        }),
-    ]
     manifest_schema = json.loads((schema_dir / "manifest.schema.json").read_text(encoding="utf-8"))
     dataset_schema = {"$schema": manifest_schema["$schema"], "definitions": manifest_schema["definitions"],
                       "$ref": "#/definitions/Dataset"}
+    census_files = (f"{ts001_e['file']} (sha256 {ts001_e['sha256'][:12]}…); {ts045_e['file']} (sha256 "
+                    f"{ts045_e['sha256'][:12]}…); {ppfi_e['file']} (provided, sha256 {ppfi_e['sha256'][:12]}…)")
+    councils = [
+        {
+            "profile": man_profile,
+            "layers": [("lsoa21", lsoa_codes, lsoa_display.geoms)],
+            "title": f"{man['name']}: LSOAs (2021)",
+            "sourceIds": ["S15", "S21"],
+            "boundaryPeriod": "LSOAs of Census 2021 (December 2021 boundaries)",
+            "coverage": f"{man['name']} ({len(man_areas)} LSOAs)",
+            "attribution": f"{OGL_ONS}. {OS_NOTICE}",
+            "boundarySource": (f"{bgc_entries[0]['url'].split('/query')[0]} ({len(bgc_entries)} pages, combined sha256 "
+                               f"{combined(bgc_entries)}…)"),
+            "boundaryRetrieved": bgc_entries[-1]["retrievedAt"],
+            "boundaryNotes": (f"LSOA BGC (20 m) coverage-simplified at {LSOA_TOLERANCE_M:.0f} m in EPSG:27700; WGS84 to "
+                              f"{COORD_DECIMALS} decimal places."),
+            "indicatorSources": ["S13", "S15", "S18", "S19", "S20", "S21"],
+            "indicatorPeriod": "Census 2021 (21 March 2021); IoD 2025; PPFI v2.1 (July 2024); RUC 2021",
+            "indicatorAttribution": f"{OGL_ONS}. {MHCLG_SOURCE}. {PPFI_SOURCE}",
+            "indicatorSource": (f"{census_files}; {iod_e['file']} (sha256 {iod_e['sha256'][:12]}…); LSOA centroids "
+                                f"({len(pwc_entries)} page, combined sha256 {combined(pwc_entries)}…); LSOA lookup "
+                                f"({len(lookup_entries)} page, combined sha256 {combined(lookup_entries)}…); urban/rural "
+                                f"({len(ruc_entries)} pages, combined sha256 {combined(ruc_entries)}…)"),
+            "indicatorRetrieved": max(ts001_e["retrievedAt"], ts045_e["retrievedAt"], iod_e["retrievedAt"],
+                                      pwc_entries[-1]["retrievedAt"], lookup_entries[-1]["retrievedAt"],
+                                      ruc_entries[-1]["retrievedAt"], ppfi_e["receivedAt"]),
+            "indicatorNotes": ("Values as published. IoD 2025 deciles as published, within England only. PPFI v2.1 from "
+                               "Leeds HASP (downloaded by John): ranks and deciles within England as published."),
+        },
+        {
+            "profile": bel_profile,
+            "layers": [("dz21", bel_codes, dz_display.geoms),
+                       ("soa2011", [a["code"] for a in soa_areas], soa_display.geoms)],
+            "title": f"{bel['name']}: Data Zones (2021) and Super Output Areas (2011)",
+            "sourceIds": ["S16", "S19"],
+            "boundaryPeriod": "Data Zones of Census 2021; SOAs of Census 2011",
+            "coverage": f"{bel['name']} ({len(bel_areas)} Data Zones, {len(soa_areas)} SOAs)",
+            "attribution": f"{NISRA_SOURCE}. {OSNI_NOTICE}",
+            "boundarySource": (f"{dz_e['url']} (sha256 {dz_e['sha256'][:12]}…); {soa_e['url']} (sha256 "
+                               f"{soa_e['sha256'][:12]}…)"),
+            "boundaryRetrieved": max(dz_e["retrievedAt"], soa_e["retrievedAt"]),
+            "boundaryNotes": (f"NISRA Data Zones and SOAs (Irish Grid, EPSG:29902) coverage-simplified at "
+                              f"{NI_TOLERANCE_M:.0f} m; WGS84 to {COORD_DECIMALS} decimal places. SOAs (2011) carry "
+                              "NIMDM 2017, PPFI v2.1 and NISRA's 2015 urban/rural class."),
+            "indicatorSources": ["S13", "S16", "S18", "S19", "S20", "S21"],
+            "indicatorPeriod": "Census 2021 (21 March 2021); NIMDM 2017; PPFI v2.1 (July 2024); NISRA urban/rural 2015",
+            "indicatorAttribution": f"{NISRA_SOURCE}. {PPFI_SOURCE}",
+            "indicatorSource": (f"{msa01_e['file']} (sha256 {msa01_e['sha256'][:12]}…); {cars_dz_e['file']} (provided, "
+                                f"sha256 {cars_dz_e['sha256'][:12]}…); {nimdm_e['file']} (sha256 "
+                                f"{nimdm_e['sha256'][:12]}…); {dzc_e['file']} (sha256 {dzc_e['sha256'][:12]}…); "
+                                f"{ppfi_e['file']} (provided, sha256 {ppfi_e['sha256'][:12]}…)"),
+            "indicatorRetrieved": max(msa01_e["retrievedAt"], nimdm_e["retrievedAt"], dzc_e["retrievedAt"],
+                                      cars_dz_e["receivedAt"], ppfi_e["receivedAt"]),
+            "indicatorNotes": ("Values as published. NIMDM 2017 deciles are derived from the ranks (89 SOAs per decile), "
+                               "within Northern Ireland only. Households and car availability: NISRA's flexible table "
+                               "builder (HH_CAR_VAN_TC5 by Data Zone), downloaded by John. PPFI v2.1 from Leeds HASP "
+                               "(downloaded by John): ranks and deciles within Northern Ireland; three domains have no "
+                               "Northern Ireland data."),
+        },
+    ]
+
     written: list[Path] = []
-    for filename, text, record in datasets:
-        path = out_dir / filename
-        path.write_text(text, encoding="utf-8")
-        sidecar = {
-            "id": record["id"], "title": record["title"], "role": record["role"],
-            "path": f"snapshots/{snapshot}/{FAMILY}/{filename}",
-            "format": record["format"], "schemaId": record["schemaId"], "sha256": _sha256(text),
-            "bytes": len(text.encode("utf-8")),
-            **({"featureCount": record["featureCount"]} if "featureCount" in record else {}),
-            **{k: record[k] for k in ("sourceIds", "referencePeriod", "coverage", "provenance", "licence",
-                                      "attribution", "expectedCadence", "retrieval")},
-        }
-        jsonschema.validate(sidecar, dataset_schema, format_checker=jsonschema.FormatChecker())
-        prov = path.with_name(filename.rsplit(".", 1)[0] + ".provenance.json")
-        prov.write_text(json.dumps(sidecar, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        written += [path, prov]
+    for c in councils:
+        profile = c["profile"]
+        lad = profile["lad"]
+        features = [{"type": "Feature", "geometry": json.loads(shapely.to_geojson(geom)),
+                     "properties": {"code": code, "kind": kind, "lad": lad}}
+                    for kind, codes, geoms in c["layers"] for code, geom in zip(codes, geoms, strict=True)]
+        geo_doc = {"type": "FeatureCollection", "features": features}
+        _validate(geo_doc, schema_dir, "small-areas")
+        indicators = {"schemaVersion": 1, "census": census_meta, "centroids": centroid_meta, "profiles": [profile]}
+        _validate(indicators, schema_dir, "small-area-indicators")
+        out_dir = out_root / "snapshots" / out_snapshot / FAMILY / lad
+        out_dir.mkdir(parents=True, exist_ok=True)
+        key = lad.lower()
+        datasets = [
+            ("small-areas.geojson", _feature_collection(features), {
+                "id": f"areas.{key}.boundaries", "title": f"Small areas of the deep profile — {c['title']}",
+                "role": "reference", "format": "geojson", "schemaId": "small-areas", "featureCount": len(features),
+                "sourceIds": c["sourceIds"], "referencePeriod": c["boundaryPeriod"], "coverage": c["coverage"],
+                "provenance": "measured", "licence": OGL, "attribution": c["attribution"], "expectedCadence": "irregular",
+                "retrieval": {"method": "ONS feature services and NISRA shapefiles (fetch-ons, fetch-reference), cached in pipeline/raw/",
+                              "source": c["boundarySource"], "retrievedAt": c["boundaryRetrieved"],
+                              "notes": c["boundaryNotes"]},
+            }),
+            ("small-area-indicators.json", _compact(indicators) + "\n", {
+                "id": f"areas.{key}.indicators",
+                "title": (f"Small-area indicators of the deep profile — {profile['name']}: Census 2021 population, households "
+                          "and car availability; urban/rural class; deprivation and the Priority Places for Food Index "
+                          "within the nation"),
+                "role": "statistical", "format": "json", "schemaId": "small-area-indicators",
+                "sourceIds": c["indicatorSources"], "referencePeriod": c["indicatorPeriod"], "coverage": c["coverage"],
+                "provenance": "measured", "licence": OGL, "attribution": c["indicatorAttribution"],
+                "expectedCadence": "irregular",
+                "retrieval": {"method": "Derived offline from the committed raw files (fetch-reference)",
+                              "source": c["indicatorSource"], "retrievedAt": c["indicatorRetrieved"],
+                              "notes": c["indicatorNotes"]},
+            }),
+        ]
+        for filename, text, record in datasets:
+            path = out_dir / filename
+            path.write_text(text, encoding="utf-8")
+            sidecar = {
+                "id": record["id"], "title": record["title"], "role": record["role"],
+                "path": f"snapshots/{out_snapshot}/{FAMILY}/{lad}/{filename}",
+                "format": record["format"], "schemaId": record["schemaId"], "sha256": _sha256(text),
+                "bytes": len(text.encode("utf-8")),
+                **({"featureCount": record["featureCount"]} if "featureCount" in record else {}),
+                **{k: record[k] for k in ("sourceIds", "referencePeriod", "coverage", "provenance", "licence",
+                                          "attribution", "expectedCadence", "retrieval")},
+            }
+            jsonschema.validate(sidecar, dataset_schema, format_checker=jsonschema.FormatChecker())
+            prov = path.with_name(filename.rsplit(".", 1)[0] + ".provenance.json")
+            prov.write_text(json.dumps(sidecar, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            written += [path, prov]
 
     reports_dir.mkdir(parents=True, exist_ok=True)
-    report = reports_dir / f"areas-qa-{snapshot}.json"
+    report = reports_dir / f"areas-qa-{out_snapshot}.json"
     report.write_text(json.dumps(qa, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     written.append(report)
     logger.info("areas build %s: %d Manchester LSOAs, %d Belfast Data Zones, %d Belfast SOAs",
-                snapshot, len(man_areas), len(bel_areas), len(soa_areas))
+                out_snapshot, len(man_areas), len(bel_areas), len(soa_areas))
     return written
 
 

@@ -1,13 +1,183 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-24T08:39:41Z",
+  "generatedAt": "2026-10-25T11:49:18Z",
   "generator": "foodscope-pipeline 0.1.0",
-  "snapshotId": "2026-10-24",
+  "snapshotId": "2026-10-25",
   "snapshots": {
+    "areas": "2026-10-25",
+    "context": "2026-10-25",
     "local": "2026-10-24",
+    "register": "2026-10-24",
     "trade": "2026-10-23"
   },
   "datasets": [
+    {
+      "id": "areas.e08000003.boundaries",
+      "title": "Small areas of the deep profile — Manchester: LSOAs (2021)",
+      "role": "reference",
+      "path": "snapshots/2026-10-25/areas/E08000003/small-areas.geojson",
+      "format": "geojson",
+      "schemaId": "small-areas",
+      "sha256": "adaf20be8d7d75223fea48c997eac02c870f5651e8757bbfafc9bfe54f0ab028",
+      "bytes": 279594,
+      "featureCount": 295,
+      "sourceIds": [
+        "S15",
+        "S21"
+      ],
+      "referencePeriod": "LSOAs of Census 2021 (December 2021 boundaries)",
+      "coverage": "Manchester (295 LSOAs)",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "ONS feature services and NISRA shapefiles (fetch-ons, fetch-reference), cached in pipeline/raw/",
+        "source": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Lower_layer_Super_Output_Areas_December_2021_Boundaries_EW_BGC_V5/FeatureServer/0 (8 pages, combined sha256 0e0add88a59e…)",
+        "retrievedAt": "2026-10-24T22:15:27Z",
+        "notes": "LSOA BGC (20 m) coverage-simplified at 5 m in EPSG:27700; WGS84 to 6 decimal places."
+      }
+    },
+    {
+      "id": "areas.e08000003.indicators",
+      "title": "Small-area indicators of the deep profile — Manchester: Census 2021 population, households and car availability; urban/rural class; deprivation and the Priority Places for Food Index within the nation",
+      "role": "statistical",
+      "path": "snapshots/2026-10-25/areas/E08000003/small-area-indicators.json",
+      "format": "json",
+      "schemaId": "small-area-indicators",
+      "sha256": "6069a9044276c2b64ad46316f20a00682eb77bf61688d705612a52ee4f1178a2",
+      "bytes": 204133,
+      "sourceIds": [
+        "S13",
+        "S15",
+        "S18",
+        "S19",
+        "S20",
+        "S21"
+      ],
+      "referencePeriod": "Census 2021 (21 March 2021); IoD 2025; PPFI v2.1 (July 2024); RUC 2021",
+      "coverage": "Manchester (295 LSOAs)",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Source: Ministry of Housing, Communities and Local Government, English Indices of Deprivation 2025 (OGL v3.0). Priority Places for Food Index v2.1, Healthy & Sustainable Places Data Service (HASP) / CDRC, DOI 10.82147/003 (OGL v3.0)",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "Derived offline from the committed raw files (fetch-reference)",
+        "source": "census2021-ts001.zip (sha256 b724c1208b76…); census2021-ts045.zip (sha256 95593dcd5324…); hasp_ppfi_v2.1.csv (provided, sha256 51f96ce7a792…); File_7_IoD2025_All_Ranks_Scores_Deciles_Population_Denominators.csv (sha256 b1b716aa2e47…); LSOA centroids (1 page, combined sha256 e3aa54bdfbe9…); LSOA lookup (1 page, combined sha256 9e360885b10b…); urban/rural (36 pages, combined sha256 9f9c6670723c…)",
+        "retrievedAt": "2026-10-25T11:49:17Z",
+        "notes": "Values as published. IoD 2025 deciles as published, within England only. PPFI v2.1 from Leeds HASP (downloaded by John): ranks and deciles within England as published."
+      }
+    },
+    {
+      "id": "areas.n09000003.boundaries",
+      "title": "Small areas of the deep profile — Belfast: Data Zones (2021) and Super Output Areas (2011)",
+      "role": "reference",
+      "path": "snapshots/2026-10-25/areas/N09000003/small-areas.geojson",
+      "format": "geojson",
+      "schemaId": "small-areas",
+      "sha256": "c4cd5f36fd8f2509f6fe1f2c3268aed33be60572f2d82249a8aebd57d7dfb772",
+      "bytes": 861645,
+      "featureCount": 909,
+      "sourceIds": [
+        "S16",
+        "S19"
+      ],
+      "referencePeriod": "Data Zones of Census 2021; SOAs of Census 2011",
+      "coverage": "Belfast (735 Data Zones, 174 SOAs)",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: NISRA, licensed under the Open Government Licence v3.0. Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "ONS feature services and NISRA shapefiles (fetch-ons, fetch-reference), cached in pipeline/raw/",
+        "source": "https://www.nisra.gov.uk/files/nisra/publications/geography-dz2021-esri-shapefile.zip (sha256 869dc1639773…); https://www.nisra.gov.uk/files/nisra/publications/SOA2011_Esri_Shapefile_0.zip (sha256 c7ae56402032…)",
+        "retrievedAt": "2026-10-24T22:15:40Z",
+        "notes": "NISRA Data Zones and SOAs (Irish Grid, EPSG:29902) coverage-simplified at 10 m; WGS84 to 6 decimal places. SOAs (2011) carry NIMDM 2017, PPFI v2.1 and NISRA's 2015 urban/rural class."
+      }
+    },
+    {
+      "id": "areas.n09000003.indicators",
+      "title": "Small-area indicators of the deep profile — Belfast: Census 2021 population, households and car availability; urban/rural class; deprivation and the Priority Places for Food Index within the nation",
+      "role": "statistical",
+      "path": "snapshots/2026-10-25/areas/N09000003/small-area-indicators.json",
+      "format": "json",
+      "schemaId": "small-area-indicators",
+      "sha256": "4e12f4cd375354ae6bab0ed98da789e1927ad1f141e88f198ef5f1ed0fae6afb",
+      "bytes": 223680,
+      "sourceIds": [
+        "S13",
+        "S16",
+        "S18",
+        "S19",
+        "S20",
+        "S21"
+      ],
+      "referencePeriod": "Census 2021 (21 March 2021); NIMDM 2017; PPFI v2.1 (July 2024); NISRA urban/rural 2015",
+      "coverage": "Belfast (735 Data Zones, 174 SOAs)",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: NISRA, licensed under the Open Government Licence v3.0. Priority Places for Food Index v2.1, Healthy & Sustainable Places Data Service (HASP) / CDRC, DOI 10.82147/003 (OGL v3.0)",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "Derived offline from the committed raw files (fetch-reference)",
+        "source": "census-2021-ms-a01.xlsx (sha256 75256392409c…); ni-census21-household-dz21hh_car_van_tc5.csv (provided, sha256 c143b3c04c18…); NIMDM17_SOAresults.xls (sha256 3738edf2d264…); geography-census-2021-population-weighted-centroids-csv.zip (sha256 4822e20b4284…); hasp_ppfi_v2.1.csv (provided, sha256 51f96ce7a792…)",
+        "retrievedAt": "2026-10-25T08:33:05Z",
+        "notes": "Values as published. NIMDM 2017 deciles are derived from the ranks (89 SOAs per decile), within Northern Ireland only. Households and car availability: NISRA's flexible table builder (HH_CAR_VAN_TC5 by Data Zone), downloaded by John. PPFI v2.1 from Leeds HASP (downloaded by John): ranks and deciles within Northern Ireland; three domains have no Northern Ireland data."
+      }
+    },
+    {
+      "id": "context.council_context",
+      "title": "Council context: map frame, urban/rural class (England and Wales) and Census 2021 car or van availability",
+      "role": "statistical",
+      "path": "snapshots/2026-10-25/context/council-context.json",
+      "format": "json",
+      "schemaId": "council-context",
+      "sha256": "e3f49e1a6c9f5ad131a0620602ff231e4aec8028840650a3f6d468f14f697039",
+      "bytes": 101302,
+      "sourceIds": [
+        "S14",
+        "S20",
+        "S21"
+      ],
+      "referencePeriod": "Census 2021 (21 March 2021); 2021 Rural Urban Classification of councils (2024 boundaries); May 2025 council boundaries",
+      "coverage": "361 councils (May 2025): urban/rural for England and Wales; car availability for England, Wales and Northern Ireland; none for Scotland",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Source: NISRA, licensed under the Open Government Licence v3.0",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "Derived offline from the committed raw files (fetch-reference --set context, fetch-reference)",
+        "source": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LAD24_RUC21_EW_LU/FeatureServer/0 (1 page, combined sha256 c4b734ba1d66…); census2021-ts045.zip (sha256 95593dcd5324…); lad22-lad23-lookup.json (sha256 259c57d43b01…); ni-census21-household-lgd14hh_car_van_tc5.xlsx (provided, sha256 22a43354073f…)",
+        "retrievedAt": "2026-10-25T11:49:02Z",
+        "notes": "Counts as published. Councils formed in April 2023 carry the sum of the Census 2021 councils they replaced; Barnsley and Sheffield carry their pre-2025 boundary figures (a small boundary change). Northern Ireland: NISRA table builder, downloaded by John."
+      }
+    },
+    {
+      "id": "context.uk_production",
+      "title": "UK production and supply of the Food Origins baskets (Defra, annual; national context)",
+      "role": "statistical",
+      "path": "snapshots/2026-10-25/context/uk-production.json",
+      "format": "json",
+      "schemaId": "uk-production",
+      "sha256": "73cde1e745f8a7d9db97dc323a2941430e1c73db7bedb7b3d1a19fd6dbaa6157",
+      "bytes": 5063,
+      "sourceIds": [
+        "S09",
+        "S10"
+      ],
+      "referencePeriod": "tomatoes 2025, strawberries 2025, potatoes 2025 (provisional), wheat 2025 (provisional)",
+      "coverage": "United Kingdom; tomatoes, strawberries, potatoes, wheat (bananas: no Defra production series)",
+      "provenance": "official_estimate",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: Department for Environment, Food & Rural Affairs, licensed under the Open Government Licence v3.0",
+      "expectedCadence": "annual",
+      "retrieval": {
+        "method": "Read offline from the committed Defra datasets (fetch-reference --set context)",
+        "source": "https://assets.publishing.service.gov.uk/media/6a327c196422bec01b1176a1/hort-dataset-25-20260625.ods (sha256 ce2a42fd2292…); https://assets.publishing.service.gov.uk/media/6a3d141feaee00074150f4db/AUK-chapter7-20260709.ods (sha256 5bdb534e35d2…)",
+        "retrievedAt": "2026-10-25T11:49:18Z",
+        "notes": "Values as published (potato and wheat shares converted from fractions to per cent; wheat imports and exports are the sums of the EU and rest-of-the-world rows). Annual and national: never combined with HMRC monthly trade."
+      }
+    },
     {
       "id": "local.lad_boundaries_2025",
       "title": "Council boundaries, May 2025 (display edition)",
@@ -138,6 +308,33 @@
         "source": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_admin_0_countries.geojson (sha256 3e458fc036ad0a66411f2c1e6cac49c5d7bfb81cb1123bc513b22511a2b7fdeb)",
         "retrievedAt": "2026-10-23T00:00:00Z",
         "notes": "Natural Earth's own label point (LABEL_X, LABEL_Y) per ISO_A2_EH code, rounded to 4 dp. Used as the symbolic start of import connections and for partners too small for 1:110m. Not a port or production location."
+      }
+    },
+    {
+      "id": "register.ni_other_grocers",
+      "title": "Northern Ireland grocers not in the GEOLYTIX data, from the FSA food hygiene register",
+      "role": "statistical",
+      "path": "snapshots/2026-10-24/register/ni-other-grocers.geojson",
+      "format": "geojson",
+      "schemaId": "ni-other-grocers",
+      "sha256": "8fe28c3f44fda5866f376f7501a030e8dbdfa42c2866dfaca5d6a9d6d5b8ec06",
+      "bytes": 75497,
+      "featureCount": 285,
+      "sourceIds": [
+        "S29",
+        "S11"
+      ],
+      "referencePeriod": "FSA register extracts 2026-10-09 to 2026-10-24",
+      "coverage": "Northern Ireland: 11 councils (supplementary to GEOLYTIX; not in any store count or rate)",
+      "provenance": "derived",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Food Standards Agency food hygiene rating data, Northern Ireland councils, licensed under the Open Government Licence v3.0",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "FSA open data XML per council (fetch-reference), cached in pipeline/raw/fsa/",
+        "source": "https://ratings.food.gov.uk/api/open-data-files/ (11 files, combined sha256 abc21bdf6ec1…)",
+        "retrievedAt": "2026-10-25T08:53:09Z",
+        "notes": "Kept: grocery symbol groups GEOLYTIX does not carry in NI (by name), and independent grocers registered as supermarkets/hypermarkets that are not within 50 m of a mapped store. Chains GEOLYTIX maps are left to it. Same group or name at the same postcode = one shop. Rules: pipeline/foodscope_pipeline/config/ni_grocers.json; every decision in the QA report."
       }
     },
     {
@@ -316,6 +513,24 @@
       "notes": "Context only (Evidence page caveat on the Netherlands dispatch effect). Not used for figures: it covers only trade where both origin and dispatch were declared."
     },
     {
+      "id": "S09",
+      "title": "Horticulture statistics 2025",
+      "publisher": "Department for Environment, Food & Rural Affairs",
+      "url": "https://www.gov.uk/government/statistics/latest-horticulture-statistics/horticulture-statistics-2025",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Accompanying dataset hort-dataset-25-20260625.ods (published 25 June 2026): tomatoes (Table 23) and strawberries (Table 12) — home production marketed, imports, exports, total supply and home production as a share of supply, calendar years. Annual national context only; Defra's trade figures use its own product definitions (fresh produce where distinguishable), not the Food Origins baskets."
+    },
+    {
+      "id": "S10",
+      "title": "Agriculture in the United Kingdom 2025, chapter 7: crops",
+      "publisher": "Department for Environment, Food & Rural Affairs",
+      "url": "https://www.gov.uk/government/statistics/agriculture-in-the-united-kingdom-2025/chapter-7-crops",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Dataset AUK-chapter7-20260709.ods (published 9 July 2026, updated 3 September 2026): wheat (Table 7.2c) and potatoes (Table 7.10c) supply and use, with production as a percentage of total new supply; 2025 provisional. Annual national context only."
+    },
+    {
       "id": "S11",
       "title": "Grocery Retail Points (v46, June 2026)",
       "publisher": "GEOLYTIX",
@@ -323,6 +538,15 @@
       "licence": "GEOLYTIX open data, no named licence (\"completely free and open to use data\")",
       "status": "verified",
       "notes": "Store locations, retailer, fascia and size band as delivered (provided by John, 24 Oct 2026). Class from size_band (convenience under 280 m², supermarket 280 m² and over); forecourt, motorway, travel and hospital formats flagged; wholesale and mainly non-food stores left out (decision D5). Retail presence only: no turnover, prices or opening hours."
+    },
+    {
+      "id": "S13",
+      "title": "Priority Places for Food Index v2.1",
+      "publisher": "Consumer Data Research Centre / Leeds Healthy & Sustainable Places Data Service",
+      "url": "https://priorityplaces.cdrc.ac.uk/",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Ranks and deciles within each nation (England 33,755 LSOAs, Wales 1,917, Scotland 6,976 Data Zones, Northern Ireland 890 SOAs 2011) for the combined index and seven domains; three domains have no Northern Ireland data. Decile 1 = highest priority: the publisher's documentation does not state the direction; it was checked against the deprivation indices. Never compared across nations. File provided by John (HASP download, 25 Oct 2026)."
     },
     {
       "id": "S14",
@@ -334,6 +558,24 @@
       "notes": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025. 361 councils; display edition generalised to 20 m, clipped to the coastline and further simplified for the web."
     },
     {
+      "id": "S15",
+      "title": "LSOA 2021 boundaries, population-weighted centroids and lookup (England and Wales)",
+      "publisher": "Office for National Statistics",
+      "url": "https://geoportal.statistics.gov.uk/",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Lower layer Super Output Areas (December 2021) BGC V5, population-weighted centroids V4 and the LSOA 2021 → ward 2025 → council 2025 lookup, for the Manchester deep profile. Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025."
+    },
+    {
+      "id": "S16",
+      "title": "Data Zones 2021 and population-weighted centroids",
+      "publisher": "Northern Ireland Statistics and Research Agency",
+      "url": "https://www.nisra.gov.uk/support/geography/data-zones-census-2021",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "3,780 Data Zones (Irish Grid TM65, EPSG:29902) and their Census 2021 population-weighted centroids, for the Belfast deep profile. Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0."
+    },
+    {
       "id": "S18",
       "title": "Population estimates for the UK, England, Wales, Scotland and Northern Ireland: mid-2025",
       "publisher": "Office for National Statistics (with NRS and NISRA)",
@@ -341,6 +583,33 @@
       "licence": "Open Government Licence v3.0",
       "status": "verified",
       "notes": "Usual residents at 30 June 2025 for all four nations (accredited official statistics), on council boundaries of April 2024; land area excluding inland water (Standard Area Measurements, January 2025; NISRA for Northern Ireland). Barnsley and Sheffield figures predate their 2025 boundary change."
+    },
+    {
+      "id": "S19",
+      "title": "Deprivation indices: English Indices of Deprivation 2025; Northern Ireland Multiple Deprivation Measure 2017",
+      "publisher": "Ministry of Housing, Communities and Local Government; NISRA",
+      "url": "https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "IoD 2025 File 7 (England, LSOA 2021, ranks and deciles within England); NIMDM 2017 (Northern Ireland, SOA 2011, ranks within Northern Ireland; deciles derived, 89 SOAs each). Each index ranks areas within its own nation only and they are never compared."
+    },
+    {
+      "id": "S20",
+      "title": "Car or van availability (Census 2021)",
+      "publisher": "Office for National Statistics; NISRA",
+      "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts045.zip",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "England and Wales: TS045 (households by number of cars or vans), councils and LSOAs. Northern Ireland: NISRA flexible table builder HH_CAR_VAN_TC5 by Data Zone and council (files from John). Census day 21 March 2021. Scotland (Census 2022) not included."
+    },
+    {
+      "id": "S21",
+      "title": "Rural–urban classifications",
+      "publisher": "Office for National Statistics; NISRA",
+      "url": "https://www.ons.gov.uk/methodology/geography/geographicalproducts/ruralurbanclassifications/2021ruralurbanclassification",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "England and Wales: ONS 2021 Rural Urban Classification of councils (LAD 2024) and LSOAs (2021). Northern Ireland: NISRA 2015 default urban/rural class per SOA (from the NIMDM 2017 file; no council-level class, no Census 2021-based edition). Scotland not included. Classifications differ by nation and are never compared."
     },
     {
       "id": "S24",
@@ -359,6 +628,15 @@
       "licence": "Esri terms of use; attribution rendered by the SDK",
       "status": "verified",
       "notes": "Dark grey style (arcgis/dark-gray), used when an ArcGIS API key is configured (Actions secret ARCGIS_API_KEY). Loads on the live site (post-deploy smoke test, 23 Oct 2026); not reachable from the build sandbox."
+    },
+    {
+      "id": "S29",
+      "title": "Food hygiene rating open data (Northern Ireland councils)",
+      "publisher": "Food Standards Agency",
+      "url": "https://ratings.food.gov.uk/open-data/",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Register of food businesses for the 11 Northern Ireland councils; used only to show grocers that GEOLYTIX does not map (supplementary layer, never counted in rates). A registration is not proof of a grocery offer or opening hours."
     }
   ]
 }

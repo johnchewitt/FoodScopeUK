@@ -1,5 +1,9 @@
 {
-  "snapshot": "2026-10-24",
+  "snapshot": "2026-10-25",
+  "rawSnapshots": {
+    "stage5": "2026-10-24",
+    "context": "2026-10-25"
+  },
   "manchester": {
     "lsoas": 295,
     "lsoasInFetchBox": 714,
@@ -37,6 +41,9 @@
       "8": 10,
       "9": 5,
       "10": 5
+    },
+    "urbanRural2021": {
+      "UN1": 295
     },
     "boundaries": {
       "cleanSnapM": 0.01,

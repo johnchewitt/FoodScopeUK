@@ -56,6 +56,7 @@
   --fs-map-store-convenience: #eb6834;
   --fs-map-store-other: #9085e9;
   --fs-map-store-outline: var(--fs-navy);
+  --fs-map-register-grocer: var(--fs-text);
   --fs-map-cluster-fill: var(--fs-navy);
   --fs-map-cluster-ring: var(--fs-text);
   --fs-map-proximity: #f184c0;
@@ -69,6 +70,16 @@
   --fs-hatch: repeating-linear-gradient(135deg, rgb(142 173 174 / 0.32) 0 1.5px, transparent 1.5px 5px);
   /* Comparison year in charts: de-emphasised grey beside the cyan selected year. */
   --fs-compare: var(--fs-text-muted);
+  /* Categorical chart slots on the panels (retailers, Stage 5); palette.ts CATEGORICAL mirrors them. */
+  --fs-cat-1: #3987e5;
+  --fs-cat-2: #d95926;
+  --fs-cat-3: #199e70;
+  --fs-cat-4: #c98500;
+  --fs-cat-5: #d55181;
+  --fs-cat-6: #008300;
+  --fs-cat-7: #9085e9;
+  --fs-cat-8: #e66767;
+  --fs-cat-other: var(--fs-text-muted);
 
   /* Glass surfaces (spec §7.3) */
   --fs-glass: color-mix(in oklab, var(--fs-emerald) 76%, transparent);
@@ -155,6 +166,7 @@
   --fs-map-store-convenience: #a3410b;
   --fs-map-store-other: #5a3fc0;
   --fs-map-store-outline: #ffffff;
+  --fs-map-register-grocer: var(--fs-navy);
   --fs-map-cluster-fill: var(--fs-navy);
   --fs-map-cluster-ring: #ffffff;
   --fs-map-proximity: #9c0a73;

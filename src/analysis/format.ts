@@ -97,6 +97,18 @@ export function formatCount(n: number | null | undefined): string {
   return nf(0).format(Math.round(n));
 }
 
+/** Area in km²: one decimal below 100 km², whole km² above. */
+export function formatKm2(v: number | null | undefined): string {
+  if (!isFiniteNumber(v)) return "—";
+  return `${(Math.abs(v) < 100 ? nf(1, 1) : nf(0)).format(v)} km²`;
+}
+
+/** Residents per km²: nearest 10 (nearest 1 below 100). */
+export function formatDensity(v: number | null | undefined): string {
+  if (!isFiniteNumber(v)) return "—";
+  return v < 100 ? nf(0).format(Math.round(v)) : nf(0).format(Math.round(v / 10) * 10);
+}
+
 /** Formats a value according to its unit string (used by <Metric>). */
 export function formatByUnit(value: number | string | null, unit: string): string {
   if (value === null) return "—";
@@ -122,6 +134,12 @@ export function formatByUnit(value: number | string | null, unit: string): strin
       return formatPerKm2(value);
     case "residents":
       return formatPopulation(value, "authority");
+    case "residents (small areas)":
+      return formatPopulation(value, "small_area");
+    case "km²":
+      return formatKm2(value);
+    case "residents per km²":
+      return formatDensity(value);
     default:
       return formatCount(value);
   }

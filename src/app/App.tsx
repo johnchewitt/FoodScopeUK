@@ -20,6 +20,7 @@ import { selectMapColourStyle, selectReducedMotion, useAppStore } from "@/state/
 import { MapLoading } from "@/components/maps/MapLoading";
 import { OriginsLegend, OriginsMapSync, OriginsTooltip } from "@/features/origins/OriginsMapExtras";
 import { AccessMapExtrasLazy } from "@/features/access/lazy";
+import { CompareDialogLazy, ProfileMapExtrasLazy } from "@/features/profiles/lazy";
 import { SeasonalMapExtrasLazy } from "@/features/seasonal/lazy";
 import { ErrorBoundary } from "./ErrorBoundary";
 
@@ -88,6 +89,11 @@ export function App() {
             <AccessMapExtrasLazy />
           </ErrorBoundary>
         )}
+        {module === "profiles" && (
+          <ErrorBoundary region="Map legend">
+            <ProfileMapExtrasLazy />
+          </ErrorBoundary>
+        )}
         <ErrorBoundary region="Timeline">
           <TimelineBar />
         </ErrorBoundary>
@@ -97,6 +103,9 @@ export function App() {
       </main>
       <EvidenceDialog />
       <HelpDialog />
+      <ErrorBoundary region="Council comparison">
+        <CompareDialogLazy />
+      </ErrorBoundary>
     </div>
   );
 }

@@ -216,7 +216,12 @@ test.describe("Food Origins explorer", () => {
       .getByRole("button", { name: /Profiles/ })
       .click();
     await expect.poll(() => mapInfo(page).then((i) => i.visible)).toBe(false);
+    // Profiles (Stage 5) has its own figures: without a council, no number is shown.
     const cards = page.locator(".kpi-card");
-    for (const text of await cards.allInnerTexts()) expect(text).toContain("No data loaded");
+    await expect(cards.first()).toContainText("No council chosen", { timeout: 30_000 });
+    for (const text of await cards.allInnerTexts()) {
+      expect(text).toContain("No council chosen");
+      expect(text.replace(/10,000|> 1 km/, "")).not.toMatch(/\d/);
+    }
   });
 });

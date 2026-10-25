@@ -17,6 +17,7 @@ export async function loadECharts(): Promise<typeof EChartsCore> {
     charts.LineChart,
     charts.BarChart,
     charts.HeatmapChart,
+    charts.PieChart,
     components.GridComponent,
     components.TooltipComponent,
     components.VisualMapComponent,
@@ -24,6 +25,7 @@ export async function loadECharts(): Promise<typeof EChartsCore> {
     components.AriaComponent,
     components.MarkLineComponent,
     components.MarkAreaComponent,
+    components.GraphicComponent,
     renderers.SVGRenderer,
     renderers.CanvasRenderer,
   ]);

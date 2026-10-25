@@ -45,8 +45,9 @@ def main(argv: list[str] | None = None) -> int:
     local = sub.add_parser("build-local", help="OFFLINE: raw boundaries, stores and population → public/data/snapshots/<snapshot>/local/")
     local.add_argument("--snapshot", required=True, help="ONS raw snapshot id YYYY-MM-DD (pipeline/raw/ons/<snapshot>/)")
 
-    areas = sub.add_parser("build-areas", help="OFFLINE: raw small-area files → <out>/snapshots/<snapshot>/areas/ + reports/areas-qa-<snapshot>.json")
-    areas.add_argument("--snapshot", required=True, help="raw snapshot id YYYY-MM-DD (pipeline/raw/<publisher>/<snapshot>/)")
+    areas = sub.add_parser("build-areas", help="OFFLINE: raw small-area files → <out>/snapshots/<context-snapshot>/areas/<council>/ + reports/areas-qa-<context-snapshot>.json")
+    areas.add_argument("--snapshot", required=True, help="raw snapshot of the stage5 set YYYY-MM-DD (pipeline/raw/<publisher>/<snapshot>/)")
+    areas.add_argument("--context-snapshot", required=True, help="raw snapshot of the context set (LSOA urban/rural class); also the output snapshot")
     areas.add_argument("--out", default=None, help="output root (default: public/data)")
 
     grocers = sub.add_parser("build-ni-grocers", help="OFFLINE: FSA register (NI) → NI grocers not in GEOLYTIX: <out>/snapshots/<snapshot>/register/ + reports/ni-grocers-qa-<snapshot>.json")
@@ -146,11 +147,12 @@ def main(argv: list[str] | None = None) -> int:
 
         out = Path(args.out) if args.out else DATA_DIR
         try:
-            written = build_areas(args.snapshot, areas_inputs(RAW, CONFIG, args.snapshot), out, REPORTS, SCHEMAS)
+            written = build_areas(args.snapshot, areas_inputs(RAW, CONFIG, args.snapshot, args.context_snapshot), out,
+                                  REPORTS, SCHEMAS, out_snapshot=args.context_snapshot)
         except Exception as exc:  # noqa: BLE001 (report any input problem and fail the step)
             logging.error("build-areas failed: %s", exc)
             return 1
-        print(f"wrote {len(written)} files for areas snapshot {args.snapshot}")
+        print(f"wrote {len(written)} files for areas snapshot {args.context_snapshot}")
         return 0
 
     if args.command == "build-ni-grocers":
