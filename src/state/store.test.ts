@@ -231,3 +231,43 @@ describe("basemap choice (SH-08)", () => {
     expect(useAppStore.getState().mapView?.zoom).toBe(7);
   });
 });
+
+describe("Local Authority Profiles selection (LP-01, LP-06, LP-07)", () => {
+  it("changing council clears the small area and chart outline and cleans the comparison", () => {
+    s().setLad("E08000003");
+    s().setCompare(["N09000003", "E08000003", "W06000015"]);
+    expect(s().compare).toEqual(["N09000003", "W06000015"]);
+    s().selectArea("E01005063");
+    s().setAreaHighlight({ label: "Synthetic class", codes: ["E01005063"] });
+    s().setLad("N09000003");
+    expect(s().area).toBeNull();
+    expect(s().areaHighlight).toBeNull();
+    expect(s().compare).toEqual(["W06000015"]);
+  });
+
+  it("toggles comparison councils up to three; selecting an area twice clears it", () => {
+    s().setLad("E08000003");
+    for (const c of ["N09000003", "W06000015", "S12000036", "E06000001"]) s().toggleCompare(c);
+    expect(s().compare).toEqual(["N09000003", "W06000015", "S12000036"]);
+    s().toggleCompare("W06000015");
+    expect(s().compare).toEqual(["N09000003", "S12000036"]);
+    s().selectArea("E01005063");
+    s().selectArea("E01005063");
+    expect(s().area).toBeNull();
+  });
+
+  it("a new map measure clears the chart outline; the URL carries the profile state", () => {
+    s().setModule("profiles");
+    s().setLad("N09000003");
+    s().setAreaHighlight({ label: "Synthetic class", codes: ["95GG35S1"] });
+    s().setAreaMeasure("deprivation");
+    expect(s().areaHighlight).toBeNull();
+    s().setNiGrocers(true);
+    expect(selectUrlState(s())).toMatchObject({
+      module: "profiles",
+      lad: "N09000003",
+      areaMeasure: "deprivation",
+      niGrocers: true,
+    });
+  });
+});

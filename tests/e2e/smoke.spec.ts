@@ -69,11 +69,19 @@ test.describe("Stage 1 shell", () => {
   test("deep link restores module, month and authority", async ({ page }) => {
     await page.goto("./?m=profiles&mo=7&lad=N09000003");
     await expect(page.getByRole("heading", { level: 1, name: "Local Authority Profiles" })).toBeVisible();
+    // Profiles has no timeline (Stage 5); the authority opens its profile.
+    await expect(page.locator("#insights-panel").getByText("N09000003")).toBeVisible({ timeout: 30_000 });
+    // The month is kept for the timeline modules.
+    await page
+      .getByRole("navigation", { name: "Modules" })
+      .getByRole("button", { name: /Seasonal/ })
+      .click();
     await expect(page.getByRole("button", { name: "Jul", exact: true })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
-    await expect(page.locator("#filter-panel").getByText("N09000003")).toBeVisible();
+    await expect(page).toHaveURL(/mo=7/);
+    await expect(page).toHaveURL(/lad=N09000003/);
   });
 
   test("invalid URL values fall back safely", async ({ page }) => {
