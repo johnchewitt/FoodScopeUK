@@ -118,11 +118,11 @@ def main(argv: list[str] | None = None) -> int:
                 ("scotgov", s6.SCOTGOV_FILES, ()),
                 ("emodnet", s6.EMODNET_FILES, ()),
                 ("ons", (), s6.ONS_QUERIES),
-                # OSNI's Spatial NI service (S34) closed the connection to GitHub's runners in three
-                # runs (25 Oct 2026); its probe stays in stage6_files.OSNI_PROBE_FILES. The transport
-                # lines come from OSNI's ArcGIS Hub download instead (John's links, 25 Oct 2026).
+                # OSNI (S34): its Spatial NI service closed the connection to GitHub's runners in three
+                # runs and its ArcGIS Hub download answered HTTP 400 (25 Oct 2026). Both stay in
+                # stage6_files (OSNI_PROBE_FILES, OSNI_FILES) for a retry, outside this set so every
+                # push does not fail on them; Northern Ireland's roads wait for a file from John.
                 ("os", tuple(f for f in s6.PROBE_FILES if f.id.startswith("os.")), ()),
-                ("osni", s6.OSNI_FILES, ()),
                 ("translink", s6.TRANSLINK_FILES, ()),
             ]
         else:
