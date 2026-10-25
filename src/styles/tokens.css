@@ -58,7 +58,9 @@
   --fs-map-store-outline: var(--fs-navy);
   --fs-map-cluster-fill: var(--fs-navy);
   --fs-map-cluster-ring: var(--fs-text);
-  --fs-map-proximity: var(--fs-cyan);
+  --fs-map-proximity: #f184c0;
+  /* Ground behind legend samples drawn as lines (the proximity ring): none on dark grey. */
+  --fs-map-sample-ground: transparent;
   /* Basemap choice swatches (SH-08): approximate tones of each style, for recognition only. */
   --fs-basemap-swatch-dark: linear-gradient(135deg, #3d3d3d 55%, #262626 55%);
   --fs-basemap-swatch-light: linear-gradient(135deg, #e6e6e6 55%, #c8c8c8 55%);
@@ -155,6 +157,8 @@
   --fs-map-store-outline: #ffffff;
   --fs-map-cluster-fill: var(--fs-navy);
   --fs-map-cluster-ring: #ffffff;
-  --fs-map-proximity: #00717c;
+  --fs-map-proximity: #9c0a73;
+  /* The legend sits on the dark glass; the magenta ring is drawn on light grey land (#f4f4f4). */
+  --fs-map-sample-ground: #f4f4f4;
   --fs-glass: color-mix(in oklab, var(--fs-emerald) 97%, transparent);
 }

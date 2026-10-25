@@ -1,10 +1,28 @@
 import { describe, expect, it } from "vitest";
 import { symbolicArc } from "./arcs";
 import { readRepoJson } from "@/test/files";
-import { connectionsBBox, fitBBox, UK_EXTENT_110M, unionBBox, type FitViewport } from "./frame";
+import { connectionsBBox, fitBBox, pointsBBox, UK_EXTENT_110M, unionBBox, type FitViewport } from "./frame";
 
 const NO_PAD = { top: 0, right: 0, bottom: 0, left: 0 };
 const square: FitViewport = { width: 1024, height: 1024, padding: NO_PAD };
+
+describe("pointsBBox", () => {
+  it("is null without points, or with no finite coordinates", () => {
+    expect(pointsBBox([])).toBeNull();
+    expect(pointsBBox([{ lon: Number.NaN, lat: 1 }])).toBeNull();
+  });
+
+  it("is a zero-size box for a single point and skips non-finite coordinates", () => {
+    expect(pointsBBox([{ lon: 1, lat: 2 }])).toEqual([1, 2, 1, 2]);
+    expect(
+      pointsBBox([
+        { lon: 1, lat: 2 },
+        { lon: -3, lat: Number.POSITIVE_INFINITY },
+        { lon: -1, lat: 5 },
+      ]),
+    ).toEqual([-1, 2, 1, 5]);
+  });
+});
 
 describe("connectionsBBox", () => {
   it("is null without connections", () => expect(connectionsBBox([], [0, 52])).toBeNull());

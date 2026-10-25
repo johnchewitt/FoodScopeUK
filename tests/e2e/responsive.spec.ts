@@ -6,6 +6,7 @@ const VIEWPORTS = [
   { name: "laptop-1366", width: 1366, height: 768 },
   { name: "tablet-1024", width: 1024, height: 768 },
   { name: "tablet-portrait-820", width: 820, height: 1180 },
+  { name: "tablet-portrait-800", width: 800, height: 1086 },
   { name: "mobile-390", width: 390, height: 844 },
 ];
 
@@ -26,6 +27,31 @@ for (const vp of VIEWPORTS) {
       { timeout: 30_000 },
     );
     await page.waitForTimeout(1000);
+
+    // Header parts never overlap (the subtitle once ran into Search at about 800 px).
+    const header = await page.evaluate(() => {
+      const box = (sel: string) => {
+        const b = document.querySelector(sel)?.getBoundingClientRect();
+        return b && b.width > 0 ? { left: b.left, right: b.right } : null;
+      };
+      // The module title is clipped by its column (it shortens, then disappears when the tools
+      // need the room), so only its visible part counts.
+      const ctx = box(".topbar__context");
+      const title = box(".topbar__module");
+      const left = ctx && title ? Math.max(ctx.left, title.left) : 0;
+      const right = ctx && title ? Math.min(ctx.right, title.right) : 0;
+      return {
+        name: box(".brand__name"),
+        sub: box(".brand__sub"),
+        module: right > left ? { left, right } : null,
+        tools: box(".topbar__tools"),
+      };
+    });
+    for (const part of [header.name, header.sub, header.module])
+      if (part) expect(part.right).toBeLessThanOrEqual(header.tools!.left + 0.5);
+    if (header.module)
+      for (const part of [header.name, header.sub])
+        if (part) expect(part.right).toBeLessThanOrEqual(header.module.left + 0.5);
 
     // No horizontal page scroll at any size.
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);

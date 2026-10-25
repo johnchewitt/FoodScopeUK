@@ -2,11 +2,11 @@
 
 | | |
 |---|---|
-| **Branch** | `stage/4-supermarket-network` (PR #8), stacked on PR #7 (`data/stage-4-inputs`), which is stacked on PR #6 (`improve/review-top-five`) |
+| **Branch** | `stage/4-supermarket-network` (PR #8), stacked on PR #7 (`data/stage-4-inputs`), which is stacked on PR #6 (`improve/review-top-five`). Merged to `main` as PR #6, PR #10 (the data) and PR #9 (the stage) on 24 Oct 2026; PRs #7 and #8 were closed. Fixes from the live checks: PR #11 (`fix/stage-4-live-checks`) |
 | **Date** | 24 October 2026 |
 | **Scope** | Roadmap §6: SM-01 – SM-10 and the curated basemap switcher (SH-08, §6.1). Includes John's three decisions of 24 Oct 2026: wholesale and mainly non-food stores are left out; each kind of data keeps its own newest date; the 125 Channel Islands and Isle of Man stores are on the map without a council. Stage 5 not started. |
 | **Data** | Trade snapshot **2026-10-23** (unchanged). Stores and population snapshot **2026-10-24**: GEOLYTIX v46 (June 2026), ONS mid-2025 population and land area, May 2025 councils. No new downloads; one offline rebuild to add the displayed-count comparison to the S12 report. |
-| **Result** | All checks pass locally (below). Still open: the live checks of light grey and imagery on a real GPU, their attribution, light grey's land colour, and the basemap request count. These need the deploy and John's dashboard. |
+| **Result** | All checks pass locally and on CI. Deployed from `main` at `0417872` (CI and Pages deploy both succeeded, smoke test included). Live checks done on 24 Oct 2026 (below); they found three small issues, fixed in the follow-up PR. Still open: the basemap request count from John's dashboard. |
 
 ## What was built
 
@@ -91,11 +91,15 @@ See "Commands run" and "Not verified" below.
 | Imagery (dark set) | `#2f3a24` (vegetation) | All ≥ 3:1 |
 | Imagery (dark set) | `#6b6b6b` (roofs, roads) | WARN: orange 1.67:1, violet 1.70:1. Relief: on imagery the navy outline is 0.6 px wider, shapes differ, and every store has a card and tooltip |
 | Light grey connections and selection `#071923 #46821f` | `#d6d6d6` | CVD ΔE 36.9, both ≥ 3:1 |
-| Light grey proximity `#00717c` | `#d6d6d6` | ≥ 3:1 (chroma flag only) |
+| Light grey proximity `#00717c` | `#d6d6d6` | ≥ 3:1 (chroma flag only). Replaced after the live checks (below) |
+| Light grey ramp, rechecked on the measured land | `#f4f4f4` (below zoom 7), `#efefef` (zoom 7 and above), `#cfd3d4` (water) | PASS all three: lightest class 2.94:1, 2.81:1, 2.14:1 |
+| Light grey stores, rechecked | `#f4f4f4`, `#efefef` | PASS: all ≥ 3:1 |
+| Overlays, all pairs (selection, proximity, council lines, store symbols, ramp ends) | — | **FAIL before the fix:** proximity vs selection normal-vision ΔE 11.8 on dark grey (`#49ead8` vs `#a1eb83`; the proximity cyan also equalled the council outlines) and 14.8 on light grey (`#00717c` vs `#46821f`; also the class 2 fill) |
+| Overlays after the fix: proximity `#f184c0` (dark grey, imagery), `#9c0a73` (light grey) | `#3d3d3d`; `#efefef`, `#cfd3d4` | PASS: dark worst normal ΔE 16.8, CVD 8.9, 4.55:1; light worst normal ΔE 17.5, CVD 9.2, 6.75:1 / 5.15:1. The legend ring sits on the light land colour on light grey, as it does on the map |
 
 Panels stay dark glass on light grey but near-opaque (97 %). Muted text then computes to 4.7:1 over light map content, against 2.7:1 at the dark style's 76 %. The dark style's figure over the brightest share class is a separate, existing issue (B33).
 
-Light grey's land colour could not be read from the sandbox, so the light set was validated against both ends of the plausible range. **Live check needed:** sample the land colour on the deployed site and record it here.
+Light grey's land colour could not be read from the sandbox, so the light set was first validated against both ends of the plausible range. On the live site the style's own layers give land `#f4f4f4` below zoom 7 and `#efefef` from zoom 7, water and background `#cfd3d4`, and urban areas `#e5e8e7` → `#eceded`; the rechecks above use these.
 
 ## Commands run and results (sandbox, 24 Oct 2026)
 
@@ -147,18 +151,32 @@ Screenshots:
 
 The stub basemap is one flat tile; the live site shows the real Esri styles.
 
+## Deployment and live checks (24 Oct 2026)
+
+Checked on https://johnchewitt.github.io/FoodScopeUK/ in the Claude desktop app's browser pane (Chromium, about 800 px wide, real GPU), after the merge of PR #9.
+
+| Check | Result |
+|---|---|
+| CI and deploy on `main` (`0417872`) | Both succeeded, including the post-deploy smoke test |
+| Each style loads with the site's key | Dark grey (`arcgis/dark-gray`), light grey (`arcgis/light-gray`) and imagery (`arcgis/imagery`) all report "ready" |
+| Attribution follows the style | Dark grey: "Esri \| TomTom \| FAO \| NOAA \| USGS \| Made with Natural Earth \| …". Light grey: "Esri UK \| Esri \| TomTom \| Garmin \| FAO \| NOAA \| USGS \| …". Imagery over Manchester: "Esri UK \| Earthstar Geographics \| Esri \| TomTom \| Garmin \| GeoTechnologies, Inc \| METI/NASA \| USGS \| …". The ONS boundary and GEOLYTIX credits follow in every style |
+| Imagery only at local scale | Offered at zoom 13 in UK Food Access; at zoom 9 the map shows dark grey and `bm=imagery` stays in the URL; imagery returns at local scale |
+| Deep link `bm=light` | Opens in light grey, in Food Origins and UK Food Access |
+| Stores file transfer (B34) | GitHub Pages serves `stores.geojson` gzipped: 1,008 kB transferred for 8,310 kB decoded, 217 ms |
+| Cluster counts (B30) | Drawn on the live site; B30 affects only offline builds |
+| Console on fresh loads | No errors. Two earlier 401 responses for an Esri item (`5e9b3685…`) did not reproduce on fresh loads |
+| Legibility | Stores, clusters and the choropleth read clearly over all three styles (by eye) |
+
+Issues found, fixed in the follow-up PR:
+1. **Overlay colours:** the proximity ring and lines were too close to the selection outline for full-colour readers on both grey styles (table above). Proximity is now pink on dark grey and imagery, magenta on light grey.
+2. **Opening view:** UK Food Access opened on the default world view (zoom 2, centred on 8° E, 30° N). It now fits the box around every mapped store (Channel Islands to Shetland, Northern Ireland to East Anglia) once per visit, instantly on first load and flying from another module. It does not move when filters change, or when the map is already at local scale.
+3. **Header at about 800 px:** the brand ran into the Search button. The cause was the freshness pill: with two data families its label grew to about 330 px ("Trade 2026-10-23 · Stores and population 2026-10-24"). Below 1024 px the pill now shows compact dates ("Trade 23 Oct · Stores 24 Oct"; the full dates stay in its accessible name and tooltip), and the subtitle and the disabled 2D/3D toggle are hidden, as on phones. The subtitle also shortens instead of overflowing at any width.
+
 ## Not verified, and why
 
-- **Light grey and imagery on the live site.** The sandbox cannot reach Esri, and E2E stubs the styles service (one flat tile per style). Still to check on the deployed site with a real GPU:
-  - each style loads with the site's key;
-  - real attribution follows the style;
-  - legibility of stores, clusters and the choropleth over the real styles;
-  - light grey's land colour.
-
-  This needs the deploy, then a session in John's browser.
+- **Light grey and imagery** were checked on the live site in one browser (Chromium in the desktop app's pane, about 800 px wide); see "Deployment and live checks". Other browsers and widths were not checked.
 - **Basemap request usage (risk R8).** Each style switch requests a new style under the key. Only John's ArcGIS Location Platform dashboard shows the count.
-- **Cluster counts on the live site.** Cluster labels need glyphs from `static.arcgis.com/fonts`, which the sandbox cannot reach. There, clusters draw without numbers (B30). The live site uses the Esri CDN and should show them.
-- **Transfer size of `stores.geojson` (8.5 MB).** Whether GitHub Pages serves `.geojson` with gzip is unchecked (B34). The prefetch starts it with the map SDK.
+- **Cluster counts offline.** Cluster labels need glyphs from `static.arcgis.com/fonts`. Offline builds (`VITE_ARCGIS_ASSETS=local` without network) draw clusters without numbers (B30); the live site shows them.
 - **Hosted FeatureLayer (SM-01).** Tested with a mock service only: there is no public layer with this schema, and `config.json` lists none.
 - **Firefox, Safari, real phones, screen readers:** as in Stage 3, only Chromium (with touch emulation for mobile) and axe.
 - **Performance on real hardware:** clustering 19,183 points and switching filters were exercised only with software WebGL.
@@ -172,9 +190,10 @@ The stub basemap is one flat tile; the live site shows the real Esri styles.
 - **Cards:** "per 10,000 residents" and "per km² of land" are labelled by denominator, with the measure and area in the detail line, because the full measure name did not fit the card.
 - **Top bar:** a long module question (UK Food Access) overlapped the tools at 1600 px. The question now shortens with an ellipsis inside its column.
 - **Kernel density** stays in Release 2 (SM-08).
+- **Header below 1024 px (live-check fix):** the subtitle (SH-01) and the disabled 2D/3D toggle (SH-03, Release 2) are hidden, as they already were on phones, and the freshness pill shows compact dates. The page title still carries the subtitle.
 
 ## Open questions
 
-1. **Merges:** please merge PR #6, then PR #7, then this PR, in that order. I will retarget each PR to `main` as the one below it merges. After the deploy I can do the live checks with you.
+1. **Merges:** done (PRs #6, #10 and #9). The live checks are recorded above.
 2. **Basemap usage:** after a few style switches on the live site, could you read the basemap request count from your ArcGIS Location Platform dashboard? I will record it here.
 3. **Proximity:** is a typed postcode for the proximity point worth adding (B31)? It needs a postcode lookup verified first.

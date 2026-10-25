@@ -44,6 +44,22 @@ export interface FitOptions {
  */
 export const UK_EXTENT_110M: BBox = [-7.572, 49.96, 1.682, 58.635];
 
+/**
+ * Smallest box containing every point with finite coordinates (UK Food Access frames all mapped
+ * stores this way); null when there are none.
+ */
+export function pointsBBox(points: Iterable<{ lon: number; lat: number }>): BBox | null {
+  let [w, s, e, n] = [Infinity, Infinity, -Infinity, -Infinity];
+  for (const { lon, lat } of points) {
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) continue;
+    w = Math.min(w, lon);
+    e = Math.max(e, lon);
+    s = Math.min(s, lat);
+    n = Math.max(n, lat);
+  }
+  return w <= e ? [w, s, e, n] : null;
+}
+
 /** Smallest box containing both. */
 export function unionBBox(a: BBox, b: BBox): BBox {
   return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])];
