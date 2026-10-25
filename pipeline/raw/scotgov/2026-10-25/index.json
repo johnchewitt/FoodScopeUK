@@ -13,6 +13,18 @@
       "bytes": 3333484,
       "sha256": "41f51a4c0e6edbd30f81c3d8d79c37f3f557a3c1d887a10b75c07f0bc01e0891",
       "retrievedAt": "2026-10-25T20:33:17Z"
+    },
+    {
+      "id": "scotgov.dz11_lookup",
+      "file": "dz2011-lookup.csv",
+      "url": "https://data.gov.scot/dataset/2011_data_zone_lookup/resource/20ad5f65-c5c2-407e-8355-7c25bf579e87/download",
+      "sourceId": "S32",
+      "licence": "Open Government Licence v3.0",
+      "description": "2011 Data Zone Lookup (Data Zones to current councils and other geographies)",
+      "httpStatus": 200,
+      "bytes": 3287962,
+      "sha256": "688416b875733f62d5ceede1ac2b73c9db021e816ea8a9c6c58da0f105b601b6",
+      "retrievedAt": "2026-10-25T20:58:29Z"
     }
   ]
 }
