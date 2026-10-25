@@ -78,7 +78,7 @@ The brief asks for a complete, tested first release over an extensive unfinished
 | Local Authority Profiles | ✅ any LAD (basic) · **Belfast & Manchester (deep)** | deep profiles for all LADs | |
 | Authority comparison | ✅ 2–4 LADs, basic indicators | full benchmarking by authority type | |
 | Food Access & Vulnerability (national small-area layers) | demo LADs only | ✅ national | |
-| Supply Chain Risk Explorer (weights + sensitivity) | | ✅ | |
+| UK Food Resilience — Risk Explorer (three views, explanations; Stage 6) | ✅ | + user weights and sensitivity (RK-05) | |
 | Scenario Lab | ✅ Import disruption (A/E), Store closure (D) | ✅ Short Straits (B), Wheat harvest (C) | |
 | Consulting Insights + opportunity statements | ✅ | | |
 | PDF export of profiles | ✅ | + scenario & insight exports | |
@@ -108,7 +108,7 @@ The brief asks for a complete, tested first release over an extensive unfinished
 ### 4.2 Requirements
 
 - **SH-01** Top bar shows "FOODSCOPE UK", subtitle "Food Security & Supply Chain Intelligence" and a subtle "Powered by ConsultingWhere" attribution.
-- **SH-02** Module navigation in a left-hand rail (changed from top-centre at John's Stage 1 instruction): Food Origins · Seasonal Supply · UK Food Access · Supply Chain Risks · Local Authority Profiles · Scenario Lab · Consulting Insights. Modules not yet built show what they will contain and when ("Added in build stage N" / "Planned for Release N") rather than being hidden, so demos can describe the full vision honestly.
+- **SH-02** Module navigation in a left-hand rail (changed from top-centre at John's Stage 1 instruction): Food Origins · Seasonal Supply · UK Food Access · Risks (UK Food Resilience — Risk Explorer) · Local Authority Profiles · Scenario Lab · Consulting Insights. Modules not yet built show what they will contain and when ("Added in build stage N" / "Planned for Release N") rather than being hidden, so demos can describe the full vision honestly.
 - **SH-03** Utilities: Search (places, authorities, commodities, stores), Help, Export, **Data freshness indicator** (latest reference period per source family, colour-coded by age against expected cadence), 2D/3D toggle (disabled with tooltip until Release 2).
 - **SH-04** Application state is reflected in the URL query string (module, commodity, year, month, LAD codes, filters, scenario parameters) so any view can be bookmarked or shared and so demos are reproducible.
 - **SH-05** Every panel implements five data states: loading (skeleton), empty, error (with retry and plain-English cause), partial (some sources failed — say which) and stale (data older than expected cadence).
@@ -216,14 +216,39 @@ The brief asks for a complete, tested first release over an extensive unfinished
 - LP-07: the selected council and up to three others, in the order chosen, never ranked. Each row says how far it compares: UK-wide definitions; Census 2021 (not Scotland); ranked within each nation; each nation's own classification. A banner appears when the councils are in different nations. Benchmarks against authorities of a similar type follow in Release 2.
 - LP-08: provisional "Consulting opportunities" prompts from transparent rules on the figures shown, with "why am I seeing this?"; expanded in Stage 8 (Consulting Insights). No requirement, budget or procurement is implied.
 
-### 5.6 Supply Chain Risk Explorer (RK) — Release 2
+### 5.6 UK Food Resilience — Risk Explorer (RK) — Release 1 (Stage 6); RK-05 Release 2
 
-- **RK-01** Three separate tabs: National supply · Transport & logistics · Local community access.
-- **RK-02** National supply: per-commodity import concentration (HHI, top-3 share), change in partner mix, domestic production availability (annual), climate exposure only where an authoritative published indicator exists (no invented climate scores).
-- **RK-03** Transport & logistics: major ports (DfT, §S23), Short Straits dependence (UKFSR 2024 Theme 3), HMRC port-level commodity imports if verified suitable (§S01/S28), road/rail context layers.
-- **RK-04** Local access: indicators from FA.
-- **RK-05** Within a tab, the user may combine normalised indicators with user-set weights. The method (normalisation, direction, weights) is shown beside the result. Sensitivity analysis: one-at-a-time weight perturbation (±25 %) and random weight sampling (Dirichlet, n = 500) reporting rank stability (median rank, 5th–95th percentile).
-- **RK-06** No cross-tab composite score (P10).
+Moved into Release 1 by John's Stage 6 brief (25 Oct 2026; roadmap §1, §8). Design: ADR-0024.
+
+- **RK-01** Three separate views, one map: International supply · Logistics · Community access (`rv` in the URL). Each view has its own controls, KPI cards, charts, legend, tooltip and explanation.
+- **RK-02** International supply exposure, per commodity basket and period (shared with Food Origins):
+  - recorded imports, number of partners, top-supplier and top-three shares, HHI (0–10,000, §6.2), year-on-year change, and monthly concentration (HHI heatmap, fixed classes of 1,000);
+  - a ranking of the baskets by HHI and a commodity–country matrix;
+  - estimated exposure to one supplier's disruption: its share of recorded imports over the period and by month, never a shortage;
+  - partners' national water stress (FAO SDG 6.4.2, §S30) as a map fill, with a no-data class;
+  - Defra's annual UK production share as national context (§S09, §S10), never combined with monthly imports;
+  - zero, suppressed and non-country trade and commodity-code changes shown as such.
+- **RK-03** Food logistics and infrastructure:
+  - major ports (DfT PORT0499, §S23): inward freight from abroad, agricultural products inwards, or roll-on/roll-off inwards, 2015–2025, as proportional circles;
+  - UKFSR 2024 port-of-entry and Short Straits shares of food, feed and drink imports (§S03), shown as published, never derived from DfT tonnage;
+  - England's Strategic Road Network delay (§S03);
+  - strategic road corridors for Great Britain (OS Open Roads, §S35);
+  - agricultural production regions (Defra June survey 2025, §S31, on ITL1, §S33).
+
+  Rail freight, distribution centres and Northern Ireland roads are listed as not available, with the reason. HMRC port-level commodity trade (§S28) is not used (gate G13).
+- **RK-04** Community food access:
+  - every council's share of small areas in its nation's two highest-priority deciles of the Priority Places for Food Index v2.1 (§S13), combined or by domain;
+  - ranked within its own nation only (ties marked);
+  - Northern Ireland's three missing domains shown as no data;
+  - small areas by decile, urban/rural context (England and Wales) and a link to the council's profile.
+- **RK-05** *(Release 2.)* Within a view, the user may combine normalised indicators with user-set weights. The method (normalisation, direction, weights) is shown beside the result. Sensitivity analysis: one-at-a-time weight perturbation (±25 %) and random weight sampling (Dirichlet, n = 500) reporting rank stability (median rank, 5th–95th percentile). Not built in Stage 6: no published indicators within a view share a unit and direction yet.
+- **RK-06** No cross-view composite score (P10).
+- **RK-07** "Explain this risk" for the selected subject (commodity, port network, port, road corridors, farming region, council). It sets out:
+  - what is measured, why it matters and how it is calculated;
+  - the observed evidence (values with provenance);
+  - sources, limitations, evidence that would help, and general options (never recommendations or an organisation's needs);
+  - separately and labelled, an interpretation that is never a forecast or probability.
+- **RK-08** Linked selection: a click on a chart bar, table row or map feature selects the commodity, partner, port or council everywhere (map, cards, charts, explanation, URL); keyboard alternatives exist for every chart selection.
 
 ### 5.7 Scenario Lab (SC)
 
@@ -378,6 +403,36 @@ share_affected(m) = unreplaced_t(m) / Σ_q M(c,q,m_baseline)
 Baseline months come from the user-selected reference year (default: latest complete calendar year). Outputs: affected and unreplaced tonnes by month, share of recorded imports affected, post-scenario partner shares and HHI assuming other partners unchanged (stated). *Scenario-modelled.*
 
 **Store closure (SC-D)**: for each small area *i* with representative point *x_i* and population *P_i*, `d_i = min_s dist(x_i, s)` over qualifying stores *s* (straight-line, metres, computed in a projected CRS — British National Grid EPSG:27700 for GB, Irish Transverse Mercator EPSG:2157 for Northern Ireland). Outputs before/after: `Σ P_i · [d_i > T]` for each threshold *T*, population-weighted mean and median distance, broken down by within-nation deprivation decile. *Scenario-modelled.*
+
+
+### 6.6 Risk Explorer indicators (Stage 6, ADR-0024)
+
+Implemented in `src/analysis/risk.ts` and `src/features/risks/model.ts`, with unit tests against independent computations from the raw files (stage 6 report, hand checks).
+
+- **Concentration** (RK-02): partner shares, HHI, CR1, CR3 and partner count as §6.2, over the **allocated** partner total of the period. Monthly HHI per month; a month with nothing recorded has no HHI and is shown as a gap. Fixed HHI classes: below 1,000, then steps of 1,000 to 5,000 and over (descriptive classes, not thresholds of risk). *Derived.*
+- **Estimated exposure to partner *p*** over the months *P* of the period: `E_p = Σ_{m∈P} M(p,m) / Σ_{m∈P} Σ_q M(q,m)`. The same by month, `e_p(m) = M(p,m) / Σ_q M(q,m)`, with its largest month and the number of months with `e_p(m) ≥ 0.5`. The part of recorded supply exposed if recorded imports from *p* stopped; no substitution, stocks or production are modelled. Never called a shortage. *Derived.*
+- **Water stress** (S30): FAO SDG 6.4.2, total freshwater withdrawal ÷ available freshwater resources (%), the latest year per country (mostly 2022). FAO classes: none < 25; low 25–50; medium 50–75; high 75–100 (100 included); critical > 100. Share of recorded imports by class: `Σ s_p` over partners in the class; partners without a value form a "no data" class, never counted as low. A national figure: it does not describe where the produce was grown or how it was irrigated. *Official estimate* (class) / *Derived* (shares).
+- **Port freight** (S23): DfT PORT0499 tonnage (thousand tonnes) by port and year, summed over cargo rows:
+  - inward freight from abroad: direction "Inwards", load region not "United Kingdom (inc CHI & IOM)" and not "Unspecified";
+  - agricultural products inwards: cargo category 23 (grain, soya, tapioca…), loaded abroad as above;
+  - roll-on/roll-off inwards: the two Ro-Ro cargo groups (self-propelled and non-self-propelled), any origin, because DfT records no commodity for them.
+
+  A port's share is its tonnage ÷ the sum over the major ports for the same measure and year. Change on the previous year is `(t_y − t_{y−1}) / t_{y−1}`. Symbol area is proportional to tonnage (radius `26 px · √(t / t_max)`, at least 3 px); a zero is a hollow ring. *Measured* / *Derived.*
+- **Port of entry and road delay** (S03): as published in UKFSR 2024 theme 3 (charts 3_2_2a, 3_2_2b, 3_2_1a); nothing is recomputed. *Official estimate.*
+- **Farming density** (S31, S33): `value ÷ region area (km², ONS ITL1, clipped)`. For wheat (hectares) the same quotient is the percentage of the region under wheat (1 km² = 100 ha). Fixed manual breaks (five classes):
+  - wheat: 2 / 5 / 10 / 15 %;
+  - cattle: 20 / 30 / 50 / 70 per km²;
+  - sheep: 50 / 100 / 150 / 250 per km²;
+  - pigs: 5 / 10 / 20 / 60 per km²;
+  - poultry: 250 / 500 / 1,000 / 1,500 per km².
+
+  England's figures cover commercial holdings. *Derived.*
+- **Priority places by council** (S13): `share = (council's small areas in its nation's deciles 1–2) ÷ (council's small areas)`, for the combined index or one domain. Small areas are assigned to councils by official lookups:
+  - England and Wales: LSOA 2021 → LAD 2025;
+  - Scotland: Data Zone 2011 → council;
+  - Northern Ireland: SOA 2011 → LGD 2014.
+
+  The nation's share pools all its areas (about 20 % by construction). Classes: none (0 %), under 10 %, 10–20 %, 20–30 %, 30–50 %, 50 % and over. Ranked within the nation only, highest share first; equal shares share a rank, marked "=" (competition ranking). Councils with fewer than 10 small areas carry a caution. *Derived.*
 
 ---
 

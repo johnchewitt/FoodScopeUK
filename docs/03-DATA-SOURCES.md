@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | 03 — Verified data catalogue and manifest |
-| **Version** | 0.7 — 25 October 2026 (Stage 6 data step: S03 theme 3 tables and S23 verified; S30–S33, S35 and S36 added and verified; S34 (OSNI roads) unreachable; S13, S15 and S17 notes updated. Earlier: pre-Stage 5 data steps S13, S15, S16, S19, S20, S29, gates G8–G11; context step S09, S10, S21) |
+| **Version** | 0.8 — 25 October 2026 (Stage 6 module: figures shown by the Risk Explorer checked against the raw files, §11. Earlier: Stage 6 data step: S03 theme 3 tables and S23 verified; S30–S33, S35 and S36 added and verified; S34 (OSNI roads) unreachable; S13, S15 and S17 notes updated. Earlier: pre-Stage 5 data steps S13, S15, S16, S19, S20, S29, gates G8–G11; context step S09, S10, S21) |
 | **Verification date** | 23 October 2026; S11, S12, S14 and S18 re-verified 24 October 2026; S09, S10 and S21 verified 25 October 2026; S03, S23, S30–S33, S35 and S36 verified 25 October 2026 (Stage 6 data step) |
 | **Machine-readable form** | Generated into `public/data/snapshots/<date>/catalogue.json` by the pipeline from Stage 2 |
 
@@ -654,4 +654,16 @@ Still not verified: Scotland's urban/rural classification and Census 2022 car av
 | S35 extract | Actions run: schema and counts written beside the extract | 3,961,077 links read; 115,947 kept; 792 roads |
 
 Still not verified: OSNI transport (S34); HMRC port-level detail (S28); UKFSR 3_2_3a units; Scotland's urban/rural classification and car availability (Release 2).
+
+### Stage 6 module (25 October 2026)
+
+Figures shown by the Risk Explorer, recomputed from the raw files with independent scripts (Python standard library and pandas, not the pipeline's or the app's code), then asserted in `src/analysis/risk.test.ts` and `src/features/risks/model.test.ts`:
+
+| Check | Method | Result (matches the app) |
+|---|---|---|
+| S01 concentration, Sep 2025 – Aug 2026, net mass | Raw `/OTS` aggregate responses, country crosswalk, suppressed and non-country rows excluded | HHI: tomatoes 2,991.676, strawberries 2,636.594, potatoes 1,949.755, bananas 1,649.640, wheat 1,433.959; partners 25, 22, 16, 43, 35 |
+| S01 estimated exposure | Same; Spain's share of tomato imports over the 12 months and by month | 11.0358 % over the period; largest month Feb 2026, 23.816 % |
+| S01 × S30 water stress | World Bank API rows (latest non-null year per country) with FAO classes | High or critical: tomatoes 0.0831 %, strawberries 23.5215 %, potatoes 23.3025 %; Spain 43.25 % (2022, low) |
+| S23 ports, 2025 | PORT0499 read with pandas: inwards, load region not UK or unspecified | Total 237,484.733 kt; London 16.145 %; Dover 12,512.825 kt, −2.238 % on 2024; agricultural products inwards 9,534.031 kt, Belfast 2,590.651 kt |
+| S13 by council (Scotland) | PPFI CSV joined to the 2011 Data Zone lookup (S32) | Glasgow City 103 of 746 (13.8 %), rank 18 of 32; North Ayrshire 119/186, East Ayrshire 98/163, West Dunbartonshire 60/121; Scotland 1,396 of 6,976; Highland 65 of 312 |
 

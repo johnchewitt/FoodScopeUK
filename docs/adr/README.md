@@ -27,3 +27,4 @@ MADR-style records. Status values: Proposed · Accepted · Superseded. Summaries
 | [0021](0021-snapshot-families.md) | Each data family (trade, local) comes from its own newest snapshot | Accepted (Stage 4) |
 | [0022](0022-basemap-colour-sets-and-local-scale.md) | A colour set per basemap style; one local-scale rule (zoom 12) for stores, councils and imagery | Accepted (Stage 4) |
 | [0023](0023-local-authority-profiles.md) | Local Authority Profiles: per-council small areas, a profile map mode, small areas as graphics | Accepted (Stage 5) |
+| [0024](0024-risk-explorer.md) | Risk Explorer: three separate views on one map, a warm risk ramp, explanations built from indicators, no composite | Accepted (Stage 6) |
