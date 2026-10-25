@@ -48,6 +48,11 @@ def main(argv: list[str] | None = None) -> int:
     areas.add_argument("--snapshot", required=True, help="raw snapshot id YYYY-MM-DD (pipeline/raw/<publisher>/<snapshot>/)")
     areas.add_argument("--out", default=None, help="output root (default: public/data)")
 
+    grocers = sub.add_parser("build-ni-grocers", help="OFFLINE: FSA register (NI) → NI grocers not in GEOLYTIX: <out>/snapshots/<snapshot>/register/ + reports/ni-grocers-qa-<snapshot>.json")
+    grocers.add_argument("--snapshot", required=True, help="raw FSA snapshot id YYYY-MM-DD (pipeline/raw/fsa/<snapshot>/)")
+    grocers.add_argument("--local-snapshot", required=True, help="local family snapshot holding stores.geojson (to leave out stores already mapped)")
+    grocers.add_argument("--out", default=None, help="output root (default: public/data)")
+
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -133,6 +138,19 @@ def main(argv: list[str] | None = None) -> int:
             logging.error("build-areas failed: %s", exc)
             return 1
         print(f"wrote {len(written)} files for areas snapshot {args.snapshot}")
+        return 0
+
+    if args.command == "build-ni-grocers":
+        from foodscope_pipeline.ni_grocers import build_ni_grocers, default_inputs as grocer_inputs
+
+        out = Path(args.out) if args.out else DATA_DIR
+        try:
+            written = build_ni_grocers(args.snapshot, grocer_inputs(RAW, CONFIG, DATA_DIR, args.snapshot, args.local_snapshot),
+                                       out, REPORTS, SCHEMAS)
+        except Exception as exc:  # noqa: BLE001 (report any input problem and fail the step)
+            logging.error("build-ni-grocers failed: %s", exc)
+            return 1
+        print(f"wrote {len(written)} files for register snapshot {args.snapshot}")
         return 0
 
     if args.command == "publish":

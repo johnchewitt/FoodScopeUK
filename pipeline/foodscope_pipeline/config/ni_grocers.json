@@ -1,0 +1,98 @@
+{
+  "description": "Rules for the Northern Ireland grocers that GEOLYTIX (S11) misses, taken from the FSA food hygiene register (S29). John asked for them on 25 Oct 2026. Rules are by name and FSA business type only; every record kept, merged or dropped is counted in pipeline/reports/ni-grocers-qa-<snapshot>.json.",
+  "businessTypes": {
+    "supermarket": {
+      "id": "7840",
+      "label": "Retailers - supermarkets/hypermarkets"
+    },
+    "otherRetailer": {
+      "id": "4613",
+      "label": "Retailers - other"
+    }
+  },
+  "groups": [
+    {
+      "id": "supervalu",
+      "label": "SuperValu",
+      "patterns": [
+        "supervalu",
+        "super valu"
+      ]
+    },
+    {
+      "id": "mace",
+      "label": "Mace",
+      "patterns": [
+        "mace"
+      ]
+    },
+    {
+      "id": "vivo",
+      "label": "Vivo",
+      "patterns": [
+        "vivo",
+        "vivoxtra",
+        "vivo xtra"
+      ]
+    },
+    {
+      "id": "costcutter",
+      "label": "Costcutter",
+      "patterns": [
+        "costcutter"
+      ]
+    },
+    {
+      "id": "nisa",
+      "label": "Nisa",
+      "patterns": [
+        "nisa"
+      ]
+    },
+    {
+      "id": "premier",
+      "label": "Premier",
+      "patterns": [
+        "premier"
+      ]
+    }
+  ],
+  "groupsNote": "Grocery symbol groups found in the FSA register for Northern Ireland whose fascia is not among GEOLYTIX's ten NI retailers. A record of either retail business type whose name contains a pattern as a whole word is kept, wherever it is.",
+  "chainsCarriedByGeolytix": [
+    "tesco",
+    "sainsbury",
+    "sainsburys",
+    "asda",
+    "lidl",
+    "aldi",
+    "iceland",
+    "marks",
+    "m&s",
+    "co-op",
+    "coop",
+    "co op",
+    "dunnes",
+    "spar",
+    "eurospar",
+    "centra",
+    "food warehouse",
+    "co-operative",
+    "cooperative"
+  ],
+  "chainsNote": "Retailers GEOLYTIX already maps in Northern Ireland: their FSA records are left to GEOLYTIX, so nothing is counted twice.",
+  "mainlyNonFood": [
+    "home bargains",
+    "b&m",
+    "b & m",
+    "b and m",
+    "poundland",
+    "poundstretcher",
+    "the range"
+  ],
+  "mainlyNonFoodNote": "General discount retailers registered as supermarkets: left out, as decision D5 leaves mainly non-food stores out of the GEOLYTIX layer.",
+  "independentMinDistanceM": 50,
+  "independentNote": "A record registered as a supermarket with no chain or group name is kept as an independent grocer unless it lies within this distance of a store already on the map (most likely the same shop registered under its operator's name).",
+  "changes": [
+    "25 Oct 2026: 'vivoxtra' added to Vivo (\"MORRISON'S VIVOXTRA\"); 'co-operative' added to the chains (\"The Co-operative Food\"); 'The Range' (homeware) added to mainly non-food — all found by reading the first build's independents."
+  ]
+}
