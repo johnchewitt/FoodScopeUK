@@ -1,0 +1,26 @@
+{
+  "id": "risk.rail",
+  "title": "Railway lines in Northern Ireland: the NIR network (Translink)",
+  "role": "reference",
+  "path": "snapshots/2026-10-25/risk/rail.geojson",
+  "format": "geojson",
+  "schemaId": "risk-rail",
+  "sha256": "f6a950ebf183763f8afb31b61f5727e3514f080bae55b49fdf073f83829d3ee9",
+  "bytes": 15369,
+  "featureCount": 10,
+  "sourceIds": [
+    "S37"
+  ],
+  "referencePeriod": "NIR railway network as published on OpenDataNI, 21 September 2015",
+  "coverage": "Northern Ireland: the NIR network's route lines (sidings left out). Great Britain: not included (no open, official railway line dataset in this build)",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Contains public sector information licensed under the Open Government Licence v3.0. Source: Translink (NI Railways), OpenDataNI",
+  "expectedCadence": "irregular",
+  "retrieval": {
+    "method": "Read offline from the committed shapefile (fetch-reference --set stage6)",
+    "source": "https://admin.opendatani.gov.uk/dataset/0297b4a0-5cea-4c22-97cc-346c76df33ed/resource/7bc41442-ef8b-4343-acc4-7a78d37cd6a0/download/nirshp.zip (sha256 789bfc3d1dd4…)",
+    "retrievedAt": "2026-10-25T23:19:17Z",
+    "notes": "Route lines (ROUTE_TYPE 'Passenger'), heights dropped, simplified at 10 m in TM75 Irish Grid (EPSG:29903), WGS84 to 5 decimals. Lines show where the railway runs, not services or freight."
+  }
+}

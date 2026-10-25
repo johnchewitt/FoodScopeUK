@@ -5,7 +5,7 @@
 | **Date** | 25 October 2026 |
 | **Branch** | `data/stage-6-inputs` |
 | **Why** | John's Stage 6 brief (UK Food Resilience — Risk Explorer) needs country water stress, ports, road corridors, farming regions and the Priority Places index for every council. None of these were verified. John chose to fetch and verify the data first, in its own pull request; FAO water stress as the only country climate/water indicator; the index summarised for every council (25 Oct 2026). |
-| **Sources** | S30 FAO water stress (World Bank API), S23 DfT port freight 2025, S36 EMODnet port locations, S03 UKFSR 2024 theme 3, S31 Defra June survey 2025, S33 ONS ITL1, S35 OS Open Roads, S13 Priority Places index with S15 (ONS LSOA lookup), S32 (Scottish 2011 Data Zone lookup) and S19 (NIMDM 2017). S34 OSNI transport could not be fetched. |
+| **Sources** | S30 FAO water stress (World Bank API), S23 DfT port freight 2025, S36 EMODnet port locations, S03 UKFSR 2024 theme 3, S31 Defra June survey 2025, S33 ONS ITL1, S35 OS Open Roads, S13 Priority Places index with S15 (ONS LSOA lookup), S32 (Scottish 2011 Data Zone lookup) and S19 (NIMDM 2017). S34 OSNI transport could not be fetched. S37 Translink NIR railway network added at John's request (25 Oct 2026). |
 
 ## What was built
 
@@ -38,6 +38,8 @@
 | Push → workflow run 40231289609 (first fetch) | World Bank, DfT, Defra, Scottish Government, ONS (ITL1, 36 lookup pages), OS probe cached; OSNI failed ("Remote end closed connection without response") |
 | Push → run 40231643879 (after adding the Open Roads step) | Open Roads extract committed (3,961,077 links read, 115,947 kept, 792 roads); OSNI failed again |
 | Push → run 40233240906 (2011 lookup, EMODnet) | Both cached; OSNI failed a second time (the job fails on any publisher failure, after committing what downloaded) |
+| Push → run 40244203513 (John's NI links: OSNI Hub download, NIR railway network) | NIR shapefile cached (90,009 bytes); OSNI's Hub download answered HTTP 400 |
+| `build-risk`, `publish` after adding the railway | `rail.geojson`: 10 route lines (about 334 km), 24 sidings left out; manifest 26 datasets, 25 catalogue entries |
 | `uv run foodscope-pipeline build-risk --snapshot 2026-10-25 --reference-snapshot 2026-10-24 --local-snapshot 2026-10-24` | 178 countries, 51 ports, 361 councils; 7 datasets + 7 sidecars; QA report `pipeline/reports/risk-qa-2026-10-25.json` |
 | `uv run foodscope-pipeline publish` | Manifest: 25 datasets, 24 catalogue entries; `risk` family 2026-10-25 |
 | `uv run pytest` (pipeline) | 191 passed (21 new in `tests/test_risk_build.py`) |
@@ -66,7 +68,10 @@
 
 ## Not verified, and why
 
-- **Northern Ireland roads (S34).** OSNI's only open service closed the connection to GitHub's runners in all three runs. The sandbox cannot reach it either. The roads layer is Great Britain only, and the app will say so. To retry before Release 1 sign-off.
+- **Northern Ireland roads (S34).** OSNI's only open service closed the connection to GitHub's runners in all three runs. The sandbox cannot reach it either. The roads layer is Great Britain only, and the app will say so.
+
+  John pointed to DfI Roads' *Highway Network* on 25 Oct 2026. Its open CSV and XML have no geometry. Its map service needs credentials (Spatial NI proxy, HTTP 403). OSNI's Hub download of the 50K transport lines answered HTTP 400. John has been asked to download the layer by hand.
+- **Northern Ireland railway lines (S37, added 25 Oct 2026 at John's request).** The Translink NIR network on OpenDataNI (2015, TM75 Irish Grid, OGL) is fetched and built into `rail.geojson`: the 10 route lines; sidings are left out. Great Britain's railway lines are not in this build.
 - **Rail freight routes and distribution centres.** No open, official mapped dataset was found: ORR publishes national freight statistics, not routes; there is no public register of distribution centres. They will be shown as not available, never inferred.
 - **UKFSR 3_2_3a** (agri-food import volume, EU and non-EU). Its unit is unclear (the title says "MT", the values are not million tonnes), so it was left out.
 - **HMRC port-level trade (S28).** Not used; still open (gate G13, HMRC part).
