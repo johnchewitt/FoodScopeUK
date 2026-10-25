@@ -70,7 +70,10 @@ export default function MapHost() {
       new AccessLayersController({
         selectStore: (id) => useAppStore.getState().selectStore(id),
         selectCouncil: (code) => useAppStore.getState().selectCouncil(code),
+        pickCouncil: (code) => useAppStore.getState().setLad(code),
+        selectArea: (code) => useAppStore.getState().selectArea(code),
         setHoverAccess: (hover) => useAppStore.getState().setHoverAccess(hover),
+        setHoverArea: (hover) => useAppStore.getState().setHoverArea(hover),
         setProximityPoint: (point) => useAppStore.getState().setProximityPoint(point),
       }),
     [],

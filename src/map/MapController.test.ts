@@ -8,7 +8,7 @@ import {
   type AccessMapModel,
   type OriginsMapModel,
 } from "@/state/store";
-import { MapController } from "./MapController";
+import { MapController, PROFILE_MAX_ZOOM } from "./MapController";
 import {
   FLIGHT_DURATION_MS,
   GO_TO_TARGETS,
@@ -234,6 +234,9 @@ describe("MapController", () => {
     describe("UK Food Access", () => {
       /** Obviously synthetic access model: only the frame matters here. */
       const access = (bbox: [number, number, number, number], storeWhere = "1=1"): AccessMapModel => ({
+        mode: "access",
+        compareCouncils: [],
+        grocers: null,
         storesUrl: "blob:synthetic",
         storeWhere,
         storesCopyright: "synthetic",
@@ -295,6 +298,74 @@ describe("MapController", () => {
         expect(view.goTo).not.toHaveBeenCalled();
         view.zoom = 3; // zooming out later does not trigger the opening frame
         useAppStore.getState().setAccessMap(access(STORES, "layer = 'A'"));
+        expect(view.goTo).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("Local Authority Profiles", () => {
+      /** Obviously synthetic profile map: a council box "A" or "B", or the UK frame. */
+      const profile = (key: string, bbox: [number, number, number, number]): AccessMapModel => ({
+        mode: "profile",
+        compareCouncils: [],
+        grocers: null,
+        storesUrl: "blob:synthetic",
+        storeWhere: "1=1",
+        storesCopyright: "synthetic",
+        frame: { key, bbox },
+        councilsUrl: "synthetic.geojson",
+        councilsCopyright: "synthetic",
+        choropleth: null,
+        selectedStore: null,
+        selectedCouncil: null,
+        proximity: null,
+      });
+      const COUNCIL_A: [number, number, number, number] = [-6.05, 54.53, -5.8, 54.66];
+      const COUNCIL_B: [number, number, number, number] = [-2.32, 53.34, -2.15, 53.55];
+      const fitCouncil = (view: ViewLike, bbox: [number, number, number, number]) =>
+        fitBBox(
+          bbox,
+          {
+            width: view.width!,
+            height: view.height!,
+            padding: view.padding,
+            framePadding: framingPadding(view.padding, useAppStore.getState().breakpoint),
+          },
+          { minSpanLon: 0, minSpanLat: 0, maxZoom: PROFILE_MAX_ZOOM },
+        );
+
+      it("fits the selected council past the national zoom cap", () => {
+        const view = fakeView();
+        new MapController(useAppStore, []).attach(view);
+        useAppStore.getState().setModule("profiles");
+        useAppStore.getState().setAccessMap(profile("profile:A", COUNCIL_A));
+        expect(view.goTo).toHaveBeenCalledWith(fitCouncil(view, COUNCIL_A), { animate: false });
+        const target = view.goTo.mock.calls[0]![0] as { zoom: number };
+        expect(target.zoom).toBeGreaterThan(9);
+        expect(target.zoom).toBeLessThanOrEqual(PROFILE_MAX_ZOOM);
+      });
+
+      it("flies to each newly selected council, at any scale, and not on other changes", () => {
+        const view = fakeView();
+        view.zoom = LOCAL_ZOOM + 1;
+        new MapController(useAppStore, []).attach(view);
+        useAppStore.getState().setModule("profiles");
+        useAppStore.getState().setAccessMap(profile("profile:A", COUNCIL_A));
+        useAppStore.getState().setAccessMap(profile("profile:B", COUNCIL_B));
+        expect(view.goTo).toHaveBeenLastCalledWith(fitCouncil(view, COUNCIL_B), {
+          animate: true,
+          duration: FLIGHT_DURATION_MS,
+        });
+        useAppStore
+          .getState()
+          .setAccessMap({ ...profile("profile:B", COUNCIL_B), storeWhere: "layer = 'A'" });
+        expect(view.goTo).toHaveBeenCalledTimes(2);
+      });
+
+      it("ignores a UK Food Access frame while in profiles", () => {
+        const view = fakeView();
+        new MapController(useAppStore, []).attach(view);
+        useAppStore.getState().setModule("profiles");
+        useAppStore.getState().setAccessMap({ ...profile("access:all-stores", COUNCIL_A), mode: "access" });
         expect(view.goTo).not.toHaveBeenCalled();
       });
     });

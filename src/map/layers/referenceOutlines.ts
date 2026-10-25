@@ -43,6 +43,13 @@ function buildRenderer(mode: OutlineMode): UniqueValueRenderer {
 const OFFLINE_GLOW = "bloom(0.9, 0.4px, 0.2)";
 
 /**
+ * The 1:110m outlines are drawn only at national and regional scales (to about zoom 8). Closer in,
+ * a 110m coastline is kilometres out and would cut across a council (Local Authority Profiles
+ * frames one council at about zoom 11); the council outlines and the basemap carry the geography.
+ */
+export const REFERENCE_MAX_SCALE = 2_000_000;
+
+/**
  * Natural Earth 1:110m country outlines (S24) used as the offline base map, and as subtle
  * outlines over the Esri basemap when a key is configured, coloured for the basemap style
  * (SH-08). If the Esri basemap fails to load, the outlines switch to the offline style so the
@@ -121,6 +128,7 @@ export class ReferenceOutlinesController implements LayerController {
       title: "Country outlines (Natural Earth 1:110m)",
       copyright: "Made with Natural Earth",
       definitionExpression: "name <> 'Antarctica'",
+      maxScale: REFERENCE_MAX_SCALE,
       renderer: buildRenderer(this.mode),
       effect: this.mode === "offline" ? OFFLINE_GLOW : null,
       popupEnabled: false,
