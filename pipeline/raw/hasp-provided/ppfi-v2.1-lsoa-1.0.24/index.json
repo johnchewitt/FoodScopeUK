@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "id": "hasp.ppfi_v21_lsoa_dictionary",
+      "file": "Data-Dictionary-Priority_Places_for_Food_Index_v2.1_LSOA1.0.24.xlsx",
+      "sourceId": "S13",
+      "description": "Leeds HASP: data dictionary of 'Priority Places for Food Index (v2.1) [LSOA]', record version 1.0.24 (structural metadata: 19 variables)",
+      "publisherUrl": "https://data.hasp.ac.uk/browser/dataset/5276/0",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Priority Places for Food Index v2.1, Healthy & Sustainable Places Data Service (HASP) / CDRC, DOI 10.82147/003 (OGL v3.0)",
+      "providedBy": "John Hewitt (project owner), attached to the build session",
+      "originalName": "2c2ee53e-Data-Dictionary-Priority_Places_for_Food_Index_v2.1_LSOA1.0.24.xlsx",
+      "receivedAt": "2026-10-25T07:42:02Z",
+      "notes": "Column names only; the data file itself is still to come. Stored byte-for-byte; never edited.",
+      "bytes": 4397,
+      "sha256": "9d6f1906d2680d4706f9864a735e7035645abce0c0000fda77c4812cc41d75f4"
+    }
+  ]
+}

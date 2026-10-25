@@ -20,9 +20,9 @@ Outputs go to `<out_root>/snapshots/<snapshot>/areas/` (the `areas` family, ADR-
 
 Values are as published. Small-area census counts are not adjusted to council totals: the ONS and
 NISRA protect confidentiality by perturbing counts, so small areas need not sum exactly to the
-council figure; the QA report records every difference. Northern Ireland car availability by Data
-Zone comes from a file John provides (NISRA's table builder does not allow automated access);
-until it is present, Belfast's car figures are null with the reason stated.
+council figure; the QA report records every difference. Northern Ireland households by car or van
+availability come from NISRA's flexible table builder (Data Zones, HH_CAR_VAN_TC5), downloaded by
+John because the builder does not allow automated access (`pipeline/raw/nisra-provided/`).
 
 Everything is deterministic: the same raw files give byte-identical outputs.
 """
@@ -42,9 +42,10 @@ from pyproj import Transformer
 
 from foodscope_pipeline.boundaries import display_geometry
 from foodscope_pipeline.sources.ons_files import files_for, load_index
+from foodscope_pipeline.sources.provided import load_provided
 from foodscope_pipeline.sources.small_areas import (
     TS001_TOTAL, TS045_NO_CAR, TS045_TOTAL, read_census_lsoa, read_data_zones, read_dz_centroids,
-    read_iod_file7, read_lsoa_boundaries, read_lsoa_centroids, read_lsoa_lookup, read_ms_a01, read_nimdm2017,
+    read_car_van_dz, read_car_van_lgd, read_iod_file7, read_lsoa_boundaries, read_lsoa_centroids, read_lsoa_lookup, read_ms_a01, read_nimdm2017,
     read_super_output_areas,
 )
 
@@ -64,8 +65,7 @@ NISRA_SOURCE = "Source: NISRA, licensed under the Open Government Licence v3.0"
 OSNI_NOTICE = "Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0"
 MHCLG_SOURCE = "Source: Ministry of Housing, Communities and Local Government, English Indices of Deprivation 2025 (OGL v3.0)"
 
-NI_CARS_MISSING = ("Northern Ireland car or van availability by Data Zone is published only in NISRA's flexible "
-                   "table builder; the file has not been provided yet")
+NISRA_CARS_EDITION = "census2021-car-van-2026-10-25"
 
 
 class AreasBuildError(RuntimeError):
@@ -78,6 +78,7 @@ class AreasInputs:
     nomis: Path  # pipeline/raw/nomis/<snapshot>/
     mhclg: Path  # pipeline/raw/mhclg/<snapshot>/
     nisra: Path  # pipeline/raw/nisra/<snapshot>/
+    nisra_cars: Path  # pipeline/raw/nisra-provided/<edition>/ (car or van availability, from John)
     profiles: Path  # config/deep_profiles.json
 
 
@@ -87,6 +88,7 @@ def default_inputs(raw_root: Path, config_dir: Path, snapshot: str) -> AreasInpu
         nomis=raw_root / "nomis" / snapshot,
         mhclg=raw_root / "mhclg" / snapshot,
         nisra=raw_root / "nisra" / snapshot,
+        nisra_cars=raw_root / "nisra-provided" / NISRA_CARS_EDITION,
         profiles=config_dir / "deep_profiles.json",
     )
 
@@ -164,6 +166,8 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
     msa01_e = _entry(nisra_index, "nisra.census2021_ms_a01")
     soa_e = _entry(nisra_index, "nisra.soa2011_boundaries")
     nimdm_e = _entry(nisra_index, "nisra.nimdm2017_soa")
+    cars_dz_path, cars_dz_e = load_provided(inputs.nisra_cars, "nisra.dz21_car_van_tc5")
+    cars_lgd_path, cars_lgd_e = load_provided(inputs.nisra_cars, "nisra.lgd14_car_van_tc5")
 
     qa: dict = {"snapshot": snapshot, "manchester": {}, "belfast": {}}
 
@@ -234,8 +238,10 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
     dz_centroids = read_dz_centroids(inputs.nisra / dzc_e["file"])
     dz_pop = read_ms_a01(inputs.nisra / msa01_e["file"], "DZ")
     lgd_pop = read_ms_a01(inputs.nisra / msa01_e["file"], "LGD")
-    if set(dz_centroids) != set(dz.codes) or set(dz_pop) != set(dz.codes):
-        raise AreasBuildError("Data Zone centroids or MS-A01 do not list the same 3,780 Data Zones")
+    dz_cars = read_car_van_dz(cars_dz_path)
+    lgd_cars = read_car_van_lgd(cars_lgd_path)
+    if set(dz_centroids) != set(dz.codes) or set(dz_pop) != set(dz.codes) or set(dz_cars) != set(dz.codes):
+        raise AreasBuildError("Data Zone centroids, MS-A01 or car availability do not list the same 3,780 Data Zones")
     outside = [c for c, g in zip(dz.codes, dz.geoms, strict=True) if not shapely.contains(g, shapely.Point(dz_centroids[c]))]
     if outside:
         # Every published centroid lies in its Data Zone in the Irish Grid: this is the check that
@@ -249,7 +255,7 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
                                   require_valid_input=False)
     bel_areas = [{
         "code": c, "name": dz.names[i],
-        "population": dz_pop[c], "households": None, "noCarHouseholds": None,
+        "population": dz_pop[c], "households": dz_cars[c]["households"], "noCarHouseholds": dz_cars[c]["noCar"],
         "centroid": _lonlat(ig_to_wgs, *dz_centroids[c]),
         "deprivation": None,
     } for c, i in zip(bel_codes, bel_idx, strict=True)]
@@ -279,6 +285,16 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
         "sumOfDataZonePopulation": sum(a["population"] for a in bel_areas),
         "differenceFromCouncilTable": sum(a["population"] for a in bel_areas) - lgd_pop[bel["lad"]],
         "councilTableMsA01": lgd_pop[bel["lad"]],
+        "households": {
+            "sumOfDataZones": {"households": sum(a["households"] for a in bel_areas),
+                               "noCarHouseholds": sum(a["noCarHouseholds"] for a in bel_areas)},
+            "councilTable": {"households": lgd_cars[bel["lad"]]["households"],
+                             "noCarHouseholds": lgd_cars[bel["lad"]]["noCar"]},
+            "northernIrelandDataZones": {"households": sum(v["households"] for v in dz_cars.values()),
+                                         "noCarHouseholds": sum(v["noCar"] for v in dz_cars.values())},
+            "northernIrelandCouncils": {"households": sum(v["households"] for v in lgd_cars.values()),
+                                        "noCarHouseholds": sum(v["noCar"] for v in lgd_cars.values())},
+        },
         "soas": len(bel_soa),
         "soaUrbanRural2015": {k: sum(r["urbanRural2015"] == k for r in bel_soa)
                               for k in sorted({r["urbanRural2015"] for r in bel_soa})},
@@ -306,8 +322,9 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
         "schemaVersion": 1,
         "census": {"sourceIds": ["S18", "S20"], "referenceDate": CENSUS_DATE,
                    "population": "Usual residents (Census 2021: ONS TS001; NISRA MS-A01)",
-                   "households": "Households (Census 2021: ONS TS045)",
-                   "noCarHouseholds": "Households with no cars or vans (Census 2021: ONS TS045)",
+                   "households": "Households (Census 2021: ONS TS045; NISRA HH_CAR_VAN_TC5, sum of its six categories)",
+                   "noCarHouseholds": ("Households with no cars or vans available (Census 2021: ONS TS045; NISRA "
+                                       "HH_CAR_VAN_TC5 category 0)"),
                    "note": ("Census counts for small areas are perturbed for confidentiality and need not add up "
                             "to council totals.")},
         "centroids": {"sourceIds": ["S15", "S16"],
@@ -334,8 +351,7 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
                                 "decile": "derived from the rank: 89 SOAs per decile",
                                 "referencePeriod": "NIMDM 2017 (most indicators 2015/16)"},
                 "areas": bel_areas, "deprivationAreas": soa_areas,
-                "missing": [{"field": "households", "reason": NI_CARS_MISSING},
-                            {"field": "noCarHouseholds", "reason": NI_CARS_MISSING}],
+                "missing": [],
             },
         ],
     }
@@ -385,15 +401,18 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
                 "method": "Derived offline from the committed raw files (fetch-reference)",
                 "source": (f"{ts001_e['file']} (sha256 {ts001_e['sha256'][:12]}…); {ts045_e['file']} (sha256 "
                            f"{ts045_e['sha256'][:12]}…); {iod_e['file']} (sha256 {iod_e['sha256'][:12]}…); "
-                           f"{msa01_e['file']} (sha256 {msa01_e['sha256'][:12]}…); {nimdm_e['file']} (sha256 "
+                           f"{msa01_e['file']} (sha256 {msa01_e['sha256'][:12]}…); {cars_dz_e['file']} (provided, sha256 "
+                           f"{cars_dz_e['sha256'][:12]}…); {nimdm_e['file']} (sha256 "
                            f"{nimdm_e['sha256'][:12]}…); {dzc_e['file']} (sha256 {dzc_e['sha256'][:12]}…); LSOA "
                            f"centroids ({len(pwc_entries)} page, combined sha256 {combined(pwc_entries)}…); LSOA lookup "
                            f"({len(lookup_entries)} page, combined sha256 {combined(lookup_entries)}…)"),
-                "retrievedAt": max(e["retrievedAt"] for e in (ts001_e, ts045_e, iod_e, msa01_e, nimdm_e, dzc_e,
-                                                              pwc_entries[-1], lookup_entries[-1])),
+                "retrievedAt": max([e["retrievedAt"] for e in (ts001_e, ts045_e, iod_e, msa01_e, nimdm_e, dzc_e,
+                                                               pwc_entries[-1], lookup_entries[-1])]
+                                   + [cars_dz_e["receivedAt"]]),
                 "notes": ("Values as published. NIMDM 2017 deciles are derived from the ranks (89 SOAs per decile); "
                           "IoD 2025 deciles are as published. Deprivation is ranked within each nation and is never "
-                          "compared across nations. Northern Ireland car availability by Data Zone: not yet provided."),
+                          "compared across nations. Northern Ireland households and car availability: NISRA's flexible "
+                          "table builder (HH_CAR_VAN_TC5 by Data Zone), downloaded by John."),
             },
         }),
     ]

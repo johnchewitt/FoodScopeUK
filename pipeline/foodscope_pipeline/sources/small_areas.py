@@ -18,6 +18,8 @@ difference instead of guessing (docs/03-DATA-SOURCES.md):
 - NISRA SOA 2011 shapefile in EPSG:29902: SOA_CODE, SOA_LABEL.
 - NISRA NIMDM 2017 SOA results (.xls), sheet "MDM": LGD2014NAME, 2015 Default Urban/Rural,
   SOA2001 (the SOA code, e.g. 95AA01S1), SOA2001_name, MDM rank and the seven domain ranks.
+- NISRA Census 2021 households by car or van availability (HH_CAR_VAN_TC5, six categories), from
+  the flexible table builder (provided by John): Data Zone CSV and council .xlsx.
 """
 
 from __future__ import annotations
@@ -255,6 +257,61 @@ def read_nimdm2017(path: Path) -> list[dict]:
     return rows
 
 
-# Car or van availability by Data Zone (provided by John from NISRA's flexible table builder) and
-# PPFI v2.1 (provided by John from Leeds HASP) get their readers once their files are in hand and
-# their structure is verified.
+# ---------------------------------------------------------------------------------------------
+# NISRA car or van availability (Census 2021, households), provided by John from the table builder
+
+CAR_VAN_CATEGORIES = {
+    "0": "No cars or vans available", "1": "1 car or van available", "2": "2 cars or vans available",
+    "3": "3 cars or vans available", "4": "4 cars or vans available", "5": "5 or more cars or vans available",
+}
+
+
+def _car_van(rows: list[tuple], where: str) -> dict[str, dict[str, int]]:
+    """Area code → {households: all six categories, noCar: category 0}; every area must have all six."""
+    seen: dict[str, dict[str, int]] = {}
+    for code, category, label, count in rows:
+        if CAR_VAN_CATEGORIES.get(str(category)) != label:
+            raise SmallAreaInputError(f"{where}: category {category!r} labelled {label!r}")
+        seen.setdefault(code, {})[str(category)] = int(count)
+    incomplete = [c for c, v in seen.items() if set(v) != set(CAR_VAN_CATEGORIES)]
+    if incomplete:
+        raise SmallAreaInputError(f"{where}: areas without all six categories: {incomplete[:5]}")
+    return {c: {"households": sum(v.values()), "noCar": v["0"]} for c, v in seen.items()}
+
+
+DZ_CAR_HEADER = ["Census 2021 Data Zone Code", "Census 2021 Data Zone Label", "Car or Van Availability Code",
+                 "Car or Van Availability Label", "Count"]
+
+
+def read_car_van_dz(path: Path) -> dict[str, dict[str, int]]:
+    """Households by car or van availability (HH_CAR_VAN_TC5) for each Data Zone, from the table builder CSV."""
+    with path.open(encoding="utf-8-sig", newline="") as fh:
+        reader = csv.reader(fh)
+        header = next(reader)
+        if header != DZ_CAR_HEADER:
+            raise SmallAreaInputError(f"{path.name}: header {header}, expected {DZ_CAR_HEADER}")
+        return _car_van([(r[0], r[2], r[3], r[4]) for r in reader], path.name)
+
+
+LGD_CAR_HEADER = ("Local Government District 2014 Code", "Local Government District 2014 Label",
+                  "Car or Van Availability Code", "Car or Van Availability Label", "Count")
+
+
+def read_car_van_lgd(path: Path) -> dict[str, dict[str, int]]:
+    """The same classification for the 11 councils (sheet "Table" of the table builder's .xlsx)."""
+    wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
+    rows, header_seen = [], False
+    for row in wb["Table"].iter_rows(values_only=True):
+        if not header_seen:
+            header_seen = tuple(row[:5]) == LGD_CAR_HEADER
+            continue
+        if row[0]:
+            rows.append((row[0], row[2], row[3], row[4]))
+    wb.close()
+    if not header_seen:
+        raise SmallAreaInputError(f"{path.name}: header {LGD_CAR_HEADER} not found")
+    return _car_van(rows, path.name)
+
+
+# PPFI v2.1 (provided by John from Leeds HASP) gets its reader once the data file is in hand; its
+# column names are in the data dictionary (docs/03-DATA-SOURCES.md, S13).

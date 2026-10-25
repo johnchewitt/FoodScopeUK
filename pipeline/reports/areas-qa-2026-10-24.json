@@ -60,6 +60,24 @@
     "sumOfDataZonePopulation": 345423,
     "differenceFromCouncilTable": 5,
     "councilTableMsA01": 345418,
+    "households": {
+      "sumOfDataZones": {
+        "households": 149193,
+        "noCarHouseholds": 50595
+      },
+      "councilTable": {
+        "households": 149207,
+        "noCarHouseholds": 50594
+      },
+      "northernIrelandDataZones": {
+        "households": 768805,
+        "noCarHouseholds": 150281
+      },
+      "northernIrelandCouncils": {
+        "households": 768810,
+        "noCarHouseholds": 150279
+      }
+    },
     "soas": 174,
     "soaUrbanRural2015": {
       "Mixed urban/rural": 2,

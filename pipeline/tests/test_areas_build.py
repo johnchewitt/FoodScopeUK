@@ -22,7 +22,7 @@ import xlrd
 
 from foodscope_pipeline.areas import AreasBuildError, build_areas, default_inputs, nimdm_decile
 from foodscope_pipeline.boundaries import DisplayBoundaryError, display_geometry
-from foodscope_pipeline.sources.small_areas import SmallAreaInputError, read_census_lsoa, read_iod_file7
+from foodscope_pipeline.sources.small_areas import SmallAreaInputError, read_car_van_dz, read_census_lsoa, read_iod_file7
 
 PIPELINE = Path(__file__).resolve().parents[1]
 REPO = PIPELINE.parent
@@ -76,11 +76,16 @@ def test_counts_and_council_totals(built, doc) -> None:
     assert (kinds.count("lsoa21"), kinds.count("dz21"), kinds.count("soa2011")) == (295, 735, 174)
 
 
-def test_belfast_has_no_car_figures_yet_and_says_why(doc) -> None:
+def test_belfast_car_availability_from_the_table_builder(built, doc) -> None:
     bel = _profile(doc, "N09000003")
-    assert all(a["households"] is None and a["noCarHouseholds"] is None for a in bel["areas"])
-    assert {m["field"] for m in bel["missing"]} == {"households", "noCarHouseholds"}
+    assert bel["missing"] == []
+    assert all(0 <= a["noCarHouseholds"] <= a["households"] for a in bel["areas"])
     assert all(a["deprivation"] is None for a in bel["areas"])  # NIMDM is on the SOAs (John, 24 Oct 2026)
+    qa = json.loads((built[1] / f"areas-qa-{SNAPSHOT}.json").read_text(encoding="utf-8"))["belfast"]["households"]
+    # Perturbed counts: the Data Zones need not add up to the council table.
+    assert qa["sumOfDataZones"] == {"households": 149_193, "noCarHouseholds": 50_595}
+    assert qa["councilTable"] == {"households": 149_207, "noCarHouseholds": 50_594}
+    assert qa["northernIrelandCouncils"]["households"] == 768_810
 
 
 def test_deprivation_is_within_each_nation(doc) -> None:
@@ -135,8 +140,15 @@ def test_belfast_sample_matches_the_raw_files(doc) -> None:
     areas = {a["code"]: a for a in bel["areas"]}
     wb = openpyxl.load_workbook(RAW / "nisra" / SNAPSHOT / "census-2021-ms-a01.xlsx", read_only=True)
     pop = {r[1]: r[2] for r in wb["DZ"].iter_rows(values_only=True) if r[1] and str(r[1]).startswith("N20")}
+    with (RAW / "nisra-provided" / "census2021-car-van-2026-10-25" / "ni-census21-household-dz21hh_car_van_tc5.csv").open(
+            encoding="utf-8-sig") as fh:
+        cars: dict[str, list[int]] = {}
+        for r in list(csv.reader(fh))[1:]:
+            cars.setdefault(r[0], []).append(int(r[4]))
     for code in BELFAST_SAMPLE_DZ:
         assert areas[code]["population"] == pop[code], code
+        assert areas[code]["households"] == sum(cars[code]), code
+        assert areas[code]["noCarHouseholds"] == cars[code][0], code
     sheet = xlrd.open_workbook(str(RAW / "nisra" / SNAPSHOT / "NIMDM17_SOAresults.xls")).sheet_by_name("MDM")
     ranks = {sheet.cell_value(i, 2): int(sheet.cell_value(i, 4)) for i in range(1, sheet.nrows)}
     soas = {a["code"]: a for a in bel["deprivationAreas"]}
@@ -184,3 +196,23 @@ def test_display_geometry_cleans_only_when_allowed() -> None:
         display_geometry(geoms, tolerance_m=1.0, min_island_m2=0.0)
     result = display_geometry(geoms, tolerance_m=1.0, min_island_m2=0.0, require_valid_input=False)
     assert result.stats["inputAreasWithMismatchedEdges"] == 2
+
+
+def test_car_van_reader_needs_all_six_categories(tmp_path: Path) -> None:
+    head = ("Census 2021 Data Zone Code,Census 2021 Data Zone Label,Car or Van Availability Code,"
+            "Car or Van Availability Label,Count\n")
+    labels = ["No cars or vans available", "1 car or van available", "2 cars or vans available",
+              "3 cars or vans available", "4 cars or vans available", "5 or more cars or vans available"]
+    full = "".join(f"A1,A,{i},{label},{i + 1}\n" for i, label in enumerate(labels))
+    path = tmp_path / "dz.csv"
+    path.write_text(head + full, encoding="utf-8")
+    assert read_car_van_dz(path) == {"A1": {"households": 21, "noCar": 1}}
+    path.write_text(head + full.split("\n", 1)[1], encoding="utf-8")  # category 0 missing
+    with pytest.raises(SmallAreaInputError, match="all six"):
+        read_car_van_dz(path)
+    path.write_text(head.replace("Count", "Households") + full, encoding="utf-8")
+    with pytest.raises(SmallAreaInputError, match="header"):
+        read_car_van_dz(path)
+    path.write_text(head + full.replace("No cars or vans available", "None"), encoding="utf-8")
+    with pytest.raises(SmallAreaInputError, match="labelled"):
+        read_car_van_dz(path)
