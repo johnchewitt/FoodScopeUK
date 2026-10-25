@@ -326,6 +326,8 @@ export class AccessLayersController implements LayerController {
   private lastHover: string | null = null;
   private visible = false;
   private profile = false;
+  private areaClassOf: ProfileMapModel["classOf"] | null = null;
+  private areaClassVersion = 0;
   private picking = false;
   private local = false;
   private reducedMotion = false;
@@ -364,7 +366,8 @@ export class AccessLayersController implements LayerController {
     const visible = (state.module === "access" || state.module === "profiles") && m !== null;
     this.profile = visible && m?.mode === "profile";
     this.reducedMotion = selectReducedMotion(state);
-    this.picking = visible && state.proximityPicking;
+    // Point picking belongs to UK Food Access; a pick left open there never captures profile clicks.
+    this.picking = visible && m?.mode === "access" && state.proximityPicking;
     const container = this.view?.container;
     if (container) container.style.cursor = this.picking ? "crosshair" : "";
     if (visible !== this.visible) {
@@ -425,11 +428,14 @@ export class AccessLayersController implements LayerController {
   private updateGrocers(m: AccessMapModel, style: MapStyle): void {
     const view = this.view;
     if (!view) return;
+    // Visibility is set on every update: the module-wide visibility loop also touches this layer.
+    if (this.grocers) this.grocers.visible = this.visible && m.grocers !== null;
     const sig = m.grocers ? `${style}|${m.grocers.points.length}|${m.grocers.points[0]?.id ?? ""}` : "";
     if (sig === this.signature.grocers) return;
     this.signature.grocers = sig;
     if (!m.grocers) {
-      if (this.grocers) this.grocers.visible = false;
+      this.grocers?.removeAll();
+      if (view.container) delete view.container.dataset.accessGrocers;
       return;
     }
     if (!this.grocers) {
@@ -492,8 +498,16 @@ export class AccessLayersController implements LayerController {
     }
   }
 
+  /**
+   * What the symbols depend on. `classOf` is compared by identity (a new object whenever the
+   * profile's area model is rebuilt), so a pointer move does not serialise every class.
+   */
   private areaStyleKey(pm: ProfileMapModel, style: MapStyle): string {
-    return `${style}|${pm.measure}|${pm.firstColour}|${pm.selected ?? ""}|${pm.highlighted.join(",")}|${JSON.stringify(pm.classOf)}`;
+    if (pm.classOf !== this.areaClassOf) {
+      this.areaClassOf = pm.classOf;
+      this.areaClassVersion += 1;
+    }
+    return `${style}|${pm.measure}|${pm.firstColour}|${pm.selected ?? ""}|${pm.highlighted.join(",")}|${this.areaClassVersion}`;
   }
 
   /** Fits a council (focusCouncil); false when the councils are not drawn. */
@@ -639,7 +653,8 @@ export class AccessLayersController implements LayerController {
     if (this.stores) layers.push(this.stores);
     if (this.grocers?.visible) layers.push(this.grocers);
     if (this.areas?.visible && this.areaModel) layers.push(this.areas);
-    if (this.councils && !this.local) layers.push(this.councils);
+    // Profiles keep councils clickable at local scale (to move to a neighbour); UK Food Access does not.
+    if (this.councils && (!this.local || this.profile)) layers.push(this.councils);
     return layers;
   }
 
