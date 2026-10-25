@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-25T20:58:30Z",
+  "generatedAt": "2026-10-25T23:19:17Z",
   "generator": "foodscope-pipeline 0.1.0",
   "snapshotId": "2026-10-25",
   "snapshots": {
@@ -470,6 +470,32 @@
       }
     },
     {
+      "id": "risk.rail",
+      "title": "Railway lines in Northern Ireland: the NIR network (Translink)",
+      "role": "reference",
+      "path": "snapshots/2026-10-25/risk/rail.geojson",
+      "format": "geojson",
+      "schemaId": "risk-rail",
+      "sha256": "f6a950ebf183763f8afb31b61f5727e3514f080bae55b49fdf073f83829d3ee9",
+      "bytes": 15369,
+      "featureCount": 10,
+      "sourceIds": [
+        "S37"
+      ],
+      "referencePeriod": "NIR railway network as published on OpenDataNI, 21 September 2015",
+      "coverage": "Northern Ireland: the NIR network's route lines (sidings left out). Great Britain: not included (no open, official railway line dataset in this build)",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Contains public sector information licensed under the Open Government Licence v3.0. Source: Translink (NI Railways), OpenDataNI",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "Read offline from the committed shapefile (fetch-reference --set stage6)",
+        "source": "https://admin.opendatani.gov.uk/dataset/0297b4a0-5cea-4c22-97cc-346c76df33ed/resource/7bc41442-ef8b-4343-acc4-7a78d37cd6a0/download/nirshp.zip (sha256 789bfc3d1dd4…)",
+        "retrievedAt": "2026-10-25T23:19:17Z",
+        "notes": "Route lines (ROUTE_TYPE 'Passenger'), heights dropped, simplified at 10 m in TM75 Irish Grid (EPSG:29903), WGS84 to 5 decimals. Lines show where the railway runs, not services or freight."
+      }
+    },
+    {
       "id": "risk.roads",
       "title": "Strategic road corridors in Great Britain: motorways, trunk roads and primary A roads (OS Open Roads)",
       "role": "reference",
@@ -892,6 +918,15 @@
       "licence": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
       "status": "verified",
       "notes": "Port points keyed by UN/LOCODE (as in DfT's port list), georeferenced from Eurostat GISCO 'Ports 2013' where possible, otherwise UN/LOCODE or other sources (recorded per port). Used only for DfT statistical ports without a DfT map location (24 of 51)."
+    },
+    {
+      "id": "S37",
+      "title": "Northern Ireland Railways (NIR) railway network",
+      "publisher": "Translink (NI Railways), via OpenDataNI",
+      "url": "https://admin.opendatani.gov.uk/dataset/northern-ireland-railways-nir-railway-network",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Shapefile in TM75 Irish Grid (EPSG:29903), published 21 September 2015: 34 lines, of which 10 route lines (about 334 km) are drawn and 24 sidings left out. Where the railway runs, not services or freight. Northern Ireland only; Great Britain's railway lines are not in this build."
     }
   ]
 }

@@ -18,7 +18,8 @@ name: Fetch reference data (ONS, Nomis, MHCLG, NISRA, FSA, Defra, World Bank, Df
 # (S03), Defra June survey structure results (S31), the Scottish 2022 and 2011 Data Zone lookups
 # (S32), EMODnet port locations (S36), ONS ITL1 regions (S33) and the LSOA-to-council lookup for
 # every LSOA (S15), and an extract of OS Open Roads (S35). OSNI's transport service (S34) refused
-# the runners in three runs and is left out of the set (Northern Ireland roads are not shown).
+# the runners in three runs and its ArcGIS Hub download answered HTTP 400, so it is left out of the
+# set (Northern Ireland roads are not shown). The NIR railway network comes from OpenDataNI (S37).
 # SNAPSHOT and SET below name the set this branch fetches; earlier sets stay in their own folders.
 # The build sandbox cannot reach these sites; everything after this download runs offline from the
 # cache (same pattern as the HMRC ingest, ADR-0016). Data reaches `main` only through a pull request.
@@ -76,7 +77,7 @@ jobs:
           python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
           import json, os, pathlib
           snap = os.environ["SNAPSHOT"]
-          for publisher in ("ons", "nomis", "mhclg", "nisra", "fsa", "defra", "worldbank", "dft", "scotgov", "emodnet", "os"):
+          for publisher in ("ons", "nomis", "mhclg", "nisra", "fsa", "defra", "worldbank", "dft", "scotgov", "emodnet", "os", "osni", "translink"):
               path = pathlib.Path(f"pipeline/raw/{publisher}/{snap}/index.json")
               print(f"### {publisher} {snap}\n")
               if not path.is_file():
