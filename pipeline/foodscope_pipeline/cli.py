@@ -54,6 +54,12 @@ def main(argv: list[str] | None = None) -> int:
     grocers.add_argument("--local-snapshot", required=True, help="local family snapshot holding stores.geojson (to leave out stores already mapped)")
     grocers.add_argument("--out", default=None, help="output root (default: public/data)")
 
+    context = sub.add_parser("build-context", help="OFFLINE: urban/rural class and car availability per council, Defra UK production → <out>/snapshots/<snapshot>/context/ + reports/context-qa-<snapshot>.json")
+    context.add_argument("--snapshot", required=True, help="raw snapshot of the context set YYYY-MM-DD (pipeline/raw/{ons,defra}/<snapshot>/)")
+    context.add_argument("--reference-snapshot", required=True, help="raw snapshot of the stage5 set (ONS LAD lookup, Nomis TS045)")
+    context.add_argument("--local-snapshot", required=True, help="local family snapshot holding lad-indicators.json (the council list)")
+    context.add_argument("--out", default=None, help="output root (default: public/data)")
+
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -158,6 +164,20 @@ def main(argv: list[str] | None = None) -> int:
             logging.error("build-ni-grocers failed: %s", exc)
             return 1
         print(f"wrote {len(written)} files for register snapshot {args.snapshot}")
+        return 0
+
+    if args.command == "build-context":
+        from foodscope_pipeline.context import build_context, default_inputs as context_inputs
+
+        out = Path(args.out) if args.out else DATA_DIR
+        try:
+            written = build_context(args.snapshot, context_inputs(RAW, CONFIG, DATA_DIR, args.snapshot,
+                                                                 args.reference_snapshot, args.local_snapshot),
+                                    out, REPORTS, SCHEMAS)
+        except Exception as exc:  # noqa: BLE001 (report any input problem and fail the step)
+            logging.error("build-context failed: %s", exc)
+            return 1
+        print(f"wrote {len(written)} files for context snapshot {args.snapshot}")
         return 0
 
     if args.command == "publish":

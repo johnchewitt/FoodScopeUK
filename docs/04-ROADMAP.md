@@ -232,6 +232,8 @@ Deliverables: LAD search/selection and fly-to (LP-01); basic profiles for all LA
 
 Added at John's request (25 Oct 2026): Northern Ireland shops easier to see. UK Food Access says what the store data covers in NI and offers the convenience layer. A supplementary layer shows the 285 NI grocers from the FSA register (S29) that GEOLYTIX misses, never counted in rates. The Belfast profile lists its stores by type and retailer.
 
+Added at John's request (25 Oct 2026, with his Stage 5 brief): urban/rural context and Defra domestic production context, fetched first in a small data step (`data/stage-5-context`): ONS 2021 Rural Urban Classification of councils and LSOAs (S21), Defra Horticulture statistics 2025 and Agriculture in the UK 2025 chapter 7 (S09, S10), and Census 2021 car availability per council (S20, from files already cached). `build-context` writes the `context` family (`council-context.json`, `uk-production.json`), published in Stage 5. Seasonal Supply's SS-07 text is updated to say S09/S10 are verified annual sources (monthly production still not published).
+
 Exit: both deep profiles render every section with provenance; a hand-checked sample of five small areas per LAD matches source values; nation comparability banner appears in Belfast–Manchester comparison.
 
 ## 8. Stage 6 — Scenario Lab
@@ -329,3 +331,4 @@ Rules of engagement:
 | 2026-10-24 | Stage 5: small-area data is published for the two deep profiles only (Belfast, Manchester), as planned for Release 1 | John (decision); LP-10 |
 | 2026-10-24 | Stage 5: NI car availability by Data Zone and the PPFI v2.1 LSOA file are provided by John (the NISRA table builder disallows automated access; HASP downloads go through a basket) | John |
 | 2026-10-25 | Northern Ireland shops: make the GEOLYTIX NI stores easier to see, and add the NI grocers GEOLYTIX misses from the FSA food hygiene register (S29) as a separate, labelled layer that is never part of a store count or rate | John (request); Stage 5 |
+| 2026-10-25 | Stage 5 (John's brief and decision): fetch urban/rural context (ONS 2021 RUC, England and Wales) and Defra annual production context (tomatoes, strawberries, potatoes, wheat) before building; council car availability added from the cached Census files; Scotland's and NI's council-level urban/rural shown as not available | S09, S10, S20, S21 |

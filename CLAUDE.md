@@ -97,7 +97,8 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 - Declare CRS explicitly; compute distances/areas in EPSG:27700 (GB) or EPSG:2157 (NI); publish WGS84.
 - Log rows in/out at every step; write rejects with reasons; deterministic sort before writing; reruns must be idempotent.
 - HMRC API: ≤ 50 requests/minute, follow `@odata.nextLink`, cache raw responses, keep suppressed rows separate.
-- Outputs go to `public/data/snapshots/<date>/<family>/` (`trade`, `local`); `publish` takes each family from its newest snapshot (ADR-0021) and writes `manifest.json`; data refreshes arrive by pull request, never direct to `main`.
+- Outputs go to `public/data/snapshots/<date>/<family>/` (`trade`, `local`; Stage 5 adds `areas`, `register`, `context`); `publish` takes each family from its newest snapshot (ADR-0021) and writes `manifest.json`; data refreshes arrive by pull request, never direct to `main`.
+- Defra datasets are .ods: read them with `foodscope_pipeline/sources/ods.py` (standard library), not a new dependency.
 - ONS (S14, S18): the sandbox cannot reach ONS either. `fetch-ons` runs in `.github/workflows/refresh-reference-data.yml` on push to a `data/**` branch and is incremental; files provided by hand live in `pipeline/raw/<source>/<edition>/` with an `index.json` of checksums. Store classes (D5) and council code changes are config in `foodscope_pipeline/config/`; stores are assigned on the BFE boundaries in EPSG:27700, councils are drawn from the clipped BGC edition (ADR-0020).
 - HMRC (S01): the sandbox cannot reach `api.uktradeinfo.com`. Run the online step through `.github/workflows/refresh-trade-data.yml` (push a `data-refresh/<date>` branch or run it manually); raw responses are committed in `pipeline/raw/hmrc/<snapshot>/` and everything after ingest runs offline from them (ADR-0016). Never hand-edit raw responses or snapshot files.
 
@@ -129,10 +130,11 @@ cd pipeline && uv run foodscope-pipeline publish     # rebuild public/data/manif
 cd pipeline && uv run foodscope-pipeline build-trade --snapshot 2026-10-23   # offline: raw HMRC cache -> trade snapshot
 cd pipeline && uv run foodscope-pipeline ingest-hmrc --snapshot <date>       # ONLINE: only on GitHub Actions (refresh-trade-data.yml)
 cd pipeline && uv run foodscope-pipeline fetch-ons --snapshot <date>         # ONLINE: only on GitHub Actions (refresh-reference-data.yml, push to data/**)
-cd pipeline && uv run foodscope-pipeline fetch-reference --snapshot <date>   # ONLINE: fetch-ons + Nomis, MHCLG, NISRA, FSA (NI) Stage 5 files (the workflow runs this)
+cd pipeline && uv run foodscope-pipeline fetch-reference --snapshot <date> [--set context]   # ONLINE: stage5 = fetch-ons + Nomis, MHCLG, NISRA, FSA (NI); context = ONS urban/rural + Defra production (the workflow runs this)
 cd pipeline && uv run foodscope-pipeline build-local --snapshot 2026-10-24   # offline: boundaries, stores, population -> public/data/snapshots/<date>/local/ + reports
 cd pipeline && uv run foodscope-pipeline build-areas --snapshot 2026-10-24   # offline: deep-profile small areas -> public/data/snapshots/<date>/areas/ (--out to write elsewhere) + reports
 cd pipeline && uv run foodscope-pipeline build-ni-grocers --snapshot 2026-10-24 --local-snapshot 2026-10-24   # offline: FSA register -> NI grocers GEOLYTIX misses (register family; --out) + reports
+cd pipeline && uv run foodscope-pipeline build-context --snapshot 2026-10-25 --reference-snapshot 2026-10-24 --local-snapshot 2026-10-24   # offline: council urban/rural + car availability, Defra UK production (context family; --out) + reports
 ```
 
 ## Definition of done (every task)

@@ -1,0 +1,117 @@
+{
+  "snapshot": "2026-10-25",
+  "boundaryChanges": [
+    {
+      "code": "E08000038",
+      "name": "Barnsley",
+      "earlierCode": "E08000016"
+    },
+    {
+      "code": "E08000039",
+      "name": "Sheffield",
+      "earlierCode": "E08000019"
+    }
+  ],
+  "production": [
+    {
+      "basket": "tomatoes",
+      "year": 2025,
+      "supplyIdentityGap": 0.0,
+      "shareGap": 0.0
+    },
+    {
+      "basket": "strawberries",
+      "year": 2025,
+      "supplyIdentityGap": 0.0,
+      "shareGap": 0.0
+    },
+    {
+      "basket": "potatoes",
+      "year": 2025,
+      "supplyIdentityGap": 0.0,
+      "shareGap": 0.0
+    },
+    {
+      "basket": "wheat",
+      "year": 2025,
+      "supplyIdentityGap": 0.0,
+      "shareGap": 0.0
+    }
+  ],
+  "carAvailability": {
+    "censusCouncilsEnglandWales": 331,
+    "councilsEnglandWales": 318,
+    "householdsEnglandWales": 24783193,
+    "householdsAfterMapping": 24783193,
+    "merged2023": [
+      {
+        "to": "E06000063",
+        "from": [
+          "E07000026",
+          "E07000028",
+          "E07000029"
+        ],
+        "names": [
+          "Allerdale",
+          "Carlisle",
+          "Copeland"
+        ]
+      },
+      {
+        "to": "E06000064",
+        "from": [
+          "E07000027",
+          "E07000030",
+          "E07000031"
+        ],
+        "names": [
+          "Barrow-in-Furness",
+          "Eden",
+          "South Lakeland"
+        ]
+      },
+      {
+        "to": "E06000065",
+        "from": [
+          "E07000163",
+          "E07000164",
+          "E07000165",
+          "E07000166",
+          "E07000167",
+          "E07000168",
+          "E07000169"
+        ],
+        "names": [
+          "Craven",
+          "Hambleton",
+          "Harrogate",
+          "Richmondshire",
+          "Ryedale",
+          "Scarborough",
+          "Selby"
+        ]
+      },
+      {
+        "to": "E06000066",
+        "from": [
+          "E07000187",
+          "E07000188",
+          "E07000189",
+          "E07000246"
+        ],
+        "names": [
+          "Mendip",
+          "Sedgemoor",
+          "South Somerset",
+          "Somerset West and Taunton"
+        ]
+      }
+    ],
+    "councilsNorthernIreland": 11
+  },
+  "urbanRural": {
+    "classifiedCouncils": 318,
+    "councilsEnglandWales": 318,
+    "unusedCodes": []
+  }
+}

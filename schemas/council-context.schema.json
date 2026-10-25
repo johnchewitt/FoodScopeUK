@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/council-context.schema.json",
+  "title": "CouncilContext",
+  "description": "Per May 2025 council (LP-02, LP-04): the ONS 2021 Rural Urban Classification (S21; England and Wales only) and Census 2021 households with no car or van (S20; England, Wales and Northern Ireland). A null value means the measure is not published or not yet included for that nation; the reason is in notCovered. Written by `foodscope-pipeline build-context`. Shares are computed in the app.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "urbanRural", "carAvailability", "councils"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "urbanRural": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceIds",
+        "classification",
+        "referencePeriod",
+        "method",
+        "classes",
+        "coverage",
+        "notCovered"
+      ],
+      "properties": {
+        "sourceIds": { "$ref": "#/definitions/SourceIds" },
+        "classification": { "type": "string" },
+        "referencePeriod": { "type": "string" },
+        "method": { "type": "string" },
+        "classes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "name", "flag"],
+            "properties": {
+              "code": { "type": "string" },
+              "name": { "type": "string" },
+              "flag": { "enum": ["Urban", "Rural"] }
+            }
+          }
+        },
+        "coverage": { "type": "string" },
+        "notCovered": { "$ref": "#/definitions/NotCovered" }
+      }
+    },
+    "carAvailability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceIds", "referenceDate", "measure", "coverage", "notCovered", "comparability"],
+      "properties": {
+        "sourceIds": { "$ref": "#/definitions/SourceIds" },
+        "referenceDate": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "measure": { "type": "string" },
+        "coverage": { "type": "string" },
+        "notCovered": { "$ref": "#/definitions/NotCovered" },
+        "comparability": { "type": "string" }
+      }
+    },
+    "councils": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "name", "nation", "urbanRural", "carAvailability"],
+        "properties": {
+          "code": { "type": "string", "pattern": "^[ENSW]\\d{8}$" },
+          "name": { "type": "string" },
+          "nation": { "enum": ["England", "Wales", "Scotland", "Northern Ireland"] },
+          "urbanRural": {
+            "oneOf": [
+              { "type": "null" },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["code", "name", "flag", "basis"],
+                "properties": {
+                  "code": { "type": "string" },
+                  "name": { "type": "string" },
+                  "flag": { "enum": ["Urban", "Rural"] },
+                  "basis": { "$ref": "#/definitions/Basis" }
+                }
+              }
+            ]
+          },
+          "carAvailability": {
+            "oneOf": [
+              { "type": "null" },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["households", "noCar", "basis"],
+                "properties": {
+                  "households": { "type": "integer", "minimum": 1 },
+                  "noCar": { "type": "integer", "minimum": 0 },
+                  "basis": { "$ref": "#/definitions/Basis" }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "SourceIds": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "pattern": "^S\\d{2}$" }
+    },
+    "NotCovered": {
+      "description": "Nation → why the measure is absent there.",
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "Basis": {
+      "description": "How the value was obtained when it is not on the council's May 2025 boundary as published (a 2023 merger summed, or a pre-2025 boundary); null when it is.",
+      "type": ["string", "null"]
+    }
+  }
+}
