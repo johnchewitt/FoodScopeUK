@@ -1,0 +1,26 @@
+{
+  "id": "context.uk_production",
+  "title": "UK production and supply of the Food Origins baskets (Defra, annual; national context)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-25/context/uk-production.json",
+  "format": "json",
+  "schemaId": "uk-production",
+  "sha256": "73cde1e745f8a7d9db97dc323a2941430e1c73db7bedb7b3d1a19fd6dbaa6157",
+  "bytes": 5063,
+  "sourceIds": [
+    "S09",
+    "S10"
+  ],
+  "referencePeriod": "tomatoes 2025, strawberries 2025, potatoes 2025 (provisional), wheat 2025 (provisional)",
+  "coverage": "United Kingdom; tomatoes, strawberries, potatoes, wheat (bananas: no Defra production series)",
+  "provenance": "official_estimate",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: Department for Environment, Food & Rural Affairs, licensed under the Open Government Licence v3.0",
+  "expectedCadence": "annual",
+  "retrieval": {
+    "method": "Read offline from the committed Defra datasets (fetch-reference --set context)",
+    "source": "https://assets.publishing.service.gov.uk/media/6a327c196422bec01b1176a1/hort-dataset-25-20260625.ods (sha256 ce2a42fd2292…); https://assets.publishing.service.gov.uk/media/6a3d141feaee00074150f4db/AUK-chapter7-20260709.ods (sha256 5bdb534e35d2…)",
+    "retrievedAt": "2026-10-25T11:49:18Z",
+    "notes": "Values as published (potato and wheat shares converted from fractions to per cent; wheat imports and exports are the sums of the EU and rest-of-the-world rows). Annual and national: never combined with HMRC monthly trade."
+  }
+}

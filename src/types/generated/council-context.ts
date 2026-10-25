@@ -10,7 +10,7 @@ export type SourceIds = [string, ...string[]];
 export type Basis = string | null;
 
 /**
- * Per May 2025 council (LP-02, LP-04): the ONS 2021 Rural Urban Classification (S21; England and Wales only) and Census 2021 households with no car or van (S20; England, Wales and Northern Ireland). A null value means the measure is not published or not yet included for that nation; the reason is in notCovered. Written by `foodscope-pipeline build-context`. Shares are computed in the app.
+ * Per May 2025 council (LP-01, LP-02, LP-04): the box around its boundary (S14, for framing the map), the ONS 2021 Rural Urban Classification (S21; England and Wales only) and Census 2021 households with no car or van (S20; England, Wales and Northern Ireland). A null value means the measure is not published or not yet included for that nation; the reason is in notCovered. Written by `foodscope-pipeline build-context`. Shares are computed in the app.
  */
 export interface CouncilContext {
   schemaVersion: 1;
@@ -49,6 +49,13 @@ export interface CouncilContext {
     code: string;
     name: string;
     nation: "England" | "Wales" | "Scotland" | "Northern Ireland";
+    /**
+     * [west, south, east, north] of the council's display boundary (WGS84, S14), for framing the map
+     *
+     * @minItems 4
+     * @maxItems 4
+     */
+    bbox: [number, number, number, number];
     urbanRural: null | {
       code: string;
       name: string;

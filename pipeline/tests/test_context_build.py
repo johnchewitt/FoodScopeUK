@@ -155,3 +155,13 @@ def test_defra_readers_keep_unavailable_years_empty() -> None:
     hort = read_horticulture_supply(RAW / "defra" / SNAPSHOT / "hort-dataset-25-20260625.ods",
                                     "Table_23_Veg_Supply", "Tomatoes")
     assert min(hort) == 1988 and set(hort[2025]) == {"production", "imports", "exports", "totalSupply", "productionShare"}
+
+
+def test_bbox_frames_each_council(councils) -> None:
+    for c in councils.values():
+        w, s, e, n = c["bbox"]
+        assert -9 < w < e < 2.1 and 49 < s < n < 61, c["code"]
+    w, s, e, n = councils["E08000003"]["bbox"]
+    assert w < -2.24 < e and s < 53.48 < n  # Manchester city centre
+    w, s, e, n = councils["N09000003"]["bbox"]
+    assert w < -5.93 < e and s < 54.597 < n  # Belfast City Hall

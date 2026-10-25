@@ -1,7 +1,7 @@
 /* Generated from schemas/small-area-indicators.schema.json by scripts/gen-types.mjs — do not edit by hand. */
 
 /**
- * Per small area of the deep profiles (LP-04, FA-02, FA-03): Census 2021 usual residents, households and households without a car or van (S18, S20), the population-weighted centroid (S15, S16), deprivation within its own nation (S19: IoD 2025 for England on LSOAs; NIMDM 2017 for Northern Ireland on SOAs 2011) and the Priority Places for Food Index v2.1 within its nation (S13, on the same geographies). Shares and distances are computed in the app (src/analysis). Written by `foodscope-pipeline build-areas`.
+ * Per small area of the deep profiles (LP-04, FA-02, FA-03): Census 2021 usual residents, households and households without a car or van (S18, S20), the population-weighted centroid (S15, S16), deprivation within its own nation (S19: IoD 2025 for England on LSOAs; NIMDM 2017 for Northern Ireland on SOAs 2011) and the Priority Places for Food Index v2.1 within its nation (S13, on the same geographies) and the urban/rural class (S21: ONS 2021 on LSOAs; NISRA 2015 on Northern Ireland SOAs). Shares and distances are computed in the app (src/analysis). One file per deep-profile council (Stage 5, ADR-0023). Written by `foodscope-pipeline build-areas`.
  */
 export interface SmallAreaIndicators {
   schemaVersion: 1;
@@ -17,7 +17,10 @@ export interface SmallAreaIndicators {
     sourceIds: string[];
     definition: string;
   };
-  profiles: Profile[];
+  /**
+   * @minItems 1
+   */
+  profiles: [Profile, ...Profile[]];
 }
 export interface Profile {
   lad: string;
@@ -27,6 +30,12 @@ export interface Profile {
     kind: "lsoa21" | "dz21";
     label: string;
     count: number;
+  };
+  urbanRural: {
+    sourceId: string;
+    geography: "lsoa21" | "soa2011";
+    classification: string;
+    referencePeriod: string;
   };
   deprivation: {
     index: string;
@@ -92,6 +101,10 @@ export interface Area {
    */
   centroid: [number, number];
   /**
+   * Urban/rural class of this small area (ONS 2021, England and Wales); null when the nation's class uses another geography (Northern Ireland: `deprivationAreas[].urbanRural2015`)
+   */
+  urbanRural: null | UrbanRural;
+  /**
    * Deprivation within the nation on this geography; null when the nation's index uses another geography (`deprivationAreas`)
    */
   deprivation: null | Rank;
@@ -99,6 +112,11 @@ export interface Area {
    * PPFI v2.1 on this geography; null when the nation's PPFI uses another geography (`deprivationAreas`)
    */
   ppfi: null | Ppfi;
+}
+export interface UrbanRural {
+  code: string;
+  name: string;
+  flag: "Urban" | "Rural";
 }
 export interface Rank {
   rank: number;

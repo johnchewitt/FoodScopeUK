@@ -12,8 +12,9 @@ Inputs (committed under pipeline/raw/, each checked against its SHA-256):
 
 Outputs go to `<out_root>/snapshots/<snapshot>/context/` (the `context` family, ADR-0021), each with
 a `*.provenance.json` sidecar:
-- `council-context.json`: per council, the urban/rural class (England and Wales) and Census 2021
-  households with and without a car or van (England, Wales, Northern Ireland). Scotland and the
+- `council-context.json`: per council, the box around its boundary (WGS84, from the display
+  boundaries of the `local` family, for framing the map), the urban/rural class (England and Wales)
+  and Census 2021 households with and without a car or van (England, Wales, Northern Ireland). Scotland and the
   Northern Ireland urban/rural class are absent with a stated reason, never filled in.
 - `uk-production.json`: Defra's latest annual supply balance for each Food Origins basket, as
   published; national context only.
@@ -142,8 +143,31 @@ def _merge_census(counts: dict[str, dict[str, int]], lookup: list[dict]) -> tupl
     return out, merged
 
 
+BBOX_DECIMALS = 4  # about 10 m: enough to frame the map
+
+
+def _bboxes(geojson: Path) -> dict[str, list[float]]:
+    """Council code → [west, south, east, north] of its display boundary (WGS84)."""
+    out: dict[str, list[float]] = {}
+
+    def walk(coords, acc: list[float]) -> None:
+        if coords and isinstance(coords[0], (int, float)):
+            x, y = coords[0], coords[1]
+            acc[0], acc[1] = min(acc[0], x), min(acc[1], y)
+            acc[2], acc[3] = max(acc[2], x), max(acc[3], y)
+            return
+        for c in coords:
+            walk(c, acc)
+
+    for f in json.loads(geojson.read_text(encoding="utf-8"))["features"]:
+        acc = [180.0, 90.0, -180.0, -90.0]
+        walk(f["geometry"]["coordinates"], acc)
+        out[f["properties"]["code"]] = [round(v, BBOX_DECIMALS) for v in acc]
+    return out
+
+
 def _council_rows(councils: list[dict], ruc: dict[str, dict], cars_ew: dict[str, dict], cars_ni: dict[str, dict],
-                  changes: dict[str, dict], qa: dict) -> list[dict]:
+                  changes: dict[str, dict], qa: dict, bboxes: dict[str, list[float]]) -> list[dict]:
     rows = []
     for c in sorted(councils, key=lambda c: c["code"]):
         code, nation = c["code"], c["nation"]
@@ -173,8 +197,10 @@ def _council_rows(councils: list[dict], ruc: dict[str, dict], cars_ew: dict[str,
             cars = {"households": n["households"], "noCar": n["noCar"], "basis": None}
         elif nation != "Scotland":
             raise ContextBuildError(f"{code}: unknown nation {nation!r}")
-        rows.append({"code": code, "name": c["name"], "nation": nation, "urbanRural": urban_rural,
-                     "carAvailability": cars})
+        if code not in bboxes:
+            raise ContextBuildError(f"{code} {c['name']}: not in the council boundaries")
+        rows.append({"code": code, "name": c["name"], "nation": nation, "bbox": bboxes[code],
+                     "urbanRural": urban_rural, "carAvailability": cars})
         if change:
             qa["boundaryChanges"].append({"code": code, "name": c["name"], "earlierCode": change["from"]})
     return rows
@@ -266,7 +292,10 @@ def build_context(snapshot: str, inputs: ContextInputs, out_root: Path, reports_
     cars_ni = read_car_van_lgd(cars_lgd_path)
 
     changes = _code_changes(inputs.code_changes)
-    rows = _council_rows(councils, ruc, cars_ew, cars_ni, changes, qa)
+    bboxes = _bboxes(inputs.local / "lad-2025-uk.geojson")
+    if set(bboxes) != {c["code"] for c in councils}:
+        raise ContextBuildError("the council boundaries and the council indicators list different councils")
+    rows = _council_rows(councils, ruc, cars_ew, cars_ni, changes, qa, bboxes)
 
     ew_households = sum(c[TS045_TOTAL] for c in ts045.values())
     used = {r["code"] for r in rows if r["nation"] in ("England", "Wales")}
@@ -332,10 +361,10 @@ def build_context(snapshot: str, inputs: ContextInputs, out_root: Path, reports_
     datasets = [
         ("council-context.json", _compact(council_doc) + "\n", {
             "id": "context.council_context",
-            "title": "Council context: urban/rural class (England and Wales) and Census 2021 car or van availability",
+            "title": "Council context: map frame, urban/rural class (England and Wales) and Census 2021 car or van availability",
             "role": "statistical", "format": "json", "schemaId": "council-context",
-            "sourceIds": ["S20", "S21"],
-            "referencePeriod": "Census 2021 (21 March 2021); 2021 Rural Urban Classification of councils (2024 boundaries)",
+            "sourceIds": ["S14", "S20", "S21"],
+            "referencePeriod": "Census 2021 (21 March 2021); 2021 Rural Urban Classification of councils (2024 boundaries); May 2025 council boundaries",
             "coverage": (f"{len(rows)} councils (May 2025): urban/rural for England and Wales; car availability for "
                          "England, Wales and Northern Ireland; none for Scotland"),
             "provenance": "measured", "licence": OGL,

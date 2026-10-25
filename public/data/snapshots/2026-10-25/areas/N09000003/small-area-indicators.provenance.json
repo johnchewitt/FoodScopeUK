@@ -1,0 +1,30 @@
+{
+  "id": "areas.n09000003.indicators",
+  "title": "Small-area indicators of the deep profile — Belfast: Census 2021 population, households and car availability; urban/rural class; deprivation and the Priority Places for Food Index within the nation",
+  "role": "statistical",
+  "path": "snapshots/2026-10-25/areas/N09000003/small-area-indicators.json",
+  "format": "json",
+  "schemaId": "small-area-indicators",
+  "sha256": "4e12f4cd375354ae6bab0ed98da789e1927ad1f141e88f198ef5f1ed0fae6afb",
+  "bytes": 223680,
+  "sourceIds": [
+    "S13",
+    "S16",
+    "S18",
+    "S19",
+    "S20",
+    "S21"
+  ],
+  "referencePeriod": "Census 2021 (21 March 2021); NIMDM 2017; PPFI v2.1 (July 2024); NISRA urban/rural 2015",
+  "coverage": "Belfast (735 Data Zones, 174 SOAs)",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: NISRA, licensed under the Open Government Licence v3.0. Priority Places for Food Index v2.1, Healthy & Sustainable Places Data Service (HASP) / CDRC, DOI 10.82147/003 (OGL v3.0)",
+  "expectedCadence": "irregular",
+  "retrieval": {
+    "method": "Derived offline from the committed raw files (fetch-reference)",
+    "source": "census-2021-ms-a01.xlsx (sha256 75256392409c…); ni-census21-household-dz21hh_car_van_tc5.csv (provided, sha256 c143b3c04c18…); NIMDM17_SOAresults.xls (sha256 3738edf2d264…); geography-census-2021-population-weighted-centroids-csv.zip (sha256 4822e20b4284…); hasp_ppfi_v2.1.csv (provided, sha256 51f96ce7a792…)",
+    "retrievedAt": "2026-10-25T08:33:05Z",
+    "notes": "Values as published. NIMDM 2017 deciles are derived from the ranks (89 SOAs per decile), within Northern Ireland only. Households and car availability: NISRA's flexible table builder (HH_CAR_VAN_TC5 by Data Zone), downloaded by John. PPFI v2.1 from Leeds HASP (downloaded by John): ranks and deciles within Northern Ireland; three domains have no Northern Ireland data."
+  }
+}

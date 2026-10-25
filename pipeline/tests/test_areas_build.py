@@ -29,15 +29,22 @@ from foodscope_pipeline.sources.small_areas import (
 PIPELINE = Path(__file__).resolve().parents[1]
 REPO = PIPELINE.parent
 RAW = PIPELINE / "raw"
-SNAPSHOT = "2026-10-24"
+SNAPSHOT = "2026-10-24"  # raw stage5 set
+CONTEXT = "2026-10-25"  # raw context set (LSOA urban/rural) and the output snapshot
+COUNCILS = ("E08000003", "N09000003")
 
 
 def _build(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
     out = tmp_path_factory.mktemp("data")
     reports = tmp_path_factory.mktemp("reports")
-    build_areas(SNAPSHOT, default_inputs(RAW, PIPELINE / "foodscope_pipeline" / "config", SNAPSHOT), out, reports,
-                REPO / "schemas")
-    return out / "snapshots" / SNAPSHOT / "areas", reports
+    build_areas(SNAPSHOT, default_inputs(RAW, PIPELINE / "foodscope_pipeline" / "config", SNAPSHOT, CONTEXT), out,
+                reports, REPO / "schemas", out_snapshot=CONTEXT)
+    return out / "snapshots" / CONTEXT / "areas", reports
+
+
+def _features(out: Path) -> list[dict]:
+    return [f for lad in COUNCILS
+            for f in json.loads((out / lad / "small-areas.geojson").read_text(encoding="utf-8"))["features"]]
 
 
 @pytest.fixture(scope="module")
@@ -47,7 +54,9 @@ def built(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
 
 @pytest.fixture(scope="module")
 def doc(built) -> dict:
-    return json.loads((built[0] / "small-area-indicators.json").read_text(encoding="utf-8"))
+    """Both councils' indicator files (one profile each) as one document."""
+    docs = [json.loads((built[0] / lad / "small-area-indicators.json").read_text(encoding="utf-8")) for lad in COUNCILS]
+    return {**docs[0], "profiles": [p for d in docs for p in d["profiles"]]}
 
 
 def _profile(doc: dict, lad: str) -> dict:
@@ -57,8 +66,11 @@ def _profile(doc: dict, lad: str) -> dict:
 def test_two_builds_are_byte_identical_and_the_report_is_committed(built, tmp_path_factory) -> None:
     out, reports = built
     again, reports_again = _build(tmp_path_factory)
-    for path in sorted(out.iterdir()):
-        assert path.read_bytes() == (again / path.name).read_bytes(), path.name
+    files = sorted(p for p in out.rglob("*") if p.is_file())
+    assert len(files) == 8
+    for path in files:
+        rel = path.relative_to(out)
+        assert path.read_bytes() == (again / rel).read_bytes(), rel
     for path in sorted(reports.iterdir()):
         assert path.read_bytes() == (reports_again / path.name).read_bytes(), path.name
         assert path.read_bytes() == (PIPELINE / "reports" / path.name).read_bytes(), path.name
@@ -67,13 +79,13 @@ def test_two_builds_are_byte_identical_and_the_report_is_committed(built, tmp_pa
 def test_counts_and_council_totals(built, doc) -> None:
     man, bel = _profile(doc, "E08000003"), _profile(doc, "N09000003")
     assert len(man["areas"]) == 295 and len(bel["areas"]) == 735 and len(bel["deprivationAreas"]) == 174
-    qa = json.loads((built[1] / f"areas-qa-{SNAPSHOT}.json").read_text(encoding="utf-8"))
+    qa = json.loads((built[1] / f"areas-qa-{CONTEXT}.json").read_text(encoding="utf-8"))
     # Small areas are perturbed for confidentiality: they need not add up to the council tables.
     assert qa["manchester"]["sumOfSmallAreas"] == {"population": 551_919, "households": 214_712, "noCarHouseholds": 83_777}
     assert qa["manchester"]["councilTable"] == {"population": 551_938, "households": 214_732, "noCarHouseholds": 83_770}
     assert qa["belfast"]["sumOfDataZonePopulation"] == 345_423 and qa["belfast"]["councilTableMsA01"] == 345_418
     assert qa["belfast"]["dataZoneCentroidsOutsideTheirZone"] == 0
-    features = json.loads((built[0] / "small-areas.geojson").read_text(encoding="utf-8"))["features"]
+    features = _features(built[0])
     kinds = [f["properties"]["kind"] for f in features]
     assert (kinds.count("lsoa21"), kinds.count("dz21"), kinds.count("soa2011")) == (295, 735, 174)
 
@@ -83,7 +95,7 @@ def test_belfast_car_availability_from_the_table_builder(built, doc) -> None:
     assert bel["missing"] == []
     assert all(0 <= a["noCarHouseholds"] <= a["households"] for a in bel["areas"])
     assert all(a["deprivation"] is None for a in bel["areas"])  # NIMDM is on the SOAs (John, 24 Oct 2026)
-    qa = json.loads((built[1] / f"areas-qa-{SNAPSHOT}.json").read_text(encoding="utf-8"))["belfast"]["households"]
+    qa = json.loads((built[1] / f"areas-qa-{CONTEXT}.json").read_text(encoding="utf-8"))["belfast"]["households"]
     # Perturbed counts: the Data Zones need not add up to the council table.
     assert qa["sumOfDataZones"] == {"households": 149_193, "noCarHouseholds": 50_595}
     assert qa["councilTable"] == {"households": 149_207, "noCarHouseholds": 50_594}
@@ -161,7 +173,7 @@ def test_belfast_sample_matches_the_raw_files(doc) -> None:
 
 def test_centroids_are_in_the_councils(built, doc) -> None:
     """Each published centroid lies in (or within 2 m of, after generalisation) its own small area."""
-    features = json.loads((built[0] / "small-areas.geojson").read_text(encoding="utf-8"))["features"]
+    features = _features(built[0])
     shapes = {f["properties"]["code"]: shapely.from_geojson(json.dumps(f["geometry"])) for f in features}
     for profile in doc["profiles"]:
         for a in profile["areas"]:
@@ -251,7 +263,7 @@ def test_ppfi_in_northern_ireland_is_on_the_soas_with_three_domains_missing(buil
     man = _profile(doc, "E08000003")
     assert man["ppfi"]["within"] == "England" and man["ppfi"]["domainsWithoutData"] == []
     assert all(v is not None for a in man["areas"] for v in a["ppfi"]["domains"].values())
-    qa = json.loads((built[1] / f"areas-qa-{SNAPSHOT}.json").read_text(encoding="utf-8"))["ppfi"]
+    qa = json.loads((built[1] / f"areas-qa-{CONTEXT}.json").read_text(encoding="utf-8"))["ppfi"]
     assert qa["areasPerCountry"] == {"E": 33_755, "W": 1_917, "S": 6_976, "NI": 890}
     # Rank 1 = highest priority: the socio-demographic domain ranks with IoD and NIMDM (1 = most deprived).
     assert qa["orientation"]["englandImdDecileVsSocioDemographicDecile"] > 0.8
@@ -267,3 +279,30 @@ def test_ppfi_reader_refuses_changed_columns_and_partial_files(tmp_path: Path) -
     path.write_text("\n".join(lines[:-1]) + "\n", encoding="utf-8")  # one area short
     with pytest.raises(SmallAreaInputError, match="areas per country"):
         read_ppfi(path)
+
+
+def test_one_folder_per_council_with_its_own_datasets(built) -> None:
+    out = built[0]
+    for lad in COUNCILS:
+        feats = json.loads((out / lad / "small-areas.geojson").read_text(encoding="utf-8"))["features"]
+        assert {f["properties"]["lad"] for f in feats} == {lad}
+        doc = json.loads((out / lad / "small-area-indicators.json").read_text(encoding="utf-8"))
+        assert [p["lad"] for p in doc["profiles"]] == [lad]
+        ids = {json.loads(p.read_text(encoding="utf-8"))["id"] for p in (out / lad).glob("*.provenance.json")}
+        assert ids == {f"areas.{lad.lower()}.boundaries", f"areas.{lad.lower()}.indicators"}
+
+
+def test_urban_rural_class_per_nation(built, doc) -> None:
+    man, bel = _profile(doc, "E08000003"), _profile(doc, "N09000003")
+    assert man["urbanRural"]["geography"] == "lsoa21" and bel["urbanRural"]["geography"] == "soa2011"
+    assert all(a["urbanRural"] is None for a in bel["areas"])  # NISRA's class is on the SOAs
+    assert {a["urbanRural2015"] for a in bel["deprivationAreas"]} <= {"Urban", "Mixed urban/rural", "Rural"}
+    qa = json.loads((built[1] / f"areas-qa-{CONTEXT}.json").read_text(encoding="utf-8"))
+    assert sum(qa["manchester"]["urbanRural2021"].values()) == 295
+    # Hand check against the ONS table, read independently.
+    pages = sorted((RAW / "ons" / CONTEXT).glob("lsoa21-ruc21-ew-lu.p*.json"))
+    ruc = {f["attributes"]["LSOA21CD"]: f["attributes"]["RUC21CD"] for p in pages
+           for f in json.loads(p.read_text(encoding="utf-8"))["features"]}
+    areas = {a["code"]: a for a in man["areas"]}
+    for code in MANCHESTER_SAMPLE:
+        assert areas[code]["urbanRural"]["code"] == ruc[code], code

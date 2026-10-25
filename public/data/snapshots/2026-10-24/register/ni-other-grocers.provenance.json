@@ -1,0 +1,27 @@
+{
+  "id": "register.ni_other_grocers",
+  "title": "Northern Ireland grocers not in the GEOLYTIX data, from the FSA food hygiene register",
+  "role": "statistical",
+  "path": "snapshots/2026-10-24/register/ni-other-grocers.geojson",
+  "format": "geojson",
+  "schemaId": "ni-other-grocers",
+  "sha256": "8fe28c3f44fda5866f376f7501a030e8dbdfa42c2866dfaca5d6a9d6d5b8ec06",
+  "bytes": 75497,
+  "featureCount": 285,
+  "sourceIds": [
+    "S29",
+    "S11"
+  ],
+  "referencePeriod": "FSA register extracts 2026-10-09 to 2026-10-24",
+  "coverage": "Northern Ireland: 11 councils (supplementary to GEOLYTIX; not in any store count or rate)",
+  "provenance": "derived",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Food Standards Agency food hygiene rating data, Northern Ireland councils, licensed under the Open Government Licence v3.0",
+  "expectedCadence": "irregular",
+  "retrieval": {
+    "method": "FSA open data XML per council (fetch-reference), cached in pipeline/raw/fsa/",
+    "source": "https://ratings.food.gov.uk/api/open-data-files/ (11 files, combined sha256 abc21bdf6ec1…)",
+    "retrievedAt": "2026-10-25T08:53:09Z",
+    "notes": "Kept: grocery symbol groups GEOLYTIX does not carry in NI (by name), and independent grocers registered as supermarkets/hypermarkets that are not within 50 m of a mapped store. Chains GEOLYTIX maps are left to it. Same group or name at the same postcode = one shop. Rules: pipeline/foodscope_pipeline/config/ni_grocers.json; every decision in the QA report."
+  }
+}

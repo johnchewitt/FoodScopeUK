@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/small-area-indicators.schema.json",
   "title": "SmallAreaIndicators",
-  "description": "Per small area of the deep profiles (LP-04, FA-02, FA-03): Census 2021 usual residents, households and households without a car or van (S18, S20), the population-weighted centroid (S15, S16), deprivation within its own nation (S19: IoD 2025 for England on LSOAs; NIMDM 2017 for Northern Ireland on SOAs 2011) and the Priority Places for Food Index v2.1 within its nation (S13, on the same geographies). Shares and distances are computed in the app (src/analysis). Written by `foodscope-pipeline build-areas`.",
+  "description": "Per small area of the deep profiles (LP-04, FA-02, FA-03): Census 2021 usual residents, households and households without a car or van (S18, S20), the population-weighted centroid (S15, S16), deprivation within its own nation (S19: IoD 2025 for England on LSOAs; NIMDM 2017 for Northern Ireland on SOAs 2011) and the Priority Places for Food Index v2.1 within its nation (S13, on the same geographies) and the urban/rural class (S21: ONS 2021 on LSOAs; NISRA 2015 on Northern Ireland SOAs). Shares and distances are computed in the app (src/analysis). One file per deep-profile council (Stage 5, ADR-0023). Written by `foodscope-pipeline build-areas`.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schemaVersion", "census", "centroids", "profiles"],
@@ -61,7 +61,8 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/Profile"
-      }
+      },
+      "minItems": 1
     }
   },
   "definitions": {
@@ -91,6 +92,7 @@
         "households",
         "noCarHouseholds",
         "centroid",
+        "urbanRural",
         "deprivation",
         "ppfi"
       ],
@@ -130,6 +132,17 @@
             "type": "number"
           },
           "description": "Population-weighted centroid, [lon, lat] WGS84"
+        },
+        "urbanRural": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/UrbanRural"
+            }
+          ],
+          "description": "Urban/rural class of this small area (ONS 2021, England and Wales); null when the nation's class uses another geography (Northern Ireland: `deprivationAreas[].urbanRural2015`)"
         },
         "deprivation": {
           "oneOf": [
@@ -227,6 +240,7 @@
         "name",
         "nation",
         "geography",
+        "urbanRural",
         "deprivation",
         "ppfi",
         "areas",
@@ -260,6 +274,26 @@
             "count": {
               "type": "integer",
               "minimum": 1
+            }
+          }
+        },
+        "urbanRural": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sourceId", "geography", "classification", "referencePeriod"],
+          "properties": {
+            "sourceId": {
+              "type": "string"
+            },
+            "geography": {
+              "type": "string",
+              "enum": ["lsoa21", "soa2011"]
+            },
+            "classification": {
+              "type": "string"
+            },
+            "referencePeriod": {
+              "type": "string"
             }
           }
         },
@@ -500,6 +534,23 @@
               ]
             }
           }
+        }
+      }
+    },
+    "UrbanRural": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "name", "flag"],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "flag": {
+          "type": "string",
+          "enum": ["Urban", "Rural"]
         }
       }
     }
