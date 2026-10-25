@@ -22,7 +22,9 @@ import xlrd
 
 from foodscope_pipeline.areas import AreasBuildError, build_areas, default_inputs, nimdm_decile
 from foodscope_pipeline.boundaries import DisplayBoundaryError, display_geometry
-from foodscope_pipeline.sources.small_areas import SmallAreaInputError, read_car_van_dz, read_census_lsoa, read_iod_file7
+from foodscope_pipeline.sources.small_areas import (
+    SmallAreaInputError, read_car_van_dz, read_census_lsoa, read_iod_file7, read_ppfi,
+)
 
 PIPELINE = Path(__file__).resolve().parents[1]
 REPO = PIPELINE.parent
@@ -216,3 +218,52 @@ def test_car_van_reader_needs_all_six_categories(tmp_path: Path) -> None:
     path.write_text(head + full.replace("No cars or vans available", "None"), encoding="utf-8")
     with pytest.raises(SmallAreaInputError, match="labelled"):
         read_car_van_dz(path)
+
+
+PPFI_CSV = RAW / "hasp-provided" / "ppfi-v2.1-lsoa-1.0.24" / "hasp_ppfi_v2.1.csv"
+
+
+def _ppfi_raw() -> dict[str, dict[str, str]]:
+    with PPFI_CSV.open(encoding="utf-8-sig") as fh:
+        return {r["lsoa21cd"]: r for r in csv.DictReader(fh)}
+
+
+def test_ppfi_sample_matches_the_raw_file(doc) -> None:
+    raw = _ppfi_raw()
+    man = {a["code"]: a for a in _profile(doc, "E08000003")["areas"]}
+    soas = {a["code"]: a for a in _profile(doc, "N09000003")["deprivationAreas"]}
+    for code, area in [*((c, man[c]) for c in MANCHESTER_SAMPLE), *((c, soas[c]) for c in BELFAST_SAMPLE_SOA)]:
+        r = raw[code]
+        assert (area["ppfi"]["rank"], area["ppfi"]["decile"]) == (int(r["combined"]), int(r["pp_dec_combined"])), code
+        prox = area["ppfi"]["domains"]["supermarket_proximity"]
+        assert (prox["rank"], prox["decile"]) == (int(r["domain_supermarket_proximity"]),
+                                                  int(r["pp_dec_domain_supermarket_proximity"])), code
+
+
+def test_ppfi_in_northern_ireland_is_on_the_soas_with_three_domains_missing(built, doc) -> None:
+    bel = _profile(doc, "N09000003")
+    assert bel["ppfi"]["geography"] == "soa2011" and bel["ppfi"]["ranked"] == 890
+    assert bel["ppfi"]["domainsWithoutData"] == ["ecommerce_access", "fuel_poverty", "supermarket_accessibility"]
+    assert all(a["ppfi"] is None for a in bel["areas"])  # Data Zones carry none: PPFI is on the SOAs
+    for soa in bel["deprivationAreas"]:
+        missing = sorted(d for d, v in soa["ppfi"]["domains"].items() if v is None)
+        assert missing == bel["ppfi"]["domainsWithoutData"], soa["code"]
+    man = _profile(doc, "E08000003")
+    assert man["ppfi"]["within"] == "England" and man["ppfi"]["domainsWithoutData"] == []
+    assert all(v is not None for a in man["areas"] for v in a["ppfi"]["domains"].values())
+    qa = json.loads((built[1] / f"areas-qa-{SNAPSHOT}.json").read_text(encoding="utf-8"))["ppfi"]
+    assert qa["areasPerCountry"] == {"E": 33_755, "W": 1_917, "S": 6_976, "NI": 890}
+    # Rank 1 = highest priority: the socio-demographic domain ranks with IoD and NIMDM (1 = most deprived).
+    assert qa["orientation"]["englandImdDecileVsSocioDemographicDecile"] > 0.8
+    assert qa["orientation"]["northernIrelandNimdmRankVsSocioDemographicRank"] > 0.9
+
+
+def test_ppfi_reader_refuses_changed_columns_and_partial_files(tmp_path: Path) -> None:
+    lines = PPFI_CSV.read_text(encoding="utf-8-sig").splitlines()
+    path = tmp_path / "ppfi.csv"
+    path.write_text(lines[0].replace("combined", "total", 1) + "\n" + "\n".join(lines[1:]) + "\n", encoding="utf-8")
+    with pytest.raises(SmallAreaInputError, match="columns"):
+        read_ppfi(path)
+    path.write_text("\n".join(lines[:-1]) + "\n", encoding="utf-8")  # one area short
+    with pytest.raises(SmallAreaInputError, match="areas per country"):
+        read_ppfi(path)

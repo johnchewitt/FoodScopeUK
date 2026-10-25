@@ -135,5 +135,47 @@
       }
     },
     "irishGridToWgs84": "Inverse of Irish Grid + TM65 to WGS 84 (2) (with axis order normalized for visualization)"
+  },
+  "ppfi": {
+    "areasPerCountry": {
+      "E": 33755,
+      "W": 1917,
+      "S": 6976,
+      "NI": 890
+    },
+    "northernIrelandDomainsWithoutData": [
+      "ecommerce_access",
+      "fuel_poverty",
+      "supermarket_accessibility"
+    ],
+    "orientation": {
+      "englandImdDecileVsSocioDemographicDecile": 0.862,
+      "northernIrelandNimdmRankVsSocioDemographicRank": 0.931,
+      "reading": "positive: rank 1 / decile 1 = highest priority, as for IoD and NIMDM (1 = most deprived)"
+    },
+    "manchesterDeciles": {
+      "1": 59,
+      "2": 60,
+      "3": 40,
+      "4": 33,
+      "5": 30,
+      "6": 20,
+      "7": 15,
+      "8": 13,
+      "9": 9,
+      "10": 16
+    },
+    "belfastSoaDeciles": {
+      "1": 0,
+      "2": 6,
+      "3": 16,
+      "4": 23,
+      "5": 17,
+      "6": 28,
+      "7": 26,
+      "8": 22,
+      "9": 23,
+      "10": 13
+    }
   }
 }

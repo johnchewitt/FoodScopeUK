@@ -32,6 +32,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import statistics
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -45,7 +46,7 @@ from foodscope_pipeline.sources.ons_files import files_for, load_index
 from foodscope_pipeline.sources.provided import load_provided
 from foodscope_pipeline.sources.small_areas import (
     TS001_TOTAL, TS045_NO_CAR, TS045_TOTAL, read_census_lsoa, read_data_zones, read_dz_centroids,
-    read_car_van_dz, read_car_van_lgd, read_iod_file7, read_lsoa_boundaries, read_lsoa_centroids, read_lsoa_lookup, read_ms_a01, read_nimdm2017,
+    read_car_van_dz, read_car_van_lgd, read_iod_file7, read_ppfi, read_lsoa_boundaries, read_lsoa_centroids, read_lsoa_lookup, read_ms_a01, read_nimdm2017,
     read_super_output_areas,
 )
 
@@ -66,6 +67,20 @@ OSNI_NOTICE = "Contains Ordnance Survey of Northern Ireland information licensed
 MHCLG_SOURCE = "Source: Ministry of Housing, Communities and Local Government, English Indices of Deprivation 2025 (OGL v3.0)"
 
 NISRA_CARS_EDITION = "census2021-car-van-2026-10-25"
+PPFI_EDITION = "ppfi-v2.1-lsoa-1.0.24"
+PPFI_SOURCE = ("Priority Places for Food Index v2.1, Healthy & Sustainable Places Data Service (HASP) / CDRC, "
+               "DOI 10.82147/003 (OGL v3.0)")
+PPFI_NOT_IN_NI = ["ecommerce_access", "fuel_poverty", "supermarket_accessibility"]
+PPFI_META = {
+    "index": "Priority Places for Food Index v2.1", "sourceId": "S13", "decile": "published",
+    "orientation": ("Rank 1 and decile 1 = highest priority. Not stated in the publisher's text; shown by the data "
+                    "(the socio-demographic domain ranks with IoD 2025 and NIMDM 2017, where 1 = most deprived)"),
+    "referencePeriod": "v2.1, released July 2024 (indicators 2016–2023)",
+}
+
+
+def _ppfi_value(row: dict) -> dict:
+    return {"rank": row["rank"], "decile": row["decile"], "domains": row["domains"]}
 
 
 class AreasBuildError(RuntimeError):
@@ -79,6 +94,7 @@ class AreasInputs:
     mhclg: Path  # pipeline/raw/mhclg/<snapshot>/
     nisra: Path  # pipeline/raw/nisra/<snapshot>/
     nisra_cars: Path  # pipeline/raw/nisra-provided/<edition>/ (car or van availability, from John)
+    hasp: Path  # pipeline/raw/hasp-provided/<edition>/ (PPFI v2.1, from John)
     profiles: Path  # config/deep_profiles.json
 
 
@@ -89,6 +105,7 @@ def default_inputs(raw_root: Path, config_dir: Path, snapshot: str) -> AreasInpu
         mhclg=raw_root / "mhclg" / snapshot,
         nisra=raw_root / "nisra" / snapshot,
         nisra_cars=raw_root / "nisra-provided" / NISRA_CARS_EDITION,
+        hasp=raw_root / "hasp-provided" / PPFI_EDITION,
         profiles=config_dir / "deep_profiles.json",
     )
 
@@ -168,6 +185,8 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
     nimdm_e = _entry(nisra_index, "nisra.nimdm2017_soa")
     cars_dz_path, cars_dz_e = load_provided(inputs.nisra_cars, "nisra.dz21_car_van_tc5")
     cars_lgd_path, cars_lgd_e = load_provided(inputs.nisra_cars, "nisra.lgd14_car_van_tc5")
+    ppfi_path, ppfi_e = load_provided(inputs.hasp, "hasp.ppfi_v21_lsoa")
+    ppfi = read_ppfi(ppfi_path)
 
     qa: dict = {"snapshot": snapshot, "manchester": {}, "belfast": {}}
 
@@ -215,6 +234,7 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
             "noCarHouseholds": ts045[c][TS045_NO_CAR],
             "centroid": _lonlat(bng_to_wgs, *centroids_bng[c]),
             "deprivation": {"rank": iod[c]["rank"], "decile": iod[c]["decile"]},
+            "ppfi": _ppfi_value(ppfi[c]),
         })
     man_sum = {"population": sum(a["population"] for a in man_areas),
                "households": sum(a["households"] for a in man_areas),
@@ -257,7 +277,7 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
         "code": c, "name": dz.names[i],
         "population": dz_pop[c], "households": dz_cars[c]["households"], "noCarHouseholds": dz_cars[c]["noCar"],
         "centroid": _lonlat(ig_to_wgs, *dz_centroids[c]),
-        "deprivation": None,
+        "deprivation": None, "ppfi": None,
     } for c, i in zip(bel_codes, bel_idx, strict=True)]
 
     # Belfast: SOAs (2011) with NIMDM 2017.
@@ -275,11 +295,37 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
     soa_areas = [{
         "code": r["code"], "name": r["name"], "urbanRural2015": r["urbanRural2015"],
         "rank": r["mdmRank"], "decile": nimdm_decile(r["mdmRank"]), "domainRanks": r["domainRanks"],
+        "ppfi": _ppfi_value(ppfi[r["code"]]),
     } for r in bel_soa]
 
     # How far the 2011 SOAs and the 2021 Data Zones of Belfast agree (they are different geographies).
     dz_union = shapely.union_all(dz_geoms)
     soa_union = shapely.union_all(soa_geoms)
+    # PPFI: which end is highest priority is not stated in the publisher's text; the data shows it.
+    # Rank 1 of the socio-demographic domain goes with the most deprived areas in both nations.
+    eng = [c for c, v in ppfi.items() if v["country"] == "E"]
+    ni_codes = [r["code"] for r in nimdm]
+    nimdm_rank = {r["code"]: r["mdmRank"] for r in nimdm}
+    qa["ppfi"] = {
+        "areasPerCountry": {c: sum(v["country"] == c for v in ppfi.values()) for c in ("E", "W", "S", "NI")},
+        "northernIrelandDomainsWithoutData": sorted(
+            d for d in ppfi[ni_codes[0]]["domains"] if all(ppfi[c]["domains"][d] is None for c in ni_codes)),
+        "orientation": {
+            "englandImdDecileVsSocioDemographicDecile": round(statistics.correlation(
+                [iod[c]["decile"] for c in eng], [ppfi[c]["domains"]["socio_demographic"]["decile"] for c in eng]), 3),
+            "northernIrelandNimdmRankVsSocioDemographicRank": round(statistics.correlation(
+                [nimdm_rank[c] for c in ni_codes], [ppfi[c]["domains"]["socio_demographic"]["rank"] for c in ni_codes]), 3),
+            "reading": "positive: rank 1 / decile 1 = highest priority, as for IoD and NIMDM (1 = most deprived)",
+        },
+        "manchesterDeciles": {str(d): sum(a["ppfi"]["decile"] == d for a in man_areas) for d in range(1, 11)},
+        "belfastSoaDeciles": {str(d): sum(a["ppfi"]["decile"] == d for a in soa_areas) for d in range(1, 11)},
+    }
+    if qa["ppfi"]["northernIrelandDomainsWithoutData"] != PPFI_NOT_IN_NI:
+        raise AreasBuildError(f"PPFI domains without NI data: {qa['ppfi']['northernIrelandDomainsWithoutData']}")
+    if min(qa["ppfi"]["orientation"][k] for k in ("englandImdDecileVsSocioDemographicDecile",
+                                                    "northernIrelandNimdmRankVsSocioDemographicRank")) < 0.5:
+        raise AreasBuildError(f"PPFI orientation is not what was verified: {qa['ppfi']['orientation']}")
+
     qa["belfast"] = {
         "dataZones": len(bel_codes), "dataZoneCentroidsOutsideTheirZone": 0,
         "sumOfDataZonePopulation": sum(a["population"] for a in bel_areas),
@@ -339,6 +385,8 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
                                 "measure": "Index of Multiple Deprivation", "geography": "lsoa21",
                                 "ranked": IOD_LSOAS, "within": "England", "decile": "published",
                                 "referencePeriod": "IoD 2025 (most indicators 2022/23)"},
+                "ppfi": {**PPFI_META, "geography": "lsoa21", "ranked": 33_755, "within": "England",
+                         "domainsWithoutData": []},
                 "areas": man_areas, "deprivationAreas": None,
                 "missing": [],
             },
@@ -350,6 +398,8 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
                                 "ranked": NIMDM_SOAS, "within": "Northern Ireland",
                                 "decile": "derived from the rank: 89 SOAs per decile",
                                 "referencePeriod": "NIMDM 2017 (most indicators 2015/16)"},
+                "ppfi": {**PPFI_META, "geography": "soa2011", "ranked": 890, "within": "Northern Ireland",
+                         "domainsWithoutData": PPFI_NOT_IN_NI},
                 "areas": bel_areas, "deprivationAreas": soa_areas,
                 "missing": [],
             },
@@ -384,35 +434,39 @@ def build_areas(snapshot: str, inputs: AreasInputs, out_root: Path, reports_dir:
                 "retrievedAt": max(bgc_entries[-1]["retrievedAt"], dz_e["retrievedAt"], soa_e["retrievedAt"]),
                 "notes": (f"LSOA BGC (20 m) coverage-simplified at {LSOA_TOLERANCE_M:.0f} m in EPSG:27700; NISRA Data "
                           f"Zones and SOAs (Irish Grid, EPSG:29902) coverage-simplified at {NI_TOLERANCE_M:.0f} m; "
-                          f"WGS84 to {COORD_DECIMALS} decimal places. SOAs (2011) carry NIMDM 2017 only."),
+                          f"WGS84 to {COORD_DECIMALS} decimal places. SOAs (2011) carry NIMDM 2017 and PPFI v2.1."),
             },
         }),
         ("small-area-indicators.json", indicators_text, {
             "id": "areas.small_area_indicators",
-            "title": "Small areas of the deep profiles: Census 2021 population, households, car availability; deprivation within each nation",
+            "title": ("Small areas of the deep profiles: Census 2021 population, households, car availability; deprivation "
+                      "and Priority Places for Food Index within each nation"),
             "role": "statistical", "format": "json", "schemaId": "small-area-indicators",
-            "sourceIds": ["S15", "S16", "S18", "S19", "S20"],
-            "referencePeriod": "Census 2021 (21 March 2021); IoD 2025; NIMDM 2017",
-            "coverage": "Manchester (LSOAs) and Belfast (Data Zones; deprivation on SOAs 2011)",
+            "sourceIds": ["S13", "S15", "S16", "S18", "S19", "S20"],
+            "referencePeriod": "Census 2021 (21 March 2021); IoD 2025; NIMDM 2017; PPFI v2.1 (July 2024)",
+            "coverage": "Manchester (LSOAs) and Belfast (Data Zones; deprivation and PPFI on SOAs 2011)",
             "provenance": "measured", "licence": "Open Government Licence v3.0",
-            "attribution": f"{OGL_ONS}. {MHCLG_SOURCE}. {NISRA_SOURCE}",
+            "attribution": f"{OGL_ONS}. {MHCLG_SOURCE}. {NISRA_SOURCE}. {PPFI_SOURCE}",
             "expectedCadence": "irregular",
             "retrieval": {
                 "method": "Derived offline from the committed raw files (fetch-reference)",
                 "source": (f"{ts001_e['file']} (sha256 {ts001_e['sha256'][:12]}…); {ts045_e['file']} (sha256 "
                            f"{ts045_e['sha256'][:12]}…); {iod_e['file']} (sha256 {iod_e['sha256'][:12]}…); "
                            f"{msa01_e['file']} (sha256 {msa01_e['sha256'][:12]}…); {cars_dz_e['file']} (provided, sha256 "
-                           f"{cars_dz_e['sha256'][:12]}…); {nimdm_e['file']} (sha256 "
+                           f"{cars_dz_e['sha256'][:12]}…); {ppfi_e['file']} (provided, sha256 {ppfi_e['sha256'][:12]}…); "
+                           f"{nimdm_e['file']} (sha256 "
                            f"{nimdm_e['sha256'][:12]}…); {dzc_e['file']} (sha256 {dzc_e['sha256'][:12]}…); LSOA "
                            f"centroids ({len(pwc_entries)} page, combined sha256 {combined(pwc_entries)}…); LSOA lookup "
                            f"({len(lookup_entries)} page, combined sha256 {combined(lookup_entries)}…)"),
                 "retrievedAt": max([e["retrievedAt"] for e in (ts001_e, ts045_e, iod_e, msa01_e, nimdm_e, dzc_e,
                                                                pwc_entries[-1], lookup_entries[-1])]
-                                   + [cars_dz_e["receivedAt"]]),
+                                   + [cars_dz_e["receivedAt"], ppfi_e["receivedAt"]]),
                 "notes": ("Values as published. NIMDM 2017 deciles are derived from the ranks (89 SOAs per decile); "
                           "IoD 2025 deciles are as published. Deprivation is ranked within each nation and is never "
                           "compared across nations. Northern Ireland households and car availability: NISRA's flexible "
-                          "table builder (HH_CAR_VAN_TC5 by Data Zone), downloaded by John."),
+                          "table builder (HH_CAR_VAN_TC5 by Data Zone), downloaded by John. PPFI v2.1 from Leeds HASP "
+                          "(downloaded by John): ranks and deciles within each nation as published; three domains have no "
+                          "Northern Ireland data."),
             },
         }),
     ]

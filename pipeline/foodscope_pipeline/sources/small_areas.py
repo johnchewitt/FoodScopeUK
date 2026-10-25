@@ -20,6 +20,8 @@ difference instead of guessing (docs/03-DATA-SOURCES.md):
   SOA2001 (the SOA code, e.g. 95AA01S1), SOA2001_name, MDM rank and the seven domain ranks.
 - NISRA Census 2021 households by car or van availability (HH_CAR_VAN_TC5, six categories), from
   the flexible table builder (provided by John): Data Zone CSV and council .xlsx.
+- Leeds HASP PPFI v2.1 [LSOA] (provided by John): the 19 columns of its data dictionary; 33,755
+  English and 1,917 Welsh LSOAs, 6,976 Scottish Data Zones and 890 Northern Ireland SOAs (2011).
 """
 
 from __future__ import annotations
@@ -313,5 +315,52 @@ def read_car_van_lgd(path: Path) -> dict[str, dict[str, int]]:
     return _car_van(rows, path.name)
 
 
-# PPFI v2.1 (provided by John from Leeds HASP) gets its reader once the data file is in hand; its
-# column names are in the data dictionary (docs/03-DATA-SOURCES.md, S13).
+# ---------------------------------------------------------------------------------------------
+# Priority Places for Food Index v2.1 (Leeds HASP, provided by John)
+
+PPFI_DOMAINS = (
+    "supermarket_proximity", "supermarket_accessibility", "ecommerce_access", "socio_demographic",
+    "nonsupermarket_proximity", "food_for_families", "fuel_poverty",
+)
+# The 19 columns of the HASP data dictionary (record 1.0.24), in file order.
+PPFI_COLUMNS = (
+    ["lsoa21cd"] + [f"domain_{d}" for d in PPFI_DOMAINS] + ["country", "country_denominator", "combined"]
+    + [f"pp_dec_domain_{d}" for d in PPFI_DOMAINS] + ["pp_dec_combined"]
+)
+PPFI_COUNTRIES = {"E": 33_755, "W": 1_917, "S": 6_976, "NI": 890}
+
+
+def _rank(value: str) -> int | None:
+    return int(value) if value.strip() else None
+
+
+def read_ppfi(path: Path) -> dict[str, dict]:
+    """Area code → {country, rank, decile, domains: {domain: {rank, decile} | None}} for every area.
+
+    Ranks are within each country (1 = highest priority; see docs/03-DATA-SOURCES.md, S13). A domain
+    with no data for an area (three domains in Northern Ireland) is None, never zero.
+    """
+    with path.open(encoding="utf-8-sig", newline="") as fh:
+        reader = csv.DictReader(fh)
+        if reader.fieldnames != PPFI_COLUMNS:
+            raise SmallAreaInputError(f"{path.name}: columns {reader.fieldnames}, expected {PPFI_COLUMNS}")
+        out: dict[str, dict] = {}
+        for r in reader:
+            country = r["country"]
+            if PPFI_COUNTRIES.get(country) != int(r["country_denominator"]):
+                raise SmallAreaInputError(f"{path.name}: {r['lsoa21cd']} country {country!r} / {r['country_denominator']}")
+            domains = {}
+            for d in PPFI_DOMAINS:
+                rank, decile = _rank(r[f"domain_{d}"]), _rank(r[f"pp_dec_domain_{d}"])
+                if (rank is None) != (decile is None):
+                    raise SmallAreaInputError(f"{path.name}: {r['lsoa21cd']} {d}: rank and decile disagree on missing")
+                domains[d] = None if rank is None else {"rank": rank, "decile": decile}
+            out[r["lsoa21cd"]] = {"country": country, "rank": int(r["combined"]),
+                                  "decile": int(r["pp_dec_combined"]), "domains": domains}
+    counts = {c: sum(v["country"] == c for v in out.values()) for c in PPFI_COUNTRIES}
+    if counts != PPFI_COUNTRIES:
+        raise SmallAreaInputError(f"{path.name}: areas per country {counts}, expected {PPFI_COUNTRIES}")
+    for c, n in PPFI_COUNTRIES.items():
+        if sorted(v["rank"] for v in out.values() if v["country"] == c) != list(range(1, n + 1)):
+            raise SmallAreaInputError(f"{path.name}: combined ranks in {c} are not 1…{n}")
+    return out
