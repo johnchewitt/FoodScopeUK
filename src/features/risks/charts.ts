@@ -717,7 +717,7 @@ export function urbanRuralOption(groups: { nation: string; groups: GroupSummary[
     rows.map(() => RISK_DARK[3]!),
     {
       format: (v) => formatShare(v),
-      max: 0.6,
+      max: Math.max(0.6, Math.ceil(Math.max(...rows.map((r) => r.g.median ?? 0)) * 10) / 10),
       markLine: { value: 0.2, label: "20 %" },
       tooltip: (i) =>
         `${rows[i]!.label}: median council ${formatShare(rows[i]!.g.median)} · all areas pooled ${formatShare(rows[i]!.g.pooled)} · ${rows[i]!.g.councils} councils`,

@@ -310,7 +310,11 @@ export function buildLogisticsModel(
     const abroad = (record: Record<string, (number | null)[]>) =>
       Object.entries(record)
         .filter(([region]) => region !== regions.domestic && region !== regions.unspecified)
-        .map(([region, values]) => ({ region, value: values[last] ?? 0 }))
+        // A year the port did not report is left out, never counted as 0 t.
+        .flatMap(([region, values]) => {
+          const value = values[last];
+          return value === null || value === undefined ? [] : [{ region, value }];
+        })
         .sort((a, b) => b.value - a.value || a.region.localeCompare(b.region));
     return {
       locode: p.locode,
@@ -383,9 +387,14 @@ export function buildLogisticsModel(
   };
 }
 
-/** "+4.2 % on 2024" style detail for a port value. */
-export function changeText(change: number | null, previousYear: number): string {
-  return change === null ? `no ${previousYear} figure` : `${formatChange(change)} on ${previousYear}`;
+/**
+ * "+4.2 % on 2024" style detail for a port value (thousand tonnes). A published zero is a value,
+ * not a gap: a change from 0 t has no percentage, so it is described in words.
+ */
+export function changeText(latest: number | null, previous: number | null, previousYear: number): string {
+  if (latest === null || previous === null) return `no ${previousYear} figure`;
+  if (previous === 0) return latest === 0 ? `also 0 t in ${previousYear}` : `up from 0 t in ${previousYear}`;
+  return `${formatChange((latest - previous) / previous)} on ${previousYear}`;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -406,8 +415,10 @@ export interface AccessRiskModel {
   nation: Nation;
   /** That nation's councils with data, highest share first. */
   ranking: CouncilRiskRow[];
-  /** Pooled share of the nation's small areas in deciles 1–2 for the measure (about 20 %). */
+  /** Pooled share of the ranking nation's small areas in deciles 1–2 for the measure (about 20 %). */
   nationShare: number | null;
+  /** The same for every nation (the baseline for each council's own nation). */
+  nationShares: Map<string, number | null>;
   /** Councils of the nation without data for the measure (Northern Ireland: three domains). */
   measureMissing: boolean;
   selected: CouncilRiskRow | null;
@@ -451,8 +462,14 @@ export function buildAccessRiskModel(
   const ranking = inNation
     .filter((r) => r.share !== null)
     .sort((a, b) => b.share! - a.share! || a.name.localeCompare(b.name));
-  const areas = inNation.reduce((s, r) => s + (r.share === null ? 0 : r.areas), 0);
-  const prio = inNation.reduce((s, r) => s + (r.priority ?? 0), 0);
+  const pooled = (list: readonly CouncilRiskRow[]) => {
+    const areas = list.reduce((s, r) => s + (r.share === null ? 0 : r.areas), 0);
+    const prio = list.reduce((s, r) => s + (r.share === null ? 0 : (r.priority ?? 0)), 0);
+    return areas > 0 ? prio / areas : null;
+  };
+  const nationShares = new Map(
+    [...new Set(rows.map((r) => r.nation))].map((n) => [n, pooled(rows.filter((r) => r.nation === n))]),
+  );
 
   const classes: string[][] = Array.from({ length: 6 }, () => []);
   const noData: string[] = [];
@@ -488,7 +505,8 @@ export function buildAccessRiskModel(
     byCode,
     nation,
     ranking,
-    nationShare: areas > 0 ? prio / areas : null,
+    nationShare: nationShares.get(nation) ?? null,
+    nationShares,
     measureMissing: inNation.length > 0 && inNation.every((r) => r.share === null),
     selected,
     selectedDomains,

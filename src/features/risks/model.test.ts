@@ -23,6 +23,7 @@ import {
   buildAccessRiskModel,
   buildLogisticsModel,
   buildSupplyModel,
+  changeText,
   type LogisticsSources,
   type SupplyBasket,
 } from "./model";
@@ -196,6 +197,17 @@ describe("international supply exposure (RK-02)", () => {
 });
 
 describe("logistics and infrastructure (RK-03)", () => {
+  it("describes a change from a published zero in words, never as a missing figure", () => {
+    expect(changeText(12.2, 0, 2024)).toBe("up from 0 t in 2024");
+    expect(changeText(0, 0, 2024)).toBe("also 0 t in 2024");
+    expect(changeText(null, 5, 2024)).toBe("no 2024 figure");
+    expect(changeText(5, null, 2024)).toBe("no 2024 figure");
+    expect(changeText(97.762, 100, 2024)).toBe("−2.2 % on 2024");
+    // Dover had no agricultural products inwards in 2024 or 2025.
+    const dover = logistics({ measure: "agricultural", port: "GBDVR" }).selected!;
+    expect([dover.previous, dover.latest]).toEqual([0, 0]);
+  });
+
   it("totals and ranks the major ports as in DfT PORT0499 (2025, inward from abroad)", () => {
     const l = logistics();
     expect(l.latestYear).toBe(2025);
@@ -311,6 +323,17 @@ describe("community food access (RK-04)", () => {
     expect(a.choropleth.noData.sort()).toEqual(ni.map((r) => r.code).sort());
   });
 
+  it("explains a council against its own nation, whatever nation is ranked", () => {
+    const a = access({ lad: "E06000001", rankNation: "Scotland" }); // Hartlepool
+    expect(a.nation).toBe("Scotland");
+    expect(a.nationShares.get("England")).toBeCloseTo(6751 / 33755, 12);
+    const e = explainCouncil(a.selected!, a);
+    const base = e.observed.find((i) => i.id === "risk.access.nation_share");
+    expect(base?.label).toBe("England: small areas in deciles 1–2");
+    expect(base?.value).toBeCloseTo(6751 / 33755, 12);
+    expect(e.interpretation[0]).toMatch(/times the nation's share/);
+  });
+
   it("puts every council in exactly one class or no data", () => {
     const a = access();
     const all = [...a.choropleth.classes.flat(), ...a.choropleth.noData];
@@ -383,7 +406,7 @@ describe("explanations", () => {
     expect(network.observed.find((i) => i.id === "risk.ports.short_straits")?.value).toBeCloseTo(0.179, 3);
     const roads = explainRoads(l);
     checkExplanation(roads);
-    expect(roads.observed[0]?.referencePeriod).toBe("Year to 2023-12");
+    expect(roads.observed[0]?.referencePeriod).toBe("Year to Dec 2023");
     expect(roads.observed[0]?.value).toBe(10.5);
   });
 

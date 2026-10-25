@@ -85,7 +85,17 @@ function regionRenderer(m: RiskMapModel, style: MapStyle): UniqueValueRenderer {
             }),
         )
       : [];
-  return new UniqueValueRenderer({ field: "id", defaultSymbol: outlineOnly, uniqueValueInfos: infos });
+  // With a measure chosen, a region without a value is hatched as no data, never left blank (P12).
+  const noData = new SimpleFillSymbol({
+    style: "backward-diagonal",
+    color: rgba(c.noData, 0.9),
+    outline: { color: rgba(c.separator, c.separatorAlpha * 0.8), width: 0.6 },
+  });
+  return new UniqueValueRenderer({
+    field: "id",
+    defaultSymbol: regions?.measure ? noData : outlineOnly,
+    uniqueValueInfos: infos,
+  });
 }
 
 function roadRenderer(style: MapStyle): UniqueValueRenderer {

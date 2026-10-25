@@ -49,6 +49,6 @@ export const ACCESS_KPI_LABELS = [
   "Priority share (selected council)",
   "Rank within nation",
   "Nation's share",
-  "Councils at 40 % or more",
+  "Councils at 40 % or more (ranking nation)",
   "Data availability",
 ];

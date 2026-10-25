@@ -1,14 +1,18 @@
 import { useQueries } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
 import type { FarmMeasure } from "@/analysis/risk";
-import { useAccess } from "@/features/access/useAccess";
 import {
   resolveCommodity,
   useCountryPoints,
   useTradeIndex,
   useUkAnchor,
 } from "@/features/origins/useOrigins";
-import { CONTEXT_COUNCILS_DATASET_ID, CONTEXT_PRODUCTION_DATASET_ID, RISK_DATASET_IDS } from "@/map/layerIds";
+import {
+  CONTEXT_COUNCILS_DATASET_ID,
+  CONTEXT_PRODUCTION_DATASET_ID,
+  LOCAL_BOUNDARIES_DATASET_ID,
+  RISK_DATASET_IDS,
+} from "@/map/layerIds";
 import { datasetUrl, familySnapshot, findDataset, useManifest } from "@/services/data/queries";
 import { useValidatedDataset, validatedDatasetQuery } from "@/services/data/useDataset";
 import { validateTradeSnapshot } from "@/services/data/validate";
@@ -162,7 +166,8 @@ export function useRiskLogistics() {
 
 /**
  * Community food access (RK-04): the Priority Places index by council, ranked within each nation,
- * with urban/rural context. The council boundaries and the access layer come from UK Food Access.
+ * with urban/rural context. The map draws the council boundaries in the Access layers' risk mode;
+ * it needs only the boundaries from the manifest, never the stores file (no stores are drawn).
  */
 export function useRiskAccess() {
   const measure = useAppStore((s) => s.ppfiMeasure);
@@ -171,7 +176,7 @@ export function useRiskAccess() {
   const manifest = useManifest();
   const doc = useValidatedDataset(RISK_DATASET_IDS.councilPpfi, validateCouncilPpfi);
   const context = useValidatedDataset(CONTEXT_COUNCILS_DATASET_ID, validateCouncilContext);
-  const a = useAccess();
+  const boundaries = findDataset(manifest.data, LOCAL_BOUNDARIES_DATASET_ID);
 
   const model = useMemo<AccessRiskModel | null>(
     () =>
@@ -180,29 +185,34 @@ export function useRiskAccess() {
   );
   const map = useMemo<AccessMapModel | null>(
     () =>
-      a.map && model
+      boundaries && model
         ? {
-            ...a.map,
             mode: "risk",
             compareCouncils: [],
             grocers: null,
+            storesUrl: "",
             storeWhere: "1=0",
+            storesCopyright: "",
             frame: { key: "risk-access", bbox: UK_FULL_EXTENT },
+            councilsUrl: datasetUrl(boundaries),
+            councilsCopyright: boundaries.attribution,
             choropleth: model.choropleth,
             selectedStore: null,
             selectedCouncil: model.selected?.code ?? null,
             proximity: null,
           }
         : null,
-    [a.map, model],
+    [boundaries, model],
   );
-  const error = doc.error ?? (a.status === "error" ? a.error : null);
+  const missingBoundaries = manifest.isSuccess && !boundaries;
+  const error = doc.error ?? (manifest.isError ? manifest.error : null);
   return {
-    status: error ? ("error" as const) : model && map ? ("ready" as const) : ("loading" as const),
+    status: error ? ("error" as const) : model ? ("ready" as const) : ("loading" as const),
     error,
     model,
     map,
-    access: a,
+    /** The council map cannot be drawn (boundaries missing from the manifest); the panels still work. */
+    mapError: missingBoundaries,
     contextError: context.error,
     sources: {
       ppfi: findDataset(manifest.data, RISK_DATASET_IDS.councilPpfi),

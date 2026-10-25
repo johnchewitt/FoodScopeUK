@@ -312,11 +312,12 @@ export function explainCouncil(c: CouncilRiskRow, a: AccessRiskModel): Explanati
   const observed: Indicator<number | string>[] = [
     councilShareIndicator(c, measure),
     councilRankIndicator(c),
-    nationShareIndicator(c.nation, a.nation === c.nation ? a.nationShare : null, measure),
+    nationShareIndicator(c.nation, a.nationShares.get(c.nation) ?? null, measure),
   ];
   const interpretation: string[] = [];
   if (c.share !== null) {
-    const ratio = a.nation === c.nation && a.nationShare ? c.share / a.nationShare : null;
+    const base = a.nationShares.get(c.nation) ?? null;
+    const ratio = base ? c.share / base : null;
     interpretation.push(
       `${formatShare(c.share)} of ${c.name}'s small areas are in ${c.nation}'s highest-priority fifth for ${measure.toLowerCase()}${ratio !== null ? ` — ${ratio.toFixed(1)} times the nation's share` : ""}.`,
     );

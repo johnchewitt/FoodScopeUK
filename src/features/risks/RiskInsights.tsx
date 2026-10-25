@@ -1,6 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
-import { formatShare, formatTonnes } from "@/analysis/format";
+import { formatGbp, formatShare, formatTonnes } from "@/analysis/format";
 import { FARM_MEASURES, FARM_UNITS, STRESS_LABELS, type FarmMeasure } from "@/analysis/risk";
 import { formatMonth, SERIES_BREAKS } from "@/analysis/trade";
 import { ChartFrame } from "@/components/charts/ChartFrame";
@@ -123,7 +123,7 @@ function SupplyInsights() {
   if (!model || !explanation) return <Loading label="Loading the supply exposure" />;
   const o = model.origins;
   const measureLabel = o.measure === "mass" ? "net mass" : "value";
-  const fmt = (v: number) => (o.measure === "mass" ? formatTonnes(v) : `£${(v / 1e6).toFixed(0)}m`);
+  const fmt = (v: number) => (o.measure === "mass" ? formatTonnes(v) : formatGbp(v));
   const ranking = rankingOption(model.ranking, o.commodity.id);
   const heat = monthlyHeatmapOption(model.monthly);
   const trend = trendOption(model.annual, measureLabel, fmt);
@@ -171,7 +171,7 @@ function SupplyInsights() {
         <ul className="map-legend__classes" aria-label="HHI classes">
           {HHI_CLASS_LABELS.map((l, i) => (
             <li key={l}>
-              <span className="swatch" data-risk={i} aria-hidden="true" />
+              <span className="swatch" data-risk-panel={i} aria-hidden="true" />
               {l}
             </li>
           ))}
@@ -251,7 +251,9 @@ function SupplyInsights() {
                         <>
                           <span
                             className="swatch swatch--inline"
-                            data-risk={["none", "low", "medium", "high", "critical"].indexOf(s.class) + 1}
+                            data-risk-panel={
+                              ["none", "low", "medium", "high", "critical"].indexOf(s.class) + 1
+                            }
                             aria-hidden="true"
                           />{" "}
                           {STRESS_LABELS[s.class].split(" (")[0]} · {formatShare(s.value / 100)} ({s.year})
@@ -430,8 +432,8 @@ function LogisticsInsights() {
             <Row label={PORT_MEASURE_LABELS[model.measure].short} indicator={portIndicator(sel, model)} />
           </dl>
           <p className="control-hint">
-            {changeText(sel.change, model.latestYear - 1)} · {formatShare(sel.shareOfTotal)} of all major
-            ports · located by {sel.location.source === "dft" ? "DfT" : "EMODnet"}
+            {changeText(sel.latest, sel.previous, model.latestYear - 1)} · {formatShare(sel.shareOfTotal)} of
+            all major ports · located by {sel.location.source === "dft" ? "DfT" : "EMODnet"}
             {sel.foodEntry.length ? ` · UKFSR food entry point (${sel.foodEntry.join(", ")})` : ""}
           </p>
           <ChartFrame
@@ -522,7 +524,8 @@ function LogisticsInsights() {
           onEvents={{
             click: (p) => {
               const g = model.entry.portOfEntry.groups[p.dataIndex ?? -1];
-              if (g?.locodes[0]) selectPort(g.locodes[0]);
+              // Select only (never toggle off): two UKFSR groups share London's port.
+              if (g?.locodes[0] && g.locodes[0] !== model.selected?.locode) selectPort(g.locodes[0]);
             },
           }}
         />
@@ -593,7 +596,9 @@ function LogisticsInsights() {
                     <tr key={r.id}>
                       <th scope="row">{r.name}</th>
                       <td className="num">
-                        {farm && r.density !== null ? (
+                        {farm && r.density === null ? (
+                          "No data"
+                        ) : farm && r.density !== null ? (
                           <>
                             <span
                               className="swatch swatch--inline"
@@ -604,8 +609,10 @@ function LogisticsInsights() {
                               ? formatShare(r.density / 100)
                               : Math.round(r.density).toLocaleString("en-GB")}
                           </>
+                        ) : r.values.wheat === undefined ? (
+                          "No data"
                         ) : (
-                          (r.values.wheat ?? 0).toLocaleString("en-GB")
+                          r.values.wheat.toLocaleString("en-GB")
                         )}
                       </td>
                     </tr>
@@ -635,7 +642,7 @@ function LogisticsInsights() {
 // Community access
 
 function AccessInsights() {
-  const { status, error, model, contextError } = useRiskAccess();
+  const { status, error, model, contextError, mapError } = useRiskAccess();
   const setLad = useAppStore((s) => s.setLad);
   const setModule = useAppStore((s) => s.setModule);
   const explanation = useMemo(
@@ -651,10 +658,20 @@ function AccessInsights() {
   const domains = sel
     ? domainsOption(model.selectedDomains.map((d) => ({ label: d.label, share: d.share })))
     : null;
-  const urban = urbanRuralOption(model.urbanRural);
+  // One nation at a time: the shares are set within each nation and are never compared across them.
+  const urbanNation = model.urbanRural.find((u) => u.nation === model.nation) ?? null;
+  const urban = urbanNation ? urbanRuralOption([urbanNation]) : null;
 
   return (
     <>
+      {mapError && (
+        <section className="panel-section">
+          <Notice tone="warn">
+            The council boundaries are missing from the data index, so the map cannot be drawn; the figures
+            below are unaffected.
+          </Notice>
+        </section>
+      )}
       {explanation ? (
         <ExplainPanel explanation={explanation} />
       ) : (
@@ -728,10 +745,10 @@ function AccessInsights() {
           Highest share first; the dashed line is the nation as a whole (about 20 % by construction). Ranks
           are within {model.nation} only.
         </p>
-        <ul className="map-legend__classes" aria-label="Map classes">
+        <ul className="map-legend__classes" aria-label="Classes">
           {PRIORITY_CLASS_LABELS.map((l, i) => (
             <li key={l}>
-              <span className="swatch" data-risk={i} aria-hidden="true" />
+              <span className="swatch" data-risk-panel={i} aria-hidden="true" />
               {l}
             </li>
           ))}
@@ -741,17 +758,22 @@ function AccessInsights() {
       <Section id="risk-urban-rural" title="Urban and rural councils" open={false}>
         {contextError ? (
           <Notice tone="warn">The urban/rural classification could not be loaded.</Notice>
-        ) : (
+        ) : urbanNation ? (
           <ChartFrame
-            title="Median council share, by urban/rural flag"
+            title={`${model.nation}: median council share, by urban/rural flag`}
             option={urban?.option ?? null}
             description={urban?.description}
-            height={130}
+            height={110}
           />
+        ) : (
+          <p className="unavailable">
+            <strong>Data unavailable:</strong> {model.nation} has no council-level urban/rural class in this
+            build.
+          </p>
         )}
         <p className="control-hint">
-          ONS 2021 Rural Urban Classification of councils, England and Wales separately (never pooled).
-          Scotland and Northern Ireland have no council-level class in this build.
+          ONS 2021 Rural Urban Classification of councils (England and Wales), shown for the ranking nation
+          only: the shares are set within each nation, so nations are never compared.
         </p>
       </Section>
 

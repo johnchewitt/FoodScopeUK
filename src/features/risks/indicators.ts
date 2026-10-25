@@ -4,6 +4,7 @@
  * "national_context" (P6); nothing here is a score.
  */
 import { formatShare } from "@/analysis/format";
+import { formatMonth } from "@/analysis/trade";
 import { FARM_UNITS, type FarmMeasure, type StressInfo } from "@/analysis/risk";
 import type { Indicator } from "@/types/indicator";
 import {
@@ -106,7 +107,7 @@ export function peakExposureIndicator(m: SupplyModel): Indicator<number> | null 
     unit: "share",
     provenance: "derived",
     sourceIds: ["S01"],
-    referencePeriod: d.peak ? d.peak.month : m.origins.periodText,
+    referencePeriod: d.peak ? formatMonth(d.peak.month) : m.origins.periodText,
     coverage: "UK recorded imports allocated to partner countries",
     method: "The partner's largest share of a single month's recorded imports in the period.",
     scope: "national_context",
@@ -204,7 +205,7 @@ export function srnDelayIndicator(l: LogisticsModel): Indicator<number> {
     unit: "seconds per vehicle per mile",
     provenance: "official_estimate",
     sourceIds: ["S03"],
-    referencePeriod: i >= 0 ? `Year to ${s.months[i]}` : "Not available",
+    referencePeriod: i >= 0 ? `Year to ${formatMonth(s.months[i]!)}` : "Not available",
     coverage: s.coverage,
     method:
       "UK Food Security Report 2024, theme 3 (chart 3_2_1a): average delay, 12 months ending in the month shown, as published. All traffic, not food freight.",

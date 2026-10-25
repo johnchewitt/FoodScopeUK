@@ -441,7 +441,9 @@ export function councilPriority(
       code: c.code,
       name: c.name,
       nation: c.nation,
-      areas: c.areas,
+      // The measure's own denominator where it has data (equal to the council's areas in the
+      // published file, but the schema does not enforce it), so pooled shares stay consistent.
+      areas: v ? v.areas : c.areas,
       priority: v ? v.priority : null,
       share: v && v.areas > 0 ? v.priority / v.areas : null,
     };

@@ -81,7 +81,6 @@ function LogisticsKpis() {
   const total = portsTotalIndicator(model);
   const prevTotal = model.totals[model.totals.length - 2] ?? null;
   const lastTotal = model.totals[model.totals.length - 1] ?? null;
-  const change = prevTotal && lastTotal !== null ? (lastTotal - prevTotal) / prevTotal : null;
   const sel = model.selected;
   return (
     <>
@@ -91,8 +90,8 @@ function LogisticsKpis() {
         indicator={sel ? portIndicator(sel, model) : total}
         detail={
           sel
-            ? `${changeText(sel.change, model.latestYear - 1)} · ${formatShare(sel.shareOfTotal)} of all major ports`
-            : `${PORT_MEASURE_LABELS[model.measure].short}, ${model.ports.length} ports · ${changeText(change, model.latestYear - 1)}`
+            ? `${changeText(sel.latest, sel.previous, model.latestYear - 1)} · ${formatShare(sel.shareOfTotal)} of all major ports`
+            : `${PORT_MEASURE_LABELS[model.measure].short}, ${model.ports.length} ports · ${changeText(lastTotal, prevTotal, model.latestYear - 1)}`
         }
       />
       <KpiCard
@@ -140,7 +139,11 @@ function AccessKpis() {
   if (!model) return <Loading labels={ACCESS_KPI_LABELS} error={error} />;
   const label = PPFI_LABELS[model.measure];
   const sel = model.selected;
-  const above = model.rows.filter((r) => r.share !== null && r.share >= 0.4);
+  // The baseline is the selected council's own nation; otherwise the ranking nation.
+  const baseNation = sel ? sel.nation : model.nation;
+  const baseShare = model.nationShares.get(baseNation) ?? null;
+  const inNation = model.rows.filter((r) => r.nation === model.nation && r.share !== null);
+  const above = inNation.filter((r) => r.share! >= 0.4);
   const nationsWithData = new Set(model.rows.filter((r) => r.share !== null).map((r) => r.nation)).size;
   return (
     <>
@@ -177,29 +180,31 @@ function AccessKpis() {
         <KpiCard label="Rank within nation" state="empty" emptyText="Select a council" />
       )}
       <KpiCard
-        label={`${model.nation}'s share`}
-        state={model.nationShare === null ? "empty" : "ready"}
-        indicator={nationShareIndicator(model.nation, model.nationShare, label)}
-        detail={`All small areas of ${model.nation} · the baseline for its councils`}
+        label={`${baseNation}'s share`}
+        state={baseShare === null ? "empty" : "ready"}
+        indicator={nationShareIndicator(baseNation, baseShare, label)}
+        detail={`All small areas of ${baseNation} · the baseline for its councils`}
         emptyText="No data for this measure"
       />
       <KpiCard
-        label="Councils at 40 % or more"
-        state="ready"
+        label={`Councils in ${model.nation} at 40 % or more`}
+        state={inNation.length === 0 ? "empty" : "ready"}
         indicator={{
           id: "risk.access.councils_above",
-          label: "Councils with 40 % or more of their small areas in deciles 1–2",
-          value: above.length,
+          label: `Councils in ${model.nation} with 40 % or more of their small areas in deciles 1–2`,
+          value: inNation.length === 0 ? null : above.length,
           unit: "councils",
           provenance: "derived",
           sourceIds: ["S13"],
           referencePeriod: "Priority Places for Food Index v2.1",
-          coverage: "UK councils with data for the measure",
-          method:
-            "Councils whose share of small areas in their own nation's deciles 1–2 is at least 40 %, twice the about 20 % of each nation by construction. Counted per nation (shown in the ranking), never compared across nations.",
+          coverage: `Councils in ${model.nation} with data for the measure`,
+          method: `Councils of ${model.nation} whose share of small areas in ${model.nation}'s deciles 1–2 is at least 40 %, twice the about 20 % of the nation's areas in those deciles by construction. Counted within one nation only (the ranking nation), never across nations.`,
           scope: "local",
+          comparabilityGroup: model.nation,
+          ...(inNation.length === 0 ? { missingReason: "not_covered" as const } : {}),
         }}
-        detail={`${label} · ${[...new Set(above.map((r) => r.nation))].map((n) => `${n} ${above.filter((r) => r.nation === n).length}`).join(", ") || "none"}`}
+        detail={`of ${inNation.length} councils · ${label}`}
+        emptyText="No data for this measure"
       />
       <KpiCard
         label="Data availability"

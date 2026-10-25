@@ -152,7 +152,8 @@ test.describe("UK Food Resilience — Risk Explorer", () => {
     await expect(kpis(page).getByText("13.8 %")).toBeVisible({ timeout: 30_000 });
     await expect(kpis(page).getByText("18 of 32")).toBeVisible();
     await expect.poll(() => viewData(page, "accessCouncils"), { timeout: 20_000 }).toBe("fills");
-    expect(await viewData(page, "accessStoreWhere")).toBe("1=0");
+    // No stores in this view: the stores layer is never created or shown.
+    expect(await visibleLayers(page)).not.toContain("access-stores");
     await settled(page);
     // Highland: council hit tests on the councils GeoJSON layer are slow under SwiftShader.
     const highland = await toScreen(page, -4.9, 57.4);
@@ -160,6 +161,12 @@ test.describe("UK Food Resilience — Risk Explorer", () => {
     await expect(page).toHaveURL(/lad=S12000017/, { timeout: 20_000 });
     await expect(kpis(page).getByText("20.8 %")).toBeVisible({ timeout: 10_000 }); // 65 of 312
     await expect(insights(page).getByText("Highland: priority places for food")).toBeVisible();
+    // At local scale the councils stay filled (they are this view's subject; UK Food Access outlines them).
+    await page
+      .locator("arcgis-map")
+      .evaluate((el: HTMLArcgisMapElement) => el.view.goTo({ zoom: 12.5 }, { animate: false }));
+    await settled(page);
+    await expect.poll(() => viewData(page, "accessCouncils")).toBe("fills");
     expect(errors, `console errors:\n${errors.join("\n")}`).toEqual([]);
     await noSeriousViolations(page);
   });

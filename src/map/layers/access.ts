@@ -203,7 +203,9 @@ function councilRenderer(
       mode: "outlines",
     };
   }
-  const fills = !local && m.choropleth !== null;
+  // UK Food Access outlines councils at local scale (stores take over); the Risk Explorer keeps its
+  // fills, because the councils are its subject and no stores are drawn.
+  const fills = (!local || m.mode === "risk") && m.choropleth !== null;
   if (fills) {
     const separator = { color: rgba(c.separator, c.separatorAlpha * 0.7), width: 0.4 };
     const ramp = m.choropleth!.ramp === "risk" ? c.risk : c.seq;
@@ -329,6 +331,7 @@ export class AccessLayersController implements LayerController {
   private lastHover: string | null = null;
   private visible = false;
   private profile = false;
+  private risk = false;
   private areaClassOf: ProfileMapModel["classOf"] | null = null;
   private areaClassVersion = 0;
   private picking = false;
@@ -372,6 +375,7 @@ export class AccessLayersController implements LayerController {
         (state.module === "profiles" && m.mode === "profile") ||
         (state.module === "risks" && state.riskView === "access" && m.mode === "risk"));
     this.profile = visible && m?.mode === "profile";
+    this.risk = visible && m?.mode === "risk";
     this.reducedMotion = selectReducedMotion(state);
     // Point picking belongs to UK Food Access; a pick left open there never captures profile clicks.
     this.picking = visible && m?.mode === "access" && state.proximityPicking;
@@ -391,7 +395,8 @@ export class AccessLayersController implements LayerController {
     }
     this.local = selectLocalScale(state);
     if (m.councilsUrl !== this.councilsUrl || !this.councils) this.createCouncils(m);
-    if (m.storesUrl !== this.storesUrl || !this.stores) this.createStores(m);
+    // The Risk Explorer's council view has no stores: never download or create them for it.
+    if (m.mode !== "risk" && (m.storesUrl !== this.storesUrl || !this.stores)) this.createStores(m);
     if (!this.overlay) {
       this.overlay = new GraphicsLayer({ id: ACCESS_OVERLAY_LAYER_ID, listMode: "hide" });
       this.view.map?.add(this.overlay);
@@ -662,8 +667,9 @@ export class AccessLayersController implements LayerController {
     if (this.stores?.visible) layers.push(this.stores);
     if (this.grocers?.visible) layers.push(this.grocers);
     if (this.areas?.visible && this.areaModel) layers.push(this.areas);
-    // Profiles keep councils clickable at local scale (to move to a neighbour); UK Food Access does not.
-    if (this.councils && (!this.local || this.profile)) layers.push(this.councils);
+    // Profiles and the Risk Explorer keep councils clickable at local scale (their subject is the
+    // council); UK Food Access does not (its stores are).
+    if (this.councils && (!this.local || this.profile || this.risk)) layers.push(this.councils);
     return layers;
   }
 

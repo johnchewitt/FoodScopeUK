@@ -1664,6 +1664,25 @@
 .swatch[data-risk="5"] {
   background: var(--fs-map-risk-5);
 }
+/* Panel legends of the risk charts: the charts always use the dark-panel ramp (RISK_DARK), whatever the basemap. */
+.swatch[data-risk-panel="0"] {
+  background: var(--fs-risk-0);
+}
+.swatch[data-risk-panel="1"] {
+  background: var(--fs-risk-1);
+}
+.swatch[data-risk-panel="2"] {
+  background: var(--fs-risk-2);
+}
+.swatch[data-risk-panel="3"] {
+  background: var(--fs-risk-3);
+}
+.swatch[data-risk-panel="4"] {
+  background: var(--fs-risk-4);
+}
+.swatch[data-risk-panel="5"] {
+  background: var(--fs-risk-5);
+}
 .swatch--none {
   border-style: dashed;
   border-color: var(--fs-text-muted);
