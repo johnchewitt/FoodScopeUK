@@ -194,6 +194,11 @@ export interface AccessMapModel {
   storeWhere: string;
   /** Attribution for the store layer (from the manifest; never hidden). */
   storesCopyright: string;
+  /**
+   * Where the map frames UK Food Access when it opens: the box around every mapped store (all
+   * layers, so filters never move the camera). Fitted once per visit to the module.
+   */
+  frame: { key: string; bbox: [number, number, number, number] } | null;
   /** Council boundaries (display edition) from the manifest. */
   councilsUrl: string;
   councilsCopyright: string;

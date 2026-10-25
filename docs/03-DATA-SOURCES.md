@@ -52,7 +52,7 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S22 | Journey time statistics | DfT | 🔴 (England only) | Access context | R2 |
 | S23 | Port freight annual statistics 2025 | DfT | 🟡 | Risks, Scenario B | R2 |
 | S24 | Natural Earth Admin 0 countries (v5.1.2) | Natural Earth | ✅ (1:110m outlines, 1:50m label points, ISO crosswalk) | Map reference layer; Origins map | R1 |
-| S25 | Basemap styles service: dark grey, light grey, imagery | Esri (ArcGIS Location Platform) | ✅ dark grey (live site); 🟡 light grey and imagery (Esri style list, live check pending) | Map | R1 |
+| S25 | Basemap styles service: dark grey, light grey, imagery | Esri (ArcGIS Location Platform) | ✅ all three styles (live site, 24 Oct 2026) | Map | R1 |
 | S26 | ArcGIS Living Atlas items | Esri and contributors | 🔴 per item | Optional reference layers | R2 |
 | S27 | Consumer price inflation — food (CPIH) | ONS (via Defra pocketbook CSV) | 🟡 | National context | R1 |
 | S28 | HMRC port reference and port-level OTS detail | HMRC | 🟡 | Risks, Scenario B | R2 |
@@ -426,11 +426,11 @@ ArcGIS dark grey style (`arcgis/dark-gray`) through the Basemap styles service, 
   - `webmaps/<id>`: a web map whose `baseMap` holds the layers.
 
   The E2E stub (`tests/e2e/support/basemapStub.ts`) imitates these two responses.
-- **Still to verify on the live site** (stage 4 report):
-  - each style loads with the site's key;
-  - attribution changes with the style;
-  - light grey's land colour (the colour set was validated against #d6d6d6–#f0f0f0);
-  - basemap request usage under the key (risk R8).
+- **Verified on the live site, 24 Oct 2026** (stage 4 report, "Deployment and live checks"):
+  - each style loads with the site's key and reports "ready";
+  - attribution changes with the style (and with the area shown, e.g. "Earthstar Geographics" on imagery over Manchester);
+  - light grey's land colour, read from the style's own layers: `#f4f4f4` below zoom 7, `#efefef` from zoom 7, water and background `#cfd3d4`. The light colour set passes against these.
+- **Still open:** basemap request usage under the key (risk R8), from John's ArcGIS Location Platform dashboard.
 
 ### S26 — ArcGIS Living Atlas 🔴
 

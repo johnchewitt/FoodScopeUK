@@ -25,6 +25,7 @@ import {
   layerCounts,
   proximityView,
   shownStores,
+  storesFrame,
   storesGeoJson,
   STORE_FIELDS,
   type AccessStore,
@@ -131,6 +132,7 @@ export function useAccess() {
       storesQuery.data ? cached(indexCache, storesQuery.data, () => indexStores(storesQuery.data!)) : null,
     [storesQuery.data],
   );
+  const frame = useMemo(() => (stores ? storesFrame(stores) : null), [stores]);
   const doc = indicatorsQuery.data ?? null;
   const filter = useMemo(() => ({ layers: storeLayers, retailers }), [storeLayers, retailers]);
   const shown = useMemo(
@@ -160,6 +162,7 @@ export function useAccess() {
       storesUrl: blobUrlFor(storesQuery.data, stores),
       storeWhere: filterWhereClause(filter),
       storesCopyright: sources.stores.attribution,
+      frame,
       councilsUrl: datasetUrl(sources.boundaries),
       councilsCopyright: sources.boundaries.attribution,
       choropleth: councilLayer === "off" ? null : choroplethFor(provision, measure),
@@ -177,6 +180,7 @@ export function useAccess() {
   }, [
     stores,
     storesQuery.data,
+    frame,
     provision,
     sources.boundaries,
     sources.stores,
