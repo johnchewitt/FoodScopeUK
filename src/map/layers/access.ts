@@ -390,7 +390,7 @@ export class AccessLayersController implements LayerController {
     const choropleth = m.choropleth
       ? `${m.choropleth.measure}:${m.choropleth.classes.map((c) => c.join(",")).join("/")}:${m.choropleth.noData.join(",")}`
       : "off";
-    const councils = `${style}|${this.local}|${choropleth}|${m.selectedCouncil ?? ""}`;
+    const councils = `${m.mode}|${style}|${this.local}|${choropleth}|${m.selectedCouncil ?? ""}|${m.compareCouncils.join(",")}`;
     if (councils !== this.signature.councils && this.councils) {
       const { renderer, mode } = councilRenderer(m, style, this.local);
       this.councils.renderer = renderer;
