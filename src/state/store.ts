@@ -10,10 +10,16 @@ import {
   type AreaMeasure,
   type BasemapId,
   type CouncilLayer,
+  type FarmLayer,
   type HeatmapMode,
   type Measure,
+  type Nation,
   type Overlay,
   type PeriodMode,
+  type PortMeasureId,
+  type PpfiMeasure,
+  type RiskFill,
+  type RiskView,
   type UrlState,
 } from "./urlState";
 
@@ -83,6 +89,11 @@ export interface AppState extends UrlState {
   /** Small areas picked from a chart (LP-06: chart → map), outlined on the map; not in the URL. */
   areaHighlight: AreaHighlight | null;
 
+  /** Risk Explorer logistics map model (serialisable; written by the feature, read by the map). */
+  riskMap: RiskMapModel | null;
+  /** Port or farming region under the pointer on the logistics map (not in the URL). */
+  hoverRisk: HoverRisk | null;
+
   // Actions
   setModule: (module: ModuleId) => void;
   setMonth: (month: number | null) => void;
@@ -137,6 +148,18 @@ export interface AppState extends UrlState {
   setHoverArea: (hover: HoverArea | null) => void;
   setAreaHighlight: (highlight: AreaHighlight | null) => void;
 
+  setRiskView: (view: RiskView) => void;
+  setRiskFill: (fill: RiskFill) => void;
+  /** Selects a port (null clears); selecting the selected port again clears it. */
+  selectPort: (locode: string | null) => void;
+  setPortMeasure: (measure: PortMeasureId) => void;
+  setRoads: (on: boolean) => void;
+  setFarmLayer: (layer: FarmLayer) => void;
+  setPpfiMeasure: (measure: PpfiMeasure) => void;
+  setRankNation: (nation: Nation | null) => void;
+  setRiskMap: (model: RiskMapModel | null) => void;
+  setHoverRisk: (hover: HoverRisk | null) => void;
+
   setBreakpoint: (bp: Breakpoint) => void;
   toggleFilterPanel: (open?: boolean) => void;
   toggleInsights: (open?: boolean) => void;
@@ -174,6 +197,11 @@ export interface OriginsMapPartner {
   flow: boolean;
   /** Line width in px (FO-03 linear scaling). */
   flowWidth: number;
+  /**
+   * Risk Explorer, water-stress fill (RK-02): index into the risk ramp of the partner's FAO class
+   * (1 = no stress … 5 = critical), or null for a partner without a value (no-data hatch).
+   */
+  stressClass?: number | null;
 }
 
 export interface OriginsMapModel {
@@ -183,6 +211,8 @@ export interface OriginsMapModel {
   partners: OriginsMapPartner[];
   /** Symbolic UK anchor (Natural Earth label point for the United Kingdom). Not a port. */
   ukAnchor: [number, number];
+  /** What the partner fills show: share of recorded imports (default) or water stress (Risk Explorer). */
+  fill?: "share" | "stress";
   /**
    * Where the map frames the data: the box around the UK and the connections drawn for the
    * commodity ([west, south, east, north], degrees). The map fits it when `key` changes (a new
@@ -255,10 +285,11 @@ export interface AccessPoint {
 /** UK Food Access map view model (serialisable; built by the feature from validated data). */
 export interface AccessMapModel {
   /**
-   * UK Food Access, or Local Authority Profiles (councils outlined, the selected council emphasised,
-   * comparison councils dashed; no choropleth or proximity tool).
+   * UK Food Access; Local Authority Profiles (councils outlined, the selected council emphasised,
+   * comparison councils dashed; no choropleth or proximity tool); or the Risk Explorer's community
+   * access view (councils shaded by the Priority Places share on the risk ramp; no stores).
    */
-  mode: "access" | "profile";
+  mode: "access" | "profile" | "risk";
   /** Comparison councils (profile mode). */
   compareCouncils: string[];
   /** NI grocers from the FSA register (S29) when the supplementary layer is on; never in any rate. */
@@ -277,8 +308,11 @@ export interface AccessMapModel {
   /** Council boundaries (display edition) from the manifest. */
   councilsUrl: string;
   councilsCopyright: string;
-  /** Council choropleth: class index → council codes; no-data codes; or null when the layer is off. */
-  choropleth: { measure: string; classes: string[][]; noData: string[] } | null;
+  /**
+   * Council choropleth: class index → council codes; no-data codes; or null when the layer is off.
+   * `ramp` "risk" draws the classes with the warm vulnerability ramp (Risk Explorer), else the teal one.
+   */
+  choropleth: { measure: string; classes: string[][]; noData: string[]; ramp?: "seq" | "risk" } | null;
   selectedStore: AccessPoint | null;
   selectedCouncil: string | null;
   proximity: {
@@ -290,9 +324,52 @@ export interface AccessMapModel {
   } | null;
 }
 
+/** One port on the Risk Explorer logistics map (serialisable). */
+export interface RiskMapPort {
+  locode: string;
+  name: string;
+  point: [number, number];
+  /** Symbol radius in px (area ∝ the measure); 0 = no tonnage for the measure (drawn as a small ring). */
+  radius: number;
+  /** Formatted value for the tooltip, e.g. "12.6 Mt from abroad, 2025". */
+  valueText: string;
+  /** Linked to a UKFSR port-of-entry group (food, feed and drink imports, S03). */
+  foodEntry: boolean;
+}
+
+/** Risk Explorer logistics map (RK-03; serialisable, built by the feature from validated data). */
+export interface RiskMapModel {
+  ports: RiskMapPort[];
+  selectedPort: string | null;
+  /** Measure and year the symbols show (part of the renderer signature). */
+  portKey: string;
+  /** Port symbol attribution (DfT; EMODnet locations). */
+  portsCopyright: string;
+  roads: { url: string; copyright: string } | null;
+  /** Farming regions: outlines URL and, when a measure is on, the class (0–4) of each region id. */
+  regions: { url: string; copyright: string; measure: string | null; classOf: Record<string, number> } | null;
+  /** The UK (fitted once per visit to the view). */
+  frame: { key: string; bbox: [number, number, number, number] } | null;
+}
+
+/** Port or farming region under the pointer on the logistics map, with screen position. */
+export interface HoverRisk {
+  kind: "port" | "region";
+  id: string;
+  x: number;
+  y: number;
+}
+
+/** True when the trade map (partners and connections) is drawn: Food Origins, Seasonal, Risk Explorer supply. */
+export function selectTradeMapModule(s: Pick<AppState, "module" | "riskView">): boolean {
+  return (
+    s.module === "origins" || s.module === "seasonal" || (s.module === "risks" && s.riskView === "supply")
+  );
+}
+
 /** True when the map can frame the recorded partners (a trade view with drawn connections). */
-export function canFramePartners(s: Pick<AppState, "module" | "originsMap">): boolean {
-  return (s.module === "origins" || s.module === "seasonal") && Boolean(s.originsMap?.frame);
+export function canFramePartners(s: Pick<AppState, "module" | "riskView" | "originsMap">): boolean {
+  return selectTradeMapModule(s) && Boolean(s.originsMap?.frame);
 }
 
 export const FLOW_COUNT_DEFAULT = 12;
@@ -339,6 +416,8 @@ export const initialState = {
   profileMap: null,
   hoverArea: null,
   areaHighlight: null,
+  riskMap: null,
+  hoverRisk: null,
 };
 
 export const useAppStore = create<AppState>()((set, get) => ({
@@ -430,6 +509,20 @@ export const useAppStore = create<AppState>()((set, get) => ({
   setProfileMap: (profileMap) => set({ profileMap }),
   setHoverArea: (hoverArea) => set({ hoverArea }),
   setAreaHighlight: (areaHighlight) => set({ areaHighlight }),
+  // Each view has its own hover; changing view clears them so a tooltip never outlives its map.
+  setRiskView: (riskView) =>
+    set((s) =>
+      s.riskView === riskView ? {} : { riskView, hoverRisk: null, hoverPartner: null, hoverAccess: null },
+    ),
+  setRiskFill: (riskFill) => set({ riskFill }),
+  selectPort: (locode) => set((s) => ({ port: locode === null || s.port === locode ? null : locode })),
+  setPortMeasure: (portMeasure) => set({ portMeasure }),
+  setRoads: (roads) => set({ roads }),
+  setFarmLayer: (farmLayer) => set({ farmLayer }),
+  setPpfiMeasure: (ppfiMeasure) => set({ ppfiMeasure }),
+  setRankNation: (rankNation) => set({ rankNation }),
+  setRiskMap: (riskMap) => set({ riskMap }),
+  setHoverRisk: (hoverRisk) => set({ hoverRisk }),
   setMapView: (mapView) => {
     const prev = get().mapView;
     const same =
@@ -522,6 +615,14 @@ export function selectUrlState(s: AppState): UrlState {
     area: s.area,
     compare: s.compare,
     niGrocers: s.niGrocers,
+    riskView: s.riskView,
+    riskFill: s.riskFill,
+    port: s.port,
+    portMeasure: s.portMeasure,
+    roads: s.roads,
+    farmLayer: s.farmLayer,
+    ppfiMeasure: s.ppfiMeasure,
+    rankNation: s.rankNation,
   };
 }
 

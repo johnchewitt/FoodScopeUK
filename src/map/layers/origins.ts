@@ -16,6 +16,7 @@ import { interpolateWidths, widthsDiffer } from "@/analysis/transition";
 import {
   selectMapColourStyle,
   selectReducedMotion,
+  selectTradeMapModule,
   type AppState,
   type HoverPartner,
   type OriginsMapModel,
@@ -38,14 +39,11 @@ import type { HitResult, LayerController, LayerStatusReporter, ViewLike, ViewPoi
  *   by FlowParticles on a canvas over the map; ADR-0015).
  * Connections are not routes and never end at a port.
  *
- * All values come from `state.originsMap` (built by the Food Origins or Seasonal Supply feature
- * from the snapshot); this controller only draws them and turns clicks/hovers into store actions
+ * All values come from `state.originsMap` (built by the Food Origins, Seasonal Supply or Risk Explorer
+ * supply feature from the snapshot); this controller only draws them and turns clicks/hovers into store actions
  * (ADR-03). When the month changes, connection widths ease from the old to the new values for at
  * most FLOW_TWEEN_MS (instant under reduced motion) and always end at the exact model widths.
  */
-
-/** Modules whose map is drawn from `state.originsMap`. */
-const TRADE_MAP_MODULES: readonly string[] = ["origins", "seasonal"];
 
 type Rgba = [number, number, number, number];
 
@@ -203,7 +201,7 @@ export class OriginsLayersController implements LayerController {
 
   update(state: AppState): void {
     this.model = state.originsMap;
-    const visible = TRADE_MAP_MODULES.includes(state.module) && state.originsMap !== null;
+    const visible = selectTradeMapModule(state) && state.originsMap !== null;
     if (visible !== this.visible) {
       this.visible = visible;
       for (const l of this.layers()) l.visible = visible;
@@ -227,10 +225,10 @@ export class OriginsLayersController implements LayerController {
     const animate = !selectReducedMotion(state);
     const m = this.model;
     const partnerSig = m.partners
-      .map((p) => `${p.key}:${p.shareClass}:${p.flow ? p.flowWidth.toFixed(2) : ""}`)
+      .map((p) => `${p.key}:${p.shareClass}:${p.stressClass ?? "-"}:${p.flow ? p.flowWidth.toFixed(2) : ""}`)
       .join("|");
     // Hover is drawn with the view's highlight, so it is not part of the renderer's signature.
-    const polygons = `${style}|${m.commodityId}|${m.periodLabel}|${m.measure}|${partnerSig}|${state.partner ?? ""}`;
+    const polygons = `${style}|${m.fill ?? "share"}|${m.commodityId}|${m.periodLabel}|${m.measure}|${partnerSig}|${state.partner ?? ""}`;
     const flows = `${style}|${m.commodityId}|${m.periodLabel}|${m.measure}|${partnerSig}|${state.partner ?? ""}|${animate}`;
     if (polygons !== this.signature.polygons) this.drawPartners(m, state.partner);
     if (flows !== this.signature.flows) this.drawFlows(m, state.partner, animate);
@@ -325,15 +323,24 @@ export class OriginsLayersController implements LayerController {
     if (!this.polygons || !this.points) return;
     const colours = MAP_COLOURS[this.style];
     const classes = shareClassColours(this.style);
+    const risk = colours.risk.map((hex) => rgba(hex));
     const selection = rgba(colours.selection);
     const separator = rgba(colours.separator, colours.separatorAlpha);
+    const stress = m.fill === "stress";
+    // Water stress (Risk Explorer): the warm ramp; a partner without a value is hatched (P12).
+    const colourOf = (p: OriginsMapPartner): Rgba | null =>
+      stress
+        ? p.stressClass === null || p.stressClass === undefined
+          ? null
+          : (risk[p.stressClass] ?? risk[0]!)
+        : (classes[p.shareClass] ?? classes[0]!);
     const fill = (p: OriginsMapPartner) => {
-      const c = classes[p.shareClass] ?? classes[0]!;
+      const c = colourOf(p);
       const isSel = p.key === selected;
-      return new SimpleFillSymbol({
-        color: c,
-        outline: isSel ? { color: selection, width: 2.25 } : { color: separator, width: 0.75 },
-      });
+      const outline = isSel ? { color: selection, width: 2.25 } : { color: separator, width: 0.75 };
+      return c
+        ? new SimpleFillSymbol({ color: c, outline })
+        : new SimpleFillSymbol({ style: "backward-diagonal", color: rgba(colours.noData, 0.9), outline });
     };
     const infos = m.partners
       .filter((p) => p.geometry === "polygon" && p.iso2)
@@ -345,13 +352,17 @@ export class OriginsLayersController implements LayerController {
     });
     this.rendererBuilds += 1;
     const container = (this.view as { container?: HTMLElement | null } | null)?.container;
-    if (container) container.dataset.partnerRendererBuilds = String(this.rendererBuilds);
+    if (container) {
+      container.dataset.partnerRendererBuilds = String(this.rendererBuilds);
+      container.dataset.partnerFill = stress ? "stress" : "share";
+    }
 
     this.points.removeAll();
     const pointPartners = m.partners.filter((p) => p.geometry === "point" && p.point);
     this.points.addMany(
       pointPartners.map((p) => {
-        const c = classes[p.shareClass] ?? classes[0]!;
+        // No value (water stress): a hollow ring in the no-data colour, never a ramp colour.
+        const c = colourOf(p);
         const isSel = p.key === selected;
         return new Graphic({
           geometry: new Point({ longitude: p.point![0], latitude: p.point![1] }),
@@ -359,8 +370,12 @@ export class OriginsLayersController implements LayerController {
           symbol: new SimpleMarkerSymbol({
             style: "circle",
             size: isSel ? 11 : 8,
-            color: c,
-            outline: isSel ? { color: selection, width: 2 } : { color: separator, width: 1 },
+            color: c ?? [0, 0, 0, 0],
+            outline: isSel
+              ? { color: selection, width: 2 }
+              : c
+                ? { color: separator, width: 1 }
+                : { color: rgba(colours.noData), width: 1.5 },
           }),
         });
       }),

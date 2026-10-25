@@ -26,6 +26,19 @@ export const REGISTER_GROCERS_MIN_ZOOM = 7.5;
 export const PROFILE_AREAS_LAYER_ID = "profile-small-areas";
 export const CONTEXT_COUNCILS_DATASET_ID = "context.council_context";
 export const CONTEXT_PRODUCTION_DATASET_ID = "context.uk_production";
+/** Risk Explorer (Stage 6): logistics layers and the `risk` family datasets. */
+export const RISK_PORTS_LAYER_ID = "risk-ports";
+export const RISK_ROADS_LAYER_ID = "risk-roads";
+export const RISK_REGIONS_LAYER_ID = "risk-regions";
+export const RISK_DATASET_IDS = {
+  waterStress: "risk.water_stress",
+  ports: "risk.ports",
+  portEntry: "risk.port_entry",
+  roads: "risk.roads",
+  farming: "risk.farming",
+  farmingRegions: "risk.farming_regions",
+  councilPpfi: "risk.council_ppfi",
+} as const;
 
 /** Dataset ids of a deep-profile council's small areas (one folder per council, ADR-0023). */
 export function areaDatasetIds(lad: string): { boundaries: string; indicators: string } {

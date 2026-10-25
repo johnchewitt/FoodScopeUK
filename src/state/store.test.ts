@@ -7,6 +7,7 @@ import {
   selectMapColourStyle,
   selectReducedMotion,
   selectRequestedMapStyle,
+  selectTradeMapModule,
   selectUrlState,
   useAppStore,
 } from "./store";
@@ -278,5 +279,64 @@ describe("Local Authority Profiles selection (LP-01, LP-06, LP-07)", () => {
     expect(s().areaHighlight).not.toBeNull(); // same council and measure: kept
     s().hydrateFromUrl({ ...selectUrlState(s()), lad: "E08000003" });
     expect(s().areaHighlight).toBeNull();
+  });
+});
+
+describe("Risk Explorer selection (RK-01 – RK-04)", () => {
+  it("shares the trade map only in the supply view", () => {
+    s().setModule("risks");
+    expect(selectTradeMapModule(s())).toBe(true);
+    s().setRiskView("logistics");
+    expect(selectTradeMapModule(s())).toBe(false);
+    s().setRiskView("access");
+    expect(selectTradeMapModule(s())).toBe(false);
+    s().setModule("origins");
+    expect(selectTradeMapModule(s())).toBe(true);
+  });
+
+  it("changing view clears every hover; the same view keeps them", () => {
+    s().setModule("risks");
+    s().setHoverRisk({ kind: "port", id: "GBDVR", x: 1, y: 2 });
+    s().setRiskView("supply");
+    expect(s().hoverRisk).not.toBeNull();
+    s().setHoverPartner({ key: "ES", name: "Spain", x: 1, y: 2 });
+    s().setRiskView("logistics");
+    expect(s()).toMatchObject({
+      riskView: "logistics",
+      hoverRisk: null,
+      hoverPartner: null,
+      hoverAccess: null,
+    });
+  });
+
+  it("selecting the selected port again clears it; the URL carries the view state", () => {
+    s().setModule("risks");
+    s().setRiskView("logistics");
+    s().selectPort("GBDVR");
+    expect(s().port).toBe("GBDVR");
+    s().selectPort("GBDVR");
+    expect(s().port).toBeNull();
+    s().selectPort("GBLON");
+    s().setPortMeasure("agricultural");
+    s().setRoads(false);
+    s().setFarmLayer("sheep");
+    expect(selectUrlState(s())).toMatchObject({
+      module: "risks",
+      riskView: "logistics",
+      port: "GBLON",
+      portMeasure: "agricultural",
+      roads: false,
+      farmLayer: "sheep",
+    });
+    s().setRiskView("access");
+    s().setPpfiMeasure("fuel_poverty");
+    s().setRankNation("Wales");
+    s().setLad("W06000015");
+    expect(selectUrlState(s())).toMatchObject({
+      riskView: "access",
+      ppfiMeasure: "fuel_poverty",
+      rankNation: "Wales",
+      lad: "W06000015",
+    });
   });
 });
