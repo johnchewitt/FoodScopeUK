@@ -28,6 +28,10 @@ import type { Indicator } from "@/types/indicator";
 import { decileBarsOption, distanceClassesOption, retailerDonutOption, sliceColour } from "./charts";
 import { opportunities, RULES } from "./consulting";
 import {
+  areaClassIndicator,
+  areaDistanceIndicator,
+  areaNoCarIndicator,
+  areaResidentsIndicator,
   beyondIndicator,
   concentrationIndicator,
   decileShareIndicator,
@@ -228,14 +232,15 @@ function Network({ p, c }: { p: ProfileData; c: CouncilRow }) {
   const slices = useMemo(() => retailerSlices(n.retailers), [n]);
   const donut = useMemo(() => retailerDonutOption(slices, n.total), [slices, n.total]);
   const detail = p.access.council;
+  // Always supermarkets, whatever council shading UK Food Access last used (its totals follow `cl`).
   const rows = useMemo(
     () =>
-      p.access.totals && detail
-        ? comparisonRows(p.access.totals, detail, "supermarkets").filter(
+      p.totals && detail
+        ? comparisonRows(p.totals.supermarkets, detail, "supermarkets").filter(
             (r) => r.kind !== "nation" || r.key === c.nation,
           )
         : [],
-    [p.access.totals, detail, c.nation],
+    [p.totals, detail, c.nation],
   );
   const chart = useMemo(
     () => comparisonOption(rows, c.nation, "supermarkets per 10,000 residents"),
@@ -643,7 +648,8 @@ function DecileChart({
 }) {
   const setHighlight = useAppStore((s) => s.setAreaHighlight);
   const setMeasure = useAppStore((s) => s.setAreaMeasure);
-  const chart = useMemo(() => decileBarsOption(rows, title, by), [rows, title, by]);
+  const axisName = measure === "deprivation" ? "Decile (1 = most deprived)" : "Decile (1 = highest priority)";
+  const chart = useMemo(() => decileBarsOption(rows, title, by, axisName), [rows, title, by, axisName]);
   // Map classes 4..0 are deciles 1–2 .. 9–10 (decileClass).
   const classes = useMemo(
     () =>
@@ -829,40 +835,111 @@ function AreaCard({ d }: { d: DeepProfile }) {
           <>
             <div>
               <dt>Residents (Census 2021)</dt>
-              <dd>{formatPopulation(census.population, "small_area")}</dd>
+              <dd>
+                <Metric compact indicator={areaResidentsIndicator(census.code, name, census.population)} />
+              </dd>
             </div>
             <div>
               <dt>No car or van</dt>
-              <dd>{nc === null ? "Data unavailable" : formatShare(nc)}</dd>
+              <dd>
+                <Metric
+                  compact
+                  indicator={areaNoCarIndicator(
+                    census.code,
+                    name,
+                    census.households,
+                    census.noCarHouseholds,
+                    nc,
+                  )}
+                />
+              </dd>
             </div>
             <div>
               <dt>Nearest supermarket (straight-line)</dt>
               <dd>
-                {census.toSupermarket === null ? "Data unavailable" : formatKm(census.toSupermarket / 1000)}
+                <Metric compact indicator={areaDistanceIndicator(census.code, name, census.toSupermarket)} />
               </dd>
             </div>
-            <div>
-              <dt>Urban/rural (ONS 2021)</dt>
-              <dd>{census.urbanRural?.name ?? "Data unavailable"}</dd>
-            </div>
+            {!census.code.startsWith("N20") && (
+              <div>
+                <dt>Urban/rural (ONS 2021)</dt>
+                <dd>
+                  <Metric
+                    compact
+                    indicator={areaClassIndicator(
+                      census.code,
+                      name,
+                      "Urban/rural (ONS 2021)",
+                      census.urbanRural?.name ?? null,
+                      "S21",
+                      d.profile.urbanRural?.referencePeriod ?? "2021 classification",
+                      "ONS 2021 Rural Urban Classification of LSOAs (England and Wales).",
+                    )}
+                  />
+                </dd>
+              </div>
+            )}
           </>
         )}
         {ppfi && (
           <div>
             <dt>PPFI decile (combined)</dt>
-            <dd>{ppfi.ppfi.decile} of 10</dd>
+            <dd>
+              <Metric
+                compact
+                indicator={areaClassIndicator(
+                  ppfi.code,
+                  name,
+                  "PPFI decile (combined)",
+                  `${ppfi.ppfi.decile} of 10`,
+                  "S13",
+                  d.profile.ppfi.referencePeriod,
+                  `Published decile of the combined index within ${d.profile.ppfi.within}; 1 = highest priority.`,
+                  "measured",
+                  d.profile.ppfi.within,
+                )}
+              />
+            </dd>
           </div>
         )}
         {dep && (
           <div>
             <dt>Deprivation decile</dt>
-            <dd>{dep.decile} of 10</dd>
+            <dd>
+              <Metric
+                compact
+                indicator={areaClassIndicator(
+                  dep.code,
+                  name,
+                  "Deprivation decile",
+                  `${dep.decile} of 10`,
+                  "S19",
+                  d.profile.deprivation.referencePeriod,
+                  `${d.profile.deprivation.index}, ${d.profile.deprivation.measure}, within ${d.profile.deprivation.within}; 1 = most deprived. Deciles: ${d.profile.deprivation.decile}.`,
+                  d.profile.deprivation.decile === "published" ? "measured" : "derived",
+                  d.profile.deprivation.within,
+                )}
+              />
+            </dd>
           </div>
         )}
         {dep?.urbanRural2015 && (
           <div>
             <dt>Urban/rural (NISRA 2015)</dt>
-            <dd>{dep.urbanRural2015}</dd>
+            <dd>
+              <Metric
+                compact
+                indicator={areaClassIndicator(
+                  dep.code,
+                  name,
+                  "Urban/rural (NISRA 2015)",
+                  dep.urbanRural2015,
+                  "S21",
+                  d.profile.urbanRural?.referencePeriod ?? "2015",
+                  "NISRA 2015 default urban/rural class of the SOA, as in the NIMDM 2017 file.",
+                )}
+              />
+            </dd>
           </div>
         )}
       </dl>

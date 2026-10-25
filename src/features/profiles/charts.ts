@@ -99,6 +99,8 @@ export function decileBarsOption(
   rows: readonly DecileRow[],
   label: string,
   by: "areas" | "population",
+  /** What decile 1 means for this index (PPFI: highest priority; deprivation: most deprived). */
+  axisName = "Decile (1 = highest priority)",
 ): { option: EChartsCoreOption; description: string } | null {
   if (rows.every((r) => r.areas === 0)) return null;
   // Map classes 0–4 use sequential colours 1–5; decile 1–2 is class 4 (most salient).
@@ -118,7 +120,7 @@ export function decileBarsOption(
     xAxis: {
       type: "category",
       data: rows.map((r) => String(r.decile)),
-      name: "Decile (1 = highest priority)",
+      name: axisName,
       nameLocation: "middle",
       nameGap: 22,
       nameTextStyle: { color: MUTED, fontSize: 10 },
