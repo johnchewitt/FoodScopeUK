@@ -155,4 +155,11 @@ describe("UK Food Resilience — Risk Explorer", { timeout: 60_000 }, () => {
     // The heatmaps draw (ECharts needs a visualMap for them).
     expect(within(insights()).queryByText("Chart could not be drawn")).toBeNull();
   });
+
+  it("explains how to read the risk figures on the Evidence page", async () => {
+    renderAt("?m=risks&view=evidence");
+    expect(await screen.findByRole("heading", { name: /Reading the risk figures/ }, T)).toBeInTheDocument();
+    expect(screen.getByText(/no score combines them, and no weighting is applied/)).toBeInTheDocument();
+    expect(screen.getByText(/not a forecast of a shortage/)).toBeInTheDocument();
+  });
 });

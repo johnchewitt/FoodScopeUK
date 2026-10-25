@@ -59,6 +59,16 @@ const LOCAL_CAVEATS = [
   "Local Authority Profiles: national supply context (recorded imports, UK production) is the same for every council and is labelled as national; it says nothing about a council's own supply chains. Small-area figures are published for Belfast and Manchester only in this release.",
 ];
 
+const RISK_CAVEATS = [
+  "The three views (international supply, logistics, community access) are kept separate: no score combines them, and no weighting is applied.",
+  "Concentration (HHI, top shares) describes how recorded imports are spread across partner countries of dispatch. A partner's share is the part of recorded supply exposed if its exports to the UK stopped (estimated exposure); it is not a forecast of a shortage, which depends on substitution, stocks and UK production.",
+  "Water stress is FAO's SDG 6.4.2 national figure (freshwater withdrawal ÷ available resources, mostly 2022), via the World Bank. It describes the whole partner country, not where the produce was grown or how it was irrigated. Partners without a value are shown as no data.",
+  "Port tonnage (DfT) is all cargo; only 'agricultural products' is food or feed. Food-specific port dependence comes only from the UK Food Security Report 2024's published shares. Port points are rough locations (DfT, or EMODnet for the same UN/LOCODE).",
+  "Road corridors (OS Open Roads) cover Great Britain only and show where roads run, not freight flows. Northern Ireland roads, rail freight routes and distribution centres are not available.",
+  "Farming densities divide the Defra June survey 2025 value by the region's area; England's figures cover commercial holdings only.",
+  "Priority places by council: the share of a council's small areas in its own nation's deciles 1–2 of the Priority Places for Food Index v2.1. Deciles are set within each nation, so councils are compared and ranked within their nation only.",
+];
+
 /** Evidence & Limitations (SH-06, EV-03), generated from the data manifest. */
 export function EvidenceDialog() {
   const open = useAppStore((s) => s.overlay === "evidence");
@@ -172,6 +182,17 @@ export function EvidenceDialog() {
               <h3>Reading the local figures (UK Food Access and Local Authority Profiles)</h3>
               <ul className="evidence-caveats">
                 {LOCAL_CAVEATS.map((c) => (
+                  <li key={c}>{c}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {manifest.data?.datasets.some((d) => d.id.startsWith("risk.")) && (
+            <section>
+              <h3>Reading the risk figures (UK Food Resilience — Risk Explorer)</h3>
+              <ul className="evidence-caveats">
+                {RISK_CAVEATS.map((c) => (
                   <li key={c}>{c}</li>
                 ))}
               </ul>
