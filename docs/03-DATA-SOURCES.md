@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | 03 — Verified data catalogue and manifest |
-| **Version** | 0.5 — 25 October 2026 (pre-Stage 5 data steps: S13, S15, S16, S19, S20 and S29 verified, gates G8–G11 cleared; context step: S09, S10 and S21 verified) |
+| **Version** | 0.6 — 25 October 2026 (pre-Stage 5 data steps: S13, S15, S16, S19, S20 and S29 verified, gates G8–G11 cleared; context step: S09, S10 and S21 verified; Stage 5: app use of S13 and S29 recorded) |
 | **Verification date** | 23 October 2026; S11, S12, S14 and S18 re-verified 24 October 2026; S09, S10 and S21 verified 25 October 2026 |
 | **Machine-readable form** | Generated into `public/data/snapshots/<date>/catalogue.json` by the pipeline from Stage 2 |
 
@@ -271,6 +271,7 @@ Published 7 March 2024, OGL v3.0. URL: https://www.ons.gov.uk/peoplepopulationan
 | **Gate G8 result (25 Oct 2026)** | **Northern Ireland is included.** 43,538 rows, ranked 1…n within each country: England 33,755 LSOAs (2021), Wales 1,917 LSOAs, Scotland 6,976 Data Zones, Northern Ireland 890 SOAs (2011, codes such as `95GG01S1`). `country` takes the values `E`, `W`, `S`, `NI`, and `country_denominator` is the number of areas in that country. In Northern Ireland three domains are empty: `domain_supermarket_accessibility`, `domain_ecommerce_access` and `domain_fuel_poverty`, with their deciles. So NI's combined index rests on four domains. Belfast's 174 SOAs carry PPFI on the same geography as NIMDM 2017, and none is in NI's top-priority decile. |
 | **Orientation** | The publisher's pages (user guide, CDRC FAQ and news page, read 25 Oct 2026) do not say which end is highest priority. The data shows it. The socio-demographic domain (income deprivation and no car) ranks with IoD 2025 (decile against decile, r = 0.86, England) and with NIMDM 2017 (rank against rank, r = 0.93, NI), both of which put 1 = most deprived. So **rank 1 and decile 1 = highest priority**. The build stops if this correlation ever falls below 0.5. |
 | **Records disagree (24 Oct 2026)** | The HASP record (dataset 5276, v2.1 LSOA) lists spatial coverage "Great Britain"; the CDRC page (data.cdrc.ac.uk/node/2443) says "the four nations" and lists "NI SOA (2011)". Downloads go through a HASP basket, so John provides the file. |
+| **App use (Stage 5)** | Deep profiles only (Belfast on its 174 SOAs, Manchester on its 295 LSOAs). The combined index and the seven domains use the published deciles, drawn in five fixed classes (deciles 1–2 most salient), always "within England" or "within Northern Ireland". The three NI domains without data are shown as "Data unavailable", never zero. The direction note above is shown in the profile and the Evidence page. Checked by hand against the raw file for five areas per council (stage 5 report). |
 
 ### S19 — Deprivation indices 🟡
 
@@ -329,6 +330,7 @@ England only; includes access to key services such as food stores in some editio
 | Classification caveat | Business types are assigned by council officers and applied unevenly: Spar shops, for example, appear under both types. So the build selects by name and type with documented rules (`config/ni_grocers.json`), not by type alone. |
 | Use | `build-ni-grocers` keeps two sets. First, grocery symbol groups that GEOLYTIX does not carry in NI (SuperValu, Mace, Vivo, Costcutter, Nisa, Premier), matched by name in either retail type. Second, independent grocers registered as supermarkets/hypermarkets that carry no chain or group name and are not within 50 m of a mapped store. Chains GEOLYTIX maps are left to it. The same group or name at the same postcode counts as one shop. Records without coordinates are dropped and counted. Result: **285 grocers** (Belfast 41): Vivo 76, Mace 55, SuperValu 30, Nisa 25, Costcutter 24, Premier 11, independents 64. Details in `pipeline/reports/ni-grocers-qa-2026-10-24.json`. |
 | Display rule | A supplementary layer labelled with its source. It is **never** added to the GEOLYTIX store counts or per-10,000 rates, which stay like for like across the UK. Great Britain has no equivalent layer, so the app must not imply one. |
+| App use (Stage 5) | An optional layer (`ng=1`) in UK Food Access and Local Authority Profiles: hollow diamonds drawn from about zoom 7.5 (at UK scale the 285 points would cover Northern Ireland), with a tooltip and a legend entry that says it is not counted. Offered by the Northern Ireland coverage note. |
 | Attribution | "Food Standards Agency food hygiene rating data, Northern Ireland councils, licensed under the Open Government Licence v3.0" |
 
 ## 6. Geography and population
