@@ -129,7 +129,7 @@ Belfast has 6 of its 174 SOAs in PPFI deciles 1–2 but 47 in NIMDM's most depri
 | `npm run typecheck` | 0 errors |
 | `npm run lint`; `npm run check:banned` | 0 errors, 0 warnings; OK |
 | `npm run format` | All files formatted |
-| `npm test` | **411 passed** (31 files; 361 at the end of Stage 4) |
+| `npm test` | **413 passed** (31 files; 361 at the end of Stage 4) |
 | `cd pipeline && uv run pytest` | **161 passed** (38 s) |
 | `VITE_ARCGIS_ASSETS=local npm run build`; `npm run build:e2e-basemap` | Both succeed |
 | `npm run e2e` | **E2E_PLACEHOLDER** |
@@ -169,6 +169,28 @@ New tests:
 - At UK scale the 285 NI grocers covered Northern Ireland as one blot. They now draw from zoom 7.5, and the legend says so.
 - Adding a comparison council did not dash it on the map. The council renderer's signature left out the comparison and the mode.
 - The KPI cards said "No data loaded" before a council was chosen. They now say "No council chosen".
+- The small-area card labelled Belfast's Data Zones "Urban/rural (ONS 2021): Data unavailable". ONS does not cover NI, so the row is not shown there; NISRA's 2015 class is on the SOAs.
+
+## Independent review
+
+A separate agent reviewed the application code without seeing this report. It reported six verified findings; all are fixed, with tests:
+
+1. **High.** The council / nation / UK provision chart took its nation and UK totals from UK Food Access's council shading. After "All grocery stores" there, Manchester's supermarket rate (0.93) sat beside England's all-store rate. The chart now always uses the profile's supermarket totals.
+2. **NI grocers layer.** Switched off, it came back on when the module changed; its diamonds then swallowed small-area clicks. It is now hidden on every update while off (E2E).
+3. **SOA codes.** 10 of Belfast's 174 SOAs (whole-ward codes ending in W, e.g. `95II07W1`) were rejected when read from the URL. Fixed (unit and component tests).
+4. **Point picking.** A pick started in UK Food Access captured clicks in Profiles. Picking now belongs to UK Food Access only.
+5. **Back and forward.** Going back to another council left a stale "Outlined on the map" line. History navigation now drops the outline when the council or measure changes.
+6. **Axis label.** The deprivation chart's axis said "1 = highest priority". It now says "1 = most deprived".
+
+The reviewer also raised four possible issues; these are now done:
+- a Northern Ireland store-coverage caveat on store figures and in the comparison (GEOLYTIX has ten retailers there);
+- the small-area card's values through `<Metric>` with provenance;
+- councils clickable at local scale in Profiles (to move to a neighbour);
+- a keyboard selector for every small area.
+
+Two remain:
+- The underserved table and the store list show plain numbers. The table has a caption naming the source and method, as the Stage 4 tables do.
+- The axe check on the comparison dialog sometimes failed on colour contrast while the dialog was still fading in. The test now waits for Calcite's `calciteDialogOpen` event.
 
 ## Not verified, and why
 

@@ -31,7 +31,7 @@ Stage 4 already draws councils and stores (`AccessLayersController`, ADR-0020 to
    - straight-line distance: 0.5 / 1 / 2 / 5 km;
    - no data hatched.
 
-   Hit tests run in priority order: store, grocer, small area, council. Graphics are rebuilt only when the council or geography changes; a new measure or highlight only changes symbols.
+   Hit tests run in priority order: store, grocer, small area, council. In profiles, councils stay clickable at local scale, so a neighbour can be chosen. Point picking belongs to UK Food Access only. Graphics are rebuilt only when the council or geography changes; a new measure or highlight only changes symbols.
 4. **Chart to map.** A click on a chart bar (or the keyboard buttons under each chart) sets `areaHighlight` (label and codes). The map outlines those areas; a status line names them and clears them. A new measure clears the outline.
 5. **Framing.** The camera fits the selected council whenever it changes, at any scale, up to zoom 13 (`PROFILE_MAX_ZOOM`); without a council it frames all mapped stores. It never moves on a measure, area or filter change (ADR-0018).
 6. **Distances in the browser.** Straight-line distances are computed in the browser (`src/analysis/profile.ts`):
@@ -50,5 +50,6 @@ Stage 4 already draws councils and stores (`AccessLayersController`, ADR-0020 to
   - publish;
   - no app change unless the nation brings a new geography (Scotland's Data Zones need an adapter in the pipeline and a `kind` in the schema).
 - **The map filters change only the map.** The store types and retailers chosen for the map (shared with UK Food Access) never change a profile's counts, rates or distances, which always use all mapped stores of the type they name.
+- **Northern Ireland store coverage.** GEOLYTIX maps ten retailers in Northern Ireland, so store figures for NI councils carry a coverage caveat in their method, and the comparison shows it whenever an NI council is included.
 - **Population bases.** Rates use ONS mid-2025 population; small-area shares use Census 2021 counts. They are never combined in one figure.
 - **Hover on the Access stores layer** is still a GeoJSON hit test (B37 in the backlog); the small areas avoid it.
