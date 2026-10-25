@@ -5,7 +5,9 @@ import { BASEMAP_STATUS_ID } from "@/map/layerIds";
 import { STORE_LAYERS, type StoreLayer } from "@/analysis/retail";
 import type { MapStyle } from "@/styles/palette";
 import {
+  cleanCompare,
   DEFAULT_URL_STATE,
+  type AreaMeasure,
   type BasemapId,
   type CouncilLayer,
   type HeatmapMode,
@@ -74,6 +76,13 @@ export interface AppState extends UrlState {
   proximityCount: number;
   proximityRadiusKm: number;
 
+  /** Local Authority Profiles small-area map model (serialisable; written by the feature, read by the map). */
+  profileMap: ProfileMapModel | null;
+  /** Small area under the pointer in a deep profile (not in the URL). */
+  hoverArea: HoverArea | null;
+  /** Small areas picked from a chart (LP-06: chart → map), outlined on the map; not in the URL. */
+  areaHighlight: AreaHighlight | null;
+
   // Actions
   setModule: (module: ModuleId) => void;
   setMonth: (month: number | null) => void;
@@ -116,6 +125,17 @@ export interface AppState extends UrlState {
   setBasemap: (basemap: BasemapId) => void;
   setBasemapChoice: (available: boolean) => void;
   setMapView: (view: { zoom: number; center: [number, number] }) => void;
+
+  /** Adds or removes a comparison council (at most MAX_COMPARE; never the selected council). */
+  toggleCompare: (code: string) => void;
+  setCompare: (codes: string[]) => void;
+  setAreaMeasure: (measure: AreaMeasure) => void;
+  /** Selects a small area (null clears); selecting the selected area again clears it. */
+  selectArea: (code: string | null) => void;
+  setNiGrocers: (on: boolean) => void;
+  setProfileMap: (model: ProfileMapModel | null) => void;
+  setHoverArea: (hover: HoverArea | null) => void;
+  setAreaHighlight: (highlight: AreaHighlight | null) => void;
 
   setBreakpoint: (bp: Breakpoint) => void;
   toggleFilterPanel: (open?: boolean) => void;
@@ -173,10 +193,56 @@ export interface OriginsMapModel {
 
 /** Store or council under the pointer on the Food Access map, with screen position for the tooltip. */
 export interface HoverAccess {
-  kind: "store" | "council" | "cluster";
+  kind: "store" | "council" | "cluster" | "grocer";
   id: string;
   x: number;
   y: number;
+}
+
+/** Small area under the pointer in a deep profile, with screen position for the tooltip. */
+export interface HoverArea {
+  code: string;
+  x: number;
+  y: number;
+}
+
+/** Small areas picked from a chart: what was picked (for the chip) and the area codes. */
+export interface AreaHighlight {
+  label: string;
+  codes: string[];
+}
+
+/** One small area drawn on the profile map: code, kind and WGS84 polygon rings. */
+export interface ProfileMapArea {
+  code: string;
+  rings: number[][][];
+}
+
+/**
+ * Local Authority Profiles small-area map (LP-06; serialisable, built by the feature from validated
+ * data). The areas of the geography the measure is published on, each with a fixed class (or none:
+ * the no-data hatch, P12). Classes index the basemap style's sequential colours from `firstColour`.
+ */
+export interface ProfileMapModel {
+  lad: string;
+  /** Changes when the geography or its areas change (the layer redraws its graphics). */
+  key: string;
+  areas: ProfileMapArea[];
+  measure: AreaMeasure;
+  classOf: Record<string, number | null>;
+  classCount: number;
+  /** First index into the sequential colours (5 classes use colours 1–5 of 6). */
+  firstColour: number;
+  selected: string | null;
+  highlighted: string[];
+  copyright: string;
+}
+
+/** One NI grocer from the FSA register on the supplementary layer (WGS84). */
+export interface GrocerPoint {
+  id: number;
+  lon: number;
+  lat: number;
 }
 
 /** One store on the proximity overlay (WGS84). */
@@ -188,6 +254,15 @@ export interface AccessPoint {
 
 /** UK Food Access map view model (serialisable; built by the feature from validated data). */
 export interface AccessMapModel {
+  /**
+   * UK Food Access, or Local Authority Profiles (councils outlined, the selected council emphasised,
+   * comparison councils dashed; no choropleth or proximity tool).
+   */
+  mode: "access" | "profile";
+  /** Comparison councils (profile mode). */
+  compareCouncils: string[];
+  /** NI grocers from the FSA register (S29) when the supplementary layer is on; never in any rate. */
+  grocers: { points: GrocerPoint[]; copyright: string } | null;
   /** Store points for the map: a blob: URL of a compact GeoJSON built from the validated data. */
   storesUrl: string;
   /** SQL where clause for the store layer (store layers and retailers shown). */
@@ -261,6 +336,9 @@ export const initialState = {
   proximityPoint: null,
   proximityCount: PROXIMITY_COUNT_DEFAULT,
   proximityRadiusKm: PROXIMITY_RADIUS_KM_DEFAULT,
+  profileMap: null,
+  hoverArea: null,
+  areaHighlight: null,
 };
 
 export const useAppStore = create<AppState>()((set, get) => ({
@@ -275,7 +353,11 @@ export const useAppStore = create<AppState>()((set, get) => ({
     const next = ((current - 1 + delta + 12) % 12) + 1;
     set({ month: next, playing: false });
   },
-  setLad: (lad) => set({ lad }),
+  // A new council clears its small-area selection and chart highlight, and leaves the comparison.
+  setLad: (lad) =>
+    set((s) =>
+      s.lad === lad ? {} : { lad, area: null, areaHighlight: null, compare: cleanCompare(s.compare, lad) },
+    ),
   setCommodity: (commodity) =>
     set((s) =>
       s.commodity === commodity ? {} : { commodity, partner: null, hoverPartner: null, playing: false },
@@ -313,7 +395,11 @@ export const useAppStore = create<AppState>()((set, get) => ({
   setRetailers: (retailers) => set({ retailers: retailers === null ? null : [...new Set(retailers)].sort() }),
   setCouncilLayer: (councilLayer) => set({ councilLayer }),
   selectStore: (store) => set({ store }),
-  selectCouncil: (code) => set((s) => ({ lad: code === null || s.lad === code ? null : code })),
+  selectCouncil: (code) =>
+    set((s) => {
+      const lad = code === null || s.lad === code ? null : code;
+      return { lad, area: null, areaHighlight: null, compare: cleanCompare(s.compare, lad) };
+    }),
   setAccessMap: (accessMap) => set({ accessMap }),
   setHoverAccess: (hoverAccess) => set({ hoverAccess }),
   setProximityPicking: (proximityPicking) => set({ proximityPicking }),
@@ -323,6 +409,19 @@ export const useAppStore = create<AppState>()((set, get) => ({
     set({ proximityRadiusKm: Math.min(PROXIMITY_RADIUS_KM_MAX, Math.max(0.5, Math.round(km * 2) / 2)) }),
   setBasemap: (basemap) => set({ basemap }),
   setBasemapChoice: (basemapChoice) => set({ basemapChoice }),
+  toggleCompare: (code) =>
+    set((s) => ({
+      compare: s.compare.includes(code)
+        ? s.compare.filter((c) => c !== code)
+        : cleanCompare([...s.compare, code], s.lad),
+    })),
+  setCompare: (codes) => set((s) => ({ compare: cleanCompare(codes, s.lad) })),
+  setAreaMeasure: (areaMeasure) => set({ areaMeasure, areaHighlight: null }),
+  selectArea: (code) => set((s) => ({ area: code === null || s.area === code ? null : code })),
+  setNiGrocers: (niGrocers) => set({ niGrocers }),
+  setProfileMap: (profileMap) => set({ profileMap }),
+  setHoverArea: (hoverArea) => set({ hoverArea }),
+  setAreaHighlight: (areaHighlight) => set({ areaHighlight }),
   setMapView: (mapView) => {
     const prev = get().mapView;
     const same =
@@ -411,6 +510,10 @@ export function selectUrlState(s: AppState): UrlState {
     councilLayer: s.councilLayer,
     store: s.store,
     basemap: s.basemap,
+    areaMeasure: s.areaMeasure,
+    area: s.area,
+    compare: s.compare,
+    niGrocers: s.niGrocers,
   };
 }
 
