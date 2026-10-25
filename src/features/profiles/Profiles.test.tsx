@@ -134,6 +134,27 @@ describe("Local Authority Profiles", { timeout: 40_000 }, () => {
     expect(useAppStore.getState().profileMap?.selected).toBe(useAppStore.getState().area);
   });
 
+  it("reaches any small area by keyboard, on the geography the map shows (LP-06)", async () => {
+    const user = userEvent.setup();
+    renderAt("?m=profiles&lad=N09000003");
+    const select = await within(controls()).findByRole(
+      "combobox",
+      { name: /Small area \(174\)/ },
+      { timeout: 20_000 },
+    );
+    await user.selectOptions(select, "95II07W1"); // a whole-ward SOA (code ends in W)
+    expect(window.location.search).toContain("sa=95II07W1");
+    expect(useAppStore.getState().profileMap?.selected).toBe("95II07W1");
+    const card = within(insights()).getByRole("region", { name: "Cregagh" });
+    expect(within(card).getAllByText(/of 10/, { selector: ".metric__value" })).toHaveLength(2); // PPFI and NIMDM
+    // Census measures switch the list to the 735 Data Zones.
+    await user.selectOptions(
+      within(controls()).getByRole("combobox", { name: "Shade small areas by" }),
+      "no-car",
+    );
+    expect(within(controls()).getByRole("combobox", { name: /Small area \(735\)/ })).toBeInTheDocument();
+  });
+
   it("compares Belfast and Manchester side by side, never ranked, with the nation warning (LP-07)", async () => {
     renderAt("?m=profiles&lad=N09000003&cmp=E08000003&view=compare");
     const banner = await screen.findByText(
@@ -159,6 +180,8 @@ describe("Local Authority Profiles", { timeout: 40_000 }, () => {
     expect(ppfi).toHaveAttribute("data-comparability", "within-nation");
     expect(row(/^Urban\/rural class/)).toHaveAttribute("data-comparability", "nation-specific");
     expect(screen.getByText(/listed in the order you chose them, never ranked/)).toBeInTheDocument();
+    // NI store coverage differs from Great Britain's: said beside the figures (P11).
+    expect(screen.getAllByText(/In Northern Ireland GEOLYTIX maps ten retailers/).length).toBeGreaterThan(0);
   });
 
   it("a council without a deep profile says what is unavailable, never zero (LP-10)", async () => {

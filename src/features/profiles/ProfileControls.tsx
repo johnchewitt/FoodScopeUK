@@ -10,7 +10,14 @@ import { SkeletonLines } from "@/components/states/Skeleton";
 import { describeDataError } from "@/services/data/errors";
 import { useAppStore } from "@/state/store";
 import { MAX_COMPARE, type AreaMeasure } from "@/state/urlState";
-import { AREA_MEASURE_LABELS, PPFI_DOMAINS, type CouncilRow, type Nation } from "./model";
+import {
+  AREA_MEASURE_LABELS,
+  measureGeography,
+  PPFI_DOMAINS,
+  type CouncilRow,
+  type DeepProfile,
+  type Nation,
+} from "./model";
 import { useProfile, type ProfileData } from "./useProfile";
 
 const INITIAL_LIST = 12;
@@ -288,9 +295,42 @@ function AreaMeasurePicker({ p }: { p: ProfileData }) {
                 : `PPFI v2.1, ranked within ${deep?.profile.ppfi.within ?? "the nation"}${deep?.ppfiGeography === "soa2011" ? ", on Super Output Areas (2011)" : ""}. Decile 1 = highest priority.`}{" "}
             Click an area on the map, or a bar in a chart, for detail.
           </p>
+          {deep && <AreaSelect deep={deep} />}
         </>
       )}
     </section>
+  );
+}
+
+/** Keyboard route to any small area on the map (the map click's equivalent, LP-06). */
+function AreaSelect({ deep }: { deep: DeepProfile }) {
+  const measure = useAppStore((s) => s.areaMeasure);
+  const area = useAppStore((s) => s.area);
+  const selectArea = useAppStore((s) => s.selectArea);
+  const kind = measureGeography(deep, measure);
+  const options = useMemo(() => {
+    const items =
+      kind === deep.profile.geography.kind
+        ? deep.areas.map((a) => ({ code: a.code, name: a.name }))
+        : (kind === deep.ppfiGeography ? deep.ppfi : deep.deprivation).map((a) => ({
+            code: a.code,
+            name: a.name,
+          }));
+    return [...items].sort((a, b) => a.name.localeCompare(b.name));
+  }, [deep, kind]);
+  const value = options.some((o) => o.code === area) ? area! : "";
+  return (
+    <label className="field-row field-row--stack">
+      <span>Small area ({formatCount(options.length)})</span>
+      <select className="select" value={value} onChange={(e) => selectArea(e.target.value || null)}>
+        <option value="">Choose an area…</option>
+        {options.map((o) => (
+          <option key={o.code} value={o.code}>
+            {o.name} ({o.code})
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }
 

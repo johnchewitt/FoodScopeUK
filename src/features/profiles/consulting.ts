@@ -7,7 +7,7 @@
  * Integrity (P14): no claim that a council has a requirement, budget or procurement; no client
  * names, credentials or project references. The wording is a possible line of enquiry only.
  */
-import { formatKm, formatShare } from "@/analysis/format";
+import { formatCount, formatKm, formatShare } from "@/analysis/format";
 import type { CouncilNetwork } from "@/analysis/profile";
 import type { NationalRow } from "./useProfile";
 import type { CouncilRow, DeepProfile } from "./model";
@@ -94,7 +94,7 @@ export function opportunities(x: ConsultingInputs): Opportunity[] {
     out.push({
       id: "catchment",
       workstream: "Supermarket Catchment and Network Analysis",
-      evidence: `${k.topRetailer} has ${formatShare(k.topShare)} of the council's ${k.stores} mapped supermarkets (store counts, not market share).`,
+      evidence: `${k.topRetailer} has ${formatShare(k.topShare)} of the council's ${formatCount(k.stores)} mapped supermarkets (store counts, not market share).`,
       analysis:
         "Catchments of each store and how the population each one serves would change if a store closed.",
       data: "Store floorspace and opening hours; street network travel times; small-area population.",
