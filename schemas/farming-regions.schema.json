@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/farming-regions.schema.json",
+  "title": "FarmingRegions",
+  "description": "Outlines of the agricultural statistics regions (S33 ONS ITL1, January 2025; London merged with the South East as in Defra's tables), coverage-simplified, WGS84. Written by `foodscope-pipeline build-risk`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "features"],
+  "properties": {
+    "type": {
+      "const": "FeatureCollection"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "properties", "geometry"],
+        "properties": {
+          "type": {
+            "const": "Feature"
+          },
+          "properties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name", "nation"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "nation": {
+                "enum": ["England", "Wales", "Scotland", "Northern Ireland"]
+              }
+            }
+          },
+          "geometry": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type", "coordinates"],
+                "properties": {
+                  "type": {
+                    "const": "Polygon"
+                  },
+                  "coordinates": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "array",
+                      "minItems": 4,
+                      "items": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type", "coordinates"],
+                "properties": {
+                  "type": {
+                    "const": "MultiPolygon"
+                  },
+                  "coordinates": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "array",
+                          "minItems": 2,
+                          "maxItems": 2,
+                          "items": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -59,6 +59,10 @@ class OnsFile:
     source_id: str
     licence: str
     description: str
+    # How a .json body is checked: "arcgis" = an ArcGIS query result with a features list (one
+    # page); "any" = any JSON object or array without an "error" key (World Bank API, service
+    # metadata, OS Downloads product lists).
+    json_kind: str = "arcgis"
 
 
 @dataclass(frozen=True)
@@ -263,6 +267,16 @@ def _check(file: OnsFile, status: int, body: bytes) -> None:
         head = body[:512].lstrip().lower()
         if not body.strip() or head.startswith((b"<!doctype", b"<html")):
             raise OnsFetchError(f"{file.id}: response is not a .csv file ({body[:40]!r})")
+    if file.filename.endswith(".json") and file.json_kind == "any":
+        try:
+            doc = json.loads(body)
+        except ValueError as exc:
+            raise OnsFetchError(f"{file.id}: response is not JSON") from exc
+        if isinstance(doc, dict) and "error" in doc:
+            raise OnsFetchError(f"{file.id}: unexpected response {str(doc)[:200]}")
+        if isinstance(doc, list) and doc and isinstance(doc[0], dict) and "message" in doc[0]:
+            raise OnsFetchError(f"{file.id}: API message {str(doc[0])[:200]}")  # World Bank errors
+        return
     if file.filename.endswith(".json"):
         doc = _json_doc(file.id, body)
         if not isinstance(doc.get("features"), list):

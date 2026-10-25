@@ -1,0 +1,289 @@
+{
+  "snapshot": "2026-10-25",
+  "waterStress": {
+    "apiRows": 6916,
+    "lastUpdated": "2026-10-08",
+    "economies": 217,
+    "withValue": 178,
+    "withoutValue": 39,
+    "byClass": {
+      "critical": 17,
+      "high": 6,
+      "low": 23,
+      "medium": 15,
+      "none": 117
+    },
+    "latestYear": {
+      "2021": 2,
+      "2022": 176
+    },
+    "duplicateIso2": []
+  },
+  "ports": {
+    "port0499Rows": 146018,
+    "latestYear": 2025,
+    "years": [
+      2015,
+      2025
+    ],
+    "portsWithLatestData": 51,
+    "reconciledWithPort0304": 33,
+    "located": {
+      "dft": 27,
+      "emodnet": 24
+    },
+    "dftVersusEmodnetKm": [
+      {
+        "port": "Forth",
+        "km": 18.4
+      },
+      {
+        "port": "Rivers Hull & Humber",
+        "km": 12.4
+      },
+      {
+        "port": "Tees & Hartlepool",
+        "km": 8.9
+      },
+      {
+        "port": "River Trent",
+        "km": 4.6
+      },
+      {
+        "port": "Tyne",
+        "km": 3.4
+      },
+      {
+        "port": "Hull",
+        "km": 2.7
+      },
+      {
+        "port": "Dundee",
+        "km": 2.1
+      },
+      {
+        "port": "Southampton",
+        "km": 1.6
+      },
+      {
+        "port": "Shoreham",
+        "km": 1.5
+      },
+      {
+        "port": "Bristol",
+        "km": 1.4
+      },
+      {
+        "port": "Liverpool",
+        "km": 1.2
+      },
+      {
+        "port": "Milford Haven",
+        "km": 1.2
+      },
+      {
+        "port": "Medway",
+        "km": 0.9
+      },
+      {
+        "port": "Plymouth",
+        "km": 0.9
+      },
+      {
+        "port": "Sullom Voe",
+        "km": 0.9
+      },
+      {
+        "port": "Aberdeen",
+        "km": 0.8
+      },
+      {
+        "port": "London",
+        "km": 0.5
+      },
+      {
+        "port": "Newport",
+        "km": 0.5
+      },
+      {
+        "port": "Grimsby & Immingham",
+        "km": 0.4
+      },
+      {
+        "port": "Peterhead",
+        "km": 0.4
+      },
+      {
+        "port": "Clyde",
+        "km": 0.3
+      },
+      {
+        "port": "Cromarty Firth",
+        "km": 0.3
+      },
+      {
+        "port": "Orkney",
+        "km": 0.3
+      },
+      {
+        "port": "Goole",
+        "km": 0.2
+      },
+      {
+        "port": "Great Yarmouth",
+        "km": 0.2
+      },
+      {
+        "port": "Harwich",
+        "km": 0.2
+      },
+      {
+        "port": "Manchester",
+        "km": 0.1
+      }
+    ],
+    "portsWithMissingYears": {}
+  },
+  "portOfEntry": {
+    "years": [
+      2022,
+      2023
+    ],
+    "sums": {
+      "2022": 100.01,
+      "2023": 99.99
+    },
+    "groups": 13,
+    "foodGroups": 12,
+    "srnMonths": [
+      "2015-04",
+      "2023-12"
+    ],
+    "srnYearEndingWithoutValue": 11
+  },
+  "roads": {
+    "features": 792,
+    "byCategory": {
+      "primary": 518,
+      "strategic": 274
+    },
+    "source": {
+      "links": 115947,
+      "roads": 792,
+      "simplifyMetres": 60.0
+    }
+  },
+  "farming": {
+    "year": 2025,
+    "regions": 11,
+    "checks": {
+      "wheat": {
+        "regionsSum": 1525137.0,
+        "englandRow": 1525137.0,
+        "countryTableEngland": 1525137.0
+      },
+      "cattle": {
+        "regionsSum": 4660871.0,
+        "englandRow": 4660871.0,
+        "countryTableEngland": 4911311.0
+      },
+      "sheep": {
+        "regionsSum": 13312071.0,
+        "englandRow": 13312071.0,
+        "countryTableEngland": 13312071.0
+      },
+      "pigs": {
+        "regionsSum": 3653771.0,
+        "englandRow": 3653771.0,
+        "countryTableEngland": 3653771.0
+      },
+      "poultry": {
+        "regionsSum": 133035904.0,
+        "englandRow": 133035904.0,
+        "countryTableEngland": 133035904.0
+      }
+    },
+    "boundaries": {
+      "cleanSnapM": 0.01,
+      "cleanAreaChangeM2": 0.002,
+      "toleranceM": 500.0,
+      "minIslandM2": 1000000.0,
+      "decimals": 6,
+      "verticesIn": 363619,
+      "verticesOut": 14296,
+      "partsIn": 4830,
+      "partsOut": 180,
+      "islandPartsDropped": 4650,
+      "islandAreaDroppedHa": 10833.6,
+      "coverageValidAfterRounding": true,
+      "overlapsAfterRounding": []
+    }
+  },
+  "councilPpfi": {
+    "smallAreas": 43538,
+    "councils": 361,
+    "byNation": {
+      "England": {
+        "councils": 296,
+        "areas": 33755,
+        "priorityAreas": 6751,
+        "priorityShare": 20.0
+      },
+      "Wales": {
+        "councils": 22,
+        "areas": 1917,
+        "priorityAreas": 384,
+        "priorityShare": 20.03
+      },
+      "Scotland": {
+        "councils": 32,
+        "areas": 6976,
+        "priorityAreas": 1396,
+        "priorityShare": 20.01
+      },
+      "Northern Ireland": {
+        "councils": 11,
+        "areas": 890,
+        "priorityAreas": 178,
+        "priorityShare": 20.0
+      }
+    },
+    "domainsWithoutData": {
+      "England": [],
+      "Wales": [],
+      "Scotland": [],
+      "Northern Ireland": [
+        "supermarket_accessibility",
+        "ecommerce_access",
+        "fuel_poverty"
+      ]
+    },
+    "fewestAreas": [
+      [
+        1,
+        "E06000053",
+        "Isles of Scilly"
+      ],
+      [
+        6,
+        "E09000001",
+        "City of London"
+      ],
+      [
+        26,
+        "E06000017",
+        "Rutland"
+      ],
+      [
+        29,
+        "S12000023",
+        "Orkney Islands"
+      ],
+      [
+        30,
+        "E07000133",
+        "Melton"
+      ]
+    ]
+  }
+}

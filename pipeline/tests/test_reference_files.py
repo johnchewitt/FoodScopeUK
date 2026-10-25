@@ -154,3 +154,52 @@ def test_fsa_covers_the_eleven_ni_councils_and_checks_xml(tmp_path: Path) -> Non
     folder = fetch("s", tmp_path, transport_for({f.url: (200, b"<?xml version='1.0'?><FHRSEstablishment/>")}),
                    now=lambda: FIXED, files=(f,), queries=())
     assert load_index(folder)["files"][0]["sourceId"] == "S29"
+
+
+def test_stage6_set_fetches_each_publisher_once(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from foodscope_pipeline.sources import stage6_files as s6
+
+    calls: list[tuple[str, tuple, tuple]] = []
+
+    def fake_fetch(snapshot, raw_root, files=None, queries=None):  # noqa: ANN001
+        calls.append((raw_root.name, files, queries))
+        return raw_root / snapshot
+
+    monkeypatch.setattr(ons_files, "fetch", fake_fetch)
+    monkeypatch.setattr(cli, "RAW", tmp_path)
+    assert cli.main(["fetch-reference", "--snapshot", "2026-10-25", "--set", "stage6"]) == 0
+    assert [c[0] for c in calls] == ["worldbank", "dft", "defra", "scotgov", "emodnet", "ons", "os"]
+    files = [f for _, fs, _ in calls for f in fs]
+    queries = [q for _, _, qs in calls for q in qs]
+    assert set(files) == set(s6.WORLDBANK_FILES + s6.DFT_FILES + s6.DEFRA_FILES + s6.SCOTGOV_FILES
+                             + s6.EMODNET_FILES + s6.PROBE_FILES)
+    assert queries == list(s6.ONS_QUERIES)
+    ids = [f.id for f in files] + [q.id for q in queries] + [f.id for f in defra_stats.FILES]
+    assert len(ids) == len(set(ids))
+    # No filename collides with an earlier item in the same publisher folder (incremental snapshots).
+    assert not {f.filename for f in s6.DEFRA_FILES} & {f.filename for f in defra_stats.FILES}
+    assert not {q.stem for q in s6.ONS_QUERIES} & {q.stem for q in ons_files.QUERIES + ons_files.CONTEXT_QUERIES}
+    for f in files:
+        assert f.url.startswith("https://") and f.licence and f.source_id.startswith("S")
+
+
+@pytest.mark.parametrize(
+    ("body", "ok"),
+    [
+        (b'[{"page":1,"pages":1,"total":2},[{"value":1}]]', True),  # World Bank: header and rows
+        (b'{"currentVersion":11.1,"fields":[]}', True),  # service metadata
+        (b'[{"message":[{"id":"120","key":"Invalid value"}]}]', False),  # World Bank error
+        (b'{"error":{"code":400}}', False),
+        (b"<html>blocked</html>", False),
+    ],
+)
+def test_any_json_files(tmp_path: Path, body: bytes, ok: bool) -> None:
+    item = OnsFile(id="x.j", filename="j.json", url="https://example.invalid/j", source_id="S0",
+                   licence="OGL", description="synthetic", json_kind="any")
+    run = lambda: fetch("s", tmp_path, transport_for({item.url: (200, body)}), now=lambda: FIXED,  # noqa: E731
+                        files=(item,), queries=())
+    if ok:
+        assert load_index(run())["files"][0]["file"] == "j.json"
+    else:
+        with pytest.raises(OnsFetchError):
+            run()

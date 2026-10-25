@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/risk-farming.schema.json",
+  "title": "RiskFarming",
+  "description": "Agricultural production regions (Defra June survey, S31): crop area and livestock on 1 June for the 8 Defra regions of England (commercial holdings) and for Wales, Scotland and Northern Ireland, with comparability notes. Regions are drawn on ONS ITL1 boundaries (S33). Written by `foodscope-pipeline build-risk`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "year", "referenceDate", "measures", "regions", "comparability", "notes"],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "year": {
+      "type": "integer"
+    },
+    "referenceDate": {
+      "type": "string"
+    },
+    "measures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "unit"],
+        "properties": {
+          "id": {
+            "enum": ["wheat", "cattle", "sheep", "pigs", "poultry"]
+          },
+          "label": {
+            "type": "string"
+          },
+          "unit": {
+            "enum": ["hectares", "head", "birds"]
+          }
+        }
+      }
+    },
+    "regions": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "nation", "itl1", "basis", "point", "areaKm2", "values"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nation": {
+            "enum": ["England", "Wales", "Scotland", "Northern Ireland"]
+          },
+          "itl1": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^TL[A-Z]$"
+            }
+          },
+          "basis": {
+            "type": "string"
+          },
+          "point": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": [
+              {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              }
+            ]
+          },
+          "areaKm2": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Area of the region's ITL1 boundaries (BGC, clipped to the coastline; includes inland water), km²"
+          },
+          "values": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "comparability": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

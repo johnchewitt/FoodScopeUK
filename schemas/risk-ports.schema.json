@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/risk-ports.schema.json",
+  "title": "RiskPorts",
+  "description": "UK major ports (DfT PORT0499, S23): freight tonnage (thousand tonnes) by year, inwards by region of loading and by cargo group, agricultural products inwards by region, and outwards. A year in which a port reported nothing is null. Locations from DfT's port list or EMODnet (S36). Written by `foodscope-pipeline build-risk`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "unit",
+    "years",
+    "latestYear",
+    "cargoGroups",
+    "regions",
+    "domesticRegion",
+    "unspecifiedRegion",
+    "agricultural",
+    "notes",
+    "method",
+    "ports"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "unit": {
+      "const": "thousand tonnes"
+    },
+    "years": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "integer"
+      }
+    },
+    "latestYear": {
+      "type": "integer"
+    },
+    "cargoGroups": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "domesticRegion": {
+      "type": "string"
+    },
+    "unspecifiedRegion": {
+      "type": "string"
+    },
+    "agricultural": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["category", "label", "group"],
+      "properties": {
+        "category": {
+          "type": "integer"
+        },
+        "label": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "method": {
+      "type": "string"
+    },
+    "ports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "locode",
+          "name",
+          "nation",
+          "point",
+          "location",
+          "years",
+          "inwardsByRegion",
+          "inwardsByGroup",
+          "agriculturalInwardsByRegion",
+          "outwards"
+        ],
+        "properties": {
+          "locode": {
+            "type": "string",
+            "pattern": "^GB[A-Z0-9]{3}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nation": {
+            "enum": ["England", "Wales", "Scotland", "Northern Ireland"]
+          },
+          "point": {
+            "oneOf": [
+              {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": [
+                  {
+                    "type": "number",
+                    "minimum": -180,
+                    "maximum": 180
+                  },
+                  {
+                    "type": "number",
+                    "minimum": -90,
+                    "maximum": 90
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "location": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source", "detail"],
+            "properties": {
+              "source": {
+                "enum": ["dft", "emodnet", "none"]
+              },
+              "detail": {
+                "type": "string"
+              }
+            }
+          },
+          "years": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "inwardsByRegion": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": ["number", "null"],
+                "minimum": 0
+              }
+            }
+          },
+          "inwardsByGroup": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": ["number", "null"],
+                "minimum": 0
+              }
+            }
+          },
+          "agriculturalInwardsByRegion": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": ["number", "null"],
+                "minimum": 0
+              }
+            }
+          },
+          "outwards": {
+            "type": "array",
+            "items": {
+              "type": ["number", "null"],
+              "minimum": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}

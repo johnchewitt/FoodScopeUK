@@ -1,0 +1,26 @@
+{
+  "id": "risk.farming_regions",
+  "title": "Agricultural statistics regions: Defra regions of England and the devolved countries (ONS ITL1)",
+  "role": "reference",
+  "path": "snapshots/2026-10-25/risk/farming-regions.geojson",
+  "format": "geojson",
+  "schemaId": "farming-regions",
+  "sha256": "352dadac3097020026493f50fb58a38b29a08a34d734f3168b8da95190809a69",
+  "bytes": 312575,
+  "featureCount": 11,
+  "sourceIds": [
+    "S33"
+  ],
+  "referencePeriod": "International Territorial Levels (January 2025)",
+  "coverage": "United Kingdom: 8 regions of England (London with the South East) and 3 countries",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025",
+  "expectedCadence": "irregular",
+  "retrieval": {
+    "method": "ONS feature service (fetch-reference --set stage6), coverage-simplified offline",
+    "source": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/ITL1_JAN_2025_UK_BGC/FeatureServer/0 (1 page, sha256 7a12b23d6391…)",
+    "retrievedAt": "2026-10-25T20:33:20Z",
+    "notes": "ITL1 BGC regions in EPSG:27700, London and the South East merged, coverage-simplified at 500 m, islands under 1 km² dropped, WGS84 to 6 decimals."
+  }
+}

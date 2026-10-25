@@ -214,7 +214,7 @@ The brief asks for a complete, tested first release over an extensive unfinished
 - LP-04 and LP-06 (deep profiles): straight-line accessibility (§6.3) at 1, 2 and 5 km with the underserved areas listed (car availability beside them); PPFI v2.1 (combined and the seven domains) and the nation's deprivation index, each on its own geography and ranked within the nation; a small-area map with fixed classes (deciles in five classes, deciles 1–2 most salient; no car or van 15/30/45/60 %; straight-line distance 0.5/1/2/5 km; no data hatched). Clicking an area opens its card; clicking a chart bar (or its keyboard button) outlines the areas of that class on the map.
 - LP-05: recorded imports (largest partner's share over the latest 12 months, HMRC) and UK production share of supply (Defra, annual) for the Food Origins baskets, labelled National context. CPIH food prices, Short Straits dependence and climate risks are not included yet (sources not verified in this stage).
 - LP-07: the selected council and up to three others, in the order chosen, never ranked. Each row says how far it compares: UK-wide definitions; Census 2021 (not Scotland); ranked within each nation; each nation's own classification. A banner appears when the councils are in different nations. Benchmarks against authorities of a similar type follow in Release 2.
-- LP-08: provisional "Consulting opportunities" prompts from transparent rules on the figures shown, with "why am I seeing this?"; expanded in Stage 7 (Consulting Insights). No requirement, budget or procurement is implied.
+- LP-08: provisional "Consulting opportunities" prompts from transparent rules on the figures shown, with "why am I seeing this?"; expanded in Stage 8 (Consulting Insights). No requirement, budget or procurement is implied.
 
 ### 5.6 Supply Chain Risk Explorer (RK) — Release 2
 
@@ -481,9 +481,9 @@ Mapped from brief §19, with how each is verified.
 |---|---|---|
 | D1 | ~~GitHub repository owner/organisation and final Pages URL~~ **Resolved 23 Oct 2026**: repo `johnchewitt/FoodScopeUK`; Pages URL `https://johnchewitt.github.io/FoodScopeUK/`; Vite `base` `/FoodScopeUK/` | — |
 | D2 | ArcGIS API key: John creates API key credentials in ArcGIS Location Platform (steps in `docs/setup/arcgis-api-key.md`) and stores the key as the GitHub Actions secret `ARCGIS_API_KEY` | Stage 1 (fallback map until then) |
-| D3 | Brand assets and permission for "Powered by ConsultingWhere" and PDF branding | Stage 1 (placeholder) / Stage 7 (final) |
+| D3 | Brand assets and permission for "Powered by ConsultingWhere" and PDF branding | Stage 1 (placeholder) / Stage 8 (final) |
 | D4 | Retailer logos: use or not (default: no logos) | Stage 4 |
 | D5 | ~~Store class definition (which GEOLYTIX size bands/formats count as "supermarket")~~ **Resolved 24 Oct 2026** (John): class from `size_band` (convenience under 280 m²; supermarket 280 m² and over in three bands); forecourt, motorway, travel and hospital stores flagged as formats; default view supermarkets in the standard format; wholesale and mainly non-food stores left out; Crown Dependency stores shown with no council (S11, ADR-0020) | — |
 | D6 | Default straight-line thresholds (proposed 1 / 2 / 5 km) | Stage 5 |
-| D7 | "About ConsultingWhere" approved copy | Stage 7 |
+| D7 | "About ConsultingWhere" approved copy | Stage 8 |
 | D8 | Whether to publish curated layers to a ConsultingWhere ArcGIS Online org (Release 3) | Release 3 |

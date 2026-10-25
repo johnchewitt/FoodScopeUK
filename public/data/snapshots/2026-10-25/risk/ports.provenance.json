@@ -1,0 +1,26 @@
+{
+  "id": "risk.ports",
+  "title": "UK major ports: freight tonnage by direction, cargo group and region of loading (DfT)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-25/risk/ports.json",
+  "format": "json",
+  "schemaId": "risk-ports",
+  "sha256": "3fb35d1d7cf66048202d95f7fe862a920e5d14ee7f78da61c86aaf3770cee85e",
+  "bytes": 122637,
+  "sourceIds": [
+    "S23",
+    "S36"
+  ],
+  "referencePeriod": "Calendar years 2015–2025",
+  "coverage": "The 51 major ports with data in 2025 (located: {'dft': 27, 'emodnet': 24})",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0 (DfT); Creative Commons Attribution 4.0 International (CC BY 4.0) (EMODnet locations)",
+  "attribution": "Source: Department for Transport, Port freight statistics, licensed under the Open Government Licence v3.0. Port locations without a DfT map point: EMODnet Human Activities, Main ports (originators Eurofish International Organisation and Cogea Srl), CC BY 4.0",
+  "expectedCadence": "annual",
+  "retrieval": {
+    "method": "Read offline from the committed DfT and EMODnet files (fetch-reference --set stage6)",
+    "source": "https://assets.publishing.service.gov.uk/media/6888c795048fff613a4d5ae9/Major_and_Minor_Port_List_for_Freight_Statistics.ods (sha256 8281034b5430…); https://assets.publishing.service.gov.uk/media/6a7315f0011ff6453dece53a/port0499.ods (sha256 2eabae5c0bf8…); https://assets.publishing.service.gov.uk/media/6a6221092dc18ebe4c3b2b0b/port0304.ods (sha256 f0c66f347ee1…); https://ows.emodnet-humanactivities.eu/wfs?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=emodnet:portlocations&OUTPUTFORMAT=application/json (sha256 8febbe841ee6…)",
+    "retrievedAt": "2026-10-25T20:58:30Z",
+    "notes": "PORT0499 summed by port and year; 2025 totals reconcile with PORT0304 for 33 ports. Tonnage of all cargo, not food: only the agricultural products category is food- or feed-related."
+  }
+}

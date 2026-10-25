@@ -1,0 +1,26 @@
+{
+  "id": "risk.farming",
+  "title": "Agricultural production regions: crop area and livestock, June 2025 (Defra)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-25/risk/farming.json",
+  "format": "json",
+  "schemaId": "risk-farming",
+  "sha256": "d8b7db62984b17659b5e5fcd6c21efe12c261043c0bc9078035c8aa7aad12d93",
+  "bytes": 4980,
+  "sourceIds": [
+    "S31",
+    "S33"
+  ],
+  "referencePeriod": "1 June 2025",
+  "coverage": "England by Defra region (commercial holdings); Wales, Scotland and Northern Ireland as countries",
+  "provenance": "official_estimate",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: Department for Environment, Food & Rural Affairs, licensed under the Open Government Licence v3.0. Source: Office for National Statistics licensed under the Open Government Licence v.3.0",
+  "expectedCadence": "annual",
+  "retrieval": {
+    "method": "Read offline from the committed Defra June survey datasets (fetch-reference --set stage6)",
+    "source": "https://assets.publishing.service.gov.uk/media/69e0b1fb6c6ccf244be42e2e/structure-england-june-regions-16apr26.ods (sha256 ec727c4cfdd0…); https://assets.publishing.service.gov.uk/media/69381cbbcfacd5e888491c57/UK_key_results_by_country_1866-2025.ods (sha256 40c048c62cd1…)",
+    "retrievedAt": "2026-10-25T20:33:15Z",
+    "notes": "Survey estimates rounded to whole units; England's regions add up to the England row."
+  }
+}

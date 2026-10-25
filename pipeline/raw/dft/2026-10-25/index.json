@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-25",
+  "files": [
+    {
+      "id": "dft.port0101",
+      "file": "port0101.ods",
+      "url": "https://assets.publishing.service.gov.uk/media/6a62202b2dc18ebe4c3b2b06/port0101.ods",
+      "sourceId": "S23",
+      "licence": "Open Government Licence v3.0",
+      "description": "PORT0101: All freight tonnage traffic by port and year (filter by direction)",
+      "httpStatus": 200,
+      "bytes": 1069330,
+      "sha256": "6daa447cfb156bef5b692086a13442d00ebc5320e7cab65efa6aeaaeb7ad4196",
+      "retrievedAt": "2026-10-25T20:33:10Z"
+    },
+    {
+      "id": "dft.port0304",
+      "file": "port0304.ods",
+      "url": "https://assets.publishing.service.gov.uk/media/6a6221092dc18ebe4c3b2b0b/port0304.ods",
+      "sourceId": "S23",
+      "licence": "Open Government Licence v3.0",
+      "description": "PORT0304: Map of UK ports by tonnage and direction, for major ports over 2 million tonnes",
+      "httpStatus": 200,
+      "bytes": 505267,
+      "sha256": "f0c66f347ee19f63a2079153d4ebb5e5784c45b13096be75dc86b8e33eeffe4d",
+      "retrievedAt": "2026-10-25T20:33:11Z"
+    },
+    {
+      "id": "dft.port0499",
+      "file": "port0499.ods",
+      "url": "https://assets.publishing.service.gov.uk/media/6a7315f0011ff6453dece53a/port0499.ods",
+      "sourceId": "S23",
+      "licence": "Open Government Licence v3.0",
+      "description": "PORT0499: UK major port freight traffic, port level downloadable dataset",
+      "httpStatus": 200,
+      "bytes": 9352067,
+      "sha256": "2eabae5c0bf8f69399e5eb7425c03baf8e266fd116fa306e36751196635014ba",
+      "retrievedAt": "2026-10-25T20:33:12Z"
+    },
+    {
+      "id": "dft.port_list",
+      "file": "Major_and_Minor_Port_List_for_Freight_Statistics.ods",
+      "url": "https://assets.publishing.service.gov.uk/media/6888c795048fff613a4d5ae9/Major_and_Minor_Port_List_for_Freight_Statistics.ods",
+      "sourceId": "S23",
+      "licence": "Open Government Licence v3.0",
+      "description": "Major and Minor Port List for Freight Statistics",
+      "httpStatus": 200,
+      "bytes": 19413,
+      "sha256": "8281034b5430eed53dc79f215f32982fe0904b853dbea63c7e61ec43fbfd7808",
+      "retrievedAt": "2026-10-25T20:33:13Z"
+    }
+  ]
+}

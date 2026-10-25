@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-25",
+  "files": [
+    {
+      "id": "emodnet.port_locations",
+      "file": "emodnet-portlocations.json",
+      "url": "https://ows.emodnet-humanactivities.eu/wfs?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=emodnet:portlocations&OUTPUTFORMAT=application/json",
+      "sourceId": "S36",
+      "licence": "Creative Commons Attribution 4.0 International (CC BY 4.0); EMODnet Human Activities (originators Eurofish International Organisation and Cogea Srl)",
+      "description": "EMODnet Human Activities, main ports: port locations (WFS layer emodnet:portlocations, GeoJSON)",
+      "httpStatus": 200,
+      "bytes": 325683,
+      "sha256": "8febbe841ee617d3fd48831e16e3d43403a53a4849212df3c3ad5ab0115a3084",
+      "retrievedAt": "2026-10-25T20:58:30Z"
+    }
+  ]
+}

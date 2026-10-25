@@ -413,6 +413,6 @@ public/data/
 | Small-area data | loaded per LAD, ≤ 1 MB gzip per authority |
 | Commodity switch (cached) | < 300 ms to updated map + KPIs |
 
-Measured in CI with bundle-size reporting; regressions over 10 % fail the build after Stage 8.
+Measured in CI with bundle-size reporting; regressions over 10 % fail the build after Stage 9 (Hardening; renumbered 25 Oct 2026).
 
 **Stage 1 measurement (production build)**: initial JS `index` chunk 605.8 kB (183.7 kB gzip) — over the 350 kB budget, mainly React, Calcite (dialog, panel, switch, loader) and Ajv; the ArcGIS `MapHost` chunk (1.15 MB, 275 kB gzip) loads lazily. Reduction is tracked in `docs/backlog.md`.

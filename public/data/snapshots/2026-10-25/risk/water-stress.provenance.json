@@ -1,0 +1,25 @@
+{
+  "id": "risk.water_stress",
+  "title": "Level of water stress by country (SDG 6.4.2, FAO AQUASTAT)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-25/risk/water-stress.json",
+  "format": "json",
+  "schemaId": "risk-water-stress",
+  "sha256": "74fc89627957001cd80d513edd1b4ec1f46f724d767416267a3908d3845eeb63",
+  "bytes": 74049,
+  "sourceIds": [
+    "S30"
+  ],
+  "referencePeriod": "Latest year per country, 2021–2022; series from 2000",
+  "coverage": "178 countries with a value; 39 World Bank economies without one (listed)",
+  "provenance": "official_estimate",
+  "licence": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+  "attribution": "FAO AQUASTAT, via World Bank World Development Indicators (ER.H2O.FWST.ZS), CC BY 4.0",
+  "expectedCadence": "annual",
+  "retrieval": {
+    "method": "World Bank API v2 (fetch-reference --set stage6, GitHub Actions)",
+    "source": "https://api.worldbank.org/v2/country/all/indicator/ER.H2O.FWST.ZS?format=json&per_page=20000&date=2000:2025 (sha256 03827cc1c41a…); https://api.worldbank.org/v2/country?format=json&per_page=400 (sha256 c9acf3932785…)",
+    "retrievedAt": "2026-10-25T20:33:09Z",
+    "notes": "API last updated 2026-10-08. Values as published (rounded to 3 decimals); classes from FAO's SDG 6.4.2 thresholds. A national figure for the whole country."
+  }
+}

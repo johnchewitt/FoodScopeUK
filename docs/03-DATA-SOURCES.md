@@ -3,8 +3,8 @@
 | | |
 |---|---|
 | **Document** | 03 — Verified data catalogue and manifest |
-| **Version** | 0.6 — 25 October 2026 (pre-Stage 5 data steps: S13, S15, S16, S19, S20 and S29 verified, gates G8–G11 cleared; context step: S09, S10 and S21 verified; Stage 5: app use of S13 and S29 recorded) |
-| **Verification date** | 23 October 2026; S11, S12, S14 and S18 re-verified 24 October 2026; S09, S10 and S21 verified 25 October 2026 |
+| **Version** | 0.7 — 25 October 2026 (Stage 6 data step: S03 theme 3 tables and S23 verified; S30–S33, S35 and S36 added and verified; S34 (OSNI roads) unreachable; S13, S15 and S17 notes updated. Earlier: pre-Stage 5 data steps S13, S15, S16, S19, S20, S29, gates G8–G11; context step S09, S10, S21) |
+| **Verification date** | 23 October 2026; S11, S12, S14 and S18 re-verified 24 October 2026; S09, S10 and S21 verified 25 October 2026; S03, S23, S30–S33, S35 and S36 verified 25 October 2026 (Stage 6 data step) |
 | **Machine-readable form** | Generated into `public/data/snapshots/<date>/catalogue.json` by the pipeline from Stage 2 |
 
 ## How to read this document
@@ -30,7 +30,7 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 |---|---|---|---|---|---|
 | S01 | Overseas Trade Statistics API (uktradeinfo) | HMRC | ✅ | Origins, Seasonal, Scenarios, Risks | R1 |
 | S02 | UK import trade by country of origin and country of dispatch, 2024 | HMRC | ✅ (context) | Evidence page, caveats | R1 |
-| S03 | United Kingdom Food Security Report 2024 | Defra | 🟡 | Profiles (national context), Risks, Scenario B | R1/R2 |
+| S03 | United Kingdom Food Security Report 2024 | Defra | ✅ theme 3 tables 3_2_1a, 3_2_2a, 3_2_2b (25 Oct 2026); 🟡 other themes | Risk Explorer (logistics), Profiles (national context), Scenario B | R1 |
 | S04 | United Kingdom Food Security Digest 2025 | Defra | 🟡 | National context | R1 |
 | S05 | Food statistics in your pocket (+ Defra trade codes) | Defra | 🟡 | Commodity definitions, prices, production-to-supply | R1 |
 | S06 | Monthly UK cattle, sheep and pig slaughter and meat production | Defra | 🟡 | Seasonal (production) | R2 |
@@ -40,9 +40,9 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S10 | Agriculture in the United Kingdom 2025, chapter 7 (crops) | Defra | ✅ (wheat, potatoes: supply and use; 25 Oct 2026) | Profiles (national context), Scenario C | R1/R2 |
 | S11 | Grocery / Supermarket Retail Points (v46, June 2026) | GEOLYTIX | ✅ | Supermarkets, Profiles, Access, Scenario D | R1 |
 | S12 | Number of chain supermarkets across LADs and smaller areas in the UK | ONS | ✅ (LAD tables 1–4) | Validation of store counts | R1 |
-| S13 | Priority Places for Food Index (v2.1) | CDRC / Leeds HASP | ✅ (all four nations; NI on SOAs 2011, three domains without data) | Access, Profiles | R1 (demo LADs) |
+| S13 | Priority Places for Food Index (v2.1) | CDRC / Leeds HASP | ✅ (all four nations; Scotland on 2011 Data Zones; NI on SOAs 2011, three domains without data) | Access, Profiles, Risk Explorer (every council) | R1 |
 | S14 | Local Authority Districts (May 2025) Boundaries UK, BGC (display) and BFE (store assignment) | ONS | ✅ | All UK views, Profiles | R1 |
-| S15 | LSOA 2021 boundaries and population-weighted centroids (E&W) | ONS | ✅ (Manchester; G11) | Access, Profiles (Manchester) | R1 |
+| S15 | LSOA 2021 boundaries and population-weighted centroids (E&W); LSOA → council lookup | ONS | ✅ (boundaries for Manchester, G11; lookup for all 35,672 LSOAs, Stage 6) | Access, Profiles (Manchester), Risk Explorer | R1 |
 | S16 | Data Zones 2021 (and Super Data Zones) | NISRA | ✅ (boundaries, centroids; G9) | Access, Profiles (Belfast) | R1 |
 | S17 | Data Zones 2022 | Scottish Government / NRS | 🔴 | Access (Scotland) | R2 |
 | S18 | Mid-year population estimates (ONS UK tables, mid-2025) | ONS (with NRS and NISRA) | ✅ (council level; Census 2021 small areas for Manchester and Belfast) | All per-capita indicators | R1 |
@@ -50,13 +50,20 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S20 | Car or van availability (Census 2021 / Scotland's Census 2022) | ONS / NISRA / NRS | ✅ England & Wales (TS045), Northern Ireland (table builder, file from John); 🔴 Scotland | Access, Profiles | R1 (Eng, NI) |
 | S21 | Rural–urban classifications | ONS / Scottish Gov / NISRA | ✅ England & Wales (ONS 2021, councils and LSOAs); Northern Ireland 2015 class per SOA (NIMDM file); 🔴 Scotland | Profiles, Access | R1 (E&W, NI small areas) |
 | S22 | Journey time statistics | DfT | 🔴 (England only) | Access context | R2 |
-| S23 | Port freight annual statistics 2025 | DfT | 🟡 | Risks, Scenario B | R2 |
+| S23 | Port freight annual statistics 2025 (PORT0499, PORT0304, port list) | DfT | ✅ (25 Oct 2026) | Risk Explorer (logistics), Scenario B | R1 |
 | S24 | Natural Earth Admin 0 countries (v5.1.2) | Natural Earth | ✅ (1:110m outlines, 1:50m label points, ISO crosswalk) | Map reference layer; Origins map | R1 |
 | S25 | Basemap styles service: dark grey, light grey, imagery | Esri (ArcGIS Location Platform) | ✅ all three styles (live site, 24 Oct 2026) | Map | R1 |
 | S26 | ArcGIS Living Atlas items | Esri and contributors | 🔴 per item | Optional reference layers | R2 |
 | S27 | Consumer price inflation — food (CPIH) | ONS (via Defra pocketbook CSV) | 🟡 | National context | R1 |
 | S28 | HMRC port reference and port-level OTS detail | HMRC | 🟡 | Risks, Scenario B | R2 |
 | S29 | Food hygiene rating open data (Northern Ireland councils) | Food Standards Agency | ✅ (NI; 25 Oct 2026) | UK Food Access, Profiles: NI grocers GEOLYTIX misses (supplementary layer) | R1 (NI) |
+| S30 | Level of water stress (SDG 6.4.2), FAO AQUASTAT via the World Bank API | FAO / World Bank | ✅ (25 Oct 2026) | Risk Explorer (supply) | R1 |
+| S31 | Structure of the agricultural industry at June: England regions; UK key results by country | Defra | ✅ (2025; 25 Oct 2026) | Risk Explorer (logistics: farming regions) | R1 |
+| S32 | Data Zone lookups (2011 and 2022) | Scottish Government | ✅ (25 Oct 2026) | Risk Explorer (PPFI by council, Scotland) | R1 |
+| S33 | International Territorial Level 1 (January 2025) Boundaries UK BGC | ONS | ✅ (25 Oct 2026) | Risk Explorer (farming regions) | R1 |
+| S34 | OSNI Open Data 1:50,000 transport | OSNI / OpenDataNI | ⚠️ service closed the connection to the pipeline in three runs (25 Oct 2026) | — (Northern Ireland roads not shown) | — |
+| S35 | OS Open Roads | Ordnance Survey | ✅ (extract, 25 Oct 2026) | Risk Explorer (logistics: road corridors, GB) | R1 |
+| S36 | EMODnet Human Activities, main ports: port locations | EMODnet | ✅ (25 Oct 2026) | Risk Explorer (locations of 24 ports DfT does not locate) | R1 |
 
 ---
 
@@ -139,15 +146,27 @@ The wording says when a code is *recorded*: the API gives no validity dates, so 
 | Published | 21 May 2026; covers 2024; no planned repeat |
 | Use | Evidence page and P3 caveat; not used for figures in maps (it covers only trade where both CoO and CoD were declared and won't match headline OTS) |
 
+### S30 — Level of water stress (SDG 6.4.2), FAO AQUASTAT ✅ (25 Oct 2026)
+
+| Field | Detail |
+|---|---|
+| Indicator | World Bank `ER.H2O.FWST.ZS`, "Level of water stress: freshwater withdrawal as a proportion of available freshwater resources" (data.worldbank.org, read 25 Oct 2026); source FAO AQUASTAT; licence CC BY 4.0 |
+| Download | `https://api.worldbank.org/v2/country/all/indicator/ER.H2O.FWST.ZS?format=json&per_page=20000&date=2000:2025` (one page: header `total` 6,916, `lastupdated` 2026-10-08) and the country list `https://api.worldbank.org/v2/country?format=json&per_page=400` (296 entries, 79 aggregates). Fetched on GitHub Actions into `pipeline/raw/worldbank/2026-10-25/` |
+| Fields used | `countryiso3code`, `date`, `value` (per cent), `indicator.id`; the country list's `id` (ISO3), `iso2Code`, `name`, `region.value` (`Aggregates` marks regions and income groups, which are excluded) |
+| Coverage | 217 economies: 178 with a value (latest year 2022; 2021 for Israel and West Bank and Gaza), 39 without (e.g. Hong Kong, Gibraltar, Kosovo, Montenegro; listed in the dataset, never filled in) |
+| Classes | FAO and UN-Water SDG 6.4.2 thresholds: no stress below 25 %, low 25–50 %, medium 50–75 %, high 75–100 %, critical above 100 % (Progress on Level of Water Stress, 2021). A value on a threshold takes the higher class, except 100 %, which is high. In the 2026 file: 117 none, 23 low, 15 medium, 6 high, 17 critical |
+| Join to trade partners | ISO 3166 alpha-2 (`iso2Code`) to HMRC partners' `iso2` (S24 crosswalk). Partners with no value (e.g. Taiwan, which the World Bank list does not include) are shown as "no data" |
+| **Limits** | A national figure: total withdrawals against renewable resources for the whole country. It does not describe the region where a crop is grown (e.g. southern Spain), the season, or whether the UK's imports are irrigated, and it is not a probability of disruption. The app says so wherever it is shown, and never folds it into a score |
+
 ### S28 — HMRC port reference and port-level detail 🟡
 
-`/Port` endpoint lists `PortId` values used in `/OTS`. Port-level commodity imports could support a commodity-specific view of Short Straits dependence. **To verify** in Stage 9: completeness of port allocation for EU roll-on/roll-off imports, suppression at port level, and how Dover/Channel Tunnel are coded. Until verified, Scenario B uses UKFSR published shares (S03).
+`/Port` endpoint lists `PortId` values used in `/OTS`. Port-level commodity imports could support a commodity-specific view of Short Straits dependence. **To verify** in Stage 10 (Release 2): completeness of port allocation for EU roll-on/roll-off imports, suppression at port level, and how Dover/Channel Tunnel are coded. Until verified, Scenario B uses UKFSR published shares (S03).
 
 ---
 
 ## 3. Food security context and domestic production (Defra)
 
-### S03 — United Kingdom Food Security Report 2024 🟡
+### S03 — United Kingdom Food Security Report 2024 ✅ theme 3 tables (25 Oct 2026); 🟡 other themes
 
 | Field | Detail |
 |---|---|
@@ -156,8 +175,9 @@ The wording says when a code is *recorded*: the API gives no validity dates, so 
 | Format | HTML themes 1–5; PDF; one ODS dataset per theme |
 | Licence | OGL v3.0 |
 | Key facts used (Theme 3) | Short Straits carried on average about 18 % of total food, feed and drink import volume; higher for perishables in 2023 — about 42 % of dairy and eggs, 39 % of meat, 29 % of fruit and vegetables. EU supplied 64 % of food, feed and drink import volume in 2023. |
-| Processing | Stage 2: download theme ODS files; extract cited tables to `context/national.json` with table references; never retype figures by hand without a test |
-| To verify | Exact ODS table IDs for the figures above; units (volume basis) |
+| **Theme 3 dataset (verified 25 Oct 2026)** | `FSR-theme3-241211.ods` (asset `6756c6a1a63e1781efb87778`, linked from the theme 3 page), fetched by `fetch-reference --set stage6` into `pipeline/raw/defra/2026-10-25/`. Sheets used, each a long table with a header row: **3_2_2a** `port`, `year`, `value` — "Percentage of imports of food, feed, and drink (FFD) by volume in the UK by port of entry, 2022 and 2023", 13 port groups including "Other recorded ports" and "No port recorded" (each year sums to 100 ± 0.01); **3_2_2b** `food`, `year`, `percentage`, `food_order` — proportion of each food group's import volume recorded as entering at Dover, Dover/Eurotunnel or Eurotunnel (Folkestone), 12 groups, 2022 and 2023 (2023: dairy 42.2, meat 38.78, fruit & veg 29.03 — the key facts above); **3_2_1a** `month`, `variable` (`Monthly`, `Year ending`), `value` — average delay on England's Strategic Road Network, seconds per vehicle per mile, April 2015 to December 2023 (the title says "to 2024"); the year-ending series has no value for its first 11 months. |
+| Not used | 3_2_3a (agri-food import volume, EU and non-EU): its title says "MT" but the values (e.g. 20,514,812,183 for the EU in 2010) are not in million tonnes; not used until the unit is confirmed. |
+| Processing | `build-risk` → `risk/port-entry.json`, values as published. Port groups are linked to DfT statistical ports (`config/risk.json`) for highlighting only; the percentages are never combined with DfT tonnages. |
 
 ### S04 — United Kingdom Food Security Digest 2025 🟡
 
@@ -208,6 +228,19 @@ Verified from the files themselves (fetched by `fetch-reference --set context` o
 The build checks, for the year it shows, that total supply = production + imports − exports and that the share = production ÷ total supply (both exact for 2025). **Bananas:** Defra publishes no UK production statistics; the profile says so. Config: `pipeline/foodscope_pipeline/config/national_production.json`. The Seasonal Supply text (SS-07) still calls S09/S10 "not yet verified"; Stage 5 updates it (monthly production is still not published).
 
 ---
+
+### S31 — Structure of the agricultural industry at June ✅ (2025 results; 25 Oct 2026)
+
+Defra, "Structure of the agricultural industry in England and the UK at June" (page updated 22 Sep 2026; OGL v3.0). Two datasets fetched into `pipeline/raw/defra/2026-10-25/`:
+
+| File | Verified structure | Use |
+|---|---|---|
+| `structure-england-june-regions-16apr26.ods` | One sheet per year (2010–2025, no 2020); sheet `2025`, header row 3 (`England 2025 Region`, then farm size, farm type, land use, crop, livestock and labour columns); rows for 8 Defra regions and England. Columns used: `Wheat`, `Total cattle`, `Total sheep`, `Total pigs`, `Total poultry`. Commercial holdings only; cattle from the Cattle Tracing System (commercial holdings) | Regions of England (London is counted with the South East: `South East (incl. London)`; `North West and Merseyside`; `Eastern`) |
+| `UK_key_results_by_country_1866-2025.ods` | Sheets `Wheat` (thousand hectares), `Cattle`, `Sheep`, `Pigs`, `Poultry` (million birds); columns `Year`, `England`, `Wales`, `England & Wales`, `Scotland`, `Great Britain`, `Northern Ireland`, `United Kingdom` | Wales, Scotland, Northern Ireland |
+
+- **Checks (build):** the 8 regions add up to the England row for every measure; for wheat, sheep, pigs and poultry they also equal England in the UK table. Cattle differ by design: regions 4,660,871 head (commercial holdings) against 4,911,311 for all holdings in England (2025). The four countries add up to the UK row.
+- **Unit labels:** the `Cattle`, `Sheep` and `Pigs` sheets say "thousand head" but hold head counts (England's sheep, 13,312,071, equals the regional table's total). Values are used as head and the discrepancy is noted in the dataset.
+- **Comparability:** England's figures are commercial holdings; each devolved country's come from its own survey or census, as compiled by Defra. Regional figures are survey estimates (sampling error). Shown as counts by region, never as a regional score.
 
 ## 4. Retail
 
@@ -271,6 +304,8 @@ Published 7 March 2024, OGL v3.0. URL: https://www.ons.gov.uk/peoplepopulationan
 | **Gate G8 result (25 Oct 2026)** | **Northern Ireland is included.** 43,538 rows, ranked 1…n within each country: England 33,755 LSOAs (2021), Wales 1,917 LSOAs, Scotland 6,976 Data Zones, Northern Ireland 890 SOAs (2011, codes such as `95GG01S1`). `country` takes the values `E`, `W`, `S`, `NI`, and `country_denominator` is the number of areas in that country. In Northern Ireland three domains are empty: `domain_supermarket_accessibility`, `domain_ecommerce_access` and `domain_fuel_poverty`, with their deciles. So NI's combined index rests on four domains. Belfast's 174 SOAs carry PPFI on the same geography as NIMDM 2017, and none is in NI's top-priority decile. |
 | **Orientation** | The publisher's pages (user guide, CDRC FAQ and news page, read 25 Oct 2026) do not say which end is highest priority. The data shows it. The socio-demographic domain (income deprivation and no car) ranks with IoD 2025 (decile against decile, r = 0.86, England) and with NIMDM 2017 (rank against rank, r = 0.93, NI), both of which put 1 = most deprived. So **rank 1 and decile 1 = highest priority**. The build stops if this correlation ever falls below 0.5. |
 | **Records disagree (24 Oct 2026)** | The HASP record (dataset 5276, v2.1 LSOA) lists spatial coverage "Great Britain"; the CDRC page (data.cdrc.ac.uk/node/2443) says "the four nations" and lists "NI SOA (2011)". Downloads go through a HASP basket, so John provides the file. |
+| **Scotland's geography (Stage 6, 25 Oct 2026)** | Scotland's 6,976 codes run from `S01006506` to `S01013481`: **2011 Data Zones**, not the 2022 Data Zones the HASP record lists (2022 codes start at `S01013482`). They are assigned to councils with the Scottish Government's 2011 Data Zone lookup (S32), which matches every one. |
+| **App use (Stage 6)** | Risk Explorer, every council (John, 25 Oct 2026): per council, the number of its small areas in the nation's deciles 1–2, for the combined index and each domain (`risk/council-ppfi.json`); England and Wales via the S15 lookup (35,672 LSOAs), Scotland via S32, Northern Ireland via the council named for each SOA in NIMDM 2017 (S19). Each nation keeps 20.0 % of its areas in deciles 1–2. Shares are of small areas, not people, and councils are ranked within their nation only. |
 | **App use (Stage 5)** | Deep profiles only (Belfast on its 174 SOAs, Manchester on its 295 LSOAs). The combined index and the seven domains use the published deciles, drawn in five fixed classes (deciles 1–2 most salient), always "within England" or "within Northern Ireland". The three NI domains without data are shown as "Data unavailable", never zero. The direction note above is shown in the profile and the Evidence page. Checked by hand against the raw file for five areas per council (stage 5 report). |
 
 ### S19 — Deprivation indices 🟡
@@ -366,6 +401,7 @@ Fetched by `fetch-reference` on GitHub Actions (run 40137753934) into `pipeline/
 | Boundaries | `Lower_layer_Super_Output_Areas_December_2021_Boundaries_EW_BGC_V5` (generalised to 20 m, clipped) | `LSOA21CD`, `LSOA21NM`, `LSOA21NMW`, `BNG_E`, `BNG_N`, `LAT`, `LONG`; EPSG:27700 | A box around Manchester (378,300–390,900 E, 382,100–405,900 N): 714 LSOAs, 8 pages of 100, count checked |
 | Population-weighted centroids | `LSOA_PopCentroids_EW_2021_V4` | `LSOA21CD`; points in EPSG:27700 | The same box: 651 points |
 
+- **Stage 6 (25 Oct 2026):** the same lookup service fetched for every LSOA (`ons.lsoa21_lad25_all`, 36 pages of 1,000, `pipeline/raw/ons/2026-10-25/`): 35,672 LSOAs, each once, matching the count query; 318 councils, all May 2025 councils of England and Wales. Used to assign the Priority Places index to councils (best fit).
 - **Checks:** every Manchester LSOA in the lookup has a boundary and a centroid; names agree between lookup and boundaries. Two centroids lie on or 1.6 m outside their generalised boundary (BGC generalisation), recorded in `pipeline/reports/areas-qa-2026-10-24.json`.
 - **Licence and attribution:** OGL v3.0; "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025" (G5 wording).
 
@@ -382,7 +418,7 @@ Fetched by `fetch-reference` on GitHub Actions (run 40137753934) into `pipeline/
 
 ### S17 — Scotland Data Zones 2022 🔴
 
-Release 2 (national access layers).
+Release 2 (national access layers). The Priority Places index uses Scotland's **2011** Data Zones (S13), so the Stage 6 council aggregation needs only the 2011 lookup (S32), not 2022 boundaries.
 
 ### S18 — Population ✅ (council level, mid-2025)
 
@@ -415,13 +451,50 @@ Release 2 (national access layers).
 
 ---
 
+### S32 — Scottish Government Data Zone lookups ✅ (25 Oct 2026)
+
+| File | Source | Verified structure |
+|---|---|---|
+| `dz2011-lookup.csv` | https://data.gov.scot/dataset/2011_data_zone_lookup (CSV, 3.1 MB, updated 19 Aug 2026, OGL v3.0) | Windows-1252 text; columns `DZ2011_Code`, `DZ2011_Name`, `IZ2011_Code`, …, `LA_Code`, `LA_Name`, …, `UR2_Code`–`UR8_Name`, `Country_Code`, `Country_Name`; 6,976 Data Zones, each once, in 32 councils whose codes are all May 2025 council codes. Every PPFI Scotland code is in it |
+| `dz2022-lookup.csv` | https://data.gov.scot/dataset/2022_data_zone_lookup (fetched first; not used) | 7,392 Data Zones (2022) — not the PPFI geography |
+
+### S33 — ONS International Territorial Level 1 (January 2025) ✅ (25 Oct 2026)
+
+Feature service `ITL1_JAN_2025_UK_BGC/FeatureServer/0` (data.gov.uk record "International Territorial Level 1 (January 2025) Boundaries UK BGC"); one page, 12 features, EPSG:27700; fields `ITL125CD` (`TLC`…`TLN`), `ITL125NM`, `BNG_E`, `BNG_N`, `LAT`, `LONG` (label point), `Shape__Area`, `Shape__Length`. Defra's English regions are ITL1 regions with London (`TLI`) and the South East (`TLJ`) merged; Wales, Scotland and Northern Ireland are `TLL`, `TLM`, `TLN`. Coverage-simplified at 500 m for national display (islands under 1 km² dropped: 4,650 parts, 108 km² in all, mostly Scottish islets).
+
 ## 7. Transport and logistics
 
-### S23 — DfT Port freight annual statistics 2025 🟡
+### S23 — DfT Port freight annual statistics 2025 ✅ (25 Oct 2026)
 
-Published 29 July 2026 (accredited official statistics); data tables as a 39.9 MB ZIP; cargo groups (liquid bulk, dry bulk, Ro-Ro, container, others); OGL v3.0. URL: https://www.gov.uk/government/statistics/port-freight-annual-statistics-2025. **To verify**: which PORT tables give port-level Ro-Ro units/tonnage and any agricultural/food cargo categories. Food-specific port dependence comes from UKFSR (S03), not DfT.
+Published 29 July 2026 (accredited official statistics); OGL v3.0. URL: https://www.gov.uk/government/statistics/port-freight-annual-statistics-2025. The data tables page ("Port and domestic waterborne freight statistics: data tables (PORT)", updated 10 Sep 2026) links each table as an .ods asset. Fetched by `fetch-reference --set stage6` into `pipeline/raw/dft/2026-10-25/`.
+
+| File | Verified structure | Use |
+|---|---|---|
+| `port0499.ods` (PORT0499, "UK major port freight traffic, port level downloadable dataset, from 2000") | Sheet `port0499`, header on row 8: `Year`, `Major Port`, `Port of Load/Unload Region`, `Port of Load/Unload Country`, `Direction` (`Inwards`, `Outwards`), `Cargo Group` (6), `Cargo Category` (27 codes), `Cargo Description`, `Tonnage (thousands)`, units and TEU. 146,020 rows, 2000–2025, every tonnage numeric; two 2002 rows have no port and zero tonnage. 8 regions (including `United Kingdom (inc CHI & IOM)` = coastwise and `Unspecified`). Notes 1–6 (revisions for Hull 2019 and London 2019–2023; 2025 recategorisation of wood pellets and wind-farm products; London Ro-Ro categories 2025) | `risk/ports.json`: 51 ports with 2025 data, 2015–2025, inwards by region and cargo group, outwards, and inwards of cargo category 23 "Agricultural products (eg grain, soya, tapioca)" by region |
+| `port0304.ods` (PORT0304, map data for ports over 2 million tonnes) | Sheet `Data`: `Port`, `Liquid Bulk`, `Dry bulk & other general cargo`, `Ro-Ro`, `Containers`, `Total`; 33 ports, 2025 | Check: PORT0499's 2025 totals equal PORT0304's for all 33 (to 0.01 kt) |
+| `Major_and_Minor_Port_List_for_Freight_Statistics.ods` | Sheet `Major_Ports_List`, header row 5: `Port Locode`, `Port Name`, `Published Port Locode`, `Published Port Name`, `Country of the UK`, …, `Published Port Latitude`, `Published Port Longitude` ("rough location for mapping purposes"); 53 statistical ports, 26 with `NA` coordinates (among them Dover, Felixstowe, Belfast, Holyhead) | UN/LOCODE, nation and map point of each port; the 24 of the 51 ports without a point take EMODnet's (S36) |
+
+**What it can and cannot say.** Tonnage covers all cargo. Only the dry-bulk category "agricultural products" is food or feed, and it is mostly grain and soya for feed and milling. Containers and roll-on/roll-off units — the way most fresh food arrives — are not recorded by commodity, so Dover shows no agricultural dry bulk at all. Food-specific port dependence therefore comes from UKFSR (S03), not DfT; the app never derives food flows through a port.
 
 ---
+
+### S34 — OSNI Open Data 1:50,000 transport ⚠️ not reachable from the pipeline
+
+data.gov.uk record "OSNI Open Data - 50K Transport - Transport lines" (OpenDataNI, OGL / LPS Open Government Data Licence): the only resource is the Esri REST layer `services.spatialni.gov.uk/opendata/rest/services/OSNIVector/OSNIOpenData_Transport_50K/MapServer/2`. Three GitHub Actions runs (25 Oct 2026) got "Remote end closed connection without response" for the service metadata, and the build sandbox cannot reach the host. The probe (`stage6_files.OSNI_PROBE_FILES`) was then taken out of the `stage6` set so that each push does not fail on it. Northern Ireland's roads are therefore **not shown**; the map and the panel say so. To retry before Release 1 sign-off.
+
+### S35 — OS Open Roads ✅ (extract, 25 Oct 2026)
+
+OS Downloads API `https://api.os.uk/downloads/v1/products/OpenRoads/downloads` (OGL v3.0): GB GeoPackage `oproad_gpkg_gb.zip`, 1,016,021,285 bytes, MD5 checked. Too large to commit: `fetch-open-roads` (GitHub Actions) downloads it to a temporary folder, records its schema (`open-roads-schema.json`: layer `road_link`, 3,961,077 links, EPSG:27700; fields `road_classification`, `road_classification_number`, `primary_route`, `trunk_road`, …) and writes the extract `open-roads-strategic.geojson` (115,947 links → 792 roads).
+
+- **Definition:** `strategic` = `trunk_road` true or `road_classification` = Motorway (the national highway authorities' networks: National Highways, Transport Scotland, Welsh Government); `primary` = other `primary_route` A roads. Links merged by road number and category, simplified at 60 m, WGS84 to 5 decimals.
+- **Limits:** Great Britain only (Northern Ireland: S34). Corridors, not freight flows or volumes; no traffic or delay per road (England's network-wide delay comes from S03).
+
+### S36 — EMODnet Human Activities, main ports: port locations ✅ (25 Oct 2026)
+
+EMODnet catalogue record `379d0425-8924-4a41-a088-1a002d2ea748` ("Main Ports, Goods-Passengers-Vessels Traffic", revised 10 Dec 2025; CC BY 4.0; credit the EMODnet portal, originators Eurofish International Organisation and Cogea Srl). WFS `https://ows.emodnet-humanactivities.eu/wfs`, layer `emodnet:portlocations`, GeoJSON, EPSG:4326 (lon, lat): 946 ports, 66 in the UK (`country` `UK` or `GB`). Fields used: `port_id` (UN/LOCODE, or DfT's own `GB203`/`GB221` for River Trent and Rivers Hull & Humber — the same codes as DfT's list), `port`, `source` (e.g. `GISCO`, `UN/LOCODE`, `Marine Traffic`), `pointx`, `pointy`.
+
+- **Use:** only for the 24 of DfT's 51 current ports that DfT does not locate (Dover, Felixstowe, Belfast, Holyhead, Larne, Cairnryan, Heysham, …). Each port records which source placed it.
+- **Check:** for the 27 ports both locate, the points agree within 3 km except multi-site estuary ports (Forth 18 km, Rivers Hull & Humber 12 km, Tees & Hartlepool 9 km, River Trent 5 km). Port symbols are "rough locations", not terminals.
 
 ## 8. Platform and reference services
 
@@ -469,8 +542,11 @@ Defra pocketbook CSV of CPIH food and non-alcoholic beverages since 2020 (S05) f
 | Realistic travel-time catchments | Requires routing | Release 1 straight-line (labelled); Release 3 pre-computed network times (OSM + documented speeds) |
 | UK-wide comparable deprivation | Indices differ by nation and year | Within-nation deciles; comparability warnings |
 | PPFI for Northern Ireland (v2) | Unconfirmed | Gate in Stage 2; NI-native indicator set as fallback |
-| Food import entry-point dependency by commodity | Partly published (UKFSR commodity groups) | Scenario B on UKFSR shares; HMRC port data only if verified |
-| Climate/agricultural risk indicators | No single authoritative per-commodity index identified | Cite Defra/UKFSR narrative findings only; no invented scores |
+| Food import entry-point dependency by commodity | Published for food groups only (UKFSR 3_2_2a/b, S03); DfT records no commodity for unitised traffic (S23) | Risk Explorer and Scenario B show UKFSR's published shares; DfT tonnage shown as all-cargo context; HMRC port data only if verified (S28) |
+| Climate/agricultural risk indicators | No authoritative per-commodity or sub-national index identified | FAO water stress by country (S30, John's choice, 25 Oct 2026), labelled national; no invented scores |
+| Rail freight routes and terminals | No open, official mapped dataset found (ORR publishes national freight statistics, not routes) | Not shown in the logistics view; stated |
+| Distribution centres and warehouses | No authoritative public register found | Not shown; stated (never inferred from store or trade data) |
+| Northern Ireland road corridors | OSNI service unreachable from the pipeline (S34) | Not shown; stated |
 | Public transport accessibility (UK-wide) | England-only DfT statistics | England context only, Release 2 |
 
 ---
@@ -482,6 +558,9 @@ Defra pocketbook CSV of CPIH food and non-alcoholic beverages since 2020 (S05) f
 - Contains GEOLYTIX Grocery Retail Points data (v46, June 2026) (courtesy acknowledgement; on the store layer and the Evidence page from Stage 4).
 - Priority Places for Food Index © CDRC / Leeds HASP, OGL v3.0 (wording to confirm).
 - Made with Natural Earth.
+- Level of water stress: FAO AQUASTAT, via World Bank World Development Indicators (ER.H2O.FWST.ZS), CC BY 4.0.
+- Port locations (where DfT gives none): EMODnet Human Activities, Main ports (Eurofish, Cogea), CC BY 4.0.
+- Road corridors: Contains OS data © Crown copyright and database right 2026 (OS Open Roads).
 - Basemap © Esri and its data providers (rendered by the SDK).
 
 ---
@@ -559,3 +638,20 @@ Still not verified: monthly UK production for the five baskets (none identified,
 | NI urban/rural edition | NISRA geography page | Latest edition 2015 (no Census 2021-based classification) |
 
 Still not verified: Scotland's urban/rural classification and Census 2022 car availability (Release 2); CPIH food (S27); Defra trade codes (G3).
+
+### Stage 6 data step (25 October 2026)
+
+| Check | Method | Result |
+|---|---|---|
+| Fetch route | `fetch-reference --set stage6` on GitHub Actions (runs 40231289609, 40231643879, 40233240906; job annotations read through the API) | All publishers cached with checksums except OSNI (S34: connection closed twice) |
+| S30 completeness | API header vs rows; country list `total` vs entries | 6,916 rows on one page; 296 entries, 79 aggregates excluded |
+| S23 consistency | Build: PORT0499 2025 totals vs PORT0304 | Equal for all 33 ports over 2 Mt (to 0.01 kt) |
+| S23 / S36 port codes | DfT port list vs PORT0499 names; EMODnet `port_id` vs DfT UN/LOCODEs | All 51 current ports listed; all 24 without a DfT point found in EMODnet |
+| S03 tables | Sheets read; port-of-entry shares summed per year | 100.01 % (2022), 99.99 % (2023); 3_2_2b and 3_2_1a as listed in S03 |
+| S31 regions vs countries | Build: regional sums vs the England row and the UK table | Equal except cattle (commercial vs all holdings, by design) |
+| S13 geography in Scotland | Code ranges; S32 lookup join | 2011 Data Zones; 6,976 of 6,976 matched |
+| PPFI by council | Build: small areas per nation after assignment | England 33,755, Wales 1,917, Scotland 6,976, NI 890 — all assigned, each nation 20.0 % in deciles 1–2 |
+| S35 extract | Actions run: schema and counts written beside the extract | 3,961,077 links read; 115,947 kept; 792 roads |
+
+Still not verified: OSNI transport (S34); HMRC port-level detail (S28); UKFSR 3_2_3a units; Scotland's urban/rural classification and car availability (Release 2).
+

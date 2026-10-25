@@ -1,0 +1,147 @@
+{
+  "fieldsUsed": {
+    "class": "road_classification",
+    "number": "road_classification_number",
+    "primary": "primary_route",
+    "trunk": "trunk_road"
+  },
+  "layers": {
+    "motorway_junction": {
+      "crs": "EPSG:27700",
+      "features": 669,
+      "fields": [
+        {
+          "name": "id",
+          "type": "object"
+        },
+        {
+          "name": "junction_number",
+          "type": "object"
+        }
+      ],
+      "geometryType": "Point"
+    },
+    "road_link": {
+      "crs": "EPSG:27700",
+      "features": 3961077,
+      "fields": [
+        {
+          "name": "id",
+          "type": "object"
+        },
+        {
+          "name": "fictitious",
+          "type": "bool"
+        },
+        {
+          "name": "road_classification",
+          "type": "object"
+        },
+        {
+          "name": "road_function",
+          "type": "object"
+        },
+        {
+          "name": "form_of_way",
+          "type": "object"
+        },
+        {
+          "name": "road_classification_number",
+          "type": "object"
+        },
+        {
+          "name": "name_1",
+          "type": "object"
+        },
+        {
+          "name": "name_1_lang",
+          "type": "object"
+        },
+        {
+          "name": "name_2",
+          "type": "object"
+        },
+        {
+          "name": "name_2_lang",
+          "type": "object"
+        },
+        {
+          "name": "road_structure",
+          "type": "object"
+        },
+        {
+          "name": "length",
+          "type": "float64"
+        },
+        {
+          "name": "length_uom",
+          "type": "object"
+        },
+        {
+          "name": "loop",
+          "type": "bool"
+        },
+        {
+          "name": "primary_route",
+          "type": "bool"
+        },
+        {
+          "name": "trunk_road",
+          "type": "bool"
+        },
+        {
+          "name": "start_node",
+          "type": "object"
+        },
+        {
+          "name": "end_node",
+          "type": "object"
+        },
+        {
+          "name": "road_number_toid",
+          "type": "object"
+        },
+        {
+          "name": "road_name_toid",
+          "type": "object"
+        }
+      ],
+      "geometryType": "LineString"
+    },
+    "road_node": {
+      "crs": "EPSG:27700",
+      "features": 3346499,
+      "fields": [
+        {
+          "name": "id",
+          "type": "object"
+        },
+        {
+          "name": "form_of_road_node",
+          "type": "object"
+        }
+      ],
+      "geometryType": "Point"
+    }
+  },
+  "linkLayer": "road_link",
+  "valueCounts": {
+    "class": {
+      "A Road": 291483,
+      "B Road": 164344,
+      "Classified Unnumbered": 352203,
+      "Motorway": 7208,
+      "Not Classified": 405159,
+      "Unclassified": 1852327,
+      "Unknown": 888353
+    },
+    "primary": {
+      "False": 3850583,
+      "True": 110494
+    },
+    "trunk": {
+      "False": 3923689,
+      "True": 37388
+    }
+  }
+}
