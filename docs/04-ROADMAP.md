@@ -18,7 +18,7 @@
 | **3** | **Seasonal Supply Explorer** ✅ merged (PR #5) and deployed | R1 | 2 | Play tomatoes January → December 2025; compare January with July; partner-by-month heatmap; year-on-year change — the same real HMRC data as Food Origins |
 | **4** | **Supermarket network** ✅ merged (PR #9) and deployed | R1 | 3, G7 ✅, and the LAD/GEOLYTIX data built in the pre-Stage 4 data step (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth; basemap choice: dark grey, light grey, imagery (SH-08) |
 | **5** | **Local Authority Profiles** ✅ merged (PR #14) and deployed | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
-| **6** | **UK Food Resilience — Risk Explorer** (supply exposure, logistics, community access) 🟡 built, awaiting review | R1 | 2, 3, 5, G6, G14–G18 | Tomatoes: concentration, partners' water stress and an estimated exposure to one supplier; ports and road corridors; councils' priority places within each nation — each with "Explain this risk" |
+| **6** | **UK Food Resilience — Risk Explorer** (supply exposure, logistics, community access) 🟡 built (PR #16, on the data PR #15), awaiting review | R1 | 2, 3, 5, G6, G14–G18 | Tomatoes: concentration, partners' water stress and an estimated exposure to one supplier; ports and road corridors; councils' priority places within each nation — each with "Explain this risk" |
 | 7 | Scenario Lab (import disruption, store closure) | R1 | 3, 5, 6 | Spanish tomato preset; close a store and see the access change |
 | 8 | Consulting Insights + PDF export | R1 | 5, 6, 7, D3, D7 | One-click profile PDF that matches the screen |
 | 9 | Hardening and Release 1 | R1 | 1–8 | Release 1 tagged and deployed; acceptance criteria evidenced |

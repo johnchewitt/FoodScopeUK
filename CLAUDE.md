@@ -16,7 +16,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 
 ## Current stage
 
-**Stages 1–5 are merged and deployed.** Stage 5 (Local Authority Profiles) merged as PR #14 on 25 Oct 2026 (report: `docs/stage-reports/stage-5.md`, ADR-0023); its live checks are not finished. **Stage 6 — UK Food Resilience: Risk Explorer** (John's brief, 25 Oct 2026; roadmap §8; stages renumbered: 7 Scenario Lab, 8 Consulting Insights, 9 Hardening and Release 1): the data step is on `data/stage-6-inputs` (PR #15; report: `docs/stage-reports/pre-stage-6-data.md`); the module is built on `stage/6-risk-explorer` (report: `docs/stage-reports/stage-6.md`, ADR-0024) and waits for review, merge and the live checks. **Do not begin Stage 7** until John asks. The other data-pipeline items in roadmap §5.3 are still to be scheduled. Update this line when a stage is merged.
+**Stages 1–5 are merged and deployed.** Stage 5 (Local Authority Profiles) merged as PR #14 on 25 Oct 2026 (report: `docs/stage-reports/stage-5.md`, ADR-0023); its live checks are not finished. **Stage 6 — UK Food Resilience: Risk Explorer** (John's brief, 25 Oct 2026; roadmap §8; stages renumbered: 7 Scenario Lab, 8 Consulting Insights, 9 Hardening and Release 1): the data step is on `data/stage-6-inputs` (PR #15; report: `docs/stage-reports/pre-stage-6-data.md`); the module is built on `stage/6-risk-explorer` (PR #16, stacked on #15; report: `docs/stage-reports/stage-6.md`, ADR-0024) and waits for review, merge and the live checks. **Do not begin Stage 7** until John asks. The other data-pipeline items in roadmap §5.3 are still to be scheduled. Update this line when a stage is merged.
 
 ## How to work
 

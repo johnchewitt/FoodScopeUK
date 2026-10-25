@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Branch** | `stage/6-risk-explorer`, on top of `data/stage-6-inputs` (PR #15, the Stage 6 data step) |
+| **Branch** | `stage/6-risk-explorer` (PR #16), on top of `data/stage-6-inputs` (PR #15, the Stage 6 data step; merge it first) |
 | **Date** | 25 October 2026 |
 | **Scope** | John's Stage 6 brief and decisions (25 Oct 2026); roadmap §8; spec §5.6 RK-01 – RK-04 and RK-06 – RK-08. RK-05 (user weights and sensitivity) is deferred to Release 2. Stage 7 not started. |
 | **Data** | Each family from its newest snapshot (ADR-0021): trade **2026-10-23** (HMRC, five baskets); risk and context **2026-10-25**; local **2026-10-24** (council boundaries). No new downloads in this stage: the `risk` family was fetched on GitHub Actions and built offline in the data step. |
