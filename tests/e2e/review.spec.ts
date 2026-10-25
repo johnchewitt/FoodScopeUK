@@ -177,7 +177,9 @@ test.describe("Share colours", () => {
   });
 
   test("hovering highlights a partner without rebuilding the renderer", async ({ page }) => {
-    // Page errors are recorded so a failure here says why (B29: this test failed only on CI).
+    // Page errors are recorded so a failure here says why. B29 (25 Oct 2026): this test failed
+    // intermittently because the map's hit test on the country fills (a GeoJSON layer) took up to
+    // 12 s under software rendering; hover now tests the label points and connections first.
     const pageErrors: string[] = [];
     page.on("pageerror", (err) => pageErrors.push(err.message));
     page.on("console", (msg) => {
@@ -196,8 +198,32 @@ test.describe("Share colours", () => {
     const before = await builds();
     // Label points where each partner's own connection ends (other connections cross some countries).
     const pts = await onScreen(page, ["TR", "MA"]);
+    // Diagnostics: DOM pointer moves reaching the page, unhandled rejections, and the map's hover
+    // counts (moves:started:settled:applied:stale:failed:key:duration) before and after the jump.
+    await page.evaluate(() => {
+      const w = window as unknown as { __domMoves: number };
+      w.__domMoves = 0;
+      window.addEventListener("pointermove", () => (w.__domMoves += 1), { capture: true });
+      const r = window as unknown as { __rejections: string[] };
+      r.__rejections = [];
+      window.addEventListener("unhandledrejection", (e) => r.__rejections.push(String(e.reason)));
+    });
+    const hoverStats = () =>
+      page.evaluate(() => ({
+        dom: (window as unknown as { __domMoves: number }).__domMoves,
+        map: (document.querySelector("arcgis-map") as HTMLArcgisMapElement).view.container?.dataset
+          .hoverStats,
+        tooltip: (() => {
+          const t = document.querySelector(".map-tooltip") as HTMLElement | null;
+          return t
+            ? `${t.style.cssText} ${JSON.stringify(t.dataset)} ${t.innerText.replace(/\s+/g, " ")}`
+            : null;
+        })(),
+        rejections: (window as unknown as { __rejections?: string[] }).__rejections ?? [],
+      }));
     await page.mouse.move(pts.TR!.x, pts.TR!.y);
     await expect(page.locator(".map-tooltip")).toContainText("Turkey", { timeout: 10_000 });
+    const statsAtTurkey = await hoverStats();
     await page.mouse.move(pts.MA!.x, pts.MA!.y);
     try {
       await expect(page.locator(".map-tooltip")).toContainText("Morocco", { timeout: 10_000 });
@@ -225,7 +251,9 @@ test.describe("Share colours", () => {
       throw new Error(
         `${(err as Error).message}\n\nDiagnostics: points before ${JSON.stringify(pts)}, after ${JSON.stringify(
           after,
-        )}; map ${JSON.stringify(probe)}; page errors ${JSON.stringify(pageErrors)}`,
+        )}; map ${JSON.stringify(probe)}; hover at Turkey ${JSON.stringify(statsAtTurkey)}, now ${JSON.stringify(
+          await hoverStats(),
+        )}; page errors ${JSON.stringify(pageErrors)}`,
         { cause: err },
       );
     }

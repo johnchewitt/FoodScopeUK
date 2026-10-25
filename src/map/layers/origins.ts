@@ -153,6 +153,12 @@ export class OriginsLayersController implements LayerController {
   private hoverFrame = 0;
   /** Hit tests can resolve out of order: only the latest one may set the hover (see onPointerMove). */
   private hoverSeq = 0;
+  /**
+   * Hover pipeline counts (B29), on the view container as `data-hover-stats` for E2E diagnostics:
+   * pointer moves seen, hovers started, settled, applied (newest), dropped as stale, failed, and
+   * the last hover's key and duration.
+   */
+  private hoverStats = { moves: 0, started: 0, settled: 0, applied: 0, stale: 0, failed: 0, key: "", ms: 0 };
   private lastHover: string | null = null;
   /** One graphic per connection, reused across months so widths can ease. */
   private flowGraphics = new Map<string, Graphic>();
@@ -482,14 +488,31 @@ export class OriginsLayersController implements LayerController {
     this.tweenFrame = 0;
   }
 
-  private hitLayers(): unknown[] {
-    return [this.points, this.flows, this.polygons].filter(Boolean);
+  /**
+   * The partner under a screen point, in two steps (B29). Label points and connections are graphics,
+   * whose hit test takes about a millisecond; the country fills are a GeoJSON layer, whose hit test
+   * takes 0.6–3 s with software rendering (measured 25 Oct 2026; up to 12 s under CI load). So the
+   * graphics are tested on their own first, and the fills only when no graphic is under the pointer.
+   * `current` says whether the answer is still wanted (a newer pointer move has not superseded it).
+   */
+  private async partnerAt(
+    view: ViewLike,
+    point: { x: number; y: number },
+    current: () => boolean = () => true,
+  ): Promise<ReturnType<typeof partnerFromHits>> {
+    const graphics = [this.points, this.flows].filter(Boolean);
+    if (graphics.length) {
+      const hit = partnerFromHits((await view.hitTest!(point, { include: graphics })).results, graphics);
+      if (hit) return hit;
+    }
+    if (!this.polygons || !current()) return null;
+    const fills = [this.polygons];
+    return partnerFromHits((await view.hitTest!(point, { include: fills })).results, fills);
   }
 
   private async onClick(e: ViewPointerEvent): Promise<void> {
     if (!this.visible || !this.view?.hitTest) return;
-    const { results } = await this.view.hitTest(e, { include: this.hitLayers() });
-    const key = partnerFromHits(results, this.hitLayers())?.key ?? null;
+    const key = (await this.partnerAt(this.view, { x: e.x, y: e.y }))?.key ?? null;
     if (key === "__uk") return;
     const isPartner =
       key !== null && (this.model?.partners.some((p) => p.key === key || p.iso2 === key) ?? false);
@@ -498,23 +521,60 @@ export class OriginsLayersController implements LayerController {
 
   private onPointerMove(e: ViewPointerEvent): void {
     if (!this.visible || !this.view?.hitTest) return;
+    this.hoverStats.moves++;
     if (this.hoverFrame) cancelAnimationFrame(this.hoverFrame);
     const view = this.view;
     const { x, y } = e;
     this.hoverFrame = requestAnimationFrame(() => {
       this.hoverFrame = 0;
-      // A slower hit test for an earlier position must not overwrite a newer one (seen on CI: the
-      // tooltip stayed on the previous partner after the pointer moved on).
+      // A slower hit test for an earlier position must not overwrite a newer one.
       const seq = ++this.hoverSeq;
-      void view.hitTest!({ x, y }, { include: this.hitLayers() }).then(({ results }) => {
-        if (seq !== this.hoverSeq || !this.visible) return;
-        const hit = partnerFromHits(results, this.hitLayers());
-        if (!hit || hit.key === "__uk") return this.clearHover();
-        this.lastHover = hit.key;
-        this.setHoverHighlight(hit.graphic, hit.key);
-        this.actions.setHoverPartner({ key: hit.key, name: hit.name, x, y });
-      });
+      void this.hoverAt(view, x, y, seq);
     });
+  }
+
+  private async hoverAt(view: ViewLike, x: number, y: number, seq: number): Promise<void> {
+    const stats = this.hoverStats;
+    stats.started++;
+    const t0 = performance.now();
+    const current = () => seq === this.hoverSeq && this.visible;
+    try {
+      const hit = await this.partnerAt(view, { x, y }, current);
+      stats.settled++;
+      stats.ms = Math.round(performance.now() - t0);
+      if (!current()) {
+        stats.stale++;
+        return;
+      }
+      stats.applied++;
+      stats.key = hit?.key ?? "-";
+      if (!hit || hit.key === "__uk") return this.clearHover();
+      this.lastHover = hit.key;
+      this.setHoverHighlight(hit.graphic, hit.key);
+      this.actions.setHoverPartner({ key: hit.key, name: hit.name, x, y });
+    } catch (err) {
+      // A failed hit test leaves the previous hover in place; counted so it can be told apart.
+      stats.failed++;
+      console.warn("Hover hit test failed", err);
+    } finally {
+      this.publishHoverStats();
+    }
+  }
+
+  private publishHoverStats(): void {
+    const container = (this.view as { container?: HTMLElement | null } | null)?.container;
+    if (!container) return;
+    const s = this.hoverStats;
+    container.dataset.hoverStats = [
+      s.moves,
+      s.started,
+      s.settled,
+      s.applied,
+      s.stale,
+      s.failed,
+      s.key,
+      `${s.ms}ms`,
+    ].join(":");
   }
 
   private clearHover(): void {
