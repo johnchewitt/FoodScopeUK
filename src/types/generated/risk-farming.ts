@@ -28,6 +28,10 @@ export interface RiskFarming {
        * @maxItems 2
        */
       point: [number, number];
+      /**
+       * Area of the region's ITL1 boundaries (BGC, clipped to the coastline; includes inland water), km²
+       */
+      areaKm2: number;
       values: {
         [k: string]: number;
       };
@@ -43,6 +47,10 @@ export interface RiskFarming {
        * @maxItems 2
        */
       point: [number, number];
+      /**
+       * Area of the region's ITL1 boundaries (BGC, clipped to the coastline; includes inland water), km²
+       */
+      areaKm2: number;
       values: {
         [k: string]: number;
       };
@@ -58,6 +66,10 @@ export interface RiskFarming {
        * @maxItems 2
        */
       point: [number, number];
+      /**
+       * Area of the region's ITL1 boundaries (BGC, clipped to the coastline; includes inland water), km²
+       */
+      areaKm2: number;
       values: {
         [k: string]: number;
       };
@@ -73,6 +85,10 @@ export interface RiskFarming {
        * @maxItems 2
        */
       point: [number, number];
+      /**
+       * Area of the region's ITL1 boundaries (BGC, clipped to the coastline; includes inland water), km²
+       */
+      areaKm2: number;
       values: {
         [k: string]: number;
       };
@@ -88,6 +104,10 @@ export interface RiskFarming {
        * @maxItems 2
        */
       point: [number, number];
+      /**
+       * Area of the region's ITL1 boundaries (BGC, clipped to the coastline; includes inland water), km²
+       */
+      areaKm2: number;
       values: {
         [k: string]: number;
       };
@@ -103,6 +123,10 @@ export interface RiskFarming {
        * @maxItems 2
        */
       point: [number, number];
+      /**
+       * Area of the region's ITL1 boundaries (BGC, clipped to the coastline; includes inland water), km²
+       */
+      areaKm2: number;
       values: {
         [k: string]: number;
       };
@@ -118,6 +142,10 @@ export interface RiskFarming {
        * @maxItems 2
        */
       point: [number, number];
+      /**
+       * Area of the region's ITL1 boundaries (BGC, clipped to the coastline; includes inland water), km²
+       */
+      areaKm2: number;
       values: {
         [k: string]: number;
       };
@@ -133,6 +161,10 @@ export interface RiskFarming {
        * @maxItems 2
        */
       point: [number, number];
+      /**
+       * Area of the region's ITL1 boundaries (BGC, clipped to the coastline; includes inland water), km²
+       */
+      areaKm2: number;
       values: {
         [k: string]: number;
       };
@@ -148,6 +180,10 @@ export interface RiskFarming {
        * @maxItems 2
        */
       point: [number, number];
+      /**
+       * Area of the region's ITL1 boundaries (BGC, clipped to the coastline; includes inland water), km²
+       */
+      areaKm2: number;
       values: {
         [k: string]: number;
       };
@@ -163,6 +199,10 @@ export interface RiskFarming {
        * @maxItems 2
        */
       point: [number, number];
+      /**
+       * Area of the region's ITL1 boundaries (BGC, clipped to the coastline; includes inland water), km²
+       */
+      areaKm2: number;
       values: {
         [k: string]: number;
       };
@@ -178,6 +218,10 @@ export interface RiskFarming {
        * @maxItems 2
        */
       point: [number, number];
+      /**
+       * Area of the region's ITL1 boundaries (BGC, clipped to the coastline; includes inland water), km²
+       */
+      areaKm2: number;
       values: {
         [k: string]: number;
       };

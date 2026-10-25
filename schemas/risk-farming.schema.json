@@ -42,7 +42,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "name", "nation", "itl1", "basis", "point", "values"],
+        "required": ["id", "name", "nation", "itl1", "basis", "point", "areaKm2", "values"],
         "properties": {
           "id": {
             "type": "string"
@@ -79,6 +79,11 @@
                 "maximum": 90
               }
             ]
+          },
+          "areaKm2": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Area of the region's ITL1 boundaries (BGC, clipped to the coastline; includes inland water), km²"
           },
           "values": {
             "type": "object",

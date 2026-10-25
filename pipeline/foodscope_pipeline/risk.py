@@ -445,11 +445,13 @@ def _itl1(inputs: RiskInputs) -> tuple[dict[str, dict], list[dict]]:
         path = inputs.ons / x["file"]
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", message="organizePolygons", category=RuntimeWarning)
-            meta, _, wkb, fields = read(path, columns=["ITL125CD", "ITL125NM", "LAT", "LONG"])
+            meta, _, wkb, fields = read(path, columns=["ITL125CD", "ITL125NM", "LAT", "LONG", "Shape__Area"])
         if meta["crs"] != "EPSG:27700":
             raise RiskBuildError(f"{path.name}: CRS {meta['crs']}")
-        for code, name, lat, lon, geom in zip(*fields, shapely.from_wkb(wkb), strict=True):
-            out[str(code)] = {"name": str(name), "point": [float(lon), float(lat)], "geom": geom}
+        for code, name, lat, lon, area, geom in zip(*fields, shapely.from_wkb(wkb), strict=True):
+            # Shape__Area: the service's area of the BGC polygon (EPSG:27700, m²), clipped to the coastline.
+            out[str(code)] = {"name": str(name), "point": [float(lon), float(lat)], "areaM2": float(area),
+                              "geom": geom}
     if len(out) != 12:
         raise RiskBuildError(f"ITL1: {len(out)} regions, expected 12")
     return out, entries
@@ -492,6 +494,7 @@ def _farming(inputs: RiskInputs, config: dict, qa: dict) -> tuple[dict, list[dic
             "id": "+".join(r["itl1"]), "name": r["defraName"], "nation": "England", "itl1": r["itl1"],
             "basis": "England region: commercial holdings (Defra June Survey; cattle from the Cattle Tracing System)",
             "point": [_round(point[0], 5), _round(point[1], 5)],
+            "areaKm2": round(sum(itl1[c]["areaM2"] for c in r["itl1"]) / 1e6, 1),
             "values": {m["id"]: round(regional[r["defraName"]][m["regionColumn"]]) for m in measures},
         })
         geoms.append(shapely.union_all(parts) if len(parts) > 1 else parts[0])
@@ -501,6 +504,7 @@ def _farming(inputs: RiskInputs, config: dict, qa: dict) -> tuple[dict, list[dic
             "id": n["itl1"], "name": n["nation"], "nation": n["nation"], "itl1": [n["itl1"]],
             "basis": f"{n['nation']}: the country's own June survey or census of agriculture, as compiled by Defra",
             "point": [_round(point[0], 5), _round(point[1], 5)],
+            "areaKm2": round(itl1[n["itl1"]]["areaM2"] / 1e6, 1),
             "values": {m["id"]: round(countries[m["id"]][n["column"]] * m["countryScale"]) for m in measures},
         })
         geoms.append(itl1[n["itl1"]]["geom"])
@@ -523,6 +527,8 @@ def _farming(inputs: RiskInputs, config: dict, qa: dict) -> tuple[dict, list[dic
              f"{year}); Defra's all-holdings England total is {checks['cattle']['countryTableEngland']:,.0f}. The "
              "England regions therefore add up to less than England in the UK table."),
             "Survey estimates are rounded to whole hectares, head or birds; they are subject to sampling error.",
+            ("Region areas are those of the ONS ITL1 boundaries clipped to the coastline (they include inland "
+             "water), for densities per km²; a density describes the whole region, not where farms are."),
             "Livestock numbers are on holdings on 1 June; poultry numbers vary with production cycles.",
         ],
         "notes": [

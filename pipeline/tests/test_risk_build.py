@@ -196,6 +196,9 @@ def test_farming_regions_values_as_published(built) -> None:
     assert regions["Northern Ireland"]["values"]["poultry"] == 25_785_289  # 25.785289 million birds
     assert regions["Eastern"]["values"]["wheat"] == 429_936
     assert regions["South East (incl. London)"]["itl1"] == ["TLI", "TLJ"]
+    # Areas from the ITL1 service's Shape__Area (m²): North East 8,598,631,244.9 m²; SE + London summed.
+    assert regions["North East"]["areaKm2"] == 8598.6
+    assert regions["South East (incl. London)"]["areaKm2"] == round((1573280703.189888 + 19087171791.6891) / 1e6, 1)
     england = [r for r in doc["regions"] if r["nation"] == "England"]
     assert sum(r["values"]["sheep"] for r in england) == pytest.approx(13_312_071, abs=8)
     outlines = _load(built, "farming-regions.geojson")

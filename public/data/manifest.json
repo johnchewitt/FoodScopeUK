@@ -373,8 +373,8 @@
       "path": "snapshots/2026-10-25/risk/farming.json",
       "format": "json",
       "schemaId": "risk-farming",
-      "sha256": "733c3441922a4c8f507f2185914c55761c456cf5f28d39361d681dc5c5014d1c",
-      "bytes": 4594,
+      "sha256": "d8b7db62984b17659b5e5fcd6c21efe12c261043c0bc9078035c8aa7aad12d93",
+      "bytes": 4980,
       "sourceIds": [
         "S31",
         "S33"
