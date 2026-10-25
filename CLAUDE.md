@@ -16,7 +16,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 
 ## Current stage
 
-**Stages 1–4 are merged and deployed.** Stage 4 (UK Food Access and the basemap choice) merged as PR #9 and went live on 24 Oct 2026 (report: `docs/stage-reports/stage-4.md`; ADR-0021, ADR-0022), with its live-check fixes in PR #11. **Stage 5 — Local Authority Profiles** is built on `stage/5-local-authority-profiles` (PR #14; report: `docs/stage-reports/stage-5.md`, ADR-0023), after the context data step (PR #13, merged); it waits for review, merge and the live checks. **Next: Stage 6 — Scenario Lab** (roadmap §8), only when John asks. The other data-pipeline items in roadmap §5.3 are still to be scheduled. Update this line when a stage is merged.
+**Stages 1–5 are merged and deployed.** Stage 5 (Local Authority Profiles) merged as PR #14 on 25 Oct 2026 (report: `docs/stage-reports/stage-5.md`, ADR-0023); its live checks are not finished. **Stage 6 — UK Food Resilience: Risk Explorer** (John's brief, 25 Oct 2026; roadmap §8; stages renumbered: 7 Scenario Lab, 8 Consulting Insights, 9 Hardening and Release 1): the data step is on `data/stage-6-inputs` (report: `docs/stage-reports/pre-stage-6-data.md`); the module follows on `stage/6-risk-explorer`. **Do not begin Stage 7.** The other data-pipeline items in roadmap §5.3 are still to be scheduled. Update this line when a stage is merged.
 
 ## How to work
 
@@ -101,7 +101,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 - Declare CRS explicitly; compute distances/areas in EPSG:27700 (GB) or EPSG:2157 (NI); publish WGS84.
 - Log rows in/out at every step; write rejects with reasons; deterministic sort before writing; reruns must be idempotent.
 - HMRC API: ≤ 50 requests/minute, follow `@odata.nextLink`, cache raw responses, keep suppressed rows separate.
-- Outputs go to `public/data/snapshots/<date>/<family>/` (`trade`, `local`; Stage 5 adds `areas`, `register`, `context`); `publish` takes each family from its newest snapshot (ADR-0021) and writes `manifest.json`; data refreshes arrive by pull request, never direct to `main`.
+- Outputs go to `public/data/snapshots/<date>/<family>/` (`trade`, `local`; Stage 5 adds `areas`, `register`, `context`; Stage 6 adds `risk`); `publish` takes each family from its newest snapshot (ADR-0021) and writes `manifest.json`; data refreshes arrive by pull request, never direct to `main`.
 - Defra datasets are .ods: read them with `foodscope_pipeline/sources/ods.py` (standard library), not a new dependency.
 - ONS (S14, S18): the sandbox cannot reach ONS either. `fetch-ons` runs in `.github/workflows/refresh-reference-data.yml` on push to a `data/**` branch and is incremental; files provided by hand live in `pipeline/raw/<source>/<edition>/` with an `index.json` of checksums. Store classes (D5) and council code changes are config in `foodscope_pipeline/config/`; stores are assigned on the BFE boundaries in EPSG:27700, councils are drawn from the clipped BGC edition (ADR-0020).
 - HMRC (S01): the sandbox cannot reach `api.uktradeinfo.com`. Run the online step through `.github/workflows/refresh-trade-data.yml` (push a `data-refresh/<date>` branch or run it manually); raw responses are committed in `pipeline/raw/hmrc/<snapshot>/` and everything after ingest runs offline from them (ADR-0016). Never hand-edit raw responses or snapshot files.
@@ -134,11 +134,13 @@ cd pipeline && uv run foodscope-pipeline publish     # rebuild public/data/manif
 cd pipeline && uv run foodscope-pipeline build-trade --snapshot 2026-10-23   # offline: raw HMRC cache -> trade snapshot
 cd pipeline && uv run foodscope-pipeline ingest-hmrc --snapshot <date>       # ONLINE: only on GitHub Actions (refresh-trade-data.yml)
 cd pipeline && uv run foodscope-pipeline fetch-ons --snapshot <date>         # ONLINE: only on GitHub Actions (refresh-reference-data.yml, push to data/**)
-cd pipeline && uv run foodscope-pipeline fetch-reference --snapshot <date> [--set context]   # ONLINE: stage5 = fetch-ons + Nomis, MHCLG, NISRA, FSA (NI); context = ONS urban/rural + Defra production (the workflow runs this)
+cd pipeline && uv run foodscope-pipeline fetch-reference --snapshot <date> [--set context|stage6]   # ONLINE: stage5 = fetch-ons + Nomis, MHCLG, NISRA, FSA (NI); context = ONS urban/rural + Defra production; stage6 = World Bank, DfT, Defra, Scottish Government, EMODnet, ONS, OS (the workflow runs this)
 cd pipeline && uv run foodscope-pipeline build-local --snapshot 2026-10-24   # offline: boundaries, stores, population -> public/data/snapshots/<date>/local/ + reports
 cd pipeline && uv run foodscope-pipeline build-areas --snapshot 2026-10-24 --context-snapshot 2026-10-25   # offline: deep-profile small areas -> public/data/snapshots/2026-10-25/areas/<LAD>/ (--out to write elsewhere) + reports
 cd pipeline && uv run foodscope-pipeline build-ni-grocers --snapshot 2026-10-24 --local-snapshot 2026-10-24   # offline: FSA register -> NI grocers GEOLYTIX misses (register family; --out) + reports
 cd pipeline && uv run foodscope-pipeline build-context --snapshot 2026-10-25 --reference-snapshot 2026-10-24 --local-snapshot 2026-10-24   # offline: council urban/rural + car availability, Defra UK production (context family; --out) + reports
+cd pipeline && uv run foodscope-pipeline fetch-open-roads --snapshot <date>   # ONLINE (Actions, stage6 set): OS Open Roads GeoPackage → schema + strategic/primary road extract in pipeline/raw/os/<date>/
+cd pipeline && uv run foodscope-pipeline build-risk --snapshot 2026-10-25 --reference-snapshot 2026-10-24 --local-snapshot 2026-10-24   # offline: water stress, ports, port of entry, roads, farming regions, PPFI by council (risk family; --out) + reports
 ```
 
 ## Definition of done (every task)

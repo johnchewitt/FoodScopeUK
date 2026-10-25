@@ -13,7 +13,7 @@ MADR-style records. Status values: Proposed · Accepted · Superseded. Summaries
 | [0007](0007-python-pipeline.md) | Python pipeline, TypeScript app | Accepted (Stage 1) |
 | [0008](0008-data-adapters.md) | Data access through adapters | Accepted (Stage 1, static adapter only) |
 | [0009](0009-indicator-envelope.md) | Indicator envelope with provenance | Accepted (Stage 1) |
-| [0010](0010-pdf-from-profile-model.md) | PDF built from the profile model | Proposed (Stage 7) |
+| [0010](0010-pdf-from-profile-model.md) | PDF built from the profile model | Proposed (Stage 8) |
 | [0011](0011-api-key-handling.md) | Referrer-restricted API key injected at build | Accepted (Stage 1) |
 | [0012](0012-straight-line-first.md) | Straight-line proximity first; network times pre-computed later | Accepted |
 | [0013](0013-query-string-state.md) | Query-string state, no path routing | Accepted (Stage 1) |

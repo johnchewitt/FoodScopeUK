@@ -57,13 +57,14 @@ The snapshot holds Natural Earth v5.1.2 reference geometry and the HMRC trade ba
 
 To rebuild an existing snapshot offline: `uv run foodscope-pipeline build-trade --snapshot 2026-10-23`.
 
-Local data (stores, councils, population, small areas, context) is built offline from raw files committed in `pipeline/raw/` (ADR-0020, ADR-0021, ADR-0023). The online fetches run on GitHub Actions when a `data/**` branch is pushed (`refresh-reference-data.yml`). Then:
+Local data (stores, councils, population, small areas, context) and the Risk Explorer data (`risk`) are built offline from raw files committed in `pipeline/raw/` (ADR-0020, ADR-0021, ADR-0023). The online fetches run on GitHub Actions when a `data/**` branch is pushed (`refresh-reference-data.yml`). Then:
 
 ```bash
 uv run foodscope-pipeline build-local --snapshot 2026-10-24          # councils, stores, population
 uv run foodscope-pipeline build-ni-grocers --snapshot 2026-10-24 --local-snapshot 2026-10-24
 uv run foodscope-pipeline build-context --snapshot 2026-10-25 --reference-snapshot 2026-10-24 --local-snapshot 2026-10-24
 uv run foodscope-pipeline build-areas --snapshot 2026-10-24 --context-snapshot 2026-10-25   # deep profiles
+uv run foodscope-pipeline build-risk --snapshot 2026-10-25 --reference-snapshot 2026-10-24 --local-snapshot 2026-10-24   # Risk Explorer
 uv run foodscope-pipeline publish
 ```
 
@@ -97,6 +98,8 @@ Code licence: to be confirmed by ConsultingWhere. Data shown in this build:
 - GEOLYTIX Grocery Retail Points (free open data with no named licence; attributed on the map as a courtesy);
 - the Priority Places for Food Index v2.1 (CDRC / Leeds HASP, OGL v3.0);
 - the Food Standards Agency food hygiene register for Northern Ireland (OGL v3.0);
+- DfT port freight statistics, the UK Food Security Report 2024, Defra's June survey, OS Open Roads ("Contains OS data © Crown copyright and database right") and the Scottish Government's Data Zone lookup (Open Government Licence v3.0);
+- FAO AQUASTAT level of water stress through the World Bank (CC BY 4.0) and EMODnet Human Activities port locations (Eurofish, Cogea; CC BY 4.0);
 - the Esri basemap when a key is configured (attribution rendered by the map).
 
 Full source terms: `docs/03-DATA-SOURCES.md`; every dataset's licence and attribution is also on the app's Evidence page.
