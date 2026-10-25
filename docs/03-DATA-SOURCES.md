@@ -56,6 +56,7 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S26 | ArcGIS Living Atlas items | Esri and contributors | 🔴 per item | Optional reference layers | R2 |
 | S27 | Consumer price inflation — food (CPIH) | ONS (via Defra pocketbook CSV) | 🟡 | National context | R1 |
 | S28 | HMRC port reference and port-level OTS detail | HMRC | 🟡 | Risks, Scenario B | R2 |
+| S29 | Food hygiene rating open data (Northern Ireland councils) | Food Standards Agency | ✅ (NI; 25 Oct 2026) | UK Food Access, Profiles: NI grocers GEOLYTIX misses (supplementary layer) | R1 (NI) |
 
 ---
 
@@ -301,6 +302,19 @@ Indices are **relative rankings within each nation** and are not comparable acro
 England only; includes access to key services such as food stores in some editions. Latest edition and methodology to verify. Release 2 context only; not combined with other nations.
 
 ---
+
+### S29 — FSA food hygiene register, Northern Ireland ✅ (25 Oct 2026)
+
+| Field | Detail |
+|---|---|
+| Why | GEOLYTIX (S11) has only ten retailers in Northern Ireland. John asked on 25 Oct 2026 to add the NI grocers it misses, from another source if possible. |
+| Publisher, licence | Food Standards Agency, Food Hygiene Rating Scheme open data: https://ratings.food.gov.uk/open-data/ (free, no registration, updated daily). Re-use is under the Open Government Licence (https://ratings.food.gov.uk/terms-and-conditions). Rating images and the FSA logo have their own rules; they are not used. |
+| Files | One XML file per council: `https://ratings.food.gov.uk/api/open-data-files/FHRS<code>en-GB.xml`. Northern Ireland codes are 801–805, 807, 809, 811, 813, 814 and 816 (`pipeline/foodscope_pipeline/sources/fsa_fhrs.py`, with their May 2025 council codes). Fetched by `fetch-reference` (run 40178373516, 25 Oct 2026) into `pipeline/raw/fsa/2026-10-24/`; the folder takes the reference-data snapshot id, and each file's own retrieval time and extract date are recorded. |
+| Verified structure | `FHRSEstablishment/Header`: `ExtractDate`, `ItemCount`, `ReturnCode`. Each `EstablishmentDetail` has `FHRSID`, `BusinessName`, `BusinessType`, `BusinessTypeID`, `AddressLine1`–`4`, `PostCode`, `LocalAuthorityCode`, and `Geocode/Longitude`, `Geocode/Latitude` (WGS84; missing for some records). 16,983 establishments in the 11 councils. Business types used: `7840` "Retailers - supermarkets/hypermarkets" (416 in NI) and `4613` "Retailers - other" (3,450). |
+| Classification caveat | Business types are assigned by council officers and applied unevenly: Spar shops, for example, appear under both types. So the build selects by name and type with documented rules (`config/ni_grocers.json`), not by type alone. |
+| Use | `build-ni-grocers` keeps two sets. First, grocery symbol groups that GEOLYTIX does not carry in NI (SuperValu, Mace, Vivo, Costcutter, Nisa, Premier), matched by name in either retail type. Second, independent grocers registered as supermarkets/hypermarkets that carry no chain or group name and are not within 50 m of a mapped store. Chains GEOLYTIX maps are left to it. The same group or name at the same postcode counts as one shop. Records without coordinates are dropped and counted. Result: **285 grocers** (Belfast 41): Vivo 76, Mace 55, SuperValu 30, Nisa 25, Costcutter 24, Premier 11, independents 64. Details in `pipeline/reports/ni-grocers-qa-2026-10-24.json`. |
+| Display rule | A supplementary layer labelled with its source. It is **never** added to the GEOLYTIX store counts or per-10,000 rates, which stay like for like across the UK. Great Britain has no equivalent layer, so the app must not imply one. |
+| Attribution | "Food Standards Agency food hygiene rating data, Northern Ireland councils, licensed under the Open Government Licence v3.0" |
 
 ## 6. Geography and population
 

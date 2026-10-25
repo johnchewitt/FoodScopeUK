@@ -228,6 +228,8 @@ Exit criteria:
 
 Deliverables: LAD search/selection and fly-to (LP-01); basic profiles for all LADs (A, B, D); deep profiles for Belfast and Manchester (C, E) with small-area layers, straight-line distances from representative points, deprivation within nation, car availability, PPFI (subject to G8); comparison view with comparability warnings (LP-07).
 
+Added at John's request (25 Oct 2026): Northern Ireland shops easier to see. UK Food Access says what the store data covers in NI and offers the convenience layer. A supplementary layer shows the 285 NI grocers from the FSA register (S29) that GEOLYTIX misses, never counted in rates. The Belfast profile lists its stores by type and retailer.
+
 Exit: both deep profiles render every section with provenance; a hand-checked sample of five small areas per LAD matches source values; nation comparability banner appears in Belfast–Manchester comparison.
 
 ## 8. Stage 6 — Scenario Lab
@@ -324,3 +326,4 @@ Rules of engagement:
 | 2026-10-24 | Stage 5: if PPFI v2.1 has no Northern Ireland rows, the Belfast profile says it is not available and uses Northern Ireland's own measures (no PPFI v1 reference). **25 Oct: v2.1 does cover NI** (890 SOAs), so Belfast shows it on its SOAs, like NIMDM, with the three missing domains stated | John (decision); S13 |
 | 2026-10-24 | Stage 5: small-area data is published for the two deep profiles only (Belfast, Manchester), as planned for Release 1 | John (decision); LP-10 |
 | 2026-10-24 | Stage 5: NI car availability by Data Zone and the PPFI v2.1 LSOA file are provided by John (the NISRA table builder disallows automated access; HASP downloads go through a basket) | John |
+| 2026-10-25 | Northern Ireland shops: make the GEOLYTIX NI stores easier to see, and add the NI grocers GEOLYTIX misses from the FSA food hygiene register (S29) as a separate, labelled layer that is never part of a store count or rate | John (request); Stage 5 |

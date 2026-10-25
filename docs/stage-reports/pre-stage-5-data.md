@@ -61,6 +61,19 @@ Raw data in the repository grows by about 48 MB, to roughly 99 MB.
 - **Schemas** `small-areas` and `small-area-indicators`, with generated types. `display_geometry` takes the CRS, tolerance and island rule as parameters, and can clean a coverage whose edges do not quite match. The council build is unchanged: its rebuild test still passes byte for byte.
 - **New dependency:** `xlrd==2.0.1`, released December 2020, to read NIMDM 2017. NISRA publishes it only as `.xls`, which openpyxl cannot read.
 
+## Northern Ireland grocers missing from GEOLYTIX (John, 25 Oct 2026)
+
+John asked to "make the existing NI shops easier to see and add the missing NI grocers from another source if possible".
+- **Source:** the FSA food hygiene register (S29, OGL), fetched for the 11 NI councils: 16,983 establishments.
+- **Build:** `build-ni-grocers` writes `register/ni-other-grocers.geojson` with a sidecar, and `pipeline/reports/ni-grocers-qa-2026-10-24.json`. The rules are in `config/ni_grocers.json`, and every record kept, merged or dropped is counted.
+- **Result: 285 grocers, 41 of them in Belfast.**
+  - **Groups:** Vivo 76, Mace 55, SuperValu 30, Nisa 25, Costcutter 24, Premier 11.
+  - **Independents:** 64 registered as supermarkets that are not within 50 m of a mapped store.
+  - **Dropped:** 13 independents within 50 m of a mapped store (probably the same shop under its operator's name), and 17 records without coordinates.
+  - **Merged:** 4 pairs at the same postcode (e.g. a SuperValu and its off-licence).
+- **Rule changes after reading the first build's independents:** "vivoxtra" was added to Vivo, "co-operative" to the chains, and The Range to mainly non-food. The change is recorded in the config.
+- **Display:** a supplementary, labelled layer. It is never part of a store count or rate, because Great Britain has no equivalent. Making the existing NI stores easier to see is UI work for Stage 5 (roadmap §7).
+
 ## Checks and figures
 
 | Check | Result |
@@ -86,7 +99,7 @@ Raw data in the repository grows by about 48 MB, to roughly 99 MB.
 |---|---|
 | GitHub Actions `refresh-reference-data.yml` (push to `data/stage-5-inputs`) | Run 40137753934: success, 11 new items in four folders |
 | `uv run foodscope-pipeline build-areas --snapshot 2026-10-24 --out <scratch>` | 4 s, 5 files |
-| `cd pipeline && uv run pytest` | **140 passed**: 116 earlier, plus 8 for the fetch registries and checks and 24 for the areas build: rebuild determinism, figures, samples (including Belfast households, no-car counts and PPFI), readers, deciles, PPFI coverage and orientation, and cleaning (25 Oct) |
+| `cd pipeline && uv run pytest` | **146 passed**: 116 earlier, plus 9 for the fetch registries and checks (incl. the FSA files), 24 for the areas build and 5 for the NI grocers build (determinism, counts, no double counting, location, reader checks); the areas build: rebuild determinism, figures, samples (including Belfast households, no-car counts and PPFI), readers, deciles, PPFI coverage and orientation, and cleaning (25 Oct) |
 | `npm run gen:types`; `npm run typecheck`; `npx vitest run` | Types generated for the two schemas; 0 type errors; 361 tests passed (no app changes) |
 
 ## Not verified, and why
