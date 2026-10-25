@@ -3,6 +3,7 @@ import { getModule } from "@/app/modules";
 import { EmptyState } from "@/components/states/EmptyState";
 import { OriginsControls } from "@/features/origins/OriginsControls";
 import { AccessControlsLazy } from "@/features/access/lazy";
+import { ProfileControlsLazy } from "@/features/profiles/lazy";
 import { SeasonalControlsLazy } from "@/features/seasonal/lazy";
 import { selectReducedMotion, useAppStore } from "@/state/store";
 
@@ -16,7 +17,6 @@ export function FilterPanel() {
   const systemReduced = useAppStore((s) => s.systemPrefersReducedMotion);
   const reduced = useAppStore(selectReducedMotion);
   const setMotionPreference = useAppStore((s) => s.setMotionPreference);
-  const lad = useAppStore((s) => s.lad);
   const mod = getModule(module);
 
   return (
@@ -45,6 +45,8 @@ export function FilterPanel() {
           <SeasonalControlsLazy />
         ) : module === "access" ? (
           <AccessControlsLazy />
+        ) : module === "profiles" ? (
+          <ProfileControlsLazy />
         ) : (
           <section className="panel-section" aria-labelledby="controls-heading">
             <h3 id="controls-heading" className="panel-section__title">
@@ -63,12 +65,6 @@ export function FilterPanel() {
                 <li key={c}>{c}</li>
               ))}
             </ul>
-            {module === "profiles" && lad && (
-              <p style={{ marginTop: 12 }}>
-                This link selects local authority <code>{lad}</code>. Its profile appears once profiles are
-                built.
-              </p>
-            )}
           </section>
         )}
 

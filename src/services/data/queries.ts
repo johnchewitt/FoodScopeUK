@@ -76,6 +76,9 @@ export function datasetUrl(dataset: Dataset): string {
 export const FAMILY_LABELS: Record<string, string> = {
   trade: "Trade",
   local: "Stores and population",
+  areas: "Small areas",
+  context: "Council context and UK production",
+  register: "NI food register",
 };
 
 /** Shorter family names for the compact freshness pill (tablet header). */
@@ -154,6 +157,9 @@ export function summariseFreshness(
     };
   }
   const families = familySnapshots(manifest);
+  const detail = `${statistical.length} statistical datasets. Each kind of data comes from its own latest snapshot: ${families
+    .map((f) => `${f.label.toLowerCase()} ${f.id}`)
+    .join(", ")}.`;
   if (families.length <= 1)
     return {
       state: "current",
@@ -161,12 +167,32 @@ export function summariseFreshness(
       short: `Snapshot ${shortDate(manifest.snapshotId)}`,
       detail: `${statistical.length} statistical datasets in snapshot ${manifest.snapshotId}.`,
     };
+  if (families.length === 2)
+    return {
+      state: "current",
+      label: families.map((f) => `${f.label} ${f.id}`).join(" · "),
+      short: families
+        .map((f) => `${FAMILY_SHORT_LABELS[f.family] ?? f.label} ${shortDate(f.id)}`)
+        .join(" · "),
+      detail,
+    };
+  // Three or more families: the date range, with every family in the detail (tooltip, Insights panel).
+  const dates = families.map((f) => f.id).sort();
+  const first = dates[0]!;
+  const last = dates[dates.length - 1]!;
   return {
     state: "current",
-    label: families.map((f) => `${f.label} ${f.id}`).join(" · "),
-    short: families.map((f) => `${FAMILY_SHORT_LABELS[f.family] ?? f.label} ${shortDate(f.id)}`).join(" · "),
-    detail: `${statistical.length} statistical datasets. Each kind of data comes from its own latest snapshot: ${families
-      .map((f) => `${f.label.toLowerCase()} ${f.id}`)
-      .join(", ")}.`,
+    label: first === last ? `Data ${first}` : `Data ${first} to ${last}`,
+    short: first === last ? `Data ${shortDate(first)}` : `Data ${shortRange(first, last)}`,
+    detail,
   };
+}
+
+/** "2026-10-23", "2026-10-25" → "23–25 Oct" (same month), else "30 Sep – 2 Oct". */
+function shortRange(first: string, last: string): string {
+  const a = shortDate(first);
+  const b = shortDate(last);
+  const [da, ma] = a.split(" ");
+  const [db, mb] = b.split(" ");
+  return ma === mb && first.slice(0, 4) === last.slice(0, 4) ? `${da}–${db} ${mb}` : `${a} – ${b}`;
 }

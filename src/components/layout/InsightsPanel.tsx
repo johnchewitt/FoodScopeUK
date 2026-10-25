@@ -8,6 +8,7 @@ import { SkeletonLines } from "@/components/states/Skeleton";
 import { principlesById } from "@/content/principles";
 import { OriginsInsights } from "@/features/origins/OriginsInsights";
 import { AccessInsightsLazy } from "@/features/access/lazy";
+import { ProfileInsightsLazy } from "@/features/profiles/lazy";
 import { SeasonalInsightsLazy } from "@/features/seasonal/lazy";
 import { BASEMAP_STATUS_ID, REFERENCE_DATASET_ID, REFERENCE_LAYER_ID } from "@/map/layerIds";
 import { basemapMode, readArcgisEnv } from "@/services/arcgis/env";
@@ -60,6 +61,9 @@ export function InsightsPanel() {
   const localDatasets = statistical.filter((d) => d.id.startsWith("local."));
   const tradeSnapshot = familySnapshot(manifest.data, "trade");
   const localSnapshot = familySnapshot(manifest.data, "local");
+  const areasSnapshot = familySnapshot(manifest.data, "areas");
+  const contextSnapshot = familySnapshot(manifest.data, "context");
+  const registerSnapshot = familySnapshot(manifest.data, "register");
 
   const failed: string[] = [];
   if (config.isError) failed.push("app configuration (defaults used)");
@@ -96,6 +100,10 @@ export function InsightsPanel() {
         ) : module === "access" ? (
           <ErrorBoundary region="UK Food Access insights">
             <AccessInsightsLazy />
+          </ErrorBoundary>
+        ) : module === "profiles" ? (
+          <ErrorBoundary region="Local Authority Profile">
+            <ProfileInsightsLazy />
           </ErrorBoundary>
         ) : (
           <section className="panel-section" aria-labelledby="about-heading">
@@ -136,7 +144,28 @@ export function InsightsPanel() {
                 <StatusItem
                   tone="ok"
                   title={`Stores and population snapshot ${localSnapshot}`}
-                  detail="GEOLYTIX grocery stores (June 2026), ONS mid-2025 population and May 2025 council boundaries. Used by UK Food Access."
+                  detail="GEOLYTIX grocery stores (June 2026), ONS mid-2025 population and May 2025 council boundaries. Used by UK Food Access and Local Authority Profiles."
+                />
+              )}
+              {contextSnapshot && (
+                <StatusItem
+                  tone="ok"
+                  title={`Council context snapshot ${contextSnapshot}`}
+                  detail="Urban/rural class (ONS 2021), Census 2021 car availability per council, and Defra UK production (2025). Used by Local Authority Profiles."
+                />
+              )}
+              {areasSnapshot && (
+                <StatusItem
+                  tone="ok"
+                  title={`Small areas snapshot ${areasSnapshot}`}
+                  detail="Census 2021 small areas, deprivation and the Priority Places for Food Index for the deep profiles (Belfast, Manchester), one council at a time."
+                />
+              )}
+              {registerSnapshot && (
+                <StatusItem
+                  tone="ok"
+                  title={`NI food register snapshot ${registerSnapshot}`}
+                  detail="Northern Ireland grocers from the FSA register that GEOLYTIX does not map: an optional layer, never counted in rates."
                 />
               )}
               {manifest.isError ? (
@@ -196,7 +225,7 @@ export function InsightsPanel() {
           )}
         </section>
 
-        {module !== "origins" && module !== "seasonal" && module !== "access" && (
+        {module !== "origins" && module !== "seasonal" && module !== "access" && module !== "profiles" && (
           <section className="panel-section">
             <ChartFrame
               title="Trend"

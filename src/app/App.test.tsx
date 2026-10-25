@@ -81,13 +81,15 @@ describe("App shell", () => {
   });
 
   it("hydrates from a deep link", async () => {
-    window.history.replaceState(null, "", "/FoodScopeUK/?m=profiles&mo=7&lad=N09000003");
+    window.history.replaceState(null, "", "/FoodScopeUK/?m=profiles&lad=N09000003&am=no-car&cmp=E08000003");
     renderApp();
     expect(
       await screen.findByRole("heading", { level: 1, name: "Local Authority Profiles" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Jul" })).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByText("N09000003")).toBeInTheDocument();
+    const state = useAppStore.getState();
+    expect([state.lad, state.areaMeasure, state.compare]).toEqual(["N09000003", "no-car", ["E08000003"]]);
+    // Local Authority Profiles has no timeline (LP: no time dimension in a council profile).
+    expect(screen.queryByRole("region", { name: "Timeline" })).not.toBeInTheDocument();
   });
 
   it("selects months and mirrors them to the URL", async () => {
@@ -104,10 +106,13 @@ describe("App shell", () => {
     expect(useAppStore.getState().month).toBe(4);
   });
 
-  it("other modules keep the Stage 1 month preview", async () => {
-    window.history.replaceState(null, "", "/FoodScopeUK/?m=profiles");
+  it("keeps a month in the link while a module without a timeline is open", async () => {
+    window.history.replaceState(null, "", "/FoodScopeUK/?m=profiles&mo=3");
     renderApp();
-    await userEvent.click(await screen.findByRole("button", { name: "Mar" }));
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Local Authority Profiles" }),
+    ).toBeInTheDocument();
+    expect(useAppStore.getState().month).toBe(3);
     expect(window.location.search).toBe("?m=profiles&mo=3");
   });
 
@@ -139,9 +144,10 @@ describe("App shell", () => {
     expect(within(insights).getByText(/Natural Earth v5.1.2, 1:110m, 176 countries/)).toBeInTheDocument();
     expect(within(insights).getByText("Trade snapshot 2026-10-23")).toBeInTheDocument();
     expect(within(insights).getByText("Stores and population snapshot 2026-10-24")).toBeInTheDocument();
+    expect(within(insights).getByText("Small areas snapshot 2026-10-25")).toBeInTheDocument();
     expect(
       await screen.findByRole("button", {
-        name: /Data freshness: Trade 2026-10-23 · Stores and population 2026-10-24/,
+        name: /Data freshness: Data 2026-10-23 to 2026-10-25/,
       }),
     ).toBeInTheDocument();
   });
