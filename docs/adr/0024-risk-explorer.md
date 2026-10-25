@@ -44,7 +44,8 @@ Earlier stages already draw the trade map (Food Origins and Seasonal Supply, `Or
 4. **The access view reuses the council layer in a risk mode.** `AccessMapModel.mode = "risk"`:
    - councils are filled by the share of their small areas in their own nation's deciles 1–2 for the chosen measure (six fixed classes on the risk ramp);
    - councils without data for the measure are hatched (Northern Ireland, three domains);
-   - stores are hidden (`storeWhere = "1=0"`);
+   - no stores layer is created: the map is built from the council boundaries in the manifest, so the view never downloads the stores file;
+   - councils stay filled and clickable at local scale (UK Food Access outlines them there);
    - the selected council is emphasised.
 
    Councils are ranked within their own nation only: competition ranking, ties marked "=".

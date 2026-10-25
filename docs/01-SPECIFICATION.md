@@ -432,7 +432,7 @@ Implemented in `src/analysis/risk.ts` and `src/features/risks/model.ts`, with un
   - Scotland: Data Zone 2011 → council;
   - Northern Ireland: SOA 2011 → LGD 2014.
 
-  The nation's share pools all its areas (about 20 % by construction). Classes: none (0 %), under 10 %, 10–20 %, 20–30 %, 30–50 %, 50 % and over. Ranked within the nation only, highest share first; equal shares share a rank, marked "=" (competition ranking). Councils with fewer than 10 small areas carry a caution. *Derived.*
+  The nation's share pools all its areas (about 20 % by construction). Classes: none (0 %), under 10 %, 10–20 %, 20–30 %, 30–50 %, 50 % and over. Ranked within the nation only, highest share first; equal shares share a rank, marked "=" (competition ranking). Councils with fewer than 10 small areas carry a caution. A council is always set against its own nation's pooled share. The count of councils at 40 % or more (twice the about 20 % by construction) is given for one nation at a time, as is the median share by ONS urban/rural flag (England, Wales). *Derived.*
 
 ---
 

@@ -17,7 +17,7 @@ A new module, **UK Food Resilience — Risk Explorer** ("Risks" in the rail), wi
 | **RK-01** three views | One radio group: International supply · Logistics · Community access. Switching view keeps the map; the other views' layers are hidden, and hovers are cleared. History gets one entry per view change. |
 | **RK-02** international supply exposure | Uses the Food Origins selection (commodity, period, measure, partner) and the trade map. **Cards:** recorded imports, partners, top supplier (with top three), HHI, share from partners in high or critical water stress, and data availability (share allocated to a partner country; provisional months). **Charts and tables:** concentration ranking of the five baskets (click a bar to switch commodity); monthly HHI heatmap (fixed classes of 1,000, provisional months dashed, empty months as gaps); estimated exposure to one partner, month by month, with a 50 % line, the period share, the largest month and the months at or above half; recorded imports by partners' water-stress class with the largest partners' values; import trend by year (partial years marked); commodity–country matrix (each basket's top five partners); Defra's UK production share (national context, annual, never combined with monthly figures); data notes (country of dispatch, provisional months, series breaks, commodity-code changes). **Map:** a "Map colour" switch between share of imports and partners' water stress (FAO classes on the risk ramp; no value hatched, never shown as low). |
 | **RK-03** food logistics and infrastructure | **Cards:** the major ports' total (or the selected port), the largest port's share, the Short Straits share of food imports (UKFSR), England's SRN delay, and how many ports are on the map. **Port symbols:** three measures (inward freight from abroad, agricultural products inwards, roll-on/roll-off inwards), 2015–2025, circles with area proportional to tonnage; a zero is a hollow ring; UKFSR food entry points carry a warm ring. **Charts and tables:** all ports by year (or the selected port, with its regions of loading); the full port table with shares; food imports by port of entry and Short Straits dependence by food group (as published); SRN delay. **Layers:** road corridors (Great Britain); agricultural production regions (wheat, cattle, sheep, pigs, poultry as densities in fixed classes) with a region table. **Not available**, listed with reasons: Northern Ireland roads, rail freight routes, distribution centres. |
-| **RK-04** community food access | Every council's share of small areas in its own nation's deciles 1–2 of the Priority Places for Food Index, combined or by domain. **Map:** councils on the risk ramp in six fixed classes (hatched where the measure has no data: three domains in Northern Ireland). **Cards:** the selected council's share and its rank within its nation; the nation's share; councils at 40 % or more; data availability. **Charts:** the selected council by domain against 20 %; its small areas by decile; councils of one nation ranked (the selected one always shown; click to select); median share by urban/rural flag for England and Wales separately. A link opens the council's profile. |
+| **RK-04** community food access | Every council's share of small areas in its own nation's deciles 1–2 of the Priority Places for Food Index, combined or by domain. **Map:** councils on the risk ramp in six fixed classes (hatched where the measure has no data: three domains in Northern Ireland). **Cards:** the selected council's share and its rank within its nation; its nation's pooled share; councils at 40 % or more in the ranking nation; data availability. **Charts:** the selected council by domain against 20 %; its small areas by decile; councils of one nation ranked (the selected one always shown; click to select); median share by urban/rural flag for the ranking nation (England or Wales; one nation at a time). A link opens the council's profile. The map needs only the council boundaries, never the stores file, and councils stay filled and clickable at local scale. |
 | **RK-07** "Explain this risk" | For the commodity, the port network or a port, the road corridors, a farming region, or a council. It gives: what is measured; why it matters; how it is calculated; observed evidence (each value through `<Metric>`, with provenance class, period, scope and sources); sources; a labelled interpretation, which always ends "not a prediction that supply will fail"; limitations; evidence that would help; general options (never recommendations or anyone's needs). In the logistics view, a switch chooses ports, roads or the farming region. |
 | **RK-08** linked selection | A bar, table row, map feature or control selects the commodity, partner, port or council everywhere: map, cards, charts, explanation and URL. Every chart selection also has a keyboard route (controls, table rows or buttons). |
 
@@ -125,12 +125,35 @@ New tests:
 - The logistics explanation defaulted to the road corridors. It now explains the port network (largest port's share, Short Straits share, all-cargo caveat), and the user can switch to roads or the farming region.
 - The survey year was written as 2025 in five places. It now comes from the data.
 - The council explanation listed the Northern Ireland limitation for every council. Limitations now follow the council's nation (Scotland's 2011 Data Zones; Northern Ireland's three missing domains).
-- The "Councils above twice their nation's share" card counted councils at 40 % or more, not twice the actual share (about 20.0 %). It is renamed "Councils at 40 % or more".
+- The "Councils above twice their nation's share" card counted councils at 40 % or more, not twice the actual share (about 20.0 %). It is now "Councils in <nation> at 40 % or more", counted within the ranking nation only (review finding 9).
 - Heatmaps failed in the development build (above).
 
 ## Independent review
 
-_To fill after the review agent reports._
+A separate agent reviewed the application code (`09c9654..HEAD`, `src` and `tests`) without seeing this report. It found the core maths correct on the real data:
+- shares, HHI, CR1/CR3, exposure, ties and classes;
+- port totals and farming densities;
+- water-stress classes.
+
+It found no composite score, no forecast or "shortage" wording, no port-of-entry shares derived from DfT tonnage and no cross-nation ranking. It reported nine verified findings. All are fixed, with tests where they apply:
+
+1. **Medium. Wrong nation for a council's baseline.** With a ranking nation chosen (e.g. Hartlepool with Scotland ranked), the council's explanation lost its nation's share and the "times the nation's share" sentence, and the card showed Scotland's share. Each nation's pooled share is now computed, and a council is always set against its own nation (unit test).
+2. **Medium. Legends inverted on light grey.** The HHI and water-stress legends in the panel used the map tokens, which are reversed on the light grey basemap, while the charts always draw the dark-panel ramp. Panel legends now use the panel tokens.
+3. **Medium/low. A published zero shown as missing.** A change from 0 t (e.g. Cairnryan, Milford Haven) read "no 2024 figure". It now reads "up from 0 t in 2024" or "also 0 t in 2024" (unit test).
+4. **Medium. Community access depended on the stores file.** The view waited for the 8.5 MB stores file and failed if it failed. The council map is now built from the manifest boundaries; no stores layer is created in this view (E2E checks the stores layer is absent).
+5. **Low. Councils at local scale.** At zoom 12 and closer, councils lost their fills and could not be clicked. They now stay filled and clickable (E2E zooms to 12.5).
+6. **Low. £ format.** The trend axis showed "£29m" for £29.1m. It now uses the shared format (spec §6.4).
+7. **Low. Month keys.** Reference periods showed "2025-12" and "Year to 2023-12". They now read "Dec 2025" and "Year to Dec 2023".
+8. **Low. Port-of-entry clicks.** Two UKFSR groups share London's port, so a second click on the chart cleared it. Chart clicks now only select.
+9. **Low. Cross-nation reading.** The "40 % or more" card counted councils UK-wide, and the urban/rural chart set England beside Wales. Both now show one nation at a time.
+
+It also listed possible issues that the current data does not trigger; four are fixed anyway:
+- a farming region without a value for the chosen measure is hatched on the map;
+- its table cell says "No data" (it showed wheat hectares);
+- an unreported region of loading is left out, not counted as 0 t;
+- pooled shares use each measure's own denominator.
+
+One possible issue was not fixed: the supply view leaves its water-stress trade map in the store after the view closes. Every trade view sets its own map when it opens, and the trade layers show only in trade views, so nothing visible follows; clearing it would redraw the map when moving between trade views.
 
 ## Not verified, and why
 
