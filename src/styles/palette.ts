@@ -61,6 +61,11 @@ export interface MapColours {
   storeConvenience: string;
   storeOther: string;
   storeOutline: string;
+  /**
+   * NI grocers from the FSA register that GEOLYTIX misses (S29): a hollow diamond, so shape and
+   * fill both say "supplementary" next to the filled GEOLYTIX symbols.
+   */
+  registerGrocer: string;
   /** Store clusters: fill, ring and count text. */
   clusterFill: string;
   clusterRing: string;
@@ -99,6 +104,7 @@ const DARK: MapColours = {
   storeConvenience: "#eb6834",
   storeOther: "#9085e9",
   storeOutline: BRAND.navy,
+  registerGrocer: BRAND.text,
   clusterFill: BRAND.navy,
   clusterRing: BRAND.text,
   clusterText: BRAND.text,
@@ -136,6 +142,7 @@ export const MAP_COLOURS: Record<MapStyle, MapColours> = {
     storeConvenience: "#a3410b",
     storeOther: "#5a3fc0",
     storeOutline: "#ffffff",
+    registerGrocer: BRAND.navy,
     clusterFill: BRAND.navy,
     clusterRing: "#ffffff",
     clusterText: "#ffffff",
@@ -166,7 +173,27 @@ export const MAP_TOKENS: Record<string, keyof MapColours> = {
   "--fs-map-store-convenience": "storeConvenience",
   "--fs-map-store-other": "storeOther",
   "--fs-map-store-outline": "storeOutline",
+  "--fs-map-register-grocer": "registerGrocer",
   "--fs-map-cluster-fill": "clusterFill",
   "--fs-map-cluster-ring": "clusterRing",
   "--fs-map-proximity": "proximity",
 };
+
+/**
+ * Categorical chart colours on the dark panels (Local Authority Profiles retailer charts): the
+ * dataviz reference palette's eight dark-surface slots, validated on the panel surface #073435
+ * (25 Oct 2026): lightness band, chroma floor, adjacent CVD ΔE ≥ 8.4, normal-vision ΔE ≥ 19.3;
+ * green is 2.74:1 against the panel, so these charts always have direct labels and a table.
+ * "Other" is the muted text colour. tokens.css mirrors them as --fs-cat-*.
+ */
+export const CATEGORICAL = [
+  "#3987e5",
+  "#d95926",
+  "#199e70",
+  "#c98500",
+  "#d55181",
+  "#008300",
+  "#9085e9",
+  "#e66767",
+] as const;
+export const CATEGORICAL_OTHER = BRAND.muted;
