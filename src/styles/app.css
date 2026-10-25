@@ -2500,6 +2500,31 @@ li[data-hidden-at-scale] .grocer-symbol {
   opacity: 0.45;
   cursor: default;
 }
+.chip-btn--small {
+  height: 26px;
+  padding: 0 8px;
+  gap: 5px;
+}
+/* Keyboard alternative to clicking a chart bar (profiles). */
+.outline-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+}
+.outline-buttons__label {
+  margin-right: 2px;
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.outline-buttons__count {
+  color: var(--fs-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.chip-btn[aria-pressed="true"] .outline-buttons__count {
+  color: inherit;
+}
 .link-btn {
   padding: 0;
   margin-right: 8px;

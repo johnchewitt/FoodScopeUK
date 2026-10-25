@@ -451,6 +451,8 @@ function StoreList({ stores }: { stores: NonNullable<ProfileData["councilStores"
 // ---------------------------------------------------------------------------------------------
 // Deep profile sections (LP-04, LP-06)
 
+const distanceHighlight = (label: string) => `${label} from a supermarket (straight-line)`;
+
 function Accessibility({ c, d }: { c: CouncilRow; d: DeepProfile }) {
   const setHighlight = useAppStore((s) => s.setAreaHighlight);
   const selectArea = useAppStore((s) => s.selectArea);
@@ -472,6 +474,10 @@ function Accessibility({ c, d }: { c: CouncilRow; d: DeepProfile }) {
     });
   }, [d]);
   const chart = useMemo(() => distanceClassesOption(classes), [classes]);
+  const pickDistance = (row: (typeof classes)[number]) => {
+    setMeasure("distance");
+    setHighlight({ label: distanceHighlight(row.label), codes: row.codes });
+  };
   const list = useMemo(() => underserved(d, km), [d, km]);
   const accessibilityDomain = d.profile.ppfi.domainsWithoutData.includes("supermarket_accessibility");
   return (
@@ -499,12 +505,20 @@ function Accessibility({ c, d }: { c: CouncilRow; d: DeepProfile }) {
         onEvents={{
           click: (e) => {
             const row = classes[e.dataIndex ?? -1];
-            if (!row) return;
-            setMeasure("distance");
-            setHighlight({ label: `${row.label} from a supermarket`, codes: row.codes });
+            if (row) pickDistance(row);
           },
         }}
-      />
+      >
+        <OutlineButtons
+          options={classes.map((row) => ({
+            key: String(row.classIndex),
+            label: row.label,
+            highlight: distanceHighlight(row.label),
+            count: row.areas,
+            onPick: () => pickDistance(row),
+          }))}
+        />
+      </ChartFrame>
       <div className="field-row">
         <span>Neighbourhoods beyond</span>
         <div className="segmented" role="radiogroup" aria-label="Straight-line threshold">
@@ -581,6 +595,39 @@ function Accessibility({ c, d }: { c: CouncilRow; d: DeepProfile }) {
   );
 }
 
+/**
+ * Keyboard alternative to clicking a chart bar (LP-06, AX-06): one button per map class outlines
+ * those areas on the map, exactly as a click on the bar does.
+ */
+function OutlineButtons({
+  options,
+}: {
+  options: { key: string; label: string; highlight: string; count: number; onPick: () => void }[];
+}) {
+  const current = useAppStore((s) => s.areaHighlight?.label ?? null);
+  return (
+    <div className="outline-buttons" role="group" aria-label="Outline on the map">
+      <span className="outline-buttons__label" aria-hidden="true">
+        Outline on the map:
+      </span>
+      {options.map((o) => (
+        <button
+          key={o.key}
+          type="button"
+          className="chip-btn chip-btn--small"
+          aria-pressed={current === o.highlight}
+          aria-label={`${o.label}: outline ${formatCount(o.count)} areas on the map`}
+          disabled={o.count === 0}
+          onClick={o.onPick}
+        >
+          {o.label}
+          <span className="outline-buttons__count">{formatCount(o.count)}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function DecileChart({
   title,
   items,
@@ -597,6 +644,22 @@ function DecileChart({
   const setHighlight = useAppStore((s) => s.setAreaHighlight);
   const setMeasure = useAppStore((s) => s.setAreaMeasure);
   const chart = useMemo(() => decileBarsOption(rows, title, by), [rows, title, by]);
+  // Map classes 4..0 are deciles 1–2 .. 9–10 (decileClass).
+  const classes = useMemo(
+    () =>
+      [4, 3, 2, 1, 0].map((cls) => {
+        const first = 2 * (4 - cls) + 1;
+        const label = `${first}–${first + 1}`;
+        return { cls, label, highlight: `${title}: deciles ${label}`, codes: codesInDecileClass(items, cls) };
+      }),
+    [items, title],
+  );
+  const pick = (cls: number) => {
+    const c = classes.find((x) => x.cls === cls);
+    if (!c) return;
+    setMeasure(measure);
+    setHighlight({ label: c.highlight, codes: c.codes });
+  };
   return (
     <ChartFrame
       title={title}
@@ -608,15 +671,20 @@ function DecileChart({
         click: (e) => {
           const row = rows[e.dataIndex ?? -1];
           if (!row) return;
-          const cls = decileClass(row.decile)!;
-          setMeasure(measure);
-          setHighlight({
-            label: `${title}: deciles ${2 * (4 - cls) + 1}–${2 * (4 - cls) + 2}`,
-            codes: codesInDecileClass(items, cls),
-          });
+          pick(decileClass(row.decile)!);
         },
       }}
-    />
+    >
+      <OutlineButtons
+        options={classes.map((c) => ({
+          key: String(c.cls),
+          label: `Deciles ${c.label}`,
+          highlight: c.highlight,
+          count: c.codes.length,
+          onPick: () => pick(c.cls),
+        }))}
+      />
+    </ChartFrame>
   );
 }
 
