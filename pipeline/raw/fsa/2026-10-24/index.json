@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-24",
+  "files": [
+    {
+      "id": "fsa.fhrs_801",
+      "file": "FHRS801en-GB.xml",
+      "url": "https://ratings.food.gov.uk/api/open-data-files/FHRS801en-GB.xml",
+      "sourceId": "S29",
+      "licence": "Open Government Licence v3.0 (Food Standards Agency, food hygiene rating data)",
+      "description": "FSA food hygiene rating open data: Antrim and Newtownabbey (FHRS 801; council N09000001)",
+      "httpStatus": 200,
+      "bytes": 1151614,
+      "sha256": "b89a29305797380f0970b43a73a9386becfe4544925f16489fc4f17e8de4db1d",
+      "retrievedAt": "2026-10-25T08:52:59Z"
+    },
+    {
+      "id": "fsa.fhrs_802",
+      "file": "FHRS802en-GB.xml",
+      "url": "https://ratings.food.gov.uk/api/open-data-files/FHRS802en-GB.xml",
+      "sourceId": "S29",
+      "licence": "Open Government Licence v3.0 (Food Standards Agency, food hygiene rating data)",
+      "description": "FSA food hygiene rating open data: Ards and North Down (FHRS 802; council N09000011)",
+      "httpStatus": 200,
+      "bytes": 1321170,
+      "sha256": "fbc20eda5e3d4c373013991c00a8d6e05b3e9e73a9f64a9f28f686563775005b",
+      "retrievedAt": "2026-10-25T08:53:00Z"
+    },
+    {
+      "id": "fsa.fhrs_803",
+      "file": "FHRS803en-GB.xml",
+      "url": "https://ratings.food.gov.uk/api/open-data-files/FHRS803en-GB.xml",
+      "sourceId": "S29",
+      "licence": "Open Government Licence v3.0 (Food Standards Agency, food hygiene rating data)",
+      "description": "FSA food hygiene rating open data: Armagh City, Banbridge and Craigavon (FHRS 803; council N09000002)",
+      "httpStatus": 200,
+      "bytes": 1965755,
+      "sha256": "4dbb69cb647d5d504a032be4690cdc7570e0ec7633bd2938244836e257be669d",
+      "retrievedAt": "2026-10-25T08:53:01Z"
+    },
+    {
+      "id": "fsa.fhrs_804",
+      "file": "FHRS804en-GB.xml",
+      "url": "https://ratings.food.gov.uk/api/open-data-files/FHRS804en-GB.xml",
+      "sourceId": "S29",
+      "licence": "Open Government Licence v3.0 (Food Standards Agency, food hygiene rating data)",
+      "description": "FSA food hygiene rating open data: Mid and East Antrim (FHRS 804; council N09000008)",
+      "httpStatus": 200,
+      "bytes": 1217337,
+      "sha256": "c958f1d4923560ab7fed54571d702410cef3d797a89a3e9cb00b59821b9de321",
+      "retrievedAt": "2026-10-25T08:53:02Z"
+    },
+    {
+      "id": "fsa.fhrs_805",
+      "file": "FHRS805en-GB.xml",
+      "url": "https://ratings.food.gov.uk/api/open-data-files/FHRS805en-GB.xml",
+      "sourceId": "S29",
+      "licence": "Open Government Licence v3.0 (Food Standards Agency, food hygiene rating data)",
+      "description": "FSA food hygiene rating open data: Causeway Coast and Glens (FHRS 805; council N09000004)",
+      "httpStatus": 200,
+      "bytes": 1526200,
+      "sha256": "2e8626cbcddd640e13012812a086cc4e8dcbe4eb0abf2eb9d29bd67d33209a32",
+      "retrievedAt": "2026-10-25T08:53:03Z"
+    },
+    {
+      "id": "fsa.fhrs_807",
+      "file": "FHRS807en-GB.xml",
+      "url": "https://ratings.food.gov.uk/api/open-data-files/FHRS807en-GB.xml",
+      "sourceId": "S29",
+      "licence": "Open Government Licence v3.0 (Food Standards Agency, food hygiene rating data)",
+      "description": "FSA food hygiene rating open data: Belfast City (FHRS 807; council N09000003)",
+      "httpStatus": 200,
+      "bytes": 3368793,
+      "sha256": "e3e8834ef85c655b0d1bd9d3cdfdef0a13001e0469ff66c31b275ff979a57a91",
+      "retrievedAt": "2026-10-25T08:53:04Z"
+    },
+    {
+      "id": "fsa.fhrs_809",
+      "file": "FHRS809en-GB.xml",
+      "url": "https://ratings.food.gov.uk/api/open-data-files/FHRS809en-GB.xml",
+      "sourceId": "S29",
+      "licence": "Open Government Licence v3.0 (Food Standards Agency, food hygiene rating data)",
+      "description": "FSA food hygiene rating open data: Lisburn and Castlereagh City (FHRS 809; council N09000007)",
+      "httpStatus": 200,
+      "bytes": 950134,
+      "sha256": "2e7e3802346a85815655a3bdb89b3718204a147f4706a24b4112983d9f15c209",
+      "retrievedAt": "2026-10-25T08:53:05Z"
+    },
+    {
+      "id": "fsa.fhrs_811",
+      "file": "FHRS811en-GB.xml",
+      "url": "https://ratings.food.gov.uk/api/open-data-files/FHRS811en-GB.xml",
+      "sourceId": "S29",
+      "licence": "Open Government Licence v3.0 (Food Standards Agency, food hygiene rating data)",
+      "description": "FSA food hygiene rating open data: Mid Ulster (FHRS 811; council N09000009)",
+      "httpStatus": 200,
+      "bytes": 1436692,
+      "sha256": "2cf0aec807047fde4508153d11aa7b0afdf93bd3941a3de7247d9eb04fdb4e94",
+      "retrievedAt": "2026-10-25T08:53:06Z"
+    },
+    {
+      "id": "fsa.fhrs_813",
+      "file": "FHRS813en-GB.xml",
+      "url": "https://ratings.food.gov.uk/api/open-data-files/FHRS813en-GB.xml",
+      "sourceId": "S29",
+      "licence": "Open Government Licence v3.0 (Food Standards Agency, food hygiene rating data)",
+      "description": "FSA food hygiene rating open data: Derry City and Strabane (FHRS 813; council N09000005)",
+      "httpStatus": 200,
+      "bytes": 1379830,
+      "sha256": "f120c7466e0ee2b8c1f981a12f39843dfd977a50bc0268053813d1fc5d0b60aa",
+      "retrievedAt": "2026-10-25T08:53:07Z"
+    },
+    {
+      "id": "fsa.fhrs_814",
+      "file": "FHRS814en-GB.xml",
+      "url": "https://ratings.food.gov.uk/api/open-data-files/FHRS814en-GB.xml",
+      "sourceId": "S29",
+      "licence": "Open Government Licence v3.0 (Food Standards Agency, food hygiene rating data)",
+      "description": "FSA food hygiene rating open data: Newry, Mourne and Down (FHRS 814; council N09000010)",
+      "httpStatus": 200,
+      "bytes": 1747921,
+      "sha256": "ab85b04cf1187cbc8d485966319c97fdfac626905eff60f5e67f31090c947815",
+      "retrievedAt": "2026-10-25T08:53:08Z"
+    },
+    {
+      "id": "fsa.fhrs_816",
+      "file": "FHRS816en-GB.xml",
+      "url": "https://ratings.food.gov.uk/api/open-data-files/FHRS816en-GB.xml",
+      "sourceId": "S29",
+      "licence": "Open Government Licence v3.0 (Food Standards Agency, food hygiene rating data)",
+      "description": "FSA food hygiene rating open data: Fermanagh and Omagh (FHRS 816; council N09000006)",
+      "httpStatus": 200,
+      "bytes": 1463781,
+      "sha256": "ee8fd7e8c559d9a3605da3bebf53924fa84528f18b142ad7dd09df41513d50bd",
+      "retrievedAt": "2026-10-25T08:53:09Z"
+    }
+  ]
+}
