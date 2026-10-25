@@ -5,10 +5,7 @@
   "description": "Railway lines in Northern Ireland from the Translink NIR railway network (S37): one feature per route line (sidings left out), WGS84. Written by `foodscope-pipeline build-risk`.",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "type",
-    "features"
-  ],
+  "required": ["type", "features"],
   "properties": {
     "type": {
       "const": "FeatureCollection"
@@ -18,11 +15,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "type",
-          "properties",
-          "geometry"
-        ],
+        "required": ["type", "properties", "geometry"],
         "properties": {
           "type": {
             "const": "Feature"
@@ -30,10 +23,7 @@
           "properties": {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-              "line",
-              "elr"
-            ],
+            "required": ["line", "elr"],
             "properties": {
               "line": {
                 "type": "string",
@@ -50,10 +40,7 @@
               {
                 "type": "object",
                 "additionalProperties": false,
-                "required": [
-                  "type",
-                  "coordinates"
-                ],
+                "required": ["type", "coordinates"],
                 "properties": {
                   "type": {
                     "const": "LineString"
@@ -75,10 +62,7 @@
               {
                 "type": "object",
                 "additionalProperties": false,
-                "required": [
-                  "type",
-                  "coordinates"
-                ],
+                "required": ["type", "coordinates"],
                 "properties": {
                   "type": {
                     "const": "MultiLineString"
