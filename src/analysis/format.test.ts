@@ -100,3 +100,12 @@ describe("profile units (Stage 5)", () => {
     expect(formatByUnit(1234, "residents per km²")).toBe("1,230");
   });
 });
+
+describe("Risk Explorer units (Stage 6)", () => {
+  it("formats road delay and densities per km²", () => {
+    expect(formatByUnit(10.5, "seconds per vehicle per mile")).toBe("10.5 s");
+    expect(formatByUnit(424.06, "sheep per km²")).toBe("424");
+    expect(formatByUnit(4.04, "pigs per km²")).toBe("4.0");
+    expect(formatByUnit(0.31, "stores per km²")).toBe("0.31");
+  });
+});
