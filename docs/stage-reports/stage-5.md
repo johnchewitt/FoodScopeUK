@@ -132,7 +132,7 @@ Belfast has 6 of its 174 SOAs in PPFI deciles 1–2 but 47 in NIMDM's most depri
 | `npm test` | **413 passed** (31 files; 361 at the end of Stage 4) |
 | `cd pipeline && uv run pytest` | **161 passed** (38 s) |
 | `VITE_ARCGIS_ASSETS=local npm run build`; `npm run build:e2e-basemap` | Both succeed |
-| `npm run e2e` | **E2E_PLACEHOLDER** |
+| `npm run e2e` | **70 passed** (13.5 min): the 62 earlier tests (two updated, see below) and 8 new profile tests, with the basemap project on the placeholder-key build. A first full run had 2 failures, both in tests that assumed Profiles was a placeholder; after updating them the profile tests passed, and the comparison test once failed axe while the dialog faded in (now waits for it to open) |
 | Hand checks (`uv run python -I <scratch>/check_stores_population.py`, `check_small_areas.py`, `check_membership.py`) | All match (above) |
 | Bundle | Profiles chunk 96.6 kB (26.6 kB gzip), loaded only when the module opens. App entry 462.1 kB (141.2 kB gzip). |
 
