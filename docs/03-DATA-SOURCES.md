@@ -40,7 +40,7 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S10 | Cereal and oilseed production (annual) | Defra | 🔴 | Origins context, Scenario C | R1/R2 |
 | S11 | Grocery / Supermarket Retail Points (v46, June 2026) | GEOLYTIX | ✅ | Supermarkets, Profiles, Access, Scenario D | R1 |
 | S12 | Number of chain supermarkets across LADs and smaller areas in the UK | ONS | ✅ (LAD tables 1–4) | Validation of store counts | R1 |
-| S13 | Priority Places for Food Index (v2.1) | CDRC / Leeds HASP | 🟡 (NI coverage ⚠️) | Access, Profiles | R1 (demo LADs) |
+| S13 | Priority Places for Food Index (v2.1) | CDRC / Leeds HASP | ✅ (all four nations; NI on SOAs 2011, three domains without data) | Access, Profiles | R1 (demo LADs) |
 | S14 | Local Authority Districts (May 2025) Boundaries UK, BGC (display) and BFE (store assignment) | ONS | ✅ | All UK views, Profiles | R1 |
 | S15 | LSOA 2021 boundaries and population-weighted centroids (E&W) | ONS | ✅ (Manchester; G11) | Access, Profiles (Manchester) | R1 |
 | S16 | Data Zones 2021 (and Super Data Zones) | NISRA | ✅ (boundaries, centroids; G9) | Access, Profiles (Belfast) | R1 |
@@ -240,7 +240,7 @@ Published 7 March 2024, OGL v3.0. URL: https://www.ons.gov.uk/peoplepopulationan
 
 ## 5. Food-access vulnerability
 
-### S13 — Priority Places for Food Index 🟡 (⚠️ NI coverage in v2 unconfirmed; gate G8 waits for the file)
+### S13 — Priority Places for Food Index ✅ (gate G8 cleared 25 Oct 2026)
 
 | Field | Detail |
 |---|---|
@@ -254,7 +254,9 @@ Published 7 March 2024, OGL v3.0. URL: https://www.ons.gov.uk/peoplepopulationan
 | **Gate** | Download v2.1 LSOA CSV; check for NI codes and record column names. If NI is absent, the Belfast profile says PPFI is not available and uses NI-native indicators (S19 NIMDM, S20 car availability, S11 proximity); no v1 reference (John's decision, 24 Oct 2026). |
 | **Columns (verified 25 Oct 2026)** | From the HASP data dictionary for record version 1.0.24, provided by John (`pipeline/raw/hasp-provided/ppfi-v2.1-lsoa-1.0.24/`): `lsoa21cd` (area code: LSOA / data zone / SOA); domain ranks `domain_supermarket_proximity`, `domain_supermarket_accessibility`, `domain_ecommerce_access`, `domain_socio_demographic`, `domain_nonsupermarket_proximity`, `domain_food_for_families`, `domain_fuel_poverty`; `country`, `country_denominator`; `combined` (rank); deciles `pp_dec_<domain>` and `pp_dec_combined`. Ranks are within each country. |
 | **NI in the user guide** | The v2.1 user guide (leeds-hasp.github.io data docs, read 25 Oct 2026) says the index covers "Super Output Areas in Northern Ireland (2011 boundaries)", ranked within each country, and that cross-country comparison is not recommended. Several NI indicators were not available: supermarket accessibility, online deliveries, markets, Healthy Start and fuel poverty. If NI rows are present, Belfast's PPFI is on the same SOAs as NIMDM 2017. |
-| **Download** | HASP needs a free account (the basket goes to a sign-in page). John provides the data file; only the dictionary has arrived so far. |
+| **Download** | HASP needs a free account (the basket goes to a sign-in page). John downloaded the data file `hasp_ppfi_v2.1.csv` (3.4 MB) on 25 Oct 2026. It is in `pipeline/raw/hasp-provided/ppfi-v2.1-lsoa-1.0.24/` with its dictionary and checksums. |
+| **Gate G8 result (25 Oct 2026)** | **Northern Ireland is included.** 43,538 rows, ranked 1…n within each country: England 33,755 LSOAs (2021), Wales 1,917 LSOAs, Scotland 6,976 Data Zones, Northern Ireland 890 SOAs (2011, codes such as `95GG01S1`). `country` takes the values `E`, `W`, `S`, `NI`, and `country_denominator` is the number of areas in that country. In Northern Ireland three domains are empty: `domain_supermarket_accessibility`, `domain_ecommerce_access` and `domain_fuel_poverty`, with their deciles. So NI's combined index rests on four domains. Belfast's 174 SOAs carry PPFI on the same geography as NIMDM 2017, and none is in NI's top-priority decile. |
+| **Orientation** | The publisher's pages (user guide, CDRC FAQ and news page, read 25 Oct 2026) do not say which end is highest priority. The data shows it. The socio-demographic domain (income deprivation and no car) ranks with IoD 2025 (decile against decile, r = 0.86, England) and with NIMDM 2017 (rank against rank, r = 0.93, NI), both of which put 1 = most deprived. So **rank 1 and decile 1 = highest priority**. The build stops if this correlation ever falls below 0.5. |
 | **Records disagree (24 Oct 2026)** | The HASP record (dataset 5276, v2.1 LSOA) lists spatial coverage "Great Britain"; the CDRC page (data.cdrc.ac.uk/node/2443) says "the four nations" and lists "NI SOA (2011)". Downloads go through a HASP basket, so John provides the file. |
 
 ### S19 — Deprivation indices 🟡
