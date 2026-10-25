@@ -1,4 +1,4 @@
-name: Fetch reference data (ONS, Nomis, MHCLG, NISRA, FSA, Defra)
+name: Fetch reference data (ONS, Nomis, MHCLG, NISRA, FSA, Defra, World Bank, DfT, Scottish Government, OSNI, OS)
 
 # Downloads the reference files the app needs into pipeline/raw/<publisher>/<snapshot>/ and commits
 # them to the branch:
@@ -13,6 +13,11 @@ name: Fetch reference data (ONS, Nomis, MHCLG, NISRA, FSA, Defra)
 # Those make up the `stage5` set (snapshot 2026-10-24). The `context` set (snapshot 2026-10-25;
 # John, 25 Oct 2026) adds the ONS 2021 Rural Urban Classification of councils and LSOAs (S21) and
 # Defra's annual production statistics (S09 horticulture, S10 Agriculture in the UK, chapter 7).
+# The `stage6` set (snapshot 2026-10-25; John's Stage 6 brief and decisions, 25 Oct 2026) adds FAO
+# water stress through the World Bank API (S30), DfT port freight tables (S23), UKFSR 2024 theme 3
+# (S03), Defra June survey structure results (S31), the Scottish 2022 Data Zone lookup (S32), ONS
+# ITL1 regions (S33) and the LSOA-to-council lookup for every LSOA (S15), and two probes of road
+# data (OSNI 1:50,000 transport, S34; OS Open Roads download list, S35).
 # SNAPSHOT and SET below name the set this branch fetches; earlier sets stay in their own folders.
 # The build sandbox cannot reach these sites; everything after this download runs offline from the
 # cache (same pattern as the HMRC ingest, ADR-0016). Data reaches `main` only through a pull request.
@@ -40,7 +45,7 @@ jobs:
     timeout-minutes: 30
     env:
       SNAPSHOT: "2026-10-25"
-      SET: "context"
+      SET: "stage6"
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
@@ -63,7 +68,7 @@ jobs:
           python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
           import json, os, pathlib
           snap = os.environ["SNAPSHOT"]
-          for publisher in ("ons", "nomis", "mhclg", "nisra", "fsa", "defra"):
+          for publisher in ("ons", "nomis", "mhclg", "nisra", "fsa", "defra", "worldbank", "dft", "scotgov", "osni", "os"):
               path = pathlib.Path(f"pipeline/raw/{publisher}/{snap}/index.json")
               print(f"### {publisher} {snap}\n")
               if not path.is_file():
