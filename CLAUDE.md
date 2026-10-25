@@ -16,7 +16,7 @@ FOODSCOPE UK is a map-centred food security and supply-chain intelligence demons
 
 ## Current stage
 
-**Stages 1–4 are merged and deployed.** Stage 4 (UK Food Access and the basemap choice) merged as PR #9 and went live on 24 Oct 2026 (report: `docs/stage-reports/stage-4.md`; ADR-0021, ADR-0022), with its live-check fixes in PR #11. **Stage 5 — Local Authority Profiles** is built on `stage/5-local-authority-profiles` (report: `docs/stage-reports/stage-5.md`, ADR-0023), on top of the context data step (`data/stage-5-context`, PR #13); it waits for review, merge and the live checks. **Next: Stage 6 — Scenario Lab** (roadmap §8), only when John asks. The other data-pipeline items in roadmap §5.3 are still to be scheduled. Update this line when a stage is merged.
+**Stages 1–4 are merged and deployed.** Stage 4 (UK Food Access and the basemap choice) merged as PR #9 and went live on 24 Oct 2026 (report: `docs/stage-reports/stage-4.md`; ADR-0021, ADR-0022), with its live-check fixes in PR #11. **Stage 5 — Local Authority Profiles** is built on `stage/5-local-authority-profiles` (PR #14; report: `docs/stage-reports/stage-5.md`, ADR-0023), after the context data step (PR #13, merged); it waits for review, merge and the live checks. **Next: Stage 6 — Scenario Lab** (roadmap §8), only when John asks. The other data-pipeline items in roadmap §5.3 are still to be scheduled. Update this line when a stage is merged.
 
 ## How to work
 

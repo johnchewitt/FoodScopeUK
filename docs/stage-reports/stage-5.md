@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Branch** | `stage/5-local-authority-profiles`, stacked on `data/stage-5-context` (PR #13, the urban/rural and Defra production data step), which is stacked on `main` after PR #12 (the Stage 5 input data) |
+| **Branch** | `stage/5-local-authority-profiles` (PR #14), on `main` after PR #12 (the Stage 5 input data) and PR #13 (the urban/rural and Defra production data step, merged 25 Oct 2026) |
 | **Date** | 25 October 2026 |
 | **Scope** | Roadmap §7 and John's Stage 5 brief (25 Oct 2026): LP-01 – LP-08 and LP-10, the comparison view, and John's earlier request to make Northern Ireland's shops easier to see. LP-09 (PDF) is Stage 7. Stage 6 not started. |
 | **Data** | Each family from its newest snapshot (ADR-0021): trade **2026-10-23**; local (stores, councils, population) **2026-10-24**; register (NI grocers, FSA) **2026-10-24**; areas (Belfast and Manchester small areas) **2026-10-25**; context (urban/rural, car availability by council, Defra production) **2026-10-25**. Built offline from committed raw files; no new downloads in this stage. |
