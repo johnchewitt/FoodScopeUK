@@ -1,4 +1,5 @@
-"""Stage 5 download registries (Nomis, MHCLG, NISRA, ONS small areas) and the shared fetch checks."""
+"""Stage 5 download registries (Nomis, MHCLG, NISRA, FSA, ONS small areas; context: ONS urban/rural, Defra)
+and the shared fetch checks."""
 
 from __future__ import annotations
 
@@ -9,7 +10,7 @@ from pathlib import Path
 import pytest
 
 from foodscope_pipeline import cli
-from foodscope_pipeline.sources import fsa_fhrs, mhclg_iod, nisra_files, nomis_census, ons_files
+from foodscope_pipeline.sources import defra_stats, fsa_fhrs, mhclg_iod, nisra_files, nomis_census, ons_files
 from foodscope_pipeline.sources.ons_files import OnsFetchError, OnsFile, OnsQuery, fetch, load_index
 
 FIXED = datetime(2026, 10, 24, 9, 0, 0, tzinfo=UTC)
@@ -28,10 +29,12 @@ def transport_for(responses: dict[str, tuple[int, bytes]]):
 
 
 def test_registries_are_https_with_unique_ids_and_filenames() -> None:
-    files = nomis_census.FILES + mhclg_iod.FILES + nisra_files.FILES + fsa_fhrs.FILES + ons_files.FILES
-    ids = [f.id for f in files] + [q.id for q in ons_files.QUERIES]
+    files = nomis_census.FILES + mhclg_iod.FILES + nisra_files.FILES + fsa_fhrs.FILES + ons_files.FILES + defra_stats.FILES
+    ids = [f.id for f in files] + [q.id for q in ons_files.QUERIES + ons_files.CONTEXT_QUERIES]
     assert len(ids) == len(set(ids))
-    for group in (nomis_census.FILES, mhclg_iod.FILES, nisra_files.FILES, fsa_fhrs.FILES):
+    stems = [q.stem for q in ons_files.QUERIES + ons_files.CONTEXT_QUERIES]
+    assert len(stems) == len(set(stems))
+    for group in (nomis_census.FILES, mhclg_iod.FILES, nisra_files.FILES, fsa_fhrs.FILES, defra_stats.FILES):
         assert len({f.filename for f in group}) == len(group)
     for f in files:
         assert f.url.startswith("https://") and f.licence and f.source_id.startswith("S")
@@ -110,6 +113,36 @@ def test_fetch_reference_continues_after_a_failing_publisher(monkeypatch: pytest
     monkeypatch.setattr(cli, "RAW", tmp_path)
     assert cli.main(["fetch-reference", "--snapshot", "2026-10-24"]) == 1
     assert seen == ["ons", "nomis", "mhclg", "nisra", "fsa"]
+
+
+def test_context_set_fetches_only_urban_rural_and_defra(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    calls: list[tuple[str, tuple, tuple]] = []
+
+    def fake_fetch(snapshot, raw_root, files=None, queries=None):  # noqa: ANN001
+        calls.append((raw_root.name, files, queries))
+        return raw_root / snapshot
+
+    monkeypatch.setattr(ons_files, "fetch", fake_fetch)
+    monkeypatch.setattr(cli, "RAW", tmp_path)
+    assert cli.main(["fetch-reference", "--snapshot", "2026-10-25", "--set", "context"]) == 0
+    assert calls == [("ons", (), ons_files.CONTEXT_QUERIES), ("defra", defra_stats.FILES, ())]
+    assert {q.source_id for q in ons_files.CONTEXT_QUERIES} == {"S21"}
+    assert {f.source_id for f in defra_stats.FILES} == {"S09", "S10"}
+    # Tables, all rows: the count must cover what the pages return.
+    for q in ons_files.CONTEXT_QUERIES:
+        assert q.count_url().endswith("query?where=1%3D1&returnCountOnly=true&f=json")
+        assert "where=1%3D1" in q.page_url(0) and "orderByFields=" in q.page_url(0)
+
+
+def test_ods_signature(tmp_path: Path) -> None:
+    ods = OnsFile(id="x.d", filename="d.ods", url="https://example.invalid/d.ods", source_id="S0",
+                  licence="OGL", description="synthetic")
+    with pytest.raises(OnsFetchError, match="not an .ods"):
+        fetch("s", tmp_path, transport_for({ods.url: (200, b"<!DOCTYPE html>")}), now=lambda: FIXED,
+              files=(ods,), queries=())
+    folder = fetch("s", tmp_path, transport_for({ods.url: (200, b"PK\x03\x04rest")}), now=lambda: FIXED,
+                   files=(ods,), queries=())
+    assert load_index(folder)["files"][0]["file"] == "d.ods"
 
 
 def test_fsa_covers_the_eleven_ni_councils_and_checks_xml(tmp_path: Path) -> None:

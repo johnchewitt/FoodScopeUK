@@ -1,0 +1,93 @@
+{
+  "description": "Defra annual supply balances shown as national context for the five Food Origins baskets (Stage 5, LP-05; John, 25 Oct 2026). Values are read as published; the build checks that total supply = production + imports - exports and that the share = production / total supply. Never combined with HMRC monthly trade (spec SS-07).",
+  "verified": "2026-10-25",
+  "baskets": [
+    {
+      "basket": "tomatoes",
+      "sourceId": "S09",
+      "item": "defra.horticulture_2025",
+      "kind": "horticulture",
+      "sheet": "Table_23_Veg_Supply",
+      "crop": "Tomatoes",
+      "table": "Horticulture statistics 2025, Table 23: supplies of vegetables for the calendar year",
+      "labels": {
+        "production": "Home production marketed",
+        "imports": "Imports",
+        "exports": "Exports",
+        "totalSupply": "Total supply",
+        "productionShare": "Home production marketed as % of total supply"
+      },
+      "notes": ["Defra: trade figures relate to fresh produce where distinguishable (source HMRC). Defra's product definitions differ from the Food Origins basket, so its import figure is not the one Food Origins shows."]
+    },
+    {
+      "basket": "strawberries",
+      "sourceId": "S09",
+      "item": "defra.horticulture_2025",
+      "kind": "horticulture",
+      "sheet": "Table_12_Fruit_Supply_",
+      "crop": "Strawberries",
+      "table": "Horticulture statistics 2025, Table 12: supplies of fruit for the calendar year",
+      "labels": {
+        "production": "Home production marketed",
+        "imports": "Imports",
+        "exports": "Exports",
+        "totalSupply": "Total supply",
+        "productionShare": "Home production marketed as % of total supply"
+      },
+      "notes": ["Defra: trade figures relate to fresh produce where distinguishable (source HMRC). Defra's product definitions differ from the Food Origins basket, so its import figure is not the one Food Origins shows."]
+    },
+    {
+      "basket": "potatoes",
+      "sourceId": "S10",
+      "item": "defra.auk_2025_chapter7",
+      "kind": "auk",
+      "sheet": "Table_7_10",
+      "title": "Table 7.10c",
+      "table": "Agriculture in the United Kingdom 2025, Table 7.10c: potatoes supply and use",
+      "rows": {
+        "production": ["Total production"],
+        "imports": ["Imports"],
+        "exports": ["Exports"],
+        "totalSupply": ["Total new supply (raw equivalent)"],
+        "productionShare": ["Production as % of total new supply for use in the UK"]
+      },
+      "labels": {
+        "production": "Total production (for human consumption and seed)",
+        "imports": "Imports (including processed, raw equivalent)",
+        "exports": "Exports (including processed, raw equivalent)",
+        "totalSupply": "Total new supply (raw equivalent)",
+        "productionShare": "Production as % of total new supply for use in the UK"
+      },
+      "notes": ["Defra revised its potato methodology in 2017 (figures from 2011). Harvested production (Table 7.10a) is larger than the supply-and-use production because it also includes stockfeed and waste. Trade includes processed potatoes in raw equivalent."]
+    },
+    {
+      "basket": "wheat",
+      "sourceId": "S10",
+      "item": "defra.auk_2025_chapter7",
+      "kind": "auk",
+      "sheet": "Table_7_2",
+      "title": "Table 7.2c",
+      "table": "Agriculture in the United Kingdom 2025, Table 7.2c: wheat supply and use",
+      "rows": {
+        "production": ["Production"],
+        "imports": ["Imports from the EU", "Imports from the rest of the world"],
+        "exports": ["Exports to the EU", "Exports to the rest of the world"],
+        "totalSupply": ["Total new supply"],
+        "productionShare": ["Production as % of total new supply for use in UK"]
+      },
+      "labels": {
+        "production": "Production",
+        "imports": "Imports (EU and rest of the world)",
+        "exports": "Exports (EU and rest of the world)",
+        "totalSupply": "Total new supply",
+        "productionShare": "Production as % of total new supply for use in the UK"
+      },
+      "notes": ["Imports and exports are the sums of Defra's EU and rest-of-the-world rows. Cereal production is standardised to 14.5 % moisture (Defra note 2)."]
+    },
+    {
+      "basket": "bananas",
+      "status": "not_published",
+      "note": "Defra publishes no UK production statistics for bananas."
+    }
+  ]
+}

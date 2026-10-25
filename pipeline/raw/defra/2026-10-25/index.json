@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-25",
+  "files": [
+    {
+      "id": "defra.horticulture_2025",
+      "file": "hort-dataset-25-20260625.ods",
+      "url": "https://assets.publishing.service.gov.uk/media/6a327c196422bec01b1176a1/hort-dataset-25-20260625.ods",
+      "sourceId": "S09",
+      "licence": "Open Government Licence v3.0",
+      "description": "Horticulture statistics 2025: accompanying dataset (area, production and value by crop)",
+      "httpStatus": 200,
+      "bytes": 477855,
+      "sha256": "ce2a42fd2292d34feeb772ce5cf154f1b4de2d22a51dcb5a9698e7b513d2a7a7",
+      "retrievedAt": "2026-10-25T11:49:18Z"
+    },
+    {
+      "id": "defra.auk_2025_chapter7",
+      "file": "AUK-chapter7-20260709.ods",
+      "url": "https://assets.publishing.service.gov.uk/media/6a3d141feaee00074150f4db/AUK-chapter7-20260709.ods",
+      "sourceId": "S10",
+      "licence": "Open Government Licence v3.0",
+      "description": "Agriculture in the United Kingdom 2025, chapter 7 (crops): full crops dataset",
+      "httpStatus": 200,
+      "bytes": 179811,
+      "sha256": "5bdb534e35d2c18571e08bc7fc61676d78c0554e2f20b658c6e5a20379a0b76d",
+      "retrievedAt": "2026-10-25T11:49:18Z"
+    }
+  ]
+}

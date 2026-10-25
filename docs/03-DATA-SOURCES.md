@@ -3,8 +3,8 @@
 | | |
 |---|---|
 | **Document** | 03 — Verified data catalogue and manifest |
-| **Version** | 0.4 — 24 October 2026 (pre-Stage 4 data step: S11, S12, S14 and S18 verified from the delivered files; gates G5 and G7 cleared) |
-| **Verification date** | 23 October 2026; S11, S12, S14 and S18 re-verified 24 October 2026 |
+| **Version** | 0.5 — 25 October 2026 (pre-Stage 5 data steps: S13, S15, S16, S19, S20 and S29 verified, gates G8–G11 cleared; context step: S09, S10 and S21 verified) |
+| **Verification date** | 23 October 2026; S11, S12, S14 and S18 re-verified 24 October 2026; S09, S10 and S21 verified 25 October 2026 |
 | **Machine-readable form** | Generated into `public/data/snapshots/<date>/catalogue.json` by the pipeline from Stage 2 |
 
 ## How to read this document
@@ -36,8 +36,8 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S06 | Monthly UK cattle, sheep and pig slaughter and meat production | Defra | 🟡 | Seasonal (production) | R2 |
 | S07 | Monthly UK hatcheries and poultry slaughterhouse statistics | Defra | 🟡 | Seasonal (production) | R2 |
 | S08 | Milk utilisation by dairies (monthly) | Defra | 🟡 | Seasonal (production) | R2 |
-| S09 | Horticulture statistics (annual) | Defra | 🔴 | Origins production context | R1 |
-| S10 | Cereal and oilseed production (annual) | Defra | 🔴 | Origins context, Scenario C | R1/R2 |
+| S09 | Horticulture statistics 2025 (annual dataset) | Defra | ✅ (tomatoes, strawberries: supply balance; 25 Oct 2026) | Profiles (national context) | R1 |
+| S10 | Agriculture in the United Kingdom 2025, chapter 7 (crops) | Defra | ✅ (wheat, potatoes: supply and use; 25 Oct 2026) | Profiles (national context), Scenario C | R1/R2 |
 | S11 | Grocery / Supermarket Retail Points (v46, June 2026) | GEOLYTIX | ✅ | Supermarkets, Profiles, Access, Scenario D | R1 |
 | S12 | Number of chain supermarkets across LADs and smaller areas in the UK | ONS | ✅ (LAD tables 1–4) | Validation of store counts | R1 |
 | S13 | Priority Places for Food Index (v2.1) | CDRC / Leeds HASP | ✅ (all four nations; NI on SOAs 2011, three domains without data) | Access, Profiles | R1 (demo LADs) |
@@ -48,7 +48,7 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S18 | Mid-year population estimates (ONS UK tables, mid-2025) | ONS (with NRS and NISRA) | ✅ (council level; Census 2021 small areas for Manchester and Belfast) | All per-capita indicators | R1 |
 | S19 | Deprivation indices (IoD 2025, WIMD 2025, SIMD, NIMDM 2017) | MHCLG / Welsh Gov / Scottish Gov / NISRA | ✅ England (IoD 2025), Northern Ireland (NIMDM 2017); 🟡 Wales, Scotland | Access, Profiles, Scenario D | R1 (Eng, NI) |
 | S20 | Car or van availability (Census 2021 / Scotland's Census 2022) | ONS / NISRA / NRS | ✅ England & Wales (TS045), Northern Ireland (table builder, file from John); 🔴 Scotland | Access, Profiles | R1 (Eng, NI) |
-| S21 | Rural–urban classifications | ONS / Scottish Gov / NISRA | 🟡 | Profiles, Access | R1 |
+| S21 | Rural–urban classifications | ONS / Scottish Gov / NISRA | ✅ England & Wales (ONS 2021, councils and LSOAs); Northern Ireland 2015 class per SOA (NIMDM file); 🔴 Scotland | Profiles, Access | R1 (E&W, NI small areas) |
 | S22 | Journey time statistics | DfT | 🔴 (England only) | Access context | R2 |
 | S23 | Port freight annual statistics 2025 | DfT | 🟡 | Risks, Scenario B | R2 |
 | S24 | Natural Earth Admin 0 countries (v5.1.2) | Natural Earth | ✅ (1:110m outlines, 1:50m label points, ISO crosswalk) | Map reference layer; Origins map | R1 |
@@ -191,9 +191,21 @@ Publisher: Defra (gov.uk statistics collections). Licence OGL v3.0. **To verify*
 
 Imports are never used to estimate domestic production.
 
-### S09 / S10 — Annual production 🔴
+### S09 / S10 — Annual production ✅ (25 October 2026)
 
-Horticulture statistics (tomatoes, strawberries, apples, potatoes) and cereal and oilseed production (wheat) — annual Defra publications to locate and verify in Stage 2. Used only side-by-side with annual imports, never to compute monthly shares (spec SS-07).
+Verified from the files themselves (fetched by `fetch-reference --set context` on GitHub Actions, run 40190433555; `pipeline/raw/defra/2026-10-25/`) for the Stage 5 national context (John, 25 Oct 2026). Both are accredited official statistics under OGL v3.0. Used only as annual national context, side by side with (never combined with) HMRC monthly trade (spec SS-07).
+
+| | S09 Horticulture statistics 2025 | S10 Agriculture in the United Kingdom 2025, chapter 7 |
+|---|---|---|
+| Publisher page | `https://www.gov.uk/government/statistics/latest-horticulture-statistics/horticulture-statistics-2025` (published 25 June 2026) | `https://www.gov.uk/government/statistics/agriculture-in-the-united-kingdom-2025/chapter-7-crops` (published 9 July 2026, updated 3 Sept 2026) |
+| File | `hort-dataset-25-20260625.ods` | `AUK-chapter7-20260709.ods` |
+| Baskets | Tomatoes (Table 23, sheet `Table_23_Veg_Supply`), strawberries (Table 12, sheet `Table_12_Fruit_Supply_`) | Wheat (Table 7.2c, sheet `Table_7_2`), potatoes (Table 7.10c, sheet `Table_7_10`) |
+| Layout | Header row with `CALENDAR YEAR` in column B and years 1988–2025; a crop heading in column A ("Tomatoes", "Strawberries:"), then five rows in column B: `Home Production Marketed (HPM)`, `Imports`, `Exports`, `Total Supply:`, `HPM as % of Total Supply` (thousand tonnes; the share in per cent) | Each sheet stacks sub-tables: a title row ("Table 7.2c Wheat supply and use (thousand tonnes)"), a header row of years (`2025 (provisional)`) and a `Notes` column, rows until a blank row. `[x]` = not available. The production share is stored as a fraction in a percentage-formatted cell |
+| Rows used | as listed | Wheat: `Production`, `Imports from the EU`, `Imports from the rest of the world`, `Exports to the EU`, `Exports to the rest of the world`, `Total new supply`, `Production as % of total new supply for use in UK`. Potatoes: `Total production`, `Imports`, `Exports`, `Total new supply (raw equivalent)`, `Production as % of total new supply for use in the UK` |
+| 2025 values (read by the build) | Tomatoes: HPM 79.0, imports 389.8, exports 1.2, supply 467.6 thousand tonnes; HPM 16.9 % of supply. Strawberries: 92.9, 72.8, 1.2, 164.5; 56.5 % | Wheat (provisional): production 11,958, imports 2,674, exports 207, total new supply 14,425; 82.9 %. Potatoes (provisional): 5,083, 2,496, 430, 7,149; 71.1 % |
+| Caveats | Defra's trade figures are HMRC "fresh produce where distinguishable" with Defra's product definitions: not the Food Origins basket. No per-crop supply for other crops is needed | Potato production in the supply table is for human consumption and seed; harvested production (Table 7.10a) is larger. Potato trade includes processed potatoes in raw equivalent. Cereals are standardised to 14.5 % moisture |
+
+The build checks, for the year it shows, that total supply = production + imports − exports and that the share = production ÷ total supply (both exact for 2025). **Bananas:** Defra publishes no UK production statistics; the profile says so. Config: `pipeline/foodscope_pipeline/config/national_production.json`. The Seasonal Supply text (SS-07) still calls S09/S10 "not yet verified"; Stage 5 updates it (monthly production is still not published).
 
 ---
 
@@ -289,13 +301,16 @@ Indices are **relative rankings within each nation** and are not comparable acro
   - **Totals** (perturbed, so they need not add up): Belfast's Data Zones 50,595 of 149,193 households with no car or van, against 50,594 of 149,207 in the council table. Northern Ireland's Data Zones 768,805 households, its councils 768,810.
   - **Not used:** an ArcGIS Online layer labelled "NISRA" (`NISRA_Other/FeatureServer/1`, "CarAvailability"). It describes people by household and has no publication record.
 - **Scotland:** Scotland's Census 2022 (NRS; table ID to confirm), Release 2. Note the one-year difference.
+- **Councils (Stage 5 context, 25 Oct 2026):** England and Wales from the same TS045 zip, member `census2021-ts045-ltla.csv` (331 councils on their 2021–22 codes: every code is a `LAD22CD` of the ONS LAD 2022 → 2023 lookup). Councils formed in April 2023 (Cumberland, Westmorland and Furness, North Yorkshire, Somerset) get the sum of the councils they replaced; Barnsley and Sheffield keep their pre-2025 figures (small boundary change, `config/lad_code_changes.json`). Northern Ireland from John's council file (`HH_CAR_VAN_TC5` by LGD 2014). Built by `build-context` into the `context` family.
 
-### S21 — Rural–urban classifications 🟡
+### S21 — Rural–urban classifications ✅ England & Wales; Northern Ireland small areas; 🔴 Scotland
 
-- England & Wales: ONS 2021 Rural Urban Classification (OA, LSOA and LAD versions published on data.gov.uk). ✅ exists; download and fields to confirm.
-- Scotland: Scottish Government Urban Rural Classification (latest edition to confirm).
-- Northern Ireland: NISRA settlement classification (2015 edition known; check for a Census 2021-based update). The NIMDM 2017 file carries NISRA's "2015 Default Urban/Rural" class per SOA (Belfast: 172 urban, 2 mixed urban/rural), kept with the SOAs in the Stage 5 build.
-- Classifications are not harmonised; profiles show each nation's own class with its definition.
+- **England & Wales ✅ (25 Oct 2026):** ONS 2021 Rural Urban Classification (methodology `https://www.ons.gov.uk/methodology/geography/geographicalproducts/ruralurbanclassifications/2021ruralurbanclassification`, last updated 31 March 2026; produced by ONS with Defra, the Welsh Government and the Government Geography Profession). Two tables fetched by `fetch-reference --set context` (`pipeline/raw/ons/2026-10-25/`), service names from their data.gov.uk records:
+  - councils: `LAD24_RUC21_EW_LU` (layer 0, a table; fields `LAD24CD`, `LAD24NM`, `RUC21CD`, `RUC21NM`, `Urban_rural_flag`; 318 rows; released 9 March 2025). Eight classes: `UUN`/`UUF` Urban, `UIN`/`UIF` Intermediate urban, `RIN`/`RIF` Intermediate rural, `RMN`/`RMF` Majority rural, each "majority nearer to" or "further from a major town or city" (share of the population in rural Output Areas: ≤ 20 %, 20–35 %, 35–50 %, ≥ 50 %). Manchester: `UUN`. All 318 match a May 2025 council by code except Barnsley and Sheffield (new codes in 2025 after a small boundary change), which keep their 2024 class with a note.
+  - LSOAs: `LSOA21_RUC21_EW_LU` (fields `LSOA21CD`, `LSOA21NM`, `LSOA21NMW`, `RUC21CD`, `RUC21NM`, `Urban_rural_flag`; 35,672 rows in 36 pages). Six classes: `UN1`/`UF1` Urban, `RLN1`/`RLF1` Larger rural, `RSN1`/`RSF1` Smaller rural (nearer/further). For the Manchester small areas (Stage 5).
+- **Scotland 🔴:** Scottish Government Urban Rural Classification, published for Data Zones (not councils); not yet included.
+- **Northern Ireland:** NISRA's urban–rural page (`https://www.nisra.gov.uk/support/geography/urban-rural-classification`, read 25 Oct 2026) lists only the 2015 and 2005 Settlement Development Limits editions; no Census 2021-based edition. There is no council-level class. The NIMDM 2017 file carries NISRA's "2015 Default Urban/Rural" class per SOA (Belfast: 172 urban, 2 mixed urban/rural), shown with the SOAs in Stage 5.
+- Classifications are not harmonised; profiles show each nation's own class with its definition and never compare them.
 
 ### S22 — Journey time statistics (DfT) 🔴
 
@@ -528,3 +543,17 @@ Still not verified: Defra trade codes for the baskets (G3, S05); HMRC port alloc
 | Seasonal reference values | Independent Python over the snapshot (stage 3 report) | Match the app's model, charts and E2E (e.g. tomatoes Jul 2025 33,168.836 t, +2.15 % vs Jul 2024; Jan 2025 HHI 2,736) |
 
 Still not verified: monthly UK production for the five baskets (none identified, SS-07); S09/S10 annual files; Defra trade codes (G3).
+
+### Stage 5 context additions (25 October 2026)
+
+| Check | Method | Result |
+|---|---|---|
+| S21 service names and fields | data.gov.uk records → layer metadata (`?f=pjson`); Manchester row queried | `LAD24_RUC21_EW_LU`, `LSOA21_RUC21_EW_LU`; fields as listed in S21; Manchester `UUN` |
+| S21 completeness | Fetched on GitHub Actions (run 40190433555): count query vs pages | 318 councils; 35,672 LSOAs, all codes unique |
+| S21 codes vs May 2025 councils | Build (`build-context`) | 316 of 318 match; Barnsley and Sheffield via `lad_code_changes.json` |
+| S09/S10 files | gov.uk publication pages → asset URLs; files read with the standard-library .ods reader | Sheets and rows as listed in S09/S10 |
+| S09/S10 internal consistency | Build check: supply = production + imports − exports; share = production ÷ supply | Exact for the four baskets, 2025 |
+| S20 councils | TS045 ltla vs the LAD 2022 → 2023 lookup; household totals before and after mapping | 331 → 318 councils; 24,783,193 households in both |
+| NI urban/rural edition | NISRA geography page | Latest edition 2015 (no Census 2021-based classification) |
+
+Still not verified: Scotland's urban/rural classification and Census 2022 car availability (Release 2); CPIH food (S27); Defra trade codes (G3).

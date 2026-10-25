@@ -24,6 +24,8 @@ Sources (URLs verified on the publisher pages, 24 Oct 2026; docs/03-DATA-SOURCES
 - S15 (Stage 5, Manchester deep profile): the LSOA (2021) to Ward (2025) to LAD (2025) best-fit
   lookup (LSOA21_WD25_LAD25_EW_LU_v2) for Manchester, and the LSOA (December 2021) BGC V5
   boundaries and V4 population-weighted centroids inside a box around Manchester.
+- S21 (Stage 5 context, `CONTEXT_QUERIES`): the 2021 Rural Urban Classification of councils
+  (LAD 2024) and of LSOAs (2021) in England and Wales, fetched by `fetch-reference --set context`.
 
 `fetch` also serves the other publishers' registries (`nomis_census`, `mhclg_iod`,
 `nisra_files`) through `fetch-reference`: same checks, same index format, one folder each.
@@ -190,6 +192,36 @@ QUERIES: tuple[OnsQuery, ...] = (
     ),
 )
 
+# Stage 5 context (S21; John, 25 Oct 2026): the ONS 2021 Rural Urban Classification of councils
+# (LAD 2024) and of LSOAs (2021) in England and Wales. Service names from their data.gov.uk
+# records, fields from the layers (read 25 Oct 2026): LAD24CD, LAD24NM / LSOA21CD, RUC21CD,
+# RUC21NM, Urban_rural_flag. Both are tables (no geometry), maxRecordCount 1000, paged.
+RUC21_LAD24_LAYER = f"{ONS_SERVICES}/LAD24_RUC21_EW_LU/FeatureServer/0"
+RUC21_LSOA21_LAYER = f"{ONS_SERVICES}/LSOA21_RUC21_EW_LU/FeatureServer/0"
+
+CONTEXT_QUERIES: tuple[OnsQuery, ...] = (
+    OnsQuery(
+        id="ons.ruc21_lad24",
+        stem="lad24-ruc21-ew-lu",
+        layer_url=RUC21_LAD24_LAYER,
+        params="where=1%3D1&outFields=LAD24CD,LAD24NM,RUC21CD,RUC21NM,Urban_rural_flag&orderByFields=LAD24CD&f=json",
+        page_size=1000,
+        source_id="S21",
+        licence=OGL,
+        description="Rural Urban Classification (2021) of Local Authority Districts (2024) in England and Wales",
+    ),
+    OnsQuery(
+        id="ons.ruc21_lsoa21",
+        stem="lsoa21-ruc21-ew-lu",
+        layer_url=RUC21_LSOA21_LAYER,
+        params="where=1%3D1&outFields=LSOA21CD,RUC21CD,RUC21NM,Urban_rural_flag&orderByFields=LSOA21CD&f=json",
+        page_size=1000,
+        source_id="S21",
+        licence=OGL,
+        description="Rural Urban Classification (2021) of Lower layer Super Output Areas (2021) in England and Wales",
+    ),
+)
+
 
 class OnsFetchError(RuntimeError):
     """A download failed or returned something other than the expected file."""
@@ -215,14 +247,14 @@ def _json_doc(item_id: str, body: bytes) -> dict:
 
 
 # First bytes of each binary format (a blocked download usually returns an HTML page instead).
-SIGNATURES = {".xlsx": b"PK", ".zip": b"PK", ".xls": b"\xd0\xcf\x11\xe0"}
+SIGNATURES = {".xlsx": b"PK", ".zip": b"PK", ".ods": b"PK", ".xls": b"\xd0\xcf\x11\xe0"}
 
 
 def _check(file: OnsFile, status: int, body: bytes) -> None:
     if status != 200:
         raise OnsFetchError(f"{file.id}: HTTP {status} from {file.url}")
     suffix = Path(file.filename).suffix
-    article = "an" if suffix.startswith(".x") else "a"
+    article = "an" if suffix.startswith((".x", ".o")) else "a"
     if suffix in SIGNATURES and not body.startswith(SIGNATURES[suffix]):
         raise OnsFetchError(f"{file.id}: response is not {article} {suffix} file ({body[:40]!r})")
     if suffix == ".xml" and not body.lstrip().startswith(b"<?xml"):

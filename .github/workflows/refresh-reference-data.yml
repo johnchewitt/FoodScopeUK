@@ -1,4 +1,4 @@
-name: Fetch reference data (ONS, Nomis, MHCLG, NISRA, FSA)
+name: Fetch reference data (ONS, Nomis, MHCLG, NISRA, FSA, Defra)
 
 # Downloads the reference files the app needs into pipeline/raw/<publisher>/<snapshot>/ and commits
 # them to the branch:
@@ -10,6 +10,10 @@ name: Fetch reference data (ONS, Nomis, MHCLG, NISRA, FSA)
 #   NIMDM 2017 (Stage 5);
 # - FSA (S29): food hygiene register files for the 11 Northern Ireland councils (NI grocers that
 #   GEOLYTIX misses; John, 25 Oct 2026).
+# Those make up the `stage5` set (snapshot 2026-10-24). The `context` set (snapshot 2026-10-25;
+# John, 25 Oct 2026) adds the ONS 2021 Rural Urban Classification of councils and LSOAs (S21) and
+# Defra's annual production statistics (S09 horticulture, S10 Agriculture in the UK, chapter 7).
+# SNAPSHOT and SET below name the set this branch fetches; earlier sets stay in their own folders.
 # The build sandbox cannot reach these sites; everything after this download runs offline from the
 # cache (same pattern as the HMRC ingest, ADR-0016). Data reaches `main` only through a pull request.
 #
@@ -35,7 +39,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      SNAPSHOT: "2026-10-24"
+      SNAPSHOT: "2026-10-25"
+      SET: "context"
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
@@ -50,7 +55,7 @@ jobs:
         id: download
         continue-on-error: true
         working-directory: pipeline
-        run: uv run foodscope-pipeline fetch-reference --snapshot "$SNAPSHOT"
+        run: uv run foodscope-pipeline fetch-reference --snapshot "$SNAPSHOT" --set "$SET"
 
       - name: Summary
         if: always()
@@ -58,7 +63,7 @@ jobs:
           python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
           import json, os, pathlib
           snap = os.environ["SNAPSHOT"]
-          for publisher in ("ons", "nomis", "mhclg", "nisra", "fsa"):
+          for publisher in ("ons", "nomis", "mhclg", "nisra", "fsa", "defra"):
               path = pathlib.Path(f"pipeline/raw/{publisher}/{snap}/index.json")
               print(f"### {publisher} {snap}\n")
               if not path.is_file():

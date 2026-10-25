@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/uk-production.schema.json",
+  "title": "UkProduction",
+  "description": "Defra's latest annual UK supply balance for each Food Origins basket (LP-05; S09 Horticulture statistics, S10 Agriculture in the UK), as published: production, imports, exports, total supply and production as a percentage of supply, plus the recent share series. National context only; never combined with HMRC monthly trade (SS-07). A basket without a Defra production series has status not_published and a note. Written by `foodscope-pipeline build-context`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "scope", "commodities"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "scope": { "const": "United Kingdom" },
+    "commodities": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["basket", "status", "note"],
+            "properties": {
+              "basket": { "type": "string" },
+              "status": { "const": "not_published" },
+              "note": { "type": "string" }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "basket",
+              "status",
+              "sourceId",
+              "table",
+              "year",
+              "provisional",
+              "file",
+              "measures",
+              "shareSeries",
+              "notes"
+            ],
+            "properties": {
+              "basket": { "type": "string" },
+              "status": { "const": "published" },
+              "sourceId": { "type": "string", "pattern": "^S\\d{2}$" },
+              "table": { "type": "string" },
+              "year": { "type": "integer", "minimum": 2000 },
+              "provisional": { "type": "boolean" },
+              "file": { "type": "string" },
+              "measures": {
+                "type": "array",
+                "minItems": 5,
+                "maxItems": 5,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["key", "label", "value", "unit"],
+                  "properties": {
+                    "key": { "enum": ["production", "imports", "exports", "totalSupply", "productionShare"] },
+                    "label": { "type": "string" },
+                    "value": { "type": "number", "minimum": 0 },
+                    "unit": { "enum": ["thousand tonnes", "%"] }
+                  }
+                }
+              },
+              "shareSeries": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["year", "value"],
+                  "properties": {
+                    "year": { "type": "integer" },
+                    "value": { "type": "number", "minimum": 0 }
+                  }
+                }
+              },
+              "notes": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
