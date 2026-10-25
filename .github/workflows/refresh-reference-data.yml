@@ -62,6 +62,13 @@ jobs:
         working-directory: pipeline
         run: uv run foodscope-pipeline fetch-reference --snapshot "$SNAPSHOT" --set "$SET"
 
+      - name: OS Open Roads extract (stage6 set)
+        id: roads
+        if: env.SET == 'stage6'
+        continue-on-error: true
+        working-directory: pipeline
+        run: uv run foodscope-pipeline fetch-open-roads --snapshot "$SNAPSHOT"
+
       - name: Summary
         if: always()
         run: |
@@ -94,7 +101,7 @@ jobs:
           fi
 
       - name: Fail if a download failed
-        if: steps.download.outcome == 'failure'
+        if: steps.download.outcome == 'failure' || steps.roads.outcome == 'failure'
         run: |
           echo "::error::At least one publisher's download failed; see the Download step's log."
           exit 1

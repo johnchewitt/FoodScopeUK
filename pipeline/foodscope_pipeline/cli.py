@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import sys
 
 from datetime import UTC, datetime
@@ -44,6 +45,9 @@ def main(argv: list[str] | None = None) -> int:
 
     local = sub.add_parser("build-local", help="OFFLINE: raw boundaries, stores and population → public/data/snapshots/<snapshot>/local/")
     local.add_argument("--snapshot", required=True, help="ONS raw snapshot id YYYY-MM-DD (pipeline/raw/ons/<snapshot>/)")
+
+    roads = sub.add_parser("fetch-open-roads", help="ONLINE: download the OS Open Roads GB GeoPackage to a temporary folder, record its schema and extract motorways, trunk roads and primary A roads into pipeline/raw/os/<snapshot>/ (after fetch-reference --set stage6)")
+    roads.add_argument("--snapshot", required=True, help="snapshot YYYY-MM-DD holding os-open-roads-downloads.json")
 
     areas = sub.add_parser("build-areas", help="OFFLINE: raw small-area files → <out>/snapshots/<context-snapshot>/areas/<council>/ + reports/areas-qa-<context-snapshot>.json")
     areas.add_argument("--snapshot", required=True, help="raw snapshot of the stage5 set YYYY-MM-DD (pipeline/raw/<publisher>/<snapshot>/)")
@@ -126,8 +130,25 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"cached {name} files in {folder}")
             except (OnsFetchError, OSError) as exc:
                 logging.error("fetch %s failed: %s", name, exc)
+                if os.environ.get("GITHUB_ACTIONS") == "true":
+                    # An annotation can be read through the API when the job log cannot.
+                    print(f"::error title=fetch {name} failed::{str(exc)[:900]}")
                 failed.append(name)
         return 1 if failed else 0
+
+    if args.command == "fetch-open-roads":
+        from foodscope_pipeline.sources.ons_files import OnsFetchError
+        from foodscope_pipeline.sources.os_open_roads import fetch_open_roads
+
+        try:
+            folder = fetch_open_roads(args.snapshot, RAW)
+        except (OnsFetchError, OSError) as exc:
+            logging.error("fetch-open-roads failed: %s", exc)
+            if os.environ.get("GITHUB_ACTIONS") == "true":
+                print(f"::error title=fetch-open-roads failed::{str(exc)[:900]}")
+            return 1
+        print(f"cached the OS Open Roads extract in {folder}")
+        return 0
 
     if args.command == "build-trade":
         from foodscope_pipeline.sources.hmrc_ots import load_baskets
