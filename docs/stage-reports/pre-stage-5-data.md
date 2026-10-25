@@ -13,9 +13,9 @@
 
 | Gate | Status | Evidence |
 |---|---|---|
-| G8 PPFI v2.1 NI coverage and columns | 🟡 Waiting for the file from John | The HASP record (dataset 5276) says "Great Britain". The CDRC page lists "NI SOA (2011)". HASP downloads go through a basket. |
+| G8 PPFI v2.1 NI coverage and columns | 🟡 Columns ✅; the data file is still to come from John | The column names come from the HASP data dictionary, which John provided on 25 Oct. The v2.1 user guide says Northern Ireland is included on its 2011 SOAs, ranked within each country, with several indicators unavailable there. The HASP record says "Great Britain". HASP downloads need a free account. |
 | G9 NISRA Data Zones: CRS, licence, centroids, lookup | ✅ | Irish Grid TM65 (EPSG:29902) from the `.prj`. Licensed under the OGL with an OSNI notice. Population-weighted centroids are published. NISRA has no DZ↔SOA lookup, and none is needed (John's decision). |
-| G10 Census car availability | 🟡 E&W ✅, NI waiting for the file from John | E&W: TS045, households by LSOA. NI by Data Zone exists only in NISRA's table builder, which disallows automated access. |
+| G10 Census car availability | ✅ | E&W: TS045, households by LSOA. NI: NISRA table builder, `HOUSEHOLD` × `DZ21` × `HH_CAR_VAN_TC5` (all 3,780 Data Zones pass its confidentiality check). John downloaded it on 25 Oct, because the builder disallows automated access. |
 | G11 LSOA 2021 boundaries and centroids | ✅ | Services `Lower_layer_Super_Output_Areas_December_2021_Boundaries_EW_BGC_V5` and `LSOA_PopCentroids_EW_2021_V4`, plus the lookup `LSOA21_WD25_LAD25_EW_LU_v2`. Fields were verified in the responses. |
 
 ## Inputs
@@ -35,6 +35,8 @@ All inputs were downloaded by `fetch-reference` on GitHub Actions (run 401377539
 | Census 2021 MS-A01 usual residents (Data Zones, councils) | S18 | same | 479 kB |
 | SOA 2011 boundaries (shapefile, 890) | S19 | same | 17.8 MB |
 | NIMDM 2017 SOA results (.xls) | S19 | same | 1.8 MB |
+| Households by car or van availability, Data Zones (CSV, 22,680 rows) and councils (.xlsx), from NISRA's table builder (John) | S20 | `pipeline/raw/nisra-provided/census2021-car-van-2026-10-25/` | 1.3 MB |
+| PPFI v2.1 data dictionary (HASP record 1.0.24; John) | S13 | `pipeline/raw/hasp-provided/ppfi-v2.1-lsoa-1.0.24/` | 4 kB |
 
 Raw data in the repository grows by about 48 MB, to roughly 99 MB.
 
@@ -64,7 +66,8 @@ Raw data in the repository grows by about 48 MB, to roughly 99 MB.
 |---|---|
 | Manchester LSOAs (lookup = boundaries = centroids = TS001 = TS045 = IoD) | 295 in every source |
 | Census totals, Manchester: small areas vs council table | Population 551,919 vs 551,938; households 214,712 vs 214,732; no car 83,777 vs 83,770. Both offices perturb counts for confidentiality. Values are used as published and the differences reported. |
-| Census totals, Belfast | Data Zones 345,423 vs MS-A01 council 345,418 |
+| Census totals, Belfast | Population: Data Zones 345,423 vs MS-A01 council 345,418. Households with no car or van: Data Zones 50,595 of 149,193 vs council table 50,594 of 149,207 |
+| Northern Ireland households | Data Zones 768,805 vs councils 768,810 |
 | IoD 2025 deciles, Manchester's LSOAs | 120 in decile 1 (most deprived 10 % in England); 5 in decile 10 |
 | LSOA centroids in their LSOA | 293 inside; 2 on or 1.6 m outside the 20 m generalised boundary |
 | Data Zone centroids in their Data Zone (Irish Grid) | 3,780 of 3,780. This confirms the CSV's undeclared grid. |
@@ -80,12 +83,13 @@ Raw data in the repository grows by about 48 MB, to roughly 99 MB.
 |---|---|
 | GitHub Actions `refresh-reference-data.yml` (push to `data/stage-5-inputs`) | Run 40137753934: success, 11 new items in four folders |
 | `uv run foodscope-pipeline build-areas --snapshot 2026-10-24 --out <scratch>` | 4 s, 5 files |
-| `cd pipeline && uv run pytest` | **136 passed**: 116 earlier, plus 8 for the fetch registries and checks and 20 for the areas build: rebuild determinism, figures, samples, readers, deciles and cleaning |
+| `cd pipeline && uv run pytest` | **137 passed**: 116 earlier, plus 8 for the fetch registries and checks and 21 for the areas build: rebuild determinism, figures, samples (now including Belfast households and no-car counts), readers, deciles and cleaning (25 Oct) |
 | `npm run gen:types`; `npm run typecheck`; `npx vitest run` | Types generated for the two schemas; 0 type errors; 361 tests passed (no app changes) |
 
 ## Not verified, and why
 
-- **PPFI v2.1 (G8)** and **Northern Ireland car availability by Data Zone (G10, NI):** they wait for John's two files. The HASP basket and NISRA's table builder cannot be scripted. Until then, Belfast's car figures are `null` with the reason stated.
+- **PPFI v2.1 data (G8):** waiting for the data file. John has provided the data dictionary, so the column names are verified. Whether Northern Ireland's rows are in the LSOA file is still unchecked: the user guide says yes, the HASP record says "Great Britain". HASP needs an account, so the file cannot be scripted.
+- **Northern Ireland grocers not in GEOLYTIX:** in NI the file has only ten retailers (S11). No other NI symbol group or independent grocer is in it. Whether to add them from another source is John's call, and it would be a separately labelled layer so the per-10,000 comparisons stay like for like.
 - **Urban/rural class for every council (LP-02):** not sourced yet. E&W has ONS RUC 2021, NI has NISRA's settlement classification, and Scotland has its own scheme. Stage 5 decides whether the basic profiles show it, or say it is not available, for each nation.
 - **SOA 2011 boundary licence:** NISRA's publication page states no licence. The OpenDataNI record lists the OGL v3.0. NISRA's copyright page puts its material under the OGL, but OSNI mapping is exempt unless a publication says otherwise.
 - **TM65 or TM75:** NISRA's `.prj` names the TM65 datum (EPSG:29902). OSNI products often use TM75. In this area the two give positions within about a metre of each other, inside the display and distance precision; recorded, not resolved.
@@ -93,6 +97,6 @@ Raw data in the repository grows by about 48 MB, to roughly 99 MB.
 
 ## Waiting on John
 
-1. The NISRA table-builder CSV: Households, Data Zone 2021, car or van availability.
-2. The PPFI v2.1 LSOA file from Leeds HASP (dataset 5276).
+1. ~~The NISRA table-builder CSV~~: received 25 Oct and built in.
+2. The PPFI v2.1 LSOA **data** file from Leeds HASP (dataset 5276). The data dictionary arrived on 25 Oct.
 3. Merging this pull request. Stage 5 starts from `main` after it.
