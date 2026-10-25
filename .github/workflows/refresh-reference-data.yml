@@ -1,4 +1,4 @@
-name: Fetch reference data (ONS, Nomis, MHCLG, NISRA)
+name: Fetch reference data (ONS, Nomis, MHCLG, NISRA, FSA)
 
 # Downloads the reference files the app needs into pipeline/raw/<publisher>/<snapshot>/ and commits
 # them to the branch:
@@ -7,7 +7,9 @@ name: Fetch reference data (ONS, Nomis, MHCLG, NISRA)
 # - Nomis (S18, S20): Census 2021 TS001 and TS045 bulk zips (Stage 5);
 # - MHCLG (S19): English Indices of Deprivation 2025, File 7 (Stage 5);
 # - NISRA (S16, S18, S19): Data Zone and SOA 2011 boundaries, Data Zone centroids, MS-A01 and
-#   NIMDM 2017 (Stage 5).
+#   NIMDM 2017 (Stage 5);
+# - FSA (S29): food hygiene register files for the 11 Northern Ireland councils (NI grocers that
+#   GEOLYTIX misses; John, 25 Oct 2026).
 # The build sandbox cannot reach these sites; everything after this download runs offline from the
 # cache (same pattern as the HMRC ingest, ADR-0016). Data reaches `main` only through a pull request.
 #
@@ -56,7 +58,7 @@ jobs:
           python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
           import json, os, pathlib
           snap = os.environ["SNAPSHOT"]
-          for publisher in ("ons", "nomis", "mhclg", "nisra"):
+          for publisher in ("ons", "nomis", "mhclg", "nisra", "fsa"):
               path = pathlib.Path(f"pipeline/raw/{publisher}/{snap}/index.json")
               print(f"### {publisher} {snap}\n")
               if not path.is_file():

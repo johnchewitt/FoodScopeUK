@@ -225,6 +225,8 @@ def _check(file: OnsFile, status: int, body: bytes) -> None:
     article = "an" if suffix.startswith(".x") else "a"
     if suffix in SIGNATURES and not body.startswith(SIGNATURES[suffix]):
         raise OnsFetchError(f"{file.id}: response is not {article} {suffix} file ({body[:40]!r})")
+    if suffix == ".xml" and not body.lstrip().startswith(b"<?xml"):
+        raise OnsFetchError(f"{file.id}: response is not an .xml file ({body[:40]!r})")
     if suffix == ".csv":
         head = body[:512].lstrip().lower()
         if not body.strip() or head.startswith((b"<!doctype", b"<html")):

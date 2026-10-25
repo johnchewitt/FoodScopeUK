@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 from foodscope_pipeline import cli
-from foodscope_pipeline.sources import mhclg_iod, nisra_files, nomis_census, ons_files
+from foodscope_pipeline.sources import fsa_fhrs, mhclg_iod, nisra_files, nomis_census, ons_files
 from foodscope_pipeline.sources.ons_files import OnsFetchError, OnsFile, OnsQuery, fetch, load_index
 
 FIXED = datetime(2026, 10, 24, 9, 0, 0, tzinfo=UTC)
@@ -28,10 +28,10 @@ def transport_for(responses: dict[str, tuple[int, bytes]]):
 
 
 def test_registries_are_https_with_unique_ids_and_filenames() -> None:
-    files = nomis_census.FILES + mhclg_iod.FILES + nisra_files.FILES + ons_files.FILES
+    files = nomis_census.FILES + mhclg_iod.FILES + nisra_files.FILES + fsa_fhrs.FILES + ons_files.FILES
     ids = [f.id for f in files] + [q.id for q in ons_files.QUERIES]
     assert len(ids) == len(set(ids))
-    for group in (nomis_census.FILES, mhclg_iod.FILES, nisra_files.FILES):
+    for group in (nomis_census.FILES, mhclg_iod.FILES, nisra_files.FILES, fsa_fhrs.FILES):
         assert len({f.filename for f in group}) == len(group)
     for f in files:
         assert f.url.startswith("https://") and f.licence and f.source_id.startswith("S")
@@ -109,4 +109,15 @@ def test_fetch_reference_continues_after_a_failing_publisher(monkeypatch: pytest
     monkeypatch.setattr(ons_files, "fetch", fake_fetch)
     monkeypatch.setattr(cli, "RAW", tmp_path)
     assert cli.main(["fetch-reference", "--snapshot", "2026-10-24"]) == 1
-    assert seen == ["ons", "nomis", "mhclg", "nisra"]
+    assert seen == ["ons", "nomis", "mhclg", "nisra", "fsa"]
+
+
+def test_fsa_covers_the_eleven_ni_councils_and_checks_xml(tmp_path: Path) -> None:
+    assert sorted(lad for _, lad, _ in fsa_fhrs.NI_COUNCILS) == [f"N090000{n:02d}" for n in range(1, 12)]
+    f = fsa_fhrs.FILES[0]
+    with pytest.raises(OnsFetchError, match="not an .xml"):
+        fetch("s", tmp_path, transport_for({f.url: (200, b"<!DOCTYPE html><html></html>")}), now=lambda: FIXED,
+              files=(f,), queries=())
+    folder = fetch("s", tmp_path, transport_for({f.url: (200, b"<?xml version='1.0'?><FHRSEstablishment/>")}),
+                   now=lambda: FIXED, files=(f,), queries=())
+    assert load_index(folder)["files"][0]["sourceId"] == "S29"

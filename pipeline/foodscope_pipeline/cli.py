@@ -36,7 +36,7 @@ def main(argv: list[str] | None = None) -> int:
     ingest.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
     ons = sub.add_parser("fetch-ons", help="ONLINE: download ONS population, lookup and boundary files into pipeline/raw/ons/<snapshot>/ (incremental)")
     ons.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
-    ref = sub.add_parser("fetch-reference", help="ONLINE: fetch-ons plus the Stage 5 small-area files from Nomis, MHCLG and NISRA into pipeline/raw/<publisher>/<snapshot>/ (incremental)")
+    ref = sub.add_parser("fetch-reference", help="ONLINE: fetch-ons plus the Stage 5 files from Nomis, MHCLG, NISRA and the FSA (NI food register) into pipeline/raw/<publisher>/<snapshot>/ (incremental)")
     ref.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
     build = sub.add_parser("build-trade", help="OFFLINE: raw HMRC cache → public/data/snapshots/<snapshot>/trade/")
     build.add_argument("--snapshot", required=True, help="snapshot id YYYY-MM-DD (must exist in the raw cache)")
@@ -76,7 +76,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "fetch-reference":
-        from foodscope_pipeline.sources import mhclg_iod, nisra_files, nomis_census
+        from foodscope_pipeline.sources import fsa_fhrs, mhclg_iod, nisra_files, nomis_census
         from foodscope_pipeline.sources.ons_files import OnsFetchError, fetch
 
         snapshot = args.snapshot or _today()
@@ -85,6 +85,7 @@ def main(argv: list[str] | None = None) -> int:
             ("nomis", nomis_census.FILES, ()),
             ("mhclg", mhclg_iod.FILES, ()),
             ("nisra", nisra_files.FILES, ()),
+            ("fsa", fsa_fhrs.FILES, ()),
         ]
         failed = []
         # Each publisher's folder is complete or unchanged; one failure does not stop the others.
