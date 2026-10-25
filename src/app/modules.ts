@@ -105,18 +105,22 @@ export const MODULES: readonly ModuleDef[] = [
   },
   {
     id: "risks",
-    label: "Supply Chain Risks",
+    label: "UK Food Resilience — Risk Explorer",
     railLabel: "Risks",
     icon: ShieldAlert,
     question: "How vulnerable is our food supply?",
     summary:
-      "Separate national supply, logistics and local access indicators with user-set weights and sensitivity analysis — never one composite score.",
-    release: 2,
-    buildStage: 9,
-    requirementIds: "RK-01 – RK-06",
-    plannedKpis: ["Import concentration", "Short Straits dependence", "Local access flags"],
-    plannedControls: ["Risk component tabs", "Indicator weights", "Sensitivity runs"],
-    principles: ["P8", "P10", "P11"],
+      'Three separate views, never one score: international supply exposure (partner concentration, estimated exposure to one supplier, partners\' water stress), logistics and infrastructure (ports, food entry points, road corridors, farming regions) and community food access (priority places by council, within each nation), each with "Explain this risk".',
+    release: 1,
+    buildStage: 6,
+    requirementIds: "RK-01 – RK-04, RK-06 (RK-05 weights: Release 2)",
+    plannedKpis: ["Partner concentration (HHI)", "Short Straits share of food imports", "Priority share"],
+    plannedControls: [
+      "View: supply, logistics, community access",
+      "Commodity, period, partner",
+      "Port measure, layers, index measure",
+    ],
+    principles: ["P3", "P8", "P10", "P11", "P12"],
     usesTimeline: false,
   },
   {
@@ -129,7 +133,7 @@ export const MODULES: readonly ModuleDef[] = [
       "A food security profile for any of the 361 UK councils: area overview, supermarket network, car availability and national supply context; deep profiles for Belfast and Manchester add small-area accessibility, the Priority Places for Food Index and deprivation within each nation; side-by-side comparison with comparability warnings.",
     release: 1,
     buildStage: 5,
-    requirementIds: "LP-01 – LP-08, LP-10 (LP-09 PDF in stage 7)",
+    requirementIds: "LP-01 – LP-08, LP-10 (LP-09 PDF in stage 8)",
     plannedKpis: [
       "Residents",
       "Mapped grocery stores",
@@ -154,7 +158,7 @@ export const MODULES: readonly ModuleDef[] = [
     summary:
       "Transparent what-if scenarios — a country and commodity import disruption and a supermarket closure — with assumptions beside every result.",
     release: 1,
-    buildStage: 6,
+    buildStage: 7,
     requirementIds: "SC-01 – SC-05",
     plannedKpis: [
       "Recorded imports affected",
@@ -178,7 +182,7 @@ export const MODULES: readonly ModuleDef[] = [
     summary:
       "Evidence-based opportunity statements linking what the data shows to possible ConsultingWhere workstreams, with limitations stated.",
     release: 1,
-    buildStage: 7,
+    buildStage: 8,
     requirementIds: "CI-01 – CI-05",
     plannedKpis: ["Evidence items", "Suggested workstreams"],
     plannedControls: ["Context: authority, commodity or scenario", "Workstream filter"],

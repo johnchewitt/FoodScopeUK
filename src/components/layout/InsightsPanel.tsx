@@ -9,6 +9,7 @@ import { principlesById } from "@/content/principles";
 import { OriginsInsights } from "@/features/origins/OriginsInsights";
 import { AccessInsightsLazy } from "@/features/access/lazy";
 import { ProfileInsightsLazy } from "@/features/profiles/lazy";
+import { RiskInsightsLazy } from "@/features/risks/lazy";
 import { SeasonalInsightsLazy } from "@/features/seasonal/lazy";
 import { BASEMAP_STATUS_ID, REFERENCE_DATASET_ID, REFERENCE_LAYER_ID } from "@/map/layerIds";
 import { basemapMode, readArcgisEnv } from "@/services/arcgis/env";
@@ -64,6 +65,7 @@ export function InsightsPanel() {
   const areasSnapshot = familySnapshot(manifest.data, "areas");
   const contextSnapshot = familySnapshot(manifest.data, "context");
   const registerSnapshot = familySnapshot(manifest.data, "register");
+  const riskSnapshot = familySnapshot(manifest.data, "risk");
 
   const failed: string[] = [];
   if (config.isError) failed.push("app configuration (defaults used)");
@@ -104,6 +106,10 @@ export function InsightsPanel() {
         ) : module === "profiles" ? (
           <ErrorBoundary region="Local Authority Profile">
             <ProfileInsightsLazy />
+          </ErrorBoundary>
+        ) : module === "risks" ? (
+          <ErrorBoundary region="Risk Explorer">
+            <RiskInsightsLazy />
           </ErrorBoundary>
         ) : (
           <section className="panel-section" aria-labelledby="about-heading">
@@ -168,6 +174,13 @@ export function InsightsPanel() {
                   detail="Northern Ireland grocers from the FSA register that GEOLYTIX does not map: an optional layer, never counted in rates."
                 />
               )}
+              {riskSnapshot && (
+                <StatusItem
+                  tone="ok"
+                  title={`Risk evidence snapshot ${riskSnapshot}`}
+                  detail="FAO water stress (World Bank), DfT major ports 2015–2025, UKFSR 2024 port and road evidence, OS Open Roads, Defra June survey 2025 by region and the Priority Places for Food Index by council. Used by the Risk Explorer."
+                />
+              )}
               {manifest.isError ? (
                 <StatusItem
                   tone="warn"
@@ -225,20 +238,24 @@ export function InsightsPanel() {
           )}
         </section>
 
-        {module !== "origins" && module !== "seasonal" && module !== "access" && module !== "profiles" && (
-          <section className="panel-section">
-            <ChartFrame
-              title="Trend"
-              option={null}
-              emptyTitle="No chart yet"
-              emptyBody={
-                mod.release > 1
-                  ? `Charts for this module are planned for Release ${mod.release}.`
-                  : `Charts are drawn from real data once it is added in build stage ${mod.buildStage}.`
-              }
-            />
-          </section>
-        )}
+        {module !== "origins" &&
+          module !== "seasonal" &&
+          module !== "access" &&
+          module !== "profiles" &&
+          module !== "risks" && (
+            <section className="panel-section">
+              <ChartFrame
+                title="Trend"
+                option={null}
+                emptyTitle="No chart yet"
+                emptyBody={
+                  mod.release > 1
+                    ? `Charts for this module are planned for Release ${mod.release}.`
+                    : `Charts are drawn from real data once it is added in build stage ${mod.buildStage}.`
+                }
+              />
+            </section>
+          )}
 
         <section className="panel-section" aria-labelledby="principles-heading">
           <h3 id="principles-heading" className="panel-section__title">

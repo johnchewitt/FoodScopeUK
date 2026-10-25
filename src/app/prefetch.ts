@@ -2,6 +2,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import { TRADE_INDEX_ID } from "@/features/origins/useOrigins";
 import { loadAccess } from "@/features/access/load";
 import { preloadProfiles } from "@/features/profiles/load";
+import { preloadRisks } from "@/features/risks/load";
 import { preloadSeasonal } from "@/features/seasonal/load";
 import {
   LOCAL_INDICATORS_DATASET_ID,
@@ -36,6 +37,8 @@ export async function prefetchStartupData(
     preloadProfiles();
     return prefetchAccess(client);
   }
+  // The Risk Explorer's chunk carries its own validators; its data loads with the view.
+  if (url.module === "risks") preloadRisks();
   if (!TRADE_MODULES.includes(url.module)) {
     await client.prefetchQuery(manifestQuery);
     return;
