@@ -157,6 +157,17 @@ function LogisticsLegend() {
           </ul>
         </>
       )}
+      {model.map.rail && (
+        <>
+          <p className="map-legend__title">Railway lines (Northern Ireland)</p>
+          <ul className="map-legend__classes">
+            <li>
+              <span className="rail-sample" aria-hidden="true" />
+              Translink NIR network, 2015
+            </li>
+          </ul>
+        </>
+      )}
       {farm && (
         <>
           <p className="map-legend__title">

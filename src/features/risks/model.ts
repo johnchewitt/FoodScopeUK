@@ -281,6 +281,7 @@ export function farmingRows(doc: RiskFarming, measure: FarmMeasure | null): Farm
 
 export interface LogisticsSources {
   roads: { url: string; copyright: string } | null;
+  rail: { url: string; copyright: string } | null;
   regions: { url: string; copyright: string } | null;
   portsCopyright: string;
 }
@@ -289,7 +290,7 @@ export function buildLogisticsModel(
   ports: RiskPorts,
   entry: RiskPortEntry,
   farming: RiskFarming | null,
-  sel: { measure: PortMeasure; port: string | null; roads: boolean; farm: FarmMeasure | null },
+  sel: { measure: PortMeasure; port: string | null; roads: boolean; rail: boolean; farm: FarmMeasure | null },
   sources: LogisticsSources,
 ): LogisticsModel {
   const regions = { domestic: ports.domesticRegion, unspecified: ports.unspecifiedRegion };
@@ -361,6 +362,7 @@ export function buildLogisticsModel(
     portKey: `${sel.measure}|${year}`,
     portsCopyright: sources.portsCopyright,
     roads: sel.roads ? sources.roads : null,
+    rail: sel.rail ? sources.rail : null,
     regions: sources.regions
       ? {
           ...sources.regions,

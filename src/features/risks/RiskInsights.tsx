@@ -389,7 +389,7 @@ function LogisticsInsights() {
   const topics = useMemo(
     () => [
       { id: "ports", label: model?.selected ? model.selected.name : "Ports" },
-      { id: "roads", label: "Roads" },
+      { id: "roads", label: "Roads and rail" },
       ...(farm && region && year ? [{ id: "region", label: "Farming" }] : []),
     ],
     [model, farm, region, year],
@@ -549,8 +549,9 @@ function LogisticsInsights() {
           height={150}
         />
         <p className="control-hint">
-          Seconds per vehicle per mile, all traffic (UKFSR 2024). The map&rsquo;s corridors come from OS Open
-          Roads (Great Britain); Northern Ireland&rsquo;s are not available.
+          Seconds per vehicle per mile, all traffic (UKFSR 2024). The map&rsquo;s road corridors come from OS
+          Open Roads (Great Britain; Northern Ireland&rsquo;s are not available) and its railway lines from
+          Translink&rsquo;s NIR network (Northern Ireland only, 2015).
         </p>
       </Section>
 

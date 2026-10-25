@@ -74,6 +74,7 @@ const supply = (
 
 const SOURCES: LogisticsSources = {
   roads: { url: "roads.geojson", copyright: "OS" },
+  rail: { url: "rail.geojson", copyright: "Translink" },
   regions: { url: "regions.geojson", copyright: "ONS" },
   portsCopyright: "DfT",
 };
@@ -85,7 +86,7 @@ const logistics = (
     ports,
     entry,
     farming,
-    { measure: "international", port: null, roads: true, farm: null, ...sel },
+    { measure: "international", port: null, roads: true, rail: true, farm: null, ...sel },
     sources,
   );
 
@@ -257,6 +258,8 @@ describe("logistics and infrastructure (RK-03)", () => {
 
   it("shows roads only when switched on, and farming classes only for a chosen measure", () => {
     expect(logistics({ roads: false }).map.roads).toBeNull();
+    expect(logistics({ rail: false }).map.rail).toBeNull();
+    expect(logistics().map.rail?.url).toBe("rail.geojson");
     expect(logistics().map.roads?.url).toBe("roads.geojson");
     expect(logistics().map.regions?.classOf).toEqual({});
     const l = logistics({ farm: "sheep" });
@@ -275,12 +278,13 @@ describe("logistics and infrastructure (RK-03)", () => {
       ports,
       entry,
       null,
-      { measure: "international", port: null, roads: true, farm: "wheat" },
-      { ...SOURCES, roads: null },
+      { measure: "international", port: null, roads: true, rail: true, farm: "wheat" },
+      { ...SOURCES, roads: null, rail: null },
     );
     expect(l.regions).toEqual([]);
     expect(l.farmingYear).toBeNull();
     expect(l.map.roads).toBeNull();
+    expect(l.map.rail).toBeNull();
   });
 });
 

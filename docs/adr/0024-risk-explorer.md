@@ -38,6 +38,7 @@ Earlier stages already draw the trade map (Food Origins and Seasonal Supply, `Or
 3. **A logistics controller.** `RiskLogisticsController` (`src/map/layers/riskLogistics.ts`) draws three layers from `state.riskMap` only (built by `buildLogisticsModel`):
    - **farming regions** (GeoJSONLayer): Defra regions of England and the devolved countries on ITL1 boundaries. Fixed classes of a density (per cent of area for wheat; head per km² for livestock) on the sequential colours 1–5, or outlines.
    - **road corridors** (GeoJSONLayer): motorway and trunk versus primary A roads, Great Britain only.
+   - **railway lines** (GeoJSONLayer, dashed, its own validated colour per basemap): Northern Ireland's NIR network (Translink, S37), added at John's request. Great Britain's railway lines are not in this build.
    - **ports** (GraphicsLayer): circles with area proportional to tonnage. A zero for the measure is a hollow ring. UKFSR food entry points have a warm ring; the selected port has the selection ring.
 
    Only the ports are hit-tested, so hover stays fast (B29). Port-of-entry shares are shown only as UKFSR publishes them, beside DfT tonnage and never derived from it.
@@ -74,6 +75,6 @@ Earlier stages already draw the trade map (Food Origins and Seasonal Supply, `Or
 ## Consequences
 - A new commodity basket in the trade snapshot joins the supply view's ranking and matrix automatically. A new risk dataset needs a schema, a validator in `validate.ts` and an `Indicator` builder in `indicators.ts`.
 - Water stress is a national figure. The legend, tooltips, KPI method and explanation all say that it does not describe where the produce was grown, nor how it was irrigated.
-- Rail freight, distribution centres and Northern Ireland road corridors are listed as "Not available" in the logistics controls, with the reason. They are never drawn from unverified sources.
+- Rail freight, distribution centres, Northern Ireland's road corridors and Great Britain's railway lines are listed as "Not available" in the logistics controls, with the reason. They are never drawn from unverified sources. DfI's open road files have no line work; a file of OSNI's 50K transport lines from John would add Northern Ireland's roads without code changes beyond the pipeline.
 - RK-05 waits for Release 2. It is not available yet, so the UI never presents a weighting.
 - Council hit tests on the councils GeoJSON layer take seconds under SwiftShader (as in UK Food Access, B37); the E2E test allows for it.

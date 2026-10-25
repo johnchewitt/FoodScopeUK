@@ -243,6 +243,8 @@ function LogisticsControls() {
   const selectPort = useAppStore((s) => s.selectPort);
   const roads = useAppStore((s) => s.roads);
   const setRoads = useAppStore((s) => s.setRoads);
+  const rail = useAppStore((s) => s.rail);
+  const setRail = useAppStore((s) => s.setRail);
   const farm = useAppStore((s) => s.farmLayer);
   const setFarm = useAppStore((s) => s.setFarmLayer);
   if (status === "error")
@@ -310,6 +312,17 @@ function LogisticsControls() {
             oncalciteSwitchChange={(e) => setRoads(e.target.checked)}
           />
         </div>
+        <div className="setting-row">
+          <span>
+            Railway lines
+            <span className="setting-row__hint">Northern Ireland (Translink NIR network, 2015)</span>
+          </span>
+          <calcite-switch
+            label="Railway lines"
+            checked={rail}
+            oncalciteSwitchChange={(e) => setRail(e.target.checked)}
+          />
+        </div>
         <label className="field-row field-row--stack">
           <span>Agricultural production regions</span>
           <select className="select" value={farm} onChange={(e) => setFarm(e.target.value as FarmLayer)}>
@@ -332,12 +345,16 @@ function LogisticsControls() {
         </h3>
         <ul className="unavailable-list">
           <li>
-            <CircleOff size={14} aria-hidden="true" /> Northern Ireland road corridors: OSNI&rsquo;s open
-            service could not be reached by the data pipeline.
+            <CircleOff size={14} aria-hidden="true" /> Northern Ireland road corridors: DfI&rsquo;s open files
+            have no line work, and OSNI&rsquo;s open service could not be reached by the data pipeline.
+          </li>
+          <li>
+            <CircleOff size={14} aria-hidden="true" /> Great Britain&rsquo;s railway lines: no open, official
+            line dataset in this build.
           </li>
           <li>
             <CircleOff size={14} aria-hidden="true" /> Rail freight routes and terminals: no open, official
-            mapped dataset found.
+            mapped dataset found (the railway lines show where track runs, not freight).
           </li>
           <li>
             <CircleOff size={14} aria-hidden="true" /> Distribution centres: no authoritative public register.

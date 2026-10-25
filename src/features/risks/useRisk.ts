@@ -123,12 +123,14 @@ export function useRiskLogistics() {
   const measure = useAppStore((s) => s.portMeasure);
   const port = useAppStore((s) => s.port);
   const roads = useAppStore((s) => s.roads);
+  const rail = useAppStore((s) => s.rail);
   const farmLayer = useAppStore((s) => s.farmLayer);
   const manifest = useManifest();
   const ports = useValidatedDataset(RISK_DATASET_IDS.ports, validatePorts);
   const entry = useValidatedDataset(RISK_DATASET_IDS.portEntry, validatePortEntry);
   const farming = useValidatedDataset(RISK_DATASET_IDS.farming, validateFarming);
   const roadsDs = findDataset(manifest.data, RISK_DATASET_IDS.roads);
+  const railDs = findDataset(manifest.data, RISK_DATASET_IDS.rail);
   const regionsDs = findDataset(manifest.data, RISK_DATASET_IDS.farmingRegions);
   const portsDs = findDataset(manifest.data, RISK_DATASET_IDS.ports);
   const farm = farmLayer === "off" ? null : (farmLayer as FarmMeasure);
@@ -139,14 +141,28 @@ export function useRiskLogistics() {
       ports.data,
       entry.data,
       farming.data ?? null,
-      { measure, port, roads, farm },
+      { measure, port, roads, rail, farm },
       {
         roads: roadsDs ? { url: datasetUrl(roadsDs), copyright: roadsDs.attribution } : null,
+        rail: railDs ? { url: datasetUrl(railDs), copyright: railDs.attribution } : null,
         regions: regionsDs ? { url: datasetUrl(regionsDs), copyright: regionsDs.attribution } : null,
         portsCopyright: portsDs.attribution,
       },
     );
-  }, [ports.data, entry.data, farming.data, measure, port, roads, farm, roadsDs, regionsDs, portsDs]);
+  }, [
+    ports.data,
+    entry.data,
+    farming.data,
+    measure,
+    port,
+    roads,
+    rail,
+    farm,
+    roadsDs,
+    railDs,
+    regionsDs,
+    portsDs,
+  ]);
 
   const error = ports.error ?? entry.error ?? (manifest.isError ? manifest.error : null);
   return {
@@ -158,6 +174,7 @@ export function useRiskLogistics() {
       ports: portsDs,
       entry: findDataset(manifest.data, RISK_DATASET_IDS.portEntry),
       roads: roadsDs,
+      rail: railDs,
       farming: findDataset(manifest.data, RISK_DATASET_IDS.farming),
       regions: regionsDs,
     },

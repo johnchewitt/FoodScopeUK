@@ -107,9 +107,13 @@ describe("UK Food Resilience — Risk Explorer", { timeout: 60_000 }, () => {
     const explain = within(insights()).getByRole("group", { name: "Explain this risk" });
     expect(within(explain).getByText("Dover: port freight")).toBeInTheDocument();
     // The explanation can switch to the road corridors.
-    await user.click(within(explain).getByRole("radio", { name: "Roads" }));
-    expect(within(explain).getByText("Strategic road corridors")).toBeInTheDocument();
-    expect(within(explain).getByText(/Northern Ireland is not shown/)).toBeInTheDocument();
+    await user.click(within(explain).getByRole("radio", { name: "Roads and rail" }));
+    expect(within(explain).getByText("Road and rail corridors")).toBeInTheDocument();
+    expect(within(explain).getByText(/Northern Ireland's roads are not shown/)).toBeInTheDocument();
+    expect(
+      within(explain).getByText(/Railway lines are shown for Northern Ireland only/),
+    ).toBeInTheDocument();
+    expect(useAppStore.getState().riskMap?.rail?.url).toMatch(/risk\/rail\.geojson$/);
   });
 
   it("maps a farming measure by region (RK-03, S31)", async () => {

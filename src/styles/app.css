@@ -3089,6 +3089,13 @@ li[data-hidden-at-scale] .grocer-symbol {
   height: 2px;
   opacity: 0.72;
 }
+.rail-sample {
+  flex: none;
+  display: inline-block;
+  width: 22px;
+  height: 0;
+  border-top: 2px dashed var(--fs-map-rail);
+}
 .road-sample--primary {
   height: 1px;
   opacity: 0.55;

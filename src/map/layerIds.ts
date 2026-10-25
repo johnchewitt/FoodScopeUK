@@ -29,12 +29,14 @@ export const CONTEXT_PRODUCTION_DATASET_ID = "context.uk_production";
 /** Risk Explorer (Stage 6): logistics layers and the `risk` family datasets. */
 export const RISK_PORTS_LAYER_ID = "risk-ports";
 export const RISK_ROADS_LAYER_ID = "risk-roads";
+export const RISK_RAIL_LAYER_ID = "risk-rail";
 export const RISK_REGIONS_LAYER_ID = "risk-regions";
 export const RISK_DATASET_IDS = {
   waterStress: "risk.water_stress",
   ports: "risk.ports",
   portEntry: "risk.port_entry",
   roads: "risk.roads",
+  rail: "risk.rail",
   farming: "risk.farming",
   farmingRegions: "risk.farming_regions",
   councilPpfi: "risk.council_ppfi",

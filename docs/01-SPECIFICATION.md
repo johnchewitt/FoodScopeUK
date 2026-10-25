@@ -233,9 +233,10 @@ Moved into Release 1 by John's Stage 6 brief (25 Oct 2026; roadmap §1, §8). De
   - UKFSR 2024 port-of-entry and Short Straits shares of food, feed and drink imports (§S03), shown as published, never derived from DfT tonnage;
   - England's Strategic Road Network delay (§S03);
   - strategic road corridors for Great Britain (OS Open Roads, §S35);
+  - railway lines for Northern Ireland (Translink NIR network, 2015, §S37; added at John's request);
   - agricultural production regions (Defra June survey 2025, §S31, on ITL1, §S33).
 
-  Rail freight, distribution centres and Northern Ireland roads are listed as not available, with the reason. HMRC port-level commodity trade (§S28) is not used (gate G13).
+  Rail freight, distribution centres, Northern Ireland's roads and Great Britain's railway lines are listed as not available, with the reason. HMRC port-level commodity trade (§S28) is not used (gate G13).
 - **RK-04** Community food access:
   - every council's share of small areas in its nation's two highest-priority deciles of the Priority Places for Food Index v2.1 (§S13), combined or by domain;
   - ranked within its own nation only (ties marked);

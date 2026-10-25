@@ -154,6 +154,7 @@ export interface AppState extends UrlState {
   selectPort: (locode: string | null) => void;
   setPortMeasure: (measure: PortMeasureId) => void;
   setRoads: (on: boolean) => void;
+  setRail: (on: boolean) => void;
   setFarmLayer: (layer: FarmLayer) => void;
   setPpfiMeasure: (measure: PpfiMeasure) => void;
   setRankNation: (nation: Nation | null) => void;
@@ -346,6 +347,8 @@ export interface RiskMapModel {
   /** Port symbol attribution (DfT; EMODnet locations). */
   portsCopyright: string;
   roads: { url: string; copyright: string } | null;
+  /** Railway lines in Northern Ireland (Translink NIR network, S37), or null when off or not published. */
+  rail: { url: string; copyright: string } | null;
   /** Farming regions: outlines URL and, when a measure is on, the class (0–4) of each region id. */
   regions: { url: string; copyright: string; measure: string | null; classOf: Record<string, number> } | null;
   /** The UK (fitted once per visit to the view). */
@@ -518,6 +521,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
   selectPort: (locode) => set((s) => ({ port: locode === null || s.port === locode ? null : locode })),
   setPortMeasure: (portMeasure) => set({ portMeasure }),
   setRoads: (roads) => set({ roads }),
+  setRail: (rail) => set({ rail }),
   setFarmLayer: (farmLayer) => set({ farmLayer }),
   setPpfiMeasure: (ppfiMeasure) => set({ ppfiMeasure }),
   setRankNation: (rankNation) => set({ rankNation }),
@@ -620,6 +624,7 @@ export function selectUrlState(s: AppState): UrlState {
     port: s.port,
     portMeasure: s.portMeasure,
     roads: s.roads,
+    rail: s.rail,
     farmLayer: s.farmLayer,
     ppfiMeasure: s.ppfiMeasure,
     rankNation: s.rankNation,

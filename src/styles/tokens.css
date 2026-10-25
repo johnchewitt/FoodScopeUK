@@ -81,6 +81,7 @@
   --fs-map-road-primary: var(--fs-text-muted);
   --fs-map-port-fill: var(--fs-text);
   --fs-map-port-outline: var(--fs-navy);
+  --fs-map-rail: #9085e9;
   /* Ground behind legend samples drawn as lines (the proximity ring): none on dark grey. */
   --fs-map-sample-ground: transparent;
   /* Basemap choice swatches (SH-08): approximate tones of each style, for recognition only. */
@@ -201,6 +202,7 @@
   --fs-map-road-primary: #5f7175;
   --fs-map-port-fill: var(--fs-navy);
   --fs-map-port-outline: #ffffff;
+  --fs-map-rail: #5a3fc0;
   /* The legend sits on the dark glass; the magenta ring is drawn on light grey land (#f4f4f4). */
   --fs-map-sample-ground: #f4f4f4;
   --fs-glass: color-mix(in oklab, var(--fs-emerald) 97%, transparent);

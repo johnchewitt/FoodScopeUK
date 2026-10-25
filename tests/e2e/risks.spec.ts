@@ -119,9 +119,10 @@ test.describe("UK Food Resilience — Risk Explorer", () => {
     await expect(kpis(page).getByText("237.5 Mt")).toBeVisible({ timeout: 30_000 });
     await expect.poll(() => viewData(page, "riskPorts"), { timeout: 20_000 }).toBe("51");
     expect(await viewData(page, "riskRoads")).toBe("on");
+    await expect.poll(() => viewData(page, "riskRail")).toBe("on");
     expect(await viewData(page, "riskRegions")).toBe("outlines");
     const layers = await visibleLayers(page);
-    expect(layers).toEqual(expect.arrayContaining(["risk-ports", "risk-roads", "risk-regions"]));
+    expect(layers).toEqual(expect.arrayContaining(["risk-ports", "risk-roads", "risk-rail", "risk-regions"]));
     expect(layers).not.toContain("origins-partners");
 
     await settled(page);
@@ -141,6 +142,11 @@ test.describe("UK Food Resilience — Risk Explorer", () => {
     await controls(page).getByRole("switch", { name: "Strategic road corridors" }).click();
     await expect(page).toHaveURL(/rd=0/);
     await expect.poll(() => viewData(page, "riskRoads")).toBe("off");
+    // Northern Ireland's railway lines (Translink NIR network) can be switched off too.
+    await expect(page.getByText("Railway lines (Northern Ireland)")).toBeVisible();
+    await controls(page).getByRole("switch", { name: "Railway lines" }).click();
+    await expect(page).toHaveURL(/rl=0/);
+    await expect.poll(() => viewData(page, "riskRail")).toBe("off");
     expect(errors, `console errors:\n${errors.join("\n")}`).toEqual([]);
     await noSeriousViolations(page);
   });
@@ -175,13 +181,17 @@ test.describe("UK Food Resilience — Risk Explorer", () => {
     const errors = trackConsoleErrors(page);
     await page.goto("./?m=risks&rv=access&lad=E08000003");
     await mapReady(page);
-    await expect(kpis(page).getByText(/of 296/)).toBeVisible({ timeout: 30_000 });
+    await expect(kpis(page).getByRole("article", { name: "Rank within nation" })).toContainText("of 296", {
+      timeout: 30_000,
+    });
     await controls(page).getByRole("radio", { name: "International supply" }).click();
     await expect(page).toHaveURL(/m=risks&lad=E08000003/);
     await expect.poll(async () => (await visibleLayers(page)).includes("access-councils")).toBe(false);
     await page.goBack();
     await expect(page).toHaveURL(/rv=access/);
-    await expect(kpis(page).getByText(/of 296/)).toBeVisible({ timeout: 20_000 });
+    await expect(kpis(page).getByRole("article", { name: "Rank within nation" })).toContainText("of 296", {
+      timeout: 20_000,
+    });
     const nav = page.getByRole("navigation", { name: "Modules" });
     await nav.getByRole("button", { name: /Profiles/ }).click();
     await expect(page).toHaveURL(/m=profiles.*lad=E08000003/);

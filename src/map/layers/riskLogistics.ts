@@ -2,6 +2,7 @@ import Graphic from "@arcgis/core/Graphic";
 import Point from "@arcgis/core/geometry/Point";
 import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
+import SimpleRenderer from "@arcgis/core/renderers/SimpleRenderer";
 import UniqueValueRenderer from "@arcgis/core/renderers/UniqueValueRenderer";
 import UniqueValueInfo from "@arcgis/core/renderers/support/UniqueValueInfo";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
@@ -11,7 +12,12 @@ import { hexToRgb } from "@/analysis/colour";
 import { selectMapColourStyle, type AppState, type HoverRisk, type RiskMapModel } from "@/state/store";
 import { MAP_COLOURS, type MapStyle } from "@/styles/palette";
 import { ensureHoverHighlight, HOVER_HIGHLIGHT } from "../highlight";
-import { RISK_PORTS_LAYER_ID, RISK_REGIONS_LAYER_ID, RISK_ROADS_LAYER_ID } from "../layerIds";
+import {
+  RISK_PORTS_LAYER_ID,
+  RISK_RAIL_LAYER_ID,
+  RISK_REGIONS_LAYER_ID,
+  RISK_ROADS_LAYER_ID,
+} from "../layerIds";
 import type { HitResult, LayerController, LayerStatusReporter, ViewLike, ViewPointerEvent } from "../types";
 
 /**
@@ -21,10 +27,12 @@ import type { HitResult, LayerController, LayerStatusReporter, ViewLike, ViewPoi
  *   a magnitude, not a vulnerability);
  * - road corridors from OS Open Roads (Great Britain): strategic (motorway and trunk) wider than
  *   primary A roads; corridors, not freight flows;
+ * - railway lines in Northern Ireland (Translink NIR network, 2015), dashed in their own colour;
+ *   where the railway runs, not services or freight;
  * - DfT major ports as proportional circles (area ∝ tonnage), largest first so small ports stay on
  *   top; a warm ring marks the ports UKFSR names as entry points for food, feed and drink imports;
  *   the selected port is ringed in the selection colour.
- * Ports are graphics, so hit tests stay fast (B29); regions and roads are never hit-tested.
+ * Ports are graphics, so hit tests stay fast (B29); regions, roads and rail are never hit-tested.
  * Everything comes from `state.riskMap` (built by the feature from validated data); this controller
  * only draws it and turns pointer events into store actions (ADR-03).
  */
@@ -115,19 +123,28 @@ function roadRenderer(style: MapStyle): UniqueValueRenderer {
   });
 }
 
+function railRenderer(style: MapStyle): SimpleRenderer {
+  const c = MAP_COLOURS[style];
+  return new SimpleRenderer({
+    symbol: new SimpleLineSymbol({ color: rgba(c.rail), width: 1.6, style: "dash", cap: "butt" }),
+  });
+}
+
 export class RiskLogisticsController implements LayerController {
   readonly id = RISK_PORTS_LAYER_ID;
   private view: (ViewLike & { container?: HTMLElement | null }) | null = null;
   private report: LayerStatusReporter | null = null;
   private regions: GeoJSONLayer | null = null;
   private roads: GeoJSONLayer | null = null;
+  private rail: GeoJSONLayer | null = null;
   private ports: GraphicsLayer | null = null;
   private regionsUrl: string | null = null;
   private roadsUrl: string | null = null;
+  private railUrl: string | null = null;
   private handles: { remove(): void }[] = [];
   private visible = false;
   private style: MapStyle = "dark";
-  private signature = { regions: "", roads: "", ports: "" };
+  private signature = { regions: "", roads: "", rail: "", ports: "" };
   private layerView: HighlightableLayerView | null = null;
   private hoverHighlight: { remove(): void } | null = null;
   private highlighted: string | null = null;
@@ -168,6 +185,7 @@ export class RiskLogisticsController implements LayerController {
     }
     this.updateRegions(m, style);
     this.updateRoads(m, style);
+    this.updateRail(m, style);
     this.updatePorts(m, style);
   }
 
@@ -180,16 +198,16 @@ export class RiskLogisticsController implements LayerController {
       view.map?.remove(l);
       l.destroy();
     }
-    this.regions = this.roads = this.ports = null;
-    this.regionsUrl = this.roadsUrl = null;
+    this.regions = this.roads = this.rail = this.ports = null;
+    this.regionsUrl = this.roadsUrl = this.railUrl = null;
     this.layerView = null;
-    this.signature = { regions: "", roads: "", ports: "" };
+    this.signature = { regions: "", roads: "", rail: "", ports: "" };
     this.view = null;
     this.report = null;
   }
 
   private layers(): (GeoJSONLayer | GraphicsLayer)[] {
-    return [this.regions, this.roads, this.ports].filter(
+    return [this.regions, this.roads, this.rail, this.ports].filter(
       (l): l is GeoJSONLayer | GraphicsLayer => l !== null,
     );
   }
@@ -227,7 +245,7 @@ export class RiskLogisticsController implements LayerController {
         listMode: "hide",
         visible: this.visible,
       });
-      view.map?.add(this.regions, this.below(this.roads, this.ports));
+      view.map?.add(this.regions, this.below(this.roads, this.rail, this.ports));
       this.signature.regions = "";
     }
     if (this.regions) this.regions.visible = this.visible && r !== null;
@@ -260,7 +278,7 @@ export class RiskLogisticsController implements LayerController {
         listMode: "hide",
         visible: this.visible,
       });
-      view.map?.add(this.roads, this.below(this.ports));
+      view.map?.add(this.roads, this.below(this.rail, this.ports));
       this.signature.roads = "";
       const layer = this.roads;
       view.whenLayerView(layer).catch((err: unknown) => {
@@ -274,6 +292,42 @@ export class RiskLogisticsController implements LayerController {
     this.signature.roads = sig;
     const container = this.view?.container;
     if (container) container.dataset.riskRoads = r ? "on" : "off";
+  }
+
+  private updateRail(m: RiskMapModel, style: MapStyle): void {
+    const view = this.view!;
+    const r = m.rail;
+    if (r && r.url !== this.railUrl) {
+      if (this.rail) {
+        view.map?.remove(this.rail);
+        this.rail.destroy();
+      }
+      this.railUrl = r.url;
+      this.rail = new GeoJSONLayer({
+        id: RISK_RAIL_LAYER_ID,
+        url: r.url,
+        title: "Railway lines, Northern Ireland (Translink NIR network)",
+        copyright: r.copyright,
+        outFields: ["line"],
+        popupEnabled: false,
+        legendEnabled: false,
+        listMode: "hide",
+        visible: this.visible,
+      });
+      view.map?.add(this.rail, this.below(this.ports));
+      this.signature.rail = "";
+      const layer = this.rail;
+      view.whenLayerView(layer).catch((err: unknown) => {
+        if (this.rail === layer)
+          this.report?.("error", err instanceof Error ? err.message : "Railway lines failed to load");
+      });
+    }
+    if (this.rail) this.rail.visible = this.visible && r !== null;
+    const sig = r ? style : "off";
+    if (sig !== this.signature.rail && this.rail && r) this.rail.renderer = railRenderer(style);
+    this.signature.rail = sig;
+    const container = this.view?.container;
+    if (container) container.dataset.riskRail = r ? "on" : "off";
   }
 
   private updatePorts(m: RiskMapModel, style: MapStyle): void {

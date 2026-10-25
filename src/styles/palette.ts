@@ -87,6 +87,8 @@ export interface MapColours {
   /** Port symbols (proportional circles) and their ring. */
   portFill: string;
   portOutline: string;
+  /** Railway lines (dashed). Validated pairwise against roads, port rings, the farm ramp and the selection. */
+  rail: string;
 }
 
 /**
@@ -148,6 +150,9 @@ const DARK: MapColours = {
   roadPrimary: BRAND.muted,
   portFill: BRAND.text,
   portOutline: BRAND.navy,
+  // Violet (as storeOther; stores are never drawn in the logistics view): normal ΔE ≥ 15.8 and
+  // CVD ≥ 11.8 against roads, port rings, selection and the teal ramp on #3d3d3d; ≥ 3:1.
+  rail: "#9085e9",
 };
 
 /**
@@ -190,6 +195,8 @@ export const MAP_COLOURS: Record<MapStyle, MapColours> = {
     roadPrimary: "#5f7175",
     portFill: BRAND.navy,
     portOutline: "#ffffff",
+    // Normal ΔE ≥ 19.5, CVD ≥ 17.9 against roads, port and ramp colours on #d6d6d6; ≥ 3:1.
+    rail: "#5a3fc0",
   },
   imagery: {
     ...DARK,
@@ -220,6 +227,7 @@ export const MAP_TOKENS: Record<string, keyof MapColours> = {
   "--fs-map-road-primary": "roadPrimary",
   "--fs-map-port-fill": "portFill",
   "--fs-map-port-outline": "portOutline",
+  "--fs-map-rail": "rail",
 };
 
 /**

@@ -3,7 +3,8 @@ import { DEFAULT_URL_STATE, historyModeFor, isGssCode, parseUrlState, serializeU
 
 describe("Risk Explorer state (RK-01 – RK-04)", () => {
   it("reads and writes the view, fills, port, layers and measures", () => {
-    const qs = "?m=risks&rv=logistics&rf=stress&pt=gbdvr&pms=roro&rd=0&fm=wheat&pf=socio_demographic&rn=S";
+    const qs =
+      "?m=risks&rv=logistics&rf=stress&pt=gbdvr&pms=roro&rd=0&rl=0&fm=wheat&pf=socio_demographic&rn=S";
     const state = parseUrlState(qs);
     expect(state).toMatchObject({
       module: "risks",
@@ -12,6 +13,7 @@ describe("Risk Explorer state (RK-01 – RK-04)", () => {
       port: "GBDVR",
       portMeasure: "roro",
       roads: false,
+      rail: false,
       farmLayer: "wheat",
       ppfiMeasure: "socio_demographic",
       rankNation: "Scotland",
@@ -27,6 +29,7 @@ describe("Risk Explorer state (RK-01 – RK-04)", () => {
     ["?pt=FRCQF", "port", null],
     ["?pms=food", "portMeasure", "international"],
     ["?rd=no", "roads", true],
+    ["?rl=off", "rail", true],
     ["?fm=barley", "farmLayer", "off"],
     ["?pf=total", "ppfiMeasure", "combined"],
     ["?rn=X", "rankNation", null],

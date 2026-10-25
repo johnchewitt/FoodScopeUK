@@ -109,12 +109,13 @@ export interface UrlState {
   compare: string[];
   /** Northern Ireland grocers from the FSA register that GEOLYTIX does not map (supplementary layer, S29). */
   niGrocers: boolean;
-  /** Risk Explorer (RK-01 – RK-04): view, supply map fill, selected port (UN/LOCODE), port measure, road corridors, farming layer, access measure, ranking nation (null = the selected council's, else England). */
+  /** Risk Explorer (RK-01 – RK-04): view, supply map fill, selected port (UN/LOCODE), port measure, road corridors, railway lines, farming layer, access measure, ranking nation (null = the selected council's, else England). */
   riskView: RiskView;
   riskFill: RiskFill;
   port: string | null;
   portMeasure: PortMeasureId;
   roads: boolean;
+  rail: boolean;
   farmLayer: FarmLayer;
   ppfiMeasure: PpfiMeasure;
   rankNation: Nation | null;
@@ -147,6 +148,7 @@ export const DEFAULT_URL_STATE: UrlState = {
   port: null,
   portMeasure: "international",
   roads: true,
+  rail: true,
   farmLayer: "off",
   ppfiMeasure: "combined",
   rankNation: null,
@@ -243,6 +245,7 @@ export function parseUrlState(search: string): UrlState {
   const pt = params.get("pt");
   const pms = params.get("pms");
   const rd = params.get("rd");
+  const rl = params.get("rl");
   const fm = params.get("fm");
   const pf = params.get("pf");
   const rn = params.get("rn");
@@ -291,6 +294,7 @@ export function parseUrlState(search: string): UrlState {
       ? (pms as PortMeasureId)
       : "international",
     roads: rd !== "0",
+    rail: rl !== "0",
     farmLayer: (FARM_LAYERS as readonly string[]).includes(fm ?? "") ? (fm as FarmLayer) : "off",
     ppfiMeasure: (PPFI_MEASURES as readonly string[]).includes(pf ?? "") ? (pf as PpfiMeasure) : "combined",
     rankNation: (Object.keys(NATION_PARAM) as Nation[]).find((n) => NATION_PARAM[n] === rn) ?? null,
@@ -324,6 +328,7 @@ export function serializeUrlState(state: UrlState): string {
   if (state.port !== null) params.set("pt", state.port);
   if (state.portMeasure !== DEFAULT_URL_STATE.portMeasure) params.set("pms", state.portMeasure);
   if (!state.roads) params.set("rd", "0");
+  if (!state.rail) params.set("rl", "0");
   if (state.farmLayer !== DEFAULT_URL_STATE.farmLayer) params.set("fm", state.farmLayer);
   if (state.ppfiMeasure !== DEFAULT_URL_STATE.ppfiMeasure) params.set("pf", state.ppfiMeasure);
   if (state.rankNation !== null) params.set("rn", NATION_PARAM[state.rankNation]);
