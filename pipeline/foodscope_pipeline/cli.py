@@ -36,8 +36,9 @@ def main(argv: list[str] | None = None) -> int:
     ingest.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
     ons = sub.add_parser("fetch-ons", help="ONLINE: download ONS population, lookup and boundary files into pipeline/raw/ons/<snapshot>/ (incremental)")
     ons.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
-    ref = sub.add_parser("fetch-reference", help="ONLINE: fetch-ons plus the Stage 5 files from Nomis, MHCLG, NISRA and the FSA (NI food register) into pipeline/raw/<publisher>/<snapshot>/ (incremental)")
+    ref = sub.add_parser("fetch-reference", help="ONLINE: fetch a set of reference files into pipeline/raw/<publisher>/<snapshot>/ (incremental): 'stage5' = fetch-ons plus Nomis, MHCLG, NISRA and the FSA (NI food register); 'context' = ONS urban/rural classification and Defra annual production")
     ref.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
+    ref.add_argument("--set", default="stage5", choices=("stage5", "context"), help="which files to fetch (default: stage5)")
     build = sub.add_parser("build-trade", help="OFFLINE: raw HMRC cache → public/data/snapshots/<snapshot>/trade/")
     build.add_argument("--snapshot", required=True, help="snapshot id YYYY-MM-DD (must exist in the raw cache)")
 
@@ -81,17 +82,23 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "fetch-reference":
-        from foodscope_pipeline.sources import fsa_fhrs, mhclg_iod, nisra_files, nomis_census
+        from foodscope_pipeline.sources import defra_stats, fsa_fhrs, mhclg_iod, nisra_files, nomis_census, ons_files
         from foodscope_pipeline.sources.ons_files import OnsFetchError, fetch
 
         snapshot = args.snapshot or _today()
-        publishers = [
-            ("ons", None, None),
-            ("nomis", nomis_census.FILES, ()),
-            ("mhclg", mhclg_iod.FILES, ()),
-            ("nisra", nisra_files.FILES, ()),
-            ("fsa", fsa_fhrs.FILES, ()),
-        ]
+        if args.set == "context":
+            publishers = [
+                ("ons", (), ons_files.CONTEXT_QUERIES),
+                ("defra", defra_stats.FILES, ()),
+            ]
+        else:
+            publishers = [
+                ("ons", None, None),
+                ("nomis", nomis_census.FILES, ()),
+                ("mhclg", mhclg_iod.FILES, ()),
+                ("nisra", nisra_files.FILES, ()),
+                ("fsa", fsa_fhrs.FILES, ()),
+            ]
         failed = []
         # Each publisher's folder is complete or unchanged; one failure does not stop the others.
         for name, files, queries in publishers:
