@@ -91,14 +91,14 @@ The validator is the dataviz skill's `validate_palette.js`. Colour is never the 
 | Command | Result |
 |---|---|
 | `npm run typecheck` | 0 errors |
-| `npm run lint`; `npm run check:banned` | _to fill_ |
-| `npm run format` | _to fill_ |
-| `npm test` | _to fill_ |
-| `cd pipeline && uv run pytest` | _to fill_ |
-| `VITE_ARCGIS_ASSETS=local npm run build` | _to fill_ |
+| `npm run lint`; `npm run check:banned` | 0 errors, 0 warnings; OK |
+| `npm run format` | All files formatted |
+| `npm test` | **498 passed** (35 files; 413 at the end of Stage 5) |
+| `cd pipeline && uv run pytest` | **196 passed** (82 s; includes the data step's risk build tests and the railway test) |
+| `VITE_ARCGIS_ASSETS=local npm run build`; `npm run build:e2e-basemap` | Both succeed |
 | `npm run e2e` | _to fill_ |
 | Hand checks (`python3 -I <scratch>/hmrc_check.py`, `ports_check.py`, `ppfi_check.py`) | All match (above) |
-| Bundle | Risk Explorer chunk 107.8 kB (29.8 kB gzip), loaded only when the module opens. App entry 466.9 kB (140.9 kB gzip; 462.1 kB at the end of Stage 5). |
+| Bundle | Risk Explorer chunk 110.6 kB (30.5 kB gzip), loaded only when the module opens. App entry 468.9 kB (141.6 kB gzip; 462.1 kB at the end of Stage 5). |
 
 New tests:
 - **Unit:**
