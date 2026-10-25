@@ -14,6 +14,7 @@ import {
   decileShareIndicator,
   densityIndicator,
   landAreaIndicator,
+  NI_STORE_COVERAGE,
   noCarIndicator,
   populationIndicator,
   retailersIndicator,
@@ -176,6 +177,12 @@ function CompareBody() {
             rows are shown side by side but not compared or ranked. Population, store, rate and straight-line
             distance measures use the same definitions across the UK.
           </span>
+        </p>
+      )}
+      {cols.some((x) => x.c.nation === "Northern Ireland") && (
+        <p className="notice notice--warn" role="note">
+          <TriangleAlert size={16} aria-hidden="true" />
+          <span>{NI_STORE_COVERAGE}</span>
         </p>
       )}
       <p className="control-hint">

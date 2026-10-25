@@ -111,6 +111,15 @@ export function noCarIndicator(c: CouncilRow): Indicator<number> {
   };
 }
 
+/**
+ * GEOLYTIX maps ten retailers in Northern Ireland; symbol groups common there are not in it (S29
+ * analysis), so NI store figures are not fully like for like with Great Britain's (P11).
+ */
+export const NI_STORE_COVERAGE =
+  "In Northern Ireland GEOLYTIX maps ten retailers; symbol groups common there (SuperValu, Mace, Vivo and others) and independent grocers are not in it, so Northern Ireland's store counts and rates may be lower, and its straight-line distances longer, than like-for-like figures for Great Britain.";
+
+const niNote = (c: CouncilRow) => (c.code.startsWith("N") ? ` ${NI_STORE_COVERAGE}` : "");
+
 export function storesIndicator(c: CouncilRow, total: number): Indicator<number> {
   return {
     id: "profile.stores",
@@ -122,7 +131,8 @@ export function storesIndicator(c: CouncilRow, total: number): Indicator<number>
     referencePeriod: STORES_PERIOD,
     coverage: area(c),
     method:
-      "GEOLYTIX stores whose location falls inside the council's full-extent boundary (May 2025); a store up to 50 m outside every boundary takes the nearest council. Every type: supermarkets, convenience stores and forecourt, travel and hospital stores.",
+      "GEOLYTIX stores whose location falls inside the council's full-extent boundary (May 2025); a store up to 50 m outside every boundary takes the nearest council. Every type: supermarkets, convenience stores and forecourt, travel and hospital stores." +
+      niNote(c),
     scope: "local",
   };
 }
@@ -193,7 +203,7 @@ export function beyondIndicator(c: CouncilRow, b: Beyond, what: "supermarket" | 
     sourceIds: ["S11", c.code.startsWith("N") ? "S16" : "S15", "S18"],
     referencePeriod: `${CENSUS_PERIOD} population; stores ${STORES_PERIOD}`,
     coverage: `${area(c)}, by small area`,
-    method: `${formatPopulation(b.population, "small_area")} residents in ${formatCount(b.areas)} small areas whose population-weighted centroid is more than ${formatKm(b.thresholdKm)} straight-line from ${target}, measured in the ${c.code.startsWith("N") ? "Irish Transverse Mercator" : "British National Grid"} grid. Straight-line proximity only: not walking, driving or public transport time, and not affordability.${b.unknown ? ` ${b.unknown} areas without a distance are left out.` : ""}`,
+    method: `${formatPopulation(b.population, "small_area")} residents in ${formatCount(b.areas)} small areas whose population-weighted centroid is more than ${formatKm(b.thresholdKm)} straight-line from ${target}, measured in the ${c.code.startsWith("N") ? "Irish Transverse Mercator" : "British National Grid"} grid. Straight-line proximity only: not walking, driving or public transport time, and not affordability.${b.unknown ? ` ${b.unknown} areas without a distance are left out.` : ""}${niNote(c)}`,
     scope: "local",
     ...(b.share === null ? { missingReason: "not_applicable" as const } : {}),
   };
@@ -266,5 +276,94 @@ export function productionShareIndicator(
     method: `${measureLabel}, as published by Defra (annual). National: not a council figure, and never combined with monthly trade.`,
     scope: "national_context",
     ...(value === null ? { missingReason: "not_published" as const } : {}),
+  };
+}
+
+// ---------------------------------------------------------------------------------------------
+// Small-area card (LP-04, LP-06): every value through an Indicator (P1, ADR-09)
+
+const isNiArea = (code: string) => code.startsWith("N20") || code.startsWith("95");
+
+export function areaResidentsIndicator(code: string, name: string, residents: number): Indicator<number> {
+  return {
+    id: `area.${code}.residents`,
+    label: "Residents (Census 2021)",
+    value: residents,
+    unit: "residents (small areas)",
+    provenance: "measured",
+    sourceIds: ["S18"],
+    referencePeriod: CENSUS_PERIOD,
+    coverage: name,
+    method: `Usual residents, Census 2021 (${isNiArea(code) ? "NISRA MS-A01" : "ONS TS001"}). Small-area counts are perturbed for confidentiality.`,
+    scope: "local",
+  };
+}
+
+export function areaNoCarIndicator(
+  code: string,
+  name: string,
+  households: number | null,
+  noCar: number | null,
+  share: number | null,
+): Indicator<number> {
+  return {
+    id: `area.${code}.no-car`,
+    label: "Households with no car or van",
+    value: share,
+    unit: "share",
+    provenance: "derived",
+    sourceIds: ["S20"],
+    referencePeriod: CENSUS_PERIOD,
+    coverage: name,
+    method:
+      households !== null && noCar !== null
+        ? `${formatCount(noCar)} of ${formatCount(households)} households (Census 2021).`
+        : "No car availability published for this area.",
+    scope: "local",
+    ...(share === null ? { missingReason: "not_covered" as const } : {}),
+  };
+}
+
+export function areaDistanceIndicator(code: string, name: string, metres: number | null): Indicator<number> {
+  const ni = isNiArea(code);
+  return {
+    id: `area.${code}.to-supermarket`,
+    label: "Nearest supermarket (straight-line)",
+    value: metres === null ? null : metres / 1000,
+    unit: "km (straight-line)",
+    provenance: "derived",
+    sourceIds: ["S11", ni ? "S16" : "S15"],
+    referencePeriod: `Stores ${STORES_PERIOD}; centroids Census 2021`,
+    coverage: name,
+    method: `Straight-line distance from the area's Census 2021 population-weighted centroid to the nearest mapped supermarket (280 m² and over), in the ${ni ? "Irish Transverse Mercator" : "British National Grid"} grid. Not a travel time.${ni ? ` ${NI_STORE_COVERAGE}` : ""}`,
+    scope: "local",
+    ...(metres === null ? { missingReason: "not_applicable" as const } : {}),
+  };
+}
+
+export function areaClassIndicator(
+  code: string,
+  name: string,
+  label: string,
+  value: string | null,
+  sourceId: string,
+  period: string,
+  method: string,
+  provenance: "measured" | "derived" = "measured",
+  within?: string,
+): Indicator<string> {
+  return {
+    id: `area.${code}.${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+    label,
+    value,
+    unit: "class",
+    provenance,
+    sourceIds: [sourceId],
+    referencePeriod: period,
+    coverage: name,
+    method,
+    scope: "local",
+    ...(within ? { comparabilityGroup: `ranked within ${within}` } : {}),
+    ...(value === null ? { missingReason: "not_covered" as const } : {}),
   };
 }
