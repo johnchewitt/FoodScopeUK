@@ -40,14 +40,14 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S10 | Cereal and oilseed production (annual) | Defra | 🔴 | Origins context, Scenario C | R1/R2 |
 | S11 | Grocery / Supermarket Retail Points (v46, June 2026) | GEOLYTIX | ✅ | Supermarkets, Profiles, Access, Scenario D | R1 |
 | S12 | Number of chain supermarkets across LADs and smaller areas in the UK | ONS | ✅ (LAD tables 1–4) | Validation of store counts | R1 |
-| S13 | Priority Places for Food Index (v2.1) | CDRC / Leeds HASP | 🟡 (NI coverage ⚠️) | Access, Profiles | R1 (demo LADs) |
+| S13 | Priority Places for Food Index (v2.1) | CDRC / Leeds HASP | ✅ (all four nations; NI on SOAs 2011, three domains without data) | Access, Profiles | R1 (demo LADs) |
 | S14 | Local Authority Districts (May 2025) Boundaries UK, BGC (display) and BFE (store assignment) | ONS | ✅ | All UK views, Profiles | R1 |
-| S15 | LSOA 2021 boundaries and population-weighted centroids (E&W) | ONS | 🔴 | Access, Profiles (Manchester) | R1 |
-| S16 | Data Zones 2021 (and Super Data Zones) | NISRA | 🟡 | Access, Profiles (Belfast) | R1 |
+| S15 | LSOA 2021 boundaries and population-weighted centroids (E&W) | ONS | ✅ (Manchester; G11) | Access, Profiles (Manchester) | R1 |
+| S16 | Data Zones 2021 (and Super Data Zones) | NISRA | ✅ (boundaries, centroids; G9) | Access, Profiles (Belfast) | R1 |
 | S17 | Data Zones 2022 | Scottish Government / NRS | 🔴 | Access (Scotland) | R2 |
-| S18 | Mid-year population estimates (ONS UK tables, mid-2025) | ONS (with NRS and NISRA) | ✅ (council level) | All per-capita indicators | R1 |
-| S19 | Deprivation indices (IoD 2025, WIMD 2025, SIMD, NIMDM 2017) | MHCLG / Welsh Gov / Scottish Gov / NISRA | 🟡 | Access, Profiles, Scenario D | R1 (Eng, NI) |
-| S20 | Car or van availability (Census 2021 / Scotland's Census 2022) | ONS / NISRA / NRS | 🔴 | Access, Profiles | R1 (Eng, NI) |
+| S18 | Mid-year population estimates (ONS UK tables, mid-2025) | ONS (with NRS and NISRA) | ✅ (council level; Census 2021 small areas for Manchester and Belfast) | All per-capita indicators | R1 |
+| S19 | Deprivation indices (IoD 2025, WIMD 2025, SIMD, NIMDM 2017) | MHCLG / Welsh Gov / Scottish Gov / NISRA | ✅ England (IoD 2025), Northern Ireland (NIMDM 2017); 🟡 Wales, Scotland | Access, Profiles, Scenario D | R1 (Eng, NI) |
+| S20 | Car or van availability (Census 2021 / Scotland's Census 2022) | ONS / NISRA / NRS | ✅ England & Wales (TS045), Northern Ireland (table builder, file from John); 🔴 Scotland | Access, Profiles | R1 (Eng, NI) |
 | S21 | Rural–urban classifications | ONS / Scottish Gov / NISRA | 🟡 | Profiles, Access | R1 |
 | S22 | Journey time statistics | DfT | 🔴 (England only) | Access context | R2 |
 | S23 | Port freight annual statistics 2025 | DfT | 🟡 | Risks, Scenario B | R2 |
@@ -56,6 +56,7 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S26 | ArcGIS Living Atlas items | Esri and contributors | 🔴 per item | Optional reference layers | R2 |
 | S27 | Consumer price inflation — food (CPIH) | ONS (via Defra pocketbook CSV) | 🟡 | National context | R1 |
 | S28 | HMRC port reference and port-level OTS detail | HMRC | 🟡 | Risks, Scenario B | R2 |
+| S29 | Food hygiene rating open data (Northern Ireland councils) | Food Standards Agency | ✅ (NI; 25 Oct 2026) | UK Food Access, Profiles: NI grocers GEOLYTIX misses (supplementary layer) | R1 (NI) |
 
 ---
 
@@ -215,7 +216,7 @@ Horticulture statistics (tomatoes, strawberries, apples, potatoes) and cereal an
 | Coordinates | `long_wgs`/`lat_wgs` present for 19,298 rows. One store (id 1010001979, M&S Anlaby, HU10 6RJ) has BNG only and is placed from it, flagged |
 | `bng_e`/`bng_n` | Equal to the WGS84 point projected to British National Grid with PROJ's default OSGB36 transformation (median difference 0.00 m), **including in Northern Ireland**, where they are therefore BNG values derived from WGS84, not Irish Grid. Three GB stores differ by 48–67 m; the pipeline uses WGS84 |
 | `pqi` | Values Rooftop (19,254), Building (28), Third Party (17); read as a location-quality indicator (no user guide read) |
-| Coverage | UK including Northern Ireland (627 `BT` postcodes; 725 stores in the 11 NI councils) **plus the Crown Dependencies**: Guernsey 30, Jersey 51, Isle of Man 44. These have no UK council: they are on the map (John, 24 Oct 2026) but in no council figure |
+| Coverage | UK including Northern Ireland (627 `BT` postcodes; 725 stores in the 11 NI councils, 722 published) **plus the Crown Dependencies**: Guernsey 30, Jersey 51, Isle of Man 44. These have no UK council: they are on the map (John, 24 Oct 2026) but in no council figure. **Northern Ireland retailers:** the file has only ten: Spar (incl. Eurospar, 385), Centra (102; 98 without a postcode), Tesco (56), Lidl (44), Iceland (40), M&S (26), Co-op (25), Asda (17), Dunnes Stores (15) and Sainsbury's (12). No other NI symbol group or independent grocer is in it |
 | Formats included | Supermarkets, convenience, petrol forecourts, motorway services, travel, hospital, wholesale and non-food outlets. Classes and formats per decision D5 (below) |
 | Processing | `foodscope-pipeline build-local`: read the .xlsx; classify by D5; council by point-in-polygon on the S14 BFE edition in EPSG:27700; a store up to 50 m outside every council (2 Northern Ireland shore-front stores) takes the nearest one and is flagged; Crown Dependency stores kept with no council (`lad: null`, `crownDependency` named); wholesale and mainly non-food stores left out (116); properties trimmed (`public/data/snapshots/<snapshot>/local/stores.geojson`, 19,183 stores) |
 | Store classes (D5, agreed 24 Oct 2026) | Class from `size_band` only: convenience under 280 m²; supermarket 280 m² and over (three bands). Format from `fascia` (`pipeline/foodscope_pipeline/config/store_classes.json`): forecourt, motorway, travel and hospital, following the GEOLYTIX groupings ONS prints in S12; wholesale (Costco, Makro) and mainly non-food (M&S Outlet, Asda Living, M&S Clothing) left out of the app (John, 24 Oct 2026). Default view: supermarkets in the standard format (7,171 stores in UK councils, plus 22 in the Crown Dependencies) |
@@ -240,7 +241,7 @@ Published 7 March 2024, OGL v3.0. URL: https://www.ons.gov.uk/peoplepopulationan
 
 ## 5. Food-access vulnerability
 
-### S13 — Priority Places for Food Index 🟡 (⚠️ NI coverage in v2 unconfirmed)
+### S13 — Priority Places for Food Index ✅ (gate G8 cleared 25 Oct 2026)
 
 | Field | Detail |
 |---|---|
@@ -251,7 +252,13 @@ Published 7 March 2024, OGL v3.0. URL: https://www.ons.gov.uk/peoplepopulationan
 | Composition | Seven domains: four retail-access domains at 12.5 % each (supermarket proximity, supermarket accessibility, online delivery access, non-supermarket food provision) and three affordability/need domains (socio-demographic barriers, family food support, fuel poverty) |
 | Version 1 | Launched 2022; covered England, Wales, Scotland and Northern Ireland using **2011** geographies (LSOA, Data Zones, NI Super Output Areas). CDRC advises **not comparing v1 with v2**. |
 | Constituency product | v2.1 by Westminster constituency (2024), England & Wales only, approximate best-fit aggregation |
-| **Gate** | Download v2.1 LSOA CSV; check for NI codes and record column names. If NI is absent, the Belfast profile uses NI-native indicators (S19 NIMDM, S20 car availability, S11 proximity) and may show PPFI v1 only as a clearly labelled, non-comparable 2022 reference. |
+| **Gate** | Download v2.1 LSOA CSV; check for NI codes and record column names. If NI is absent, the Belfast profile says PPFI is not available and uses NI-native indicators (S19 NIMDM, S20 car availability, S11 proximity); no v1 reference (John's decision, 24 Oct 2026). |
+| **Columns (verified 25 Oct 2026)** | From the HASP data dictionary for record version 1.0.24, provided by John (`pipeline/raw/hasp-provided/ppfi-v2.1-lsoa-1.0.24/`): `lsoa21cd` (area code: LSOA / data zone / SOA); domain ranks `domain_supermarket_proximity`, `domain_supermarket_accessibility`, `domain_ecommerce_access`, `domain_socio_demographic`, `domain_nonsupermarket_proximity`, `domain_food_for_families`, `domain_fuel_poverty`; `country`, `country_denominator`; `combined` (rank); deciles `pp_dec_<domain>` and `pp_dec_combined`. Ranks are within each country. |
+| **NI in the user guide** | The v2.1 user guide (leeds-hasp.github.io data docs, read 25 Oct 2026) says the index covers "Super Output Areas in Northern Ireland (2011 boundaries)", ranked within each country, and that cross-country comparison is not recommended. Several NI indicators were not available: supermarket accessibility, online deliveries, markets, Healthy Start and fuel poverty. If NI rows are present, Belfast's PPFI is on the same SOAs as NIMDM 2017. |
+| **Download** | HASP needs a free account (the basket goes to a sign-in page). John downloaded the data file `hasp_ppfi_v2.1.csv` (3.4 MB) on 25 Oct 2026. It is in `pipeline/raw/hasp-provided/ppfi-v2.1-lsoa-1.0.24/` with its dictionary and checksums. |
+| **Gate G8 result (25 Oct 2026)** | **Northern Ireland is included.** 43,538 rows, ranked 1…n within each country: England 33,755 LSOAs (2021), Wales 1,917 LSOAs, Scotland 6,976 Data Zones, Northern Ireland 890 SOAs (2011, codes such as `95GG01S1`). `country` takes the values `E`, `W`, `S`, `NI`, and `country_denominator` is the number of areas in that country. In Northern Ireland three domains are empty: `domain_supermarket_accessibility`, `domain_ecommerce_access` and `domain_fuel_poverty`, with their deciles. So NI's combined index rests on four domains. Belfast's 174 SOAs carry PPFI on the same geography as NIMDM 2017, and none is in NI's top-priority decile. |
+| **Orientation** | The publisher's pages (user guide, CDRC FAQ and news page, read 25 Oct 2026) do not say which end is highest priority. The data shows it. The socio-demographic domain (income deprivation and no car) ranks with IoD 2025 (decile against decile, r = 0.86, England) and with NIMDM 2017 (rank against rank, r = 0.93, NI), both of which put 1 = most deprived. So **rank 1 and decile 1 = highest priority**. The build stops if this correlation ever falls below 0.5. |
+| **Records disagree (24 Oct 2026)** | The HASP record (dataset 5276, v2.1 LSOA) lists spatial coverage "Great Britain"; the CDRC page (data.cdrc.ac.uk/node/2443) says "the four nations" and lists "NI SOA (2011)". Downloads go through a HASP basket, so John provides the file. |
 
 ### S19 — Deprivation indices 🟡
 
@@ -264,15 +271,30 @@ Published 7 March 2024, OGL v3.0. URL: https://www.ons.gov.uk/peoplepopulationan
 
 Indices are **relative rankings within each nation** and are not comparable across nations (P11). Display deciles within nation only.
 
-### S20 — Car or van availability 🔴
+**Verified 24 Oct 2026 (fetched by `fetch-reference`, run 40137753934):**
+- **England, IoD 2025** (MHCLG, published 30 Oct 2025, OGL v3.0): File 7 `https://assets.publishing.service.gov.uk/media/691ded56d140bbbaa59a2a7d/File_7_IoD2025_All_Ranks_Scores_Deciles_Population_Denominators.csv`, 56 columns, 33,755 LSOAs. Used: `LSOA code (2021)`, `Local Authority District code (2024)`, `Index of Multiple Deprivation (IMD) Rank (where 1 is most deprived)`, `Index of Multiple Deprivation (IMD) Decile (where 1 is most deprived 10% of LSOAs)`. Deciles are published, within England. Manchester's 295 LSOAs: 120 in decile 1.
+- **Northern Ireland, NIMDM 2017** (NISRA, 23 Nov 2017; still the latest): `https://www.nisra.gov.uk/files/nisra/publications/NIMDM17_SOAresults.xls` (read with `xlrd`), sheet `MDM`. Columns: `LGD2014NAME`, `2015 Default Urban/Rural`, `SOA2001` (the SOA code, e.g. `95AA01S1`), `SOA2001_name`, `Multiple Deprivation Measure Rank (where 1 is most deprived)` and the seven domain ranks. 890 SOAs ranked 1–890. Most indicators relate to 2015/16 (metadata sheet). NISRA publishes ranks only. The app's deciles are derived, 89 SOAs each, and labelled as derived.
+- **SOA 2011 boundaries:** `https://www.nisra.gov.uk/files/nisra/publications/SOA2011_Esri_Shapefile_0.zip` (2 Sep 2013), EPSG:29902, fields `SOA_CODE`, `SOA_LABEL`, 890 SOAs matching NIMDM's codes. The OpenDataNI record lists them under the OGL v3.0.
+- **Belfast:** 174 SOAs have `LGD2014NAME = Belfast` (172 urban, 2 mixed urban/rural). They predate the 2015 council boundaries. Together they cover 141.3 km² against 137.7 km² for Belfast's Data Zones, and 13.3 km² differ. The profile says so and shows NIMDM on these SOAs, never reallocated (John's decision, 24 Oct 2026).
 
-England & Wales: Census 2021 (ONS topic summary table on car or van availability — expected TS045; confirm on Nomis). Northern Ireland: Census 2021 (NISRA; table ID to confirm, at DZ 2021). Scotland: Scotland's Census 2022 (NRS; table ID to confirm). Note the one-year difference for Scotland.
+### S20 — Car or van availability ✅ England & Wales, Northern Ireland; 🔴 Scotland
+
+- **England & Wales (gate G10 ✅, 24 Oct 2026):** Census 2021 TS045, Nomis bulk download `https://www.nomisweb.co.uk/output/census/2021/census2021-ts045.zip`, member `census2021-ts045-lsoa.csv` (35,672 LSOAs). Columns: `Number of cars or vans: Total: All households`, `Number of cars or vans: No cars or vans in household`, then 1, 2, 3 or more. Unit: households. Manchester: 83,777 of 214,712 households have no car or van (small-area sum; council table 83,770 of 214,732).
+- **Northern Ireland (gate G10 ✅, 25 Oct 2026):**
+  - **Where:** the published table MS-E10 covers Northern Ireland and its 11 councils only. Data Zones are only in NISRA's flexible table builder, whose robots policy disallows automated access.
+  - **Table:** dataset `HOUSEHOLD`, geography `DZ21`, variable `HH_CAR_VAN_TC5` (codes read in the builder, 25 Oct 2026). The CSV link is `https://build.nisra.gov.uk/en/custom/table.csv?d=HOUSEHOLD&v=DZ21&v=HH_CAR_VAN_TC5`, and all 3,780 Data Zones pass the builder's confidentiality check. The builder also offers 2- and 3-category versions (`HH_CAR_VAN_IND`, `HH_CAR_VAN_TC2`).
+  - **Columns:** `Census 2021 Data Zone Code`, `Census 2021 Data Zone Label`, `Car or Van Availability Code`, `Car or Van Availability Label`, `Count`. Codes run 0 ("No cars or vans available") to 5 ("5 or more cars or vans available"), 22,680 rows.
+  - **Units:** households, the same as TS045. Households = the sum of the six categories.
+  - **Files:** John downloaded the CSV and the council version (.xlsx, sheet `Table`). Both are in `pipeline/raw/nisra-provided/census2021-car-van-2026-10-25/` with checksums.
+  - **Totals** (perturbed, so they need not add up): Belfast's Data Zones 50,595 of 149,193 households with no car or van, against 50,594 of 149,207 in the council table. Northern Ireland's Data Zones 768,805 households, its councils 768,810.
+  - **Not used:** an ArcGIS Online layer labelled "NISRA" (`NISRA_Other/FeatureServer/1`, "CarAvailability"). It describes people by household and has no publication record.
+- **Scotland:** Scotland's Census 2022 (NRS; table ID to confirm), Release 2. Note the one-year difference.
 
 ### S21 — Rural–urban classifications 🟡
 
 - England & Wales: ONS 2021 Rural Urban Classification (OA, LSOA and LAD versions published on data.gov.uk). ✅ exists; download and fields to confirm.
 - Scotland: Scottish Government Urban Rural Classification (latest edition to confirm).
-- Northern Ireland: NISRA settlement classification (2015 edition known; check for a Census 2021-based update).
+- Northern Ireland: NISRA settlement classification (2015 edition known; check for a Census 2021-based update). The NIMDM 2017 file carries NISRA's "2015 Default Urban/Rural" class per SOA (Belfast: 172 urban, 2 mixed urban/rural), kept with the SOAs in the Stage 5 build.
 - Classifications are not harmonised; profiles show each nation's own class with its definition.
 
 ### S22 — Journey time statistics (DfT) 🔴
@@ -280,6 +302,19 @@ England & Wales: Census 2021 (ONS topic summary table on car or van availability
 England only; includes access to key services such as food stores in some editions. Latest edition and methodology to verify. Release 2 context only; not combined with other nations.
 
 ---
+
+### S29 — FSA food hygiene register, Northern Ireland ✅ (25 Oct 2026)
+
+| Field | Detail |
+|---|---|
+| Why | GEOLYTIX (S11) has only ten retailers in Northern Ireland. John asked on 25 Oct 2026 to add the NI grocers it misses, from another source if possible. |
+| Publisher, licence | Food Standards Agency, Food Hygiene Rating Scheme open data: https://ratings.food.gov.uk/open-data/ (free, no registration, updated daily). Re-use is under the Open Government Licence (https://ratings.food.gov.uk/terms-and-conditions). Rating images and the FSA logo have their own rules; they are not used. |
+| Files | One XML file per council: `https://ratings.food.gov.uk/api/open-data-files/FHRS<code>en-GB.xml`. Northern Ireland codes are 801–805, 807, 809, 811, 813, 814 and 816 (`pipeline/foodscope_pipeline/sources/fsa_fhrs.py`, with their May 2025 council codes). Fetched by `fetch-reference` (run 40178373516, 25 Oct 2026) into `pipeline/raw/fsa/2026-10-24/`; the folder takes the reference-data snapshot id, and each file's own retrieval time and extract date are recorded. |
+| Verified structure | `FHRSEstablishment/Header`: `ExtractDate`, `ItemCount`, `ReturnCode`. Each `EstablishmentDetail` has `FHRSID`, `BusinessName`, `BusinessType`, `BusinessTypeID`, `AddressLine1`–`4`, `PostCode`, `LocalAuthorityCode`, and `Geocode/Longitude`, `Geocode/Latitude` (WGS84; missing for some records). 16,983 establishments in the 11 councils. Business types used: `7840` "Retailers - supermarkets/hypermarkets" (416 in NI) and `4613` "Retailers - other" (3,450). |
+| Classification caveat | Business types are assigned by council officers and applied unevenly: Spar shops, for example, appear under both types. So the build selects by name and type with documented rules (`config/ni_grocers.json`), not by type alone. |
+| Use | `build-ni-grocers` keeps two sets. First, grocery symbol groups that GEOLYTIX does not carry in NI (SuperValu, Mace, Vivo, Costcutter, Nisa, Premier), matched by name in either retail type. Second, independent grocers registered as supermarkets/hypermarkets that carry no chain or group name and are not within 50 m of a mapped store. Chains GEOLYTIX maps are left to it. The same group or name at the same postcode counts as one shop. Records without coordinates are dropped and counted. Result: **285 grocers** (Belfast 41): Vivo 76, Mace 55, SuperValu 30, Nisa 25, Costcutter 24, Premier 11, independents 64. Details in `pipeline/reports/ni-grocers-qa-2026-10-24.json`. |
+| Display rule | A supplementary layer labelled with its source. It is **never** added to the GEOLYTIX store counts or per-10,000 rates, which stay like for like across the UK. Great Britain has no equivalent layer, so the app must not imply one. |
+| Attribution | "Food Standards Agency food hygiene rating data, Northern Ireland councils, licensed under the Open Government Licence v3.0" |
 
 ## 6. Geography and population
 
@@ -304,13 +339,29 @@ Two editions of the same 361 councils, each used for what it is good at (ADR-002
 - **2025 code changes:** Barnsley E08000016 → E08000038 and Sheffield E08000019 → E08000039, after The Barnsley and Sheffield (Boundary Change) Order 2024 (SI 2024/1328) moved the Oughtibridge Mill development into Sheffield (`pipeline/foodscope_pipeline/config/lad_code_changes.json`, with sources).
 - **Areas:** for council areas use S18's land area. For a BFE or BGC area in Northern Ireland, compute in ITM (EPSG:2157), not BNG.
 
-### S15 — LSOA 2021 boundaries and population-weighted centroids (E&W) 🔴
+### S15 — LSOA 2021 boundaries and population-weighted centroids (E&W) ✅ (gate G11, 24 Oct 2026)
 
-ONS Open Geography Portal; service URLs and fields to verify in Stage 5 (Manchester deep profile).
+Fetched by `fetch-reference` on GitHub Actions (run 40137753934) into `pipeline/raw/ons/2026-10-24/`. Service names from their data.gov.uk records; fields verified in the downloaded responses.
 
-### S16 — NISRA Data Zones 2021 🟡
+| Item | Service | Verified fields | What is fetched |
+|---|---|---|---|
+| Lookup | `LSOA21_WD25_LAD25_EW_LU_v2` (LSOA (2021) to Electoral Ward (2025) to LAD (2025) Best Fit Lookup in EW (V2)) | `LSOA21CD`, `LSOA21NM`, `LSOA21NMW`, `WD25CD`, `WD25NM`, `WD25NMW`, `LAD25CD`, `LAD25NM`, `LAD25NMW` | `LAD25CD = 'E08000003'`: 295 LSOAs |
+| Boundaries | `Lower_layer_Super_Output_Areas_December_2021_Boundaries_EW_BGC_V5` (generalised to 20 m, clipped) | `LSOA21CD`, `LSOA21NM`, `LSOA21NMW`, `BNG_E`, `BNG_N`, `LAT`, `LONG`; EPSG:27700 | A box around Manchester (378,300–390,900 E, 382,100–405,900 N): 714 LSOAs, 8 pages of 100, count checked |
+| Population-weighted centroids | `LSOA_PopCentroids_EW_2021_V4` | `LSOA21CD`; points in EPSG:27700 | The same box: 651 points |
 
-3,780 Data Zones nesting in 850 Super Data Zones, 80 District Electoral Areas (2014) and 11 Local Government Districts (2014); attribute table carries DZ2021, SDZ2021, DEA2014 and LGD2014 codes and names. Formats: Shapefile, GeoJSON, Geodatabase. Info: https://nisra.gov.uk/support/geography/data-zones-census-2021. **To verify**: CRS (expect Irish Grid or ITM), licence wording, availability of population-weighted centroids (else use a documented substitute such as polygon-interior points, flagged as lower quality). Note NIMDM 2017 uses SOA 2011 → a DZ2021↔SOA2011 best-fit lookup will be needed.
+- **Checks:** every Manchester LSOA in the lookup has a boundary and a centroid; names agree between lookup and boundaries. Two centroids lie on or 1.6 m outside their generalised boundary (BGC generalisation), recorded in `pipeline/reports/areas-qa-2026-10-24.json`.
+- **Licence and attribution:** OGL v3.0; "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025" (G5 wording).
+
+### S16 — NISRA Data Zones 2021 ✅ (gate G9, 24 Oct 2026)
+
+Fetched by `fetch-reference` on GitHub Actions (run 40137753934) into `pipeline/raw/nisra/2026-10-24/`.
+
+- **Boundaries:** "Data Zone Boundaries GIS format" (21 Feb 2023), ESRI Shapefile `https://www.nisra.gov.uk/files/nisra/publications/geography-dz2021-esri-shapefile.zip` (14.8 MB). 3,780 Data Zones. Fields: `DZ2021_cd`, `DZ2021_nm`, `SDZ2021_cd`, `SDZ2021_nm`, `DEA2014_cd`, `DEA2014_nm`, `LGD2014_cd`, `LGD2014_nm`, `Area_ha`, `Perim_km`. **CRS: Irish Grid on the TM65 datum (EPSG:29902)**, from the `.prj`. Belfast (`LGD2014_cd = N09000003`) has 735 Data Zones.
+- **Licence:** "Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0" (publication page). NISRA's copyright page: NISRA material is under the OGL with the attribution "Source: NISRA"; OSNI mapping is exempt unless a publication says otherwise, as this one does.
+- **Coverage quality:** 36 of Belfast's Data Zones have edges that do not match their neighbours exactly (overlaps totalling 0.01 m² and hairline gaps). The display build cleans them (1.1 m² moved in total) before simplifying; recorded in the QA report.
+- **Population-weighted centroids:** "Census 2021 population weighted centroids for Data Zones and Super Data Zones" (6 Oct 2023), CSV zip `https://www.nisra.gov.uk/system/files/statistics/geography-census-2021-population-weighted-centroids-csv.zip`. Member `census-2021-population-weighted-centroids-data-zone.csv`, columns `DZ2021_code`, `DZ2021_name`, `X`, `Y`. The CRS is not stated; all 3,780 centroids lie inside their own Data Zone in EPSG:29902, which confirms the Irish Grid.
+- **Transformation to WGS84:** PROJ's "Irish Grid + TM65 to WGS 84 (2)" (pyproj 3.8.0). Accuracy is about a metre, well inside the display and straight-line distance precision.
+- **DZ2021 ↔ SOA 2011 lookup:** NISRA publishes none (its information papers describe approximations). Not needed: John decided on 24 Oct 2026 that NIMDM 2017 is shown on its own SOAs (S19).
 
 ### S17 — Scotland Data Zones 2022 🔴
 
@@ -329,7 +380,10 @@ Release 2 (national access layers).
 - **Boundaries:** April 2024 (note 10). Barnsley and Sheffield changed codes in 2025 after a small boundary change (S14). ONS's note 18 says the estimates do not account for it. The pipeline gives both councils their old-code figures with a note on each.
 - **Rounding:** Scotland's estimates involve some rounding to the nearest 10 (note 7); display LAD populations to the nearest 100 (spec §6.4).
 - **Rule:** per-capita indicators use the latest year available **for all nations being compared**. Mid-2025 meets this for all four. Where vintages differ, the comparability warning appears.
-- **Small areas:** the small-area estimates for Belfast and Manchester (Stage 5) are still to verify.
+- **Small areas (Stage 5, verified 24 Oct 2026):** Census 2021 usual residents, the same date in both nations (21 March 2021):
+  - **England and Wales:** Nomis bulk download `https://www.nomisweb.co.uk/output/census/2021/census2021-ts001.zip`, member `census2021-ts001-lsoa.csv` (35,672 LSOAs), columns `date`, `geography`, `geography code`, `Residence type: Total; measures: Value`.
+  - **Northern Ireland:** NISRA MS-A01 `https://www.nisra.gov.uk/system/files/statistics/census-2021-ms-a01.xlsx`, sheet `DZ` (header `Geography`, `Geography Code`, `All usual residents`; 3,780 Data Zones) and sheet `LGD` (`Geography code`).
+  - **Totals:** small areas do not sum exactly to council tables because both offices perturb counts for confidentiality. Manchester's LSOAs sum to 551,919 against 551,938 in the council table; Belfast's Data Zones sum to 345,423 against 345,418. Values are used as published, with the difference reported.
 
 ### S24 — Country geometries ✅
 

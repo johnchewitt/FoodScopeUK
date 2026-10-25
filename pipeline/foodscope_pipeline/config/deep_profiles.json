@@ -1,0 +1,19 @@
+{
+  "description": "Councils with a deep profile (spec LP-10). Codes checked against the ONS May 2025 council boundaries (S14). Small areas are published for these councils only (John's decision, 24 Oct 2026).",
+  "profiles": [
+    {
+      "lad": "E08000003",
+      "name": "Manchester",
+      "nation": "England",
+      "smallAreas": "lsoa21"
+    },
+    {
+      "lad": "N09000003",
+      "name": "Belfast",
+      "nation": "Northern Ireland",
+      "smallAreas": "dz21",
+      "deprivationAreas": "soa2011",
+      "nimdmLgdName": "Belfast"
+    }
+  ]
+}

@@ -45,10 +45,10 @@ Each gate must be cleared (evidence recorded in `docs/stage-reports/`) before th
 | G5 ✅ | ONS/OS attribution wording for boundaries | ONS metadata | LAD ingest (§5.3) — **cleared 24 Oct 2026**: "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025" in every boundary provenance record |
 | G6 | UKFSR 2024 ODS table IDs for Short Straits figures | Download Theme 3 ODS | Defra context file (§5.3) |
 | G7 ✅ | GEOLYTIX current schema, store-class values, **NI coverage**, `bng_*` for NI | Download latest file; inspect `size_band`/`fascia` values; count `BT` postcodes | 4 — **cleared 24 Oct 2026** on v46: the same 17 columns as v31; 4 size bands, 53 fascias; 627 `BT` postcodes (725 stores in NI councils); in NI `bng_*` are BNG values derived from WGS84, not Irish Grid |
-| G8 | **PPFI v2.1 NI coverage** and column names | Download HASP LSOA CSV | Clear before Stage 5 (early warning for Belfast); blocks 5 |
-| G9 | NISRA DZ2021 CRS, licence, centroids; DZ2021↔SOA2011 lookup | NISRA downloads | 5 |
-| G10 | Census car availability tables (E&W TS045?; NI table ID) | Nomis / NISRA | 5 |
-| G11 | ONS LSOA 2021 boundaries + population-weighted centroids service | ONS Open Geography Portal | 5 |
+| G8 ✅ | **PPFI v2.1 NI coverage** and column names | Download HASP LSOA CSV | Clear before Stage 5 (early warning for Belfast); blocks 5 — **cleared 25 Oct 2026**: NI included (890 SOAs 2011, ranked within NI; three domains without NI data); columns from the HASP data dictionary; file from John |
+| G9 ✅ | NISRA DZ2021 CRS, licence, centroids; DZ2021↔SOA2011 lookup | NISRA downloads | 5 — **cleared 24 Oct 2026**: Irish Grid TM65 (EPSG:29902), OGL v3.0 (OSNI notice), population-weighted centroids published; no DZ↔SOA lookup, not needed (NIMDM shown on its own SOAs, John's decision) |
+| G10 ✅ | Census car availability tables (E&W TS045?; NI table ID) | Nomis / NISRA | 5 — **cleared**: E&W TS045 (24 Oct 2026); NI table builder `HOUSEHOLD` × `DZ21` × `HH_CAR_VAN_TC5`, file from John (25 Oct 2026) |
+| G11 ✅ | ONS LSOA 2021 boundaries + population-weighted centroids service | ONS Open Geography Portal | 5 — **cleared 24 Oct 2026**: `Lower_layer_Super_Output_Areas_December_2021_Boundaries_EW_BGC_V5`, `LSOA_PopCentroids_EW_2021_V4`, lookup `LSOA21_WD25_LAD25_EW_LU_v2` |
 | G12 | SIMD 2026 released? Scotland DZ2022 and car availability | Scottish Government / NRS | 9 |
 | G13 | DfT PORT tables with port-level Ro-Ro; HMRC port allocation for EU Ro-Ro | Inspect ZIP; HMRC notes | 9 (Scenario B) |
 
@@ -230,6 +230,8 @@ Status on 24 October 2026 (evidence in `docs/stage-reports/stage-4.md`): merged 
 
 Deliverables: LAD search/selection and fly-to (LP-01); basic profiles for all LADs (A, B, D); deep profiles for Belfast and Manchester (C, E) with small-area layers, straight-line distances from representative points, deprivation within nation, car availability, PPFI (subject to G8); comparison view with comparability warnings (LP-07).
 
+Added at John's request (25 Oct 2026): Northern Ireland shops easier to see. UK Food Access says what the store data covers in NI and offers the convenience layer. A supplementary layer shows the 285 NI grocers from the FSA register (S29) that GEOLYTIX misses, never counted in rates. The Belfast profile lists its stores by type and retailer.
+
 Exit: both deep profiles render every section with provenance; a hand-checked sample of five small areas per LAD matches source values; nation comparability banner appears in Belfast–Manchester comparison.
 
 ## 8. Stage 6 — Scenario Lab
@@ -322,3 +324,8 @@ Rules of engagement:
 | 2026-10-24 | Population: ONS mid-2025 estimates for all four nations, fetched by the pipeline on GitHub Actions (John's decision) | S18 |
 | 2026-10-24 | Council boundaries: BGC clipped edition for display, BFE full-extent edition for store assignment; local data built offline and published in Stage 4 | ADR-0020, S14 |
 | 2026-10-24 | John's decisions: leave out wholesale and mainly non-food stores; show the 125 Crown Dependency stores on the map without a council; each kind of data keeps its own newest date, so trade and stores refresh on their own schedules | ADR-0020, Stage 4 |
+| 2026-10-24 | Stage 5: Northern Ireland deprivation (NIMDM 2017) is shown on its own 2011 Super Output Areas, never reallocated to Data Zones | John (decision); spec P12, P11 |
+| 2026-10-24 | Stage 5: if PPFI v2.1 has no Northern Ireland rows, the Belfast profile says it is not available and uses Northern Ireland's own measures (no PPFI v1 reference). **25 Oct: v2.1 does cover NI** (890 SOAs), so Belfast shows it on its SOAs, like NIMDM, with the three missing domains stated | John (decision); S13 |
+| 2026-10-24 | Stage 5: small-area data is published for the two deep profiles only (Belfast, Manchester), as planned for Release 1 | John (decision); LP-10 |
+| 2026-10-24 | Stage 5: NI car availability by Data Zone and the PPFI v2.1 LSOA file are provided by John (the NISRA table builder disallows automated access; HASP downloads go through a basket) | John |
+| 2026-10-25 | Northern Ireland shops: make the GEOLYTIX NI stores easier to see, and add the NI grocers GEOLYTIX misses from the FSA food hygiene register (S29) as a separate, labelled layer that is never part of a store count or rate | John (request); Stage 5 |

@@ -1,0 +1,169 @@
+{
+  "snapshot": "2026-10-24",
+  "establishments": 16983,
+  "byBusinessType": {
+    "Distributors/Transporters": 122,
+    "Farmers/growers": 72,
+    "Hospitals/Childcare/Caring Premises": 1391,
+    "Hotel/bed & breakfast/guest house": 484,
+    "Importers/Exporters": 18,
+    "Manufacturers/packers": 569,
+    "Mobile caterer": 851,
+    "Other catering premises": 2028,
+    "Pub/bar/nightclub": 1002,
+    "Restaurant/Cafe/Canteen": 3417,
+    "Retailers - other": 3450,
+    "Retailers - supermarkets/hypermarkets": 416,
+    "School/college/university": 1402,
+    "Takeaway/sandwich shop": 1761
+  },
+  "extractDates": {
+    "2026-10-09": 1178,
+    "2026-10-13": 1102,
+    "2026-10-15": 1446,
+    "2026-10-20": 1736,
+    "2026-10-21": 2286,
+    "2026-10-23": 5862,
+    "2026-10-24": 3373
+  },
+  "kept": {
+    "costcutter": 24,
+    "independent": 64,
+    "mace": 55,
+    "nisa": 25,
+    "premier": 11,
+    "supervalu": 30,
+    "vivo": 76
+  },
+  "dropped": {
+    "costcutter: no coordinates": 2,
+    "independent within 50 m of a mapped Iceland": 2,
+    "independent within 50 m of a mapped Spar": 9,
+    "independent within 50 m of a mapped Tesco": 1,
+    "independent: no coordinates": 3,
+    "mace: no coordinates": 4,
+    "nisa: no coordinates": 2,
+    "supervalu: no coordinates": 5,
+    "vivo: no coordinates": 1
+  },
+  "merged": [
+    {
+      "kept": "710807",
+      "merged": "711054",
+      "name": "Costcutter",
+      "postcode": "BT93 1TF"
+    },
+    {
+      "kept": "58219",
+      "merged": "746462",
+      "name": "Costcutter",
+      "postcode": "BT17 0LB"
+    },
+    {
+      "kept": "835232",
+      "merged": "753881",
+      "name": "Supervalu Off Licence",
+      "postcode": "BT49 0AB"
+    },
+    {
+      "kept": "836081",
+      "merged": "1112791",
+      "name": "Costcutter",
+      "postcode": "BT44 0QR"
+    }
+  ],
+  "independentsNearMapStore": [
+    {
+      "fhrsId": "1129053",
+      "name": "Crawfordsburn Filling Station",
+      "store": "Spar",
+      "distanceM": 1.1
+    },
+    {
+      "fhrsId": "953059",
+      "name": "Scrabo Service Station",
+      "store": "Spar",
+      "distanceM": 24.9
+    },
+    {
+      "fhrsId": "864725",
+      "name": "JAW Retail",
+      "store": "Spar",
+      "distanceM": 40.1
+    },
+    {
+      "fhrsId": "1644964",
+      "name": "Ballycastle Food Stores",
+      "store": "Spar",
+      "distanceM": 27.7
+    },
+    {
+      "fhrsId": "834721",
+      "name": "Bush Filling Station",
+      "store": "Spar",
+      "distanceM": 2.1
+    },
+    {
+      "fhrsId": "1518705",
+      "name": "Asianmix",
+      "store": "Spar",
+      "distanceM": 36.1
+    },
+    {
+      "fhrsId": "1660089",
+      "name": "ECO FRESH FOOD",
+      "store": "Spar",
+      "distanceM": 34.5
+    },
+    {
+      "fhrsId": "1884116",
+      "name": "Zain Supermarket",
+      "store": "Iceland",
+      "distanceM": 40.9
+    },
+    {
+      "fhrsId": "1010286",
+      "name": "Greens of Lisburn",
+      "store": "Tesco",
+      "distanceM": 23.4
+    },
+    {
+      "fhrsId": "848425",
+      "name": "J C Stewart",
+      "store": "Spar",
+      "distanceM": 26.6
+    },
+    {
+      "fhrsId": "759911",
+      "name": "DOWNPATRICK SERVICE STATION",
+      "store": "Spar",
+      "distanceM": 10.0
+    },
+    {
+      "fhrsId": "1412238",
+      "name": "Lynas Food Outlet",
+      "store": "Iceland",
+      "distanceM": 18.0
+    }
+  ],
+  "published": 285,
+  "byCouncil": {
+    "N09000001": 8,
+    "N09000002": 21,
+    "N09000003": 41,
+    "N09000004": 26,
+    "N09000005": 34,
+    "N09000006": 23,
+    "N09000007": 9,
+    "N09000008": 16,
+    "N09000009": 34,
+    "N09000010": 49,
+    "N09000011": 24
+  },
+  "nearestMapStoreM": {
+    "under50": 7,
+    "under200": 69,
+    "median": 494,
+    "max": 10695
+  }
+}

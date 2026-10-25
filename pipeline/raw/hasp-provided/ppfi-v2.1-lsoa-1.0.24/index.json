@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "id": "hasp.ppfi_v21_lsoa",
+      "file": "hasp_ppfi_v2.1.csv",
+      "sourceId": "S13",
+      "description": "Leeds HASP: Priority Places for Food Index (v2.1) [LSOA], record version 1.0.24: domain and combined ranks and deciles within each country for England's LSOAs (2021), Wales's LSOAs (2021), Scotland's Data Zones and Northern Ireland's SOAs (2011)",
+      "publisherUrl": "https://data.hasp.ac.uk/browser/dataset/5276/0",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Priority Places for Food Index v2.1, Healthy & Sustainable Places Data Service (HASP) / CDRC, DOI 10.82147/003 (OGL v3.0)",
+      "providedBy": "John Hewitt (project owner), attached to the build session",
+      "originalName": "47e80b4d-hasp_ppfi_v2.1.csv",
+      "receivedAt": "2026-10-25T08:33:05Z",
+      "notes": "Downloaded by John from the HASP basket (needs a free account). Stored byte-for-byte; never edited.",
+      "bytes": 3428591,
+      "sha256": "51f96ce7a79212eb43d31c7e9021380557b2983e8bea5b7d9fed5946f8d14266"
+    },
+    {
+      "id": "hasp.ppfi_v21_lsoa_dictionary",
+      "file": "Data-Dictionary-Priority_Places_for_Food_Index_v2.1_LSOA1.0.24.xlsx",
+      "sourceId": "S13",
+      "description": "Leeds HASP: data dictionary of 'Priority Places for Food Index (v2.1) [LSOA]', record version 1.0.24 (structural metadata: 19 variables)",
+      "publisherUrl": "https://data.hasp.ac.uk/browser/dataset/5276/0",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Priority Places for Food Index v2.1, Healthy & Sustainable Places Data Service (HASP) / CDRC, DOI 10.82147/003 (OGL v3.0)",
+      "providedBy": "John Hewitt (project owner), attached to the build session",
+      "originalName": "2c2ee53e-Data-Dictionary-Priority_Places_for_Food_Index_v2.1_LSOA1.0.24.xlsx",
+      "receivedAt": "2026-10-25T07:42:02Z",
+      "notes": "Column names only; the data file itself is still to come. Stored byte-for-byte; never edited.",
+      "bytes": 4397,
+      "sha256": "9d6f1906d2680d4706f9864a735e7035645abce0c0000fda77c4812cc41d75f4"
+    }
+  ]
+}

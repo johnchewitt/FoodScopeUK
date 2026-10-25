@@ -1,14 +1,22 @@
-name: Fetch reference data (ONS)
+name: Fetch reference data (ONS, Nomis, MHCLG, NISRA, FSA)
 
-# Downloads ONS files the app needs before Stage 4 (mid-year population estimates, S18; the LAD
-# 2022→2023 lookup and the clipped May 2025 council boundaries, S14) into
-# pipeline/raw/ons/<snapshot>/ and commits them to the branch. The build sandbox cannot reach
-# ONS; everything after this download runs offline from the cache (same pattern as the HMRC
-# ingest, ADR-0016). Data reaches `main` only through a pull request.
+# Downloads the reference files the app needs into pipeline/raw/<publisher>/<snapshot>/ and commits
+# them to the branch:
+# - ONS (S14, S15, S18): mid-year population, LAD lookup and council boundaries (Stage 4); LSOA
+#   lookup, boundaries and population-weighted centroids for the Manchester deep profile (Stage 5);
+# - Nomis (S18, S20): Census 2021 TS001 and TS045 bulk zips (Stage 5);
+# - MHCLG (S19): English Indices of Deprivation 2025, File 7 (Stage 5);
+# - NISRA (S16, S18, S19): Data Zone and SOA 2011 boundaries, Data Zone centroids, MS-A01 and
+#   NIMDM 2017 (Stage 5);
+# - FSA (S29): food hygiene register files for the 11 Northern Ireland councils (NI grocers that
+#   GEOLYTIX misses; John, 25 Oct 2026).
+# The build sandbox cannot reach these sites; everything after this download runs offline from the
+# cache (same pattern as the HMRC ingest, ADR-0016). Data reaches `main` only through a pull request.
 #
-# Trigger: push to a `data/**` branch. The fetch is incremental: items already in the snapshot's
+# Trigger: push to a `data/**` branch. The fetch is incremental: items already in a snapshot's
 # index.json are verified and not downloaded again, so the commit this job pushes back finds
-# nothing new and does not start another download.
+# nothing new and does not start another download. Each publisher's folder is complete or
+# unchanged: what downloaded is committed even when another publisher failed, and the job then fails.
 
 on:
   push:
@@ -23,9 +31,9 @@ concurrency:
 
 jobs:
   fetch:
-    name: Fetch ONS files
+    name: Fetch reference files
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     env:
       SNAPSHOT: "2026-10-24"
     steps:
@@ -38,30 +46,45 @@ jobs:
         working-directory: pipeline
         run: uv sync --locked
 
-      - name: Download from ONS
+      - name: Download
+        id: download
+        continue-on-error: true
         working-directory: pipeline
-        run: uv run foodscope-pipeline fetch-ons --snapshot "$SNAPSHOT"
+        run: uv run foodscope-pipeline fetch-reference --snapshot "$SNAPSHOT"
 
       - name: Summary
+        if: always()
         run: |
           python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
           import json, os, pathlib
           snap = os.environ["SNAPSHOT"]
-          idx = json.loads(pathlib.Path(f"pipeline/raw/ons/{snap}/index.json").read_text())
-          print(f"### ONS files {snap}\n")
-          for f in idx["files"]:
-              print(f"- {f['id']} `{f['file']}`: {f['bytes']:,} bytes, sha256 {f['sha256'][:12]}…, {f['url']}")
+          for publisher in ("ons", "nomis", "mhclg", "nisra", "fsa"):
+              path = pathlib.Path(f"pipeline/raw/{publisher}/{snap}/index.json")
+              print(f"### {publisher} {snap}\n")
+              if not path.is_file():
+                  print("Nothing cached.\n")
+                  continue
+              for f in json.loads(path.read_text())["files"]:
+                  print(f"- {f['id']} `{f['file']}`: {f['bytes']:,} bytes, sha256 {f['sha256'][:12]}…, {f['url']}")
+              print()
           PY
 
       - name: Commit to the branch
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pipeline/raw/ons
+          git add -A pipeline/raw
           if git diff --cached --quiet; then
             echo "::notice::No changes."
-            exit 0
+          else
+            git commit -m "data(reference): raw reference files $SNAPSHOT" \
+              -m "Downloaded by $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            git push origin "HEAD:$GITHUB_REF_NAME"
           fi
-          git commit -m "data(ons): raw ONS files $SNAPSHOT" \
-            -m "Downloaded by $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          git push origin "HEAD:$GITHUB_REF_NAME"
+
+      - name: Fail if a download failed
+        if: steps.download.outcome == 'failure'
+        run: |
+          echo "::error::At least one publisher's download failed; see the Download step's log."
+          exit 1

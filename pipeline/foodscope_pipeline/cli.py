@@ -36,11 +36,22 @@ def main(argv: list[str] | None = None) -> int:
     ingest.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
     ons = sub.add_parser("fetch-ons", help="ONLINE: download ONS population, lookup and boundary files into pipeline/raw/ons/<snapshot>/ (incremental)")
     ons.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
+    ref = sub.add_parser("fetch-reference", help="ONLINE: fetch-ons plus the Stage 5 files from Nomis, MHCLG, NISRA and the FSA (NI food register) into pipeline/raw/<publisher>/<snapshot>/ (incremental)")
+    ref.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
     build = sub.add_parser("build-trade", help="OFFLINE: raw HMRC cache → public/data/snapshots/<snapshot>/trade/")
     build.add_argument("--snapshot", required=True, help="snapshot id YYYY-MM-DD (must exist in the raw cache)")
 
     local = sub.add_parser("build-local", help="OFFLINE: raw boundaries, stores and population → public/data/snapshots/<snapshot>/local/")
     local.add_argument("--snapshot", required=True, help="ONS raw snapshot id YYYY-MM-DD (pipeline/raw/ons/<snapshot>/)")
+
+    areas = sub.add_parser("build-areas", help="OFFLINE: raw small-area files → <out>/snapshots/<snapshot>/areas/ + reports/areas-qa-<snapshot>.json")
+    areas.add_argument("--snapshot", required=True, help="raw snapshot id YYYY-MM-DD (pipeline/raw/<publisher>/<snapshot>/)")
+    areas.add_argument("--out", default=None, help="output root (default: public/data)")
+
+    grocers = sub.add_parser("build-ni-grocers", help="OFFLINE: FSA register (NI) → NI grocers not in GEOLYTIX: <out>/snapshots/<snapshot>/register/ + reports/ni-grocers-qa-<snapshot>.json")
+    grocers.add_argument("--snapshot", required=True, help="raw FSA snapshot id YYYY-MM-DD (pipeline/raw/fsa/<snapshot>/)")
+    grocers.add_argument("--local-snapshot", required=True, help="local family snapshot holding stores.geojson (to leave out stores already mapped)")
+    grocers.add_argument("--out", default=None, help="output root (default: public/data)")
 
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(levelname)s %(name)s: %(message)s")
@@ -69,6 +80,29 @@ def main(argv: list[str] | None = None) -> int:
         print(f"cached ONS files in {folder}")
         return 0
 
+    if args.command == "fetch-reference":
+        from foodscope_pipeline.sources import fsa_fhrs, mhclg_iod, nisra_files, nomis_census
+        from foodscope_pipeline.sources.ons_files import OnsFetchError, fetch
+
+        snapshot = args.snapshot or _today()
+        publishers = [
+            ("ons", None, None),
+            ("nomis", nomis_census.FILES, ()),
+            ("mhclg", mhclg_iod.FILES, ()),
+            ("nisra", nisra_files.FILES, ()),
+            ("fsa", fsa_fhrs.FILES, ()),
+        ]
+        failed = []
+        # Each publisher's folder is complete or unchanged; one failure does not stop the others.
+        for name, files, queries in publishers:
+            try:
+                folder = fetch(snapshot, RAW / name, files=files, queries=queries)
+                print(f"cached {name} files in {folder}")
+            except (OnsFetchError, OSError) as exc:
+                logging.error("fetch %s failed: %s", name, exc)
+                failed.append(name)
+        return 1 if failed else 0
+
     if args.command == "build-trade":
         from foodscope_pipeline.sources.hmrc_ots import load_baskets
         from foodscope_pipeline.trade import TradeBuildError, build_trade
@@ -92,6 +126,31 @@ def main(argv: list[str] | None = None) -> int:
             logging.error("build-local failed: %s", exc)
             return 1
         print(f"wrote {len(written)} files for local snapshot {args.snapshot}")
+        return 0
+
+    if args.command == "build-areas":
+        from foodscope_pipeline.areas import build_areas, default_inputs as areas_inputs
+
+        out = Path(args.out) if args.out else DATA_DIR
+        try:
+            written = build_areas(args.snapshot, areas_inputs(RAW, CONFIG, args.snapshot), out, REPORTS, SCHEMAS)
+        except Exception as exc:  # noqa: BLE001 (report any input problem and fail the step)
+            logging.error("build-areas failed: %s", exc)
+            return 1
+        print(f"wrote {len(written)} files for areas snapshot {args.snapshot}")
+        return 0
+
+    if args.command == "build-ni-grocers":
+        from foodscope_pipeline.ni_grocers import build_ni_grocers, default_inputs as grocer_inputs
+
+        out = Path(args.out) if args.out else DATA_DIR
+        try:
+            written = build_ni_grocers(args.snapshot, grocer_inputs(RAW, CONFIG, DATA_DIR, args.snapshot, args.local_snapshot),
+                                       out, REPORTS, SCHEMAS)
+        except Exception as exc:  # noqa: BLE001 (report any input problem and fail the step)
+            logging.error("build-ni-grocers failed: %s", exc)
+            return 1
+        print(f"wrote {len(written)} files for register snapshot {args.snapshot}")
         return 0
 
     if args.command == "publish":

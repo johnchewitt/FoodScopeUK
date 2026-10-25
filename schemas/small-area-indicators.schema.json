@@ -1,0 +1,507 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/small-area-indicators.schema.json",
+  "title": "SmallAreaIndicators",
+  "description": "Per small area of the deep profiles (LP-04, FA-02, FA-03): Census 2021 usual residents, households and households without a car or van (S18, S20), the population-weighted centroid (S15, S16), deprivation within its own nation (S19: IoD 2025 for England on LSOAs; NIMDM 2017 for Northern Ireland on SOAs 2011) and the Priority Places for Food Index v2.1 within its nation (S13, on the same geographies). Shares and distances are computed in the app (src/analysis). Written by `foodscope-pipeline build-areas`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "census", "centroids", "profiles"],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "census": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceIds", "referenceDate", "population", "households", "noCarHouseholds", "note"],
+      "properties": {
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^S\\d{2}$"
+          }
+        },
+        "referenceDate": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "population": {
+          "type": "string"
+        },
+        "households": {
+          "type": "string"
+        },
+        "noCarHouseholds": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "centroids": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceIds", "definition"],
+      "properties": {
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "definition": {
+          "type": "string"
+        }
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Profile"
+      }
+    }
+  },
+  "definitions": {
+    "Rank": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rank", "decile"],
+      "properties": {
+        "rank": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "decile": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        }
+      }
+    },
+    "Area": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "name",
+        "population",
+        "households",
+        "noCarHouseholds",
+        "centroid",
+        "deprivation",
+        "ppfi"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string",
+          "description": "Electoral ward (2025), best-fit (England and Wales only)"
+        },
+        "wardName": {
+          "type": "string"
+        },
+        "population": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Census 2021 usual residents"
+        },
+        "households": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Census 2021 households; null when not published for this geography (see the profile's `missing`)"
+        },
+        "noCarHouseholds": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "centroid": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "number"
+          },
+          "description": "Population-weighted centroid, [lon, lat] WGS84"
+        },
+        "deprivation": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/Rank"
+            }
+          ],
+          "description": "Deprivation within the nation on this geography; null when the nation's index uses another geography (`deprivationAreas`)"
+        },
+        "ppfi": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/Ppfi"
+            }
+          ],
+          "description": "PPFI v2.1 on this geography; null when the nation's PPFI uses another geography (`deprivationAreas`)"
+        }
+      }
+    },
+    "DeprivationArea": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "name", "urbanRural2015", "rank", "decile", "domainRanks", "ppfi"],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "urbanRural2015": {
+          "type": "string",
+          "description": "NISRA 2015 default urban/rural classification, as in the NIMDM 2017 file"
+        },
+        "rank": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "decile": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "domainRanks": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["income", "employment", "health", "education", "access", "livingEnvironment", "crime"],
+          "properties": {
+            "income": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "employment": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "health": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "education": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "access": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "livingEnvironment": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "crime": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "ppfi": {
+          "$ref": "#/definitions/Ppfi"
+        }
+      }
+    },
+    "Profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lad",
+        "name",
+        "nation",
+        "geography",
+        "deprivation",
+        "ppfi",
+        "areas",
+        "deprivationAreas",
+        "missing"
+      ],
+      "properties": {
+        "lad": {
+          "type": "string",
+          "pattern": "^[ENSW]\\d{8}$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "nation": {
+          "type": "string",
+          "enum": ["England", "Wales", "Scotland", "Northern Ireland"]
+        },
+        "geography": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "label", "count"],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": ["lsoa21", "dz21"]
+            },
+            "label": {
+              "type": "string"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "deprivation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "index",
+            "sourceId",
+            "measure",
+            "geography",
+            "ranked",
+            "within",
+            "decile",
+            "referencePeriod"
+          ],
+          "properties": {
+            "index": {
+              "type": "string"
+            },
+            "sourceId": {
+              "type": "string"
+            },
+            "measure": {
+              "type": "string"
+            },
+            "geography": {
+              "type": "string",
+              "enum": ["lsoa21", "soa2011"]
+            },
+            "ranked": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "within": {
+              "type": "string"
+            },
+            "decile": {
+              "type": "string",
+              "description": "'published' or how it was derived"
+            },
+            "referencePeriod": {
+              "type": "string"
+            }
+          }
+        },
+        "areas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Area"
+          }
+        },
+        "deprivationAreas": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DeprivationArea"
+              }
+            }
+          ]
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["field", "reason"],
+            "properties": {
+              "field": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "ppfi": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "index",
+            "sourceId",
+            "decile",
+            "orientation",
+            "referencePeriod",
+            "geography",
+            "ranked",
+            "within",
+            "domainsWithoutData"
+          ],
+          "properties": {
+            "index": {
+              "type": "string"
+            },
+            "sourceId": {
+              "type": "string"
+            },
+            "decile": {
+              "type": "string"
+            },
+            "orientation": {
+              "type": "string"
+            },
+            "referencePeriod": {
+              "type": "string"
+            },
+            "geography": {
+              "type": "string",
+              "enum": ["lsoa21", "soa2011"]
+            },
+            "ranked": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "within": {
+              "type": "string"
+            },
+            "domainsWithoutData": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "supermarket_proximity",
+                  "supermarket_accessibility",
+                  "ecommerce_access",
+                  "socio_demographic",
+                  "nonsupermarket_proximity",
+                  "food_for_families",
+                  "fuel_poverty"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "Ppfi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rank", "decile", "domains"],
+      "description": "Priority Places for Food Index v2.1 for one area: combined rank and decile within its nation, and each domain's rank and decile (null where the domain has no data for that nation)",
+      "properties": {
+        "rank": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "decile": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "domains": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "supermarket_proximity",
+            "supermarket_accessibility",
+            "ecommerce_access",
+            "socio_demographic",
+            "nonsupermarket_proximity",
+            "food_for_families",
+            "fuel_poverty"
+          ],
+          "properties": {
+            "supermarket_proximity": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/Rank"
+                }
+              ]
+            },
+            "supermarket_accessibility": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/Rank"
+                }
+              ]
+            },
+            "ecommerce_access": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/Rank"
+                }
+              ]
+            },
+            "socio_demographic": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/Rank"
+                }
+              ]
+            },
+            "nonsupermarket_proximity": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/Rank"
+                }
+              ]
+            },
+            "food_for_families": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/Rank"
+                }
+              ]
+            },
+            "fuel_poverty": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/Rank"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

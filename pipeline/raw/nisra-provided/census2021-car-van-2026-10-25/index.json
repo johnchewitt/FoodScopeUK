@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "id": "nisra.dz21_car_van_tc5",
+      "file": "ni-census21-household-dz21hh_car_van_tc5.csv",
+      "sourceId": "S20",
+      "description": "NISRA Census 2021 flexible table builder: households by car or van availability (HH_CAR_VAN_TC5, 6 categories) for the 3,780 Data Zones (DZ21)",
+      "publisherUrl": "https://build.nisra.gov.uk/en/custom/data?d=HOUSEHOLD&v=DZ21&v=HH_CAR_VAN_TC5",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: NISRA, licensed under the Open Government Licence v3.0",
+      "providedBy": "John Hewitt (project owner), attached to the build session",
+      "originalName": "34e7d691-ni-census21-household-dz21hh_car_van_tc5-145c5dde.csv",
+      "receivedAt": "2026-10-25T07:42:02Z",
+      "notes": "Downloaded by John with the table builder's CSV link (the builder's robots policy disallows automated access). Stored byte-for-byte; never edited.",
+      "bytes": 1260649,
+      "sha256": "c143b3c04c1883e7de3d0cc40da8f07abc6895ff84ebc6223ddeb47f11eceb0a"
+    },
+    {
+      "id": "nisra.lgd14_car_van_tc5",
+      "file": "ni-census21-household-lgd14hh_car_van_tc5.xlsx",
+      "sourceId": "S20",
+      "description": "NISRA Census 2021 MS-E10 Car or van availability, households by the 11 Local Government Districts (LGD14), from the table builder",
+      "publisherUrl": "https://build.nisra.gov.uk/en/standard/MS-E10",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: NISRA, licensed under the Open Government Licence v3.0",
+      "providedBy": "John Hewitt (project owner), attached to the build session",
+      "originalName": "e0c68c65-ni-census21-household-lgd14hh_car_van_tc5-5aba2ad5.xlsx",
+      "receivedAt": "2026-10-24T23:43:16Z",
+      "notes": "Council table used only to check the Data Zone sums (QA). Stored byte-for-byte; never edited.",
+      "bytes": 17057,
+      "sha256": "22a43354073f94f339342ed568184eaf3906f81675f0bc6c6f576a03c1e6959c"
+    }
+  ]
+}

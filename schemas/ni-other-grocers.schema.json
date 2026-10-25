@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/ni-other-grocers.schema.json",
+  "title": "NiOtherGrocers",
+  "description": "Northern Ireland grocers not in the GEOLYTIX data (S11), from the FSA food hygiene register (S29): grocery symbol groups GEOLYTIX does not carry in NI, and independent grocers registered as supermarkets/hypermarkets. Supplementary layer: never part of a store count or rate. Written by `foodscope-pipeline build-ni-grocers`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "features"],
+  "properties": {
+    "type": {
+      "const": "FeatureCollection"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Grocer"
+      }
+    }
+  },
+  "definitions": {
+    "Grocer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "geometry", "properties"],
+      "properties": {
+        "type": {
+          "const": "Feature"
+        },
+        "geometry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "coordinates"],
+          "properties": {
+            "type": {
+              "const": "Point"
+            },
+            "coordinates": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "name", "kind", "group", "fsaType", "postcode", "town", "lad"],
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "FSA FHRSID"
+            },
+            "name": {
+              "type": "string",
+              "description": "Business name as registered"
+            },
+            "kind": {
+              "type": "string",
+              "enum": ["group", "independent"]
+            },
+            "group": {
+              "type": ["string", "null"],
+              "description": "Symbol group (e.g. SuperValu) for kind 'group'; null for independents"
+            },
+            "fsaType": {
+              "type": "string",
+              "enum": ["Retailers - supermarkets/hypermarkets", "Retailers - other"]
+            },
+            "postcode": {
+              "type": ["string", "null"]
+            },
+            "town": {
+              "type": ["string", "null"]
+            },
+            "lad": {
+              "type": "string",
+              "pattern": "^N090000(0[1-9]|1[01])$"
+            }
+          }
+        }
+      }
+    }
+  }
+}

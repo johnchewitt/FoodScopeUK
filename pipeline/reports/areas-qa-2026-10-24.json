@@ -1,0 +1,181 @@
+{
+  "snapshot": "2026-10-24",
+  "manchester": {
+    "lsoas": 295,
+    "lsoasInFetchBox": 714,
+    "centroidsInFetchBox": 651,
+    "centroidsOutsideTheirGeneralisedLsoa": {
+      "E01005098": 0.0,
+      "E01005113": 1.6
+    },
+    "sumOfSmallAreas": {
+      "population": 551919,
+      "households": 214712,
+      "noCarHouseholds": 83777
+    },
+    "councilTable": {
+      "population": 551938,
+      "households": 214732,
+      "noCarHouseholds": 83770
+    },
+    "difference": {
+      "population": -19,
+      "households": -20,
+      "noCarHouseholds": 7
+    },
+    "iodLad2024": [
+      "E08000003"
+    ],
+    "iodDeciles": {
+      "1": 120,
+      "2": 54,
+      "3": 24,
+      "4": 27,
+      "5": 24,
+      "6": 13,
+      "7": 13,
+      "8": 10,
+      "9": 5,
+      "10": 5
+    },
+    "boundaries": {
+      "cleanSnapM": 0.01,
+      "cleanAreaChangeM2": 0.0,
+      "toleranceM": 5.0,
+      "minIslandM2": 0.0,
+      "decimals": 6,
+      "verticesIn": 11321,
+      "verticesOut": 10991,
+      "partsIn": 295,
+      "partsOut": 295,
+      "islandPartsDropped": 0,
+      "islandAreaDroppedHa": 0.0,
+      "coverageValidAfterRounding": true,
+      "overlapsAfterRounding": []
+    }
+  },
+  "belfast": {
+    "dataZones": 735,
+    "dataZoneCentroidsOutsideTheirZone": 0,
+    "sumOfDataZonePopulation": 345423,
+    "differenceFromCouncilTable": 5,
+    "councilTableMsA01": 345418,
+    "households": {
+      "sumOfDataZones": {
+        "households": 149193,
+        "noCarHouseholds": 50595
+      },
+      "councilTable": {
+        "households": 149207,
+        "noCarHouseholds": 50594
+      },
+      "northernIrelandDataZones": {
+        "households": 768805,
+        "noCarHouseholds": 150281
+      },
+      "northernIrelandCouncils": {
+        "households": 768810,
+        "noCarHouseholds": 150279
+      }
+    },
+    "soas": 174,
+    "soaUrbanRural2015": {
+      "Mixed urban/rural": 2,
+      "Urban": 172
+    },
+    "nimdmDeciles": {
+      "1": 47,
+      "2": 24,
+      "3": 9,
+      "4": 11,
+      "5": 9,
+      "6": 9,
+      "7": 13,
+      "8": 11,
+      "9": 8,
+      "10": 33
+    },
+    "areaKm2": {
+      "dataZones": 137.7,
+      "soas2011": 141.31,
+      "symmetricDifference": 13.25
+    },
+    "boundaries": {
+      "dataZones": {
+        "inputAreasWithMismatchedEdges": 36,
+        "cleanSnapM": 0.01,
+        "cleanAreaChangeM2": 1.083,
+        "toleranceM": 10.0,
+        "minIslandM2": 0.0,
+        "decimals": 6,
+        "verticesIn": 75004,
+        "verticesOut": 18313,
+        "partsIn": 735,
+        "partsOut": 735,
+        "islandPartsDropped": 0,
+        "islandAreaDroppedHa": 0.0,
+        "coverageValidAfterRounding": true,
+        "overlapsAfterRounding": []
+      },
+      "soas2011": {
+        "inputAreasWithMismatchedEdges": 73,
+        "cleanSnapM": 0.01,
+        "cleanAreaChangeM2": 19.841,
+        "toleranceM": 10.0,
+        "minIslandM2": 0.0,
+        "decimals": 6,
+        "verticesIn": 135821,
+        "verticesOut": 15643,
+        "partsIn": 177,
+        "partsOut": 174,
+        "islandPartsDropped": 0,
+        "islandAreaDroppedHa": 0.0,
+        "coverageValidAfterRounding": false,
+        "overlapsAfterRounding": []
+      }
+    },
+    "irishGridToWgs84": "Inverse of Irish Grid + TM65 to WGS 84 (2) (with axis order normalized for visualization)"
+  },
+  "ppfi": {
+    "areasPerCountry": {
+      "E": 33755,
+      "W": 1917,
+      "S": 6976,
+      "NI": 890
+    },
+    "northernIrelandDomainsWithoutData": [
+      "ecommerce_access",
+      "fuel_poverty",
+      "supermarket_accessibility"
+    ],
+    "orientation": {
+      "englandImdDecileVsSocioDemographicDecile": 0.862,
+      "northernIrelandNimdmRankVsSocioDemographicRank": 0.931,
+      "reading": "positive: rank 1 / decile 1 = highest priority, as for IoD and NIMDM (1 = most deprived)"
+    },
+    "manchesterDeciles": {
+      "1": 59,
+      "2": 60,
+      "3": 40,
+      "4": 33,
+      "5": 30,
+      "6": 20,
+      "7": 15,
+      "8": 13,
+      "9": 9,
+      "10": 16
+    },
+    "belfastSoaDeciles": {
+      "1": 0,
+      "2": 6,
+      "3": 16,
+      "4": 23,
+      "5": 17,
+      "6": 28,
+      "7": 26,
+      "8": 22,
+      "9": 23,
+      "10": 13
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-24",
+  "files": [
+    {
+      "id": "mhclg.iod2025_file7",
+      "file": "File_7_IoD2025_All_Ranks_Scores_Deciles_Population_Denominators.csv",
+      "url": "https://assets.publishing.service.gov.uk/media/691ded56d140bbbaa59a2a7d/File_7_IoD2025_All_Ranks_Scores_Deciles_Population_Denominators.csv",
+      "sourceId": "S19",
+      "licence": "Open Government Licence v3.0",
+      "description": "English Indices of Deprivation 2025, File 7: all ranks, scores, deciles and population denominators (LSOA 2021)",
+      "httpStatus": 200,
+      "bytes": 9897666,
+      "sha256": "b1b716aa2e476449f987b9de3e08255b4794eabfd270626de5de18b2f5eff3ef",
+      "retrievedAt": "2026-10-24T22:15:35Z"
+    }
+  ]
+}
