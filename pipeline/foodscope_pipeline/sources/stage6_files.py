@@ -237,6 +237,46 @@ OSNI_PROBE_FILES: tuple[OnsFile, ...] = (
     ),
 )
 
+# --- Northern Ireland transport (John, 25 Oct 2026, pointing to OpenDataNI) ---------------------
+# John's links: DfI Roads "Highway Network" and Translink "NIR Railway Network" on OpenDataNI.
+# - DfI Highway Network (data.gov.uk record 411c9fc1…, read 25 Oct 2026): the CSV and XML resources
+#   (dfi.highway-iams.uk/OpenData/HIGHWAY_NETWORK.CSV) carry section attributes and CLASS but no
+#   geometry; the geometry is only in an ArcGIS map whose service is behind a Spatial NI utility proxy
+#   (credentials, whitelisted referrers; HTTP 403 without them). It cannot be fetched openly.
+# - OSNI Open Data 50K Transport, transport lines (S34; data.gov.uk record 092bebf4…, OGL, use
+#   subject to the LPS Open Government Data Licence): motorways, A, B and C class roads, minor roads
+#   and railways. Besides the Spatial NI REST layer that refused the runners, the record lists
+#   OSNI's ArcGIS Hub downloads (item 476bb4e6…, layer 2), served by ArcGIS Hub, not Spatial NI.
+# - Translink NIR Railway Network (S37; OpenDataNI dataset 0297b4a0…, OGL, created 21 Sep 2015):
+#   a shapefile ZIP uploaded to OpenDataNI, "must be viewed in Irish Grid projection".
+OSNI_HUB_ITEM = "https://osni-spatialni.opendata.arcgis.com/api/download/v1/items/476bb4e6f8e64f60a08ae84888733bd4"
+OSNI_LICENCE = "Open Government Licence v3.0 (OpenDataNI); use subject to the LPS Open Government Data Licence"
+
+OSNI_FILES: tuple[OnsFile, ...] = (
+    OnsFile(
+        id="osni.transport50k_lines",
+        filename="osni-transport-50k-lines.geojson",
+        url=f"{OSNI_HUB_ITEM}/geojson?layers=2",
+        source_id="S34",
+        licence=OSNI_LICENCE,
+        description="OSNI Open Data 50K Transport: transport lines (roads by class, railways), GeoJSON from OSNI's ArcGIS Hub",
+    ),
+)
+
+TRANSLINK_FILES: tuple[OnsFile, ...] = (
+    OnsFile(
+        id="translink.nir_railway_network",
+        filename="nir-railway-network-shp.zip",
+        url=(
+            "https://admin.opendatani.gov.uk/dataset/0297b4a0-5cea-4c22-97cc-346c76df33ed/resource/"
+            "7bc41442-ef8b-4343-acc4-7a78d37cd6a0/download/nirshp.zip"
+        ),
+        source_id="S37",
+        licence=OGL,
+        description="Northern Ireland Railways (NIR) railway network, Translink, shapefile (Irish Grid), OpenDataNI",
+    ),
+)
+
 PROBE_FILES: tuple[OnsFile, ...] = (
     OnsFile(
         id="os.open_roads_downloads",

@@ -267,6 +267,11 @@ def _check(file: OnsFile, status: int, body: bytes) -> None:
         head = body[:512].lstrip().lower()
         if not body.strip() or head.startswith((b"<!doctype", b"<html")):
             raise OnsFetchError(f"{file.id}: response is not a .csv file ({body[:40]!r})")
+    if suffix == ".geojson":
+        doc = _json_doc(file.id, body)
+        if doc.get("type") != "FeatureCollection" or not isinstance(doc.get("features"), list) or not doc["features"]:
+            raise OnsFetchError(f"{file.id}: response is not a GeoJSON feature collection ({body[:80]!r})")
+        return
     if file.filename.endswith(".json") and file.json_kind == "any":
         try:
             doc = json.loads(body)
