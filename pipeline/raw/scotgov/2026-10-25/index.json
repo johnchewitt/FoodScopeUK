@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-25",
+  "files": [
+    {
+      "id": "scotgov.dz22_lookup",
+      "file": "dz2022-lookup.csv",
+      "url": "https://data.gov.scot/dataset/2022_data_zone_lookup/resource/81b010f5-0207-4ee5-bd2d-e7821aa6a3dc/download",
+      "sourceId": "S32",
+      "licence": "Open Government Licence v3.0",
+      "description": "2022 Data Zone Lookup (Data Zones to councils and other geographies)",
+      "httpStatus": 200,
+      "bytes": 3333484,
+      "sha256": "41f51a4c0e6edbd30f81c3d8d79c37f3f557a3c1d887a10b75c07f0bc01e0891",
+      "retrievedAt": "2026-10-25T20:33:17Z"
+    }
+  ]
+}

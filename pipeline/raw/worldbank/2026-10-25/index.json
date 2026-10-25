@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-25",
+  "files": [
+    {
+      "id": "worldbank.water_stress",
+      "file": "er-h2o-fwst-zs-2000-2025.json",
+      "url": "https://api.worldbank.org/v2/country/all/indicator/ER.H2O.FWST.ZS?format=json&per_page=20000&date=2000:2025",
+      "sourceId": "S30",
+      "licence": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "description": "Level of water stress (SDG 6.4.2, FAO AQUASTAT) by country, 2000-2025, World Bank API",
+      "httpStatus": 200,
+      "bytes": 1946926,
+      "sha256": "03827cc1c41a45fa6c6b7028d29cfb84c7edc0e1f156daa579bccb6dbe28290e",
+      "retrievedAt": "2026-10-25T20:33:09Z"
+    },
+    {
+      "id": "worldbank.countries",
+      "file": "countries.json",
+      "url": "https://api.worldbank.org/v2/country?format=json&per_page=400",
+      "sourceId": "S30",
+      "licence": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "description": "World Bank country list (ISO codes; regions and income groups mark aggregates)",
+      "httpStatus": 200,
+      "bytes": 113954,
+      "sha256": "c9acf3932785191a649cbc04c3056af4cf64a236e5c3b49d49be25ddb0440bce",
+      "retrievedAt": "2026-10-25T20:33:09Z"
+    }
+  ]
+}

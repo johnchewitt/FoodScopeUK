@@ -25,6 +25,42 @@
       "bytes": 179811,
       "sha256": "5bdb534e35d2c18571e08bc7fc61676d78c0554e2f20b658c6e5a20379a0b76d",
       "retrievedAt": "2026-10-25T11:49:18Z"
+    },
+    {
+      "id": "defra.ukfsr_2024_theme3",
+      "file": "FSR-theme3-241211.ods",
+      "url": "https://assets.publishing.service.gov.uk/media/6756c6a1a63e1781efb87778/FSR-theme3-241211.ods",
+      "sourceId": "S03",
+      "licence": "Open Government Licence v3.0",
+      "description": "United Kingdom Food Security Report 2024, theme 3 (food supply chain resilience): chart data",
+      "httpStatus": 200,
+      "bytes": 60277,
+      "sha256": "1ab86d0020576fe3715753963b3e28a622a84e22d6b193a71c8d7df47285fd0a",
+      "retrievedAt": "2026-10-25T20:33:13Z"
+    },
+    {
+      "id": "defra.structure_england_regions",
+      "file": "structure-england-june-regions-16apr26.ods",
+      "url": "https://assets.publishing.service.gov.uk/media/69e0b1fb6c6ccf244be42e2e/structure-england-june-regions-16apr26.ods",
+      "sourceId": "S31",
+      "licence": "Open Government Licence v3.0",
+      "description": "Structure of the agricultural industry in England at June: results by region",
+      "httpStatus": 200,
+      "bytes": 381909,
+      "sha256": "ec727c4cfdd06a16e15198c396f636978c59f41af34123d1edaa67bab3c53705",
+      "retrievedAt": "2026-10-25T20:33:14Z"
+    },
+    {
+      "id": "defra.structure_uk_by_country",
+      "file": "UK_key_results_by_country_1866-2025.ods",
+      "url": "https://assets.publishing.service.gov.uk/media/69381cbbcfacd5e888491c57/UK_key_results_by_country_1866-2025.ods",
+      "sourceId": "S31",
+      "licence": "Open Government Licence v3.0",
+      "description": "Structure of the agricultural industry: UK key results by country, 1866 to 2025",
+      "httpStatus": 200,
+      "bytes": 277121,
+      "sha256": "40c048c62cd185a7e083572f31308464db9258eb2a9466597146be44a07cc606",
+      "retrievedAt": "2026-10-25T20:33:15Z"
     }
   ]
 }

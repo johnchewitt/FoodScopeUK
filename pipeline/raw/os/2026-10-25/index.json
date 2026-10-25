@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-25",
+  "files": [
+    {
+      "id": "os.open_roads_downloads",
+      "file": "os-open-roads-downloads.json",
+      "url": "https://api.os.uk/downloads/v1/products/OpenRoads/downloads",
+      "sourceId": "S35",
+      "licence": "Open Government Licence v3.0",
+      "description": "OS Open Roads: OS Downloads API list of files (formats, areas, sizes, checksums)",
+      "httpStatus": 200,
+      "bytes": 1004,
+      "sha256": "bfe120ec154778e18892bfe8a2f50cb3a640fe9301b13544837b8cddf161cb8d",
+      "retrievedAt": "2026-10-25T20:33:29Z"
+    }
+  ]
+}
