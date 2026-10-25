@@ -15,7 +15,12 @@ import pytest
 from shapely import LineString, to_wkb
 
 from foodscope_pipeline.sources.ons_files import OnsFetchError
-from foodscope_pipeline.sources.os_open_roads import EXTRACT_FILE, SCHEMA_FILE, fetch_open_roads, pick_download
+from foodscope_pipeline.sources.os_open_roads import (
+    EXTRACT_FILE,
+    SCHEMA_FILE,
+    fetch_open_roads,
+    pick_download,
+)
 
 FIXED = datetime(2026, 10, 25, 12, 0, 0, tzinfo=UTC)
 

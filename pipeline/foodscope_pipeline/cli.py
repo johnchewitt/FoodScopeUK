@@ -37,7 +37,7 @@ def main(argv: list[str] | None = None) -> int:
     ingest.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
     ons = sub.add_parser("fetch-ons", help="ONLINE: download ONS population, lookup and boundary files into pipeline/raw/ons/<snapshot>/ (incremental)")
     ons.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
-    ref = sub.add_parser("fetch-reference", help="ONLINE: fetch a set of reference files into pipeline/raw/<publisher>/<snapshot>/ (incremental): 'stage5' = fetch-ons plus Nomis, MHCLG, NISRA and the FSA (NI food register); 'context' = ONS urban/rural classification and Defra annual production; 'stage6' = Risk Explorer inputs (FAO water stress via the World Bank, DfT ports, UKFSR theme 3, Defra June survey, Scottish Data Zone lookup, ONS ITL1 and LSOA lookup, road-data probes)")
+    ref = sub.add_parser("fetch-reference", help="ONLINE: fetch a set of reference files into pipeline/raw/<publisher>/<snapshot>/ (incremental): 'stage5' = fetch-ons plus Nomis, MHCLG, NISRA and the FSA (NI food register); 'context' = ONS urban/rural classification and Defra annual production; 'stage6' = Risk Explorer inputs (FAO water stress via the World Bank, DfT ports, UKFSR theme 3, Defra June survey, Scottish Data Zone lookups, EMODnet port locations, ONS ITL1 and LSOA lookup, road-data probes)")
     ref.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
     ref.add_argument("--set", default="stage5", choices=("stage5", "context", "stage6"), help="which files to fetch (default: stage5)")
     build = sub.add_parser("build-trade", help="OFFLINE: raw HMRC cache → public/data/snapshots/<snapshot>/trade/")
@@ -110,6 +110,7 @@ def main(argv: list[str] | None = None) -> int:
                 ("dft", s6.DFT_FILES, ()),
                 ("defra", s6.DEFRA_FILES, ()),
                 ("scotgov", s6.SCOTGOV_FILES, ()),
+                ("emodnet", s6.EMODNET_FILES, ()),
                 ("ons", (), s6.ONS_QUERIES),
                 ("osni", tuple(f for f in s6.PROBE_FILES if f.id.startswith("osni.")), ()),
                 ("os", tuple(f for f in s6.PROBE_FILES if f.id.startswith("os.")), ()),

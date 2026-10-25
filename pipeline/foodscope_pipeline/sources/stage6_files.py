@@ -10,6 +10,12 @@ Actions into `pipeline/raw/<publisher>/<snapshot>/`, with checksums, as for Stag
 Two items are probes, fetched to read their structure before deciding what to extract: the OSNI
 1:50,000 transport layer metadata (S34) and the OS Open Roads download list (S35). The road data
 itself is fetched in a second run once the fields and file sizes are known.
+
+Second run (25 Oct 2026, after reading the first): the Priority Places index codes Scotland's
+small areas as 2011 Data Zones (S01006506-S01013481), not 2022 ones, so the 2011 Data Zone lookup
+is added; DfT's port list gives a map location for only 27 of its 53 statistical ports (none for
+Dover, Felixstowe or Belfast), so EMODnet's port locations (S36, keyed by UN/LOCODE like DfT's
+list) are added. The OSNI probe is retried (its server closed the connection in the first run).
 """
 
 from __future__ import annotations
@@ -131,6 +137,42 @@ SCOTGOV_FILES: tuple[OnsFile, ...] = (
         source_id="S32",
         licence=OGL,
         description="2022 Data Zone Lookup (Data Zones to councils and other geographies)",
+    ),
+    # data.gov.scot/dataset/2011_data_zone_lookup (read 25 Oct 2026): CSV, 3.1 MB, updated
+    # 19 Aug 2026, OGL v3.0; columns DZ2011, IZ2011, MMWard, LA, ..., UR2-UR8, Country. The PPFI
+    # (S13) uses 2011 Data Zones for Scotland, so this lookup assigns them to councils.
+    OnsFile(
+        id="scotgov.dz11_lookup",
+        filename="dz2011-lookup.csv",
+        url=(
+            "https://data.gov.scot/dataset/2011_data_zone_lookup/resource/"
+            "20ad5f65-c5c2-407e-8355-7c25bf579e87/download"
+        ),
+        source_id="S32",
+        licence=OGL,
+        description="2011 Data Zone Lookup (Data Zones to current councils and other geographies)",
+    ),
+)
+
+# --- S36: EMODnet Human Activities, main ports: port locations -----------------------------------
+# EMODnet catalogue record 379d0425-8924-4a41-a088-1a002d2ea748 (read 25 Oct 2026): "Main Ports,
+# Goods-Passengers-Vessels Traffic", Eurostat maritime statistics for EU, EFTA, Turkey and UK main
+# ports; ports georeferenced from the GISCO "Ports 2013" points where possible, otherwise UN/LOCODE,
+# port authorities and other sources; revised 10 Dec 2025; CC BY 4.0 (credit the EMODnet portal,
+# originators Eurofish and Cogea). WFS endpoint and layer `emodnet:portlocations` from the record.
+CC_BY_4_EMODNET = f"{CC_BY_4}; EMODnet Human Activities (originators Eurofish International Organisation and Cogea Srl)"
+EMODNET_FILES: tuple[OnsFile, ...] = (
+    OnsFile(
+        id="emodnet.port_locations",
+        filename="emodnet-portlocations.json",
+        url=(
+            "https://ows.emodnet-humanactivities.eu/wfs?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature"
+            "&TYPENAME=emodnet:portlocations&OUTPUTFORMAT=application/json"
+        ),
+        source_id="S36",
+        licence=CC_BY_4_EMODNET,
+        description="EMODnet Human Activities, main ports: port locations (WFS layer emodnet:portlocations, GeoJSON)",
+        json_kind="any",
     ),
 )
 

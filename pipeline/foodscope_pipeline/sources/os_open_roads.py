@@ -145,9 +145,9 @@ def _truthy(value: object) -> bool:
 
 def extract(gpkg: str, schema: dict, tolerance_m: float = SIMPLIFY_M) -> dict:
     """Motorways, trunk roads and primary A roads merged by road number, simplified, WGS84."""
+    import numpy as np
     import pyogrio
     from pyproj import Transformer
-    import numpy as np
     from shapely import from_wkb, line_merge, simplify, union_all
     from shapely import transform as transform_coords
     from shapely.geometry import mapping
