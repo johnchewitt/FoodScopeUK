@@ -190,7 +190,15 @@ test.describe("Local Authority Profiles", () => {
     await expect
       .poll(async () => (await profileLayers(page)).councilStyles.E08000003, { timeout: 15_000 })
       .toBe("dash");
+    // Axe reads colours, so wait for the dialog's opening transition to finish (calciteDialogOpen).
+    const opened = page.evaluate(
+      () =>
+        new Promise<void>((resolve) =>
+          document.addEventListener("calciteDialogOpen", () => resolve(), { once: true }),
+        ),
+    );
     await controls(page).getByRole("button", { name: "Open comparison" }).click();
+    await opened;
     await expect(page).toHaveURL(/view=compare/);
     await expect(
       page.getByText(/These councils are in different nations \(Northern Ireland, England\)/),
@@ -260,6 +268,24 @@ test.describe("NI grocers from the FSA register (SM-10, John's request)", () => 
     expect(layers.grocersMinScale).toBeLessThan(5_000_000);
     // Never part of a count or rate.
     expect(await page.getByRole("region", { name: /UK Food Access key figures/ }).innerText()).toBe(before);
+    // Switched off, it stays off in Local Authority Profiles (found in review).
+    await insights(page)
+      .getByRole("button", { name: /Hide other NI grocers/ })
+      .click();
+    await expect(page).not.toHaveURL(/ng=1/);
+    await page
+      .getByRole("navigation", { name: "Modules" })
+      .getByRole("button", { name: /Profiles/ })
+      .click();
+    await expect.poll(() => viewData(page, "profileAreas"), { timeout: 30_000 }).toBe("N09000003:ppfi:174");
+    const grocersVisible = await page
+      .locator("arcgis-map")
+      .evaluate(
+        (el: HTMLArcgisMapElement) =>
+          (el.view.map!.layers.find((l) => l.id === "access-ni-grocers") as { visible: boolean } | undefined)
+            ?.visible ?? false,
+      );
+    expect(grocersVisible).toBe(false);
   });
 });
 
