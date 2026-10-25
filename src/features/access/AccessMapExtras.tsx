@@ -2,6 +2,7 @@ import { ChevronDown } from "lucide-react";
 import type { ReactNode } from "react";
 import { formatCount, formatKm, formatPer10k } from "@/analysis/format";
 import { STORE_LAYER_LABELS, type StoreLayer } from "@/analysis/retail";
+import { REGISTER_GROCERS_MIN_ZOOM } from "@/map/layerIds";
 import { selectLocalScale, useAppStore } from "@/state/store";
 import { classLabels } from "./model";
 import { useAccess, useAccessMapSync } from "./useAccess";
@@ -65,6 +66,7 @@ export function AccessLegend() {
           </span>
           {local ? "Groups appear when zoomed out" : "Group of nearby stores (count); zoom in for each store"}
         </li>
+        {a.grocers && <GrocerLegendItem count={a.grocers.points.length} />}
       </ul>
       {choropleth ? (
         <>
@@ -104,6 +106,38 @@ export function AccessLegend() {
   );
 }
 
+/** NI grocer from the FSA register (S29): name, group and place; never counted in rates. */
+export function GrocerTooltipBody({
+  grocer,
+}: {
+  grocer: { name: string; group: string | null; town: string | null; postcode: string | null };
+}) {
+  return (
+    <>
+      <strong>{grocer.name}</strong>
+      <span>
+        {grocer.group ?? "Independent grocer"} · {[grocer.town, grocer.postcode].filter(Boolean).join(" ")}
+      </span>
+      <span className="map-tooltip__hint">FSA register (not in GEOLYTIX); not counted in any rate</span>
+    </>
+  );
+}
+
+/** Legend entry for the NI grocers layer (S29). */
+export function GrocerLegendItem({ count }: { count: number }) {
+  const zoom = useAppStore((s) => s.mapView?.zoom ?? null);
+  const hidden = zoom !== null && zoom < REGISTER_GROCERS_MIN_ZOOM;
+  return (
+    <li data-hidden-at-scale={hidden || undefined}>
+      <span className="grocer-symbol" aria-hidden="true" />
+      <span>
+        Other NI grocers, FSA register ({formatCount(count)}); not counted
+        {hidden && <span className="map-legend__sub">Zoom in to Northern Ireland to see them</span>}
+      </span>
+    </li>
+  );
+}
+
 /** Tooltip for the store, cluster or council under the pointer. */
 export function AccessTooltip() {
   const hover = useAppStore((s) => s.hoverAccess);
@@ -123,6 +157,10 @@ export function AccessTooltip() {
         <span className="map-tooltip__hint">Click for details</span>
       </>
     );
+  } else if (hover.kind === "grocer") {
+    const g = a.grocersDoc?.features.find((f) => String(f.properties.id) === hover.id);
+    if (!g) return null;
+    body = <GrocerTooltipBody grocer={g.properties} />;
   } else if (hover.kind === "cluster") {
     body = (
       <>

@@ -24,8 +24,9 @@ import {
   type StoreFilter,
   type StoreLayer,
 } from "@/analysis/retail";
-import type { AccessMapModel, AccessPoint } from "@/state/store";
+import type { AccessMapModel, AccessPoint, GrocerPoint } from "@/state/store";
 import type { CouncilIndicators } from "@/types/generated/lad-indicators";
+import type { NiOtherGrocers } from "@/types/generated/ni-other-grocers";
 import type { StoreCollection, StoreProperties } from "@/types/generated/stores";
 
 /** Canonical store fields (stores.schema.json), read by the hosted-layer adapter (SM-01). */
@@ -273,3 +274,30 @@ export function shownStores(stores: readonly AccessStore[], filter: StoreFilter)
 }
 
 export { filterWhereClause, per10k, perKm2 };
+
+/** NI grocers from the FSA register (S29) as map points; never added to store counts or rates. */
+export function grocerPoints(doc: NiOtherGrocers): GrocerPoint[] {
+  return doc.features.map((f) => ({
+    id: f.properties.id,
+    lon: f.geometry.coordinates[0],
+    lat: f.geometry.coordinates[1],
+  }));
+}
+
+/**
+ * GEOLYTIX coverage in Northern Ireland (S11, gate G7): it maps ten retailers there, most of them
+ * as convenience stores, so the default view (supermarkets) shows few NI stores.
+ */
+export function niRetailers(stores: readonly AccessStore[]): {
+  retailers: string[];
+  byLayer: Record<StoreLayer, number>;
+} {
+  const byLayer: Record<StoreLayer, number> = { supermarket: 0, convenience: 0, other: 0 };
+  const names = new Set<string>();
+  for (const s of stores) {
+    if (!s.lad?.startsWith("N")) continue;
+    names.add(s.retailer);
+    byLayer[s.layer]++;
+  }
+  return { retailers: [...names].sort(), byLayer };
+}

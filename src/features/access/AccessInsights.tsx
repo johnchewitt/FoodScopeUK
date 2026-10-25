@@ -20,7 +20,7 @@ import { PROVISION_NOTE } from "./note";
 import { STORE_ZOOM } from "./AccessControls";
 import { comparisonOption, comparisonRows } from "./charts";
 import { rateIndicator } from "./indicators";
-import { classLabels, NATIONS, type AccessStore, type Nation } from "./model";
+import { classLabels, NATIONS, niRetailers, type AccessStore, type Nation } from "./model";
 import { useAccess, type AccessData } from "./useAccess";
 
 const INITIAL_ROWS = 15;
@@ -32,6 +32,70 @@ function ProvisionNoteBlock() {
         <Info size={15} aria-hidden="true" />
         <span>{PROVISION_NOTE}</span>
       </p>
+    </section>
+  );
+}
+
+/** Rough box around Northern Ireland (WGS84), to offer the NI note when the map is centred there. */
+const NI_BOX = { west: -8.2, east: -5.4, south: 54.0, north: 55.35 };
+
+/**
+ * Northern Ireland coverage (Stage 5, John's request of 25 Oct 2026): GEOLYTIX maps ten retailers
+ * in NI, mostly as convenience stores, so the default view (supermarkets) shows few NI stores.
+ * Offers the convenience layer and the FSA register layer (S29), which is never counted.
+ */
+function NiCoverageNote({ a }: { a: AccessData }) {
+  const storeLayers = useAppStore((s) => s.storeLayers);
+  const toggleLayer = useAppStore((s) => s.toggleStoreLayer);
+  const niGrocers = useAppStore((s) => s.niGrocers);
+  const setNiGrocers = useAppStore((s) => s.setNiGrocers);
+  const mapView = useAppStore((s) => s.mapView);
+  const ni = useMemo(() => (a.stores ? niRetailers(a.stores) : null), [a.stores]);
+  const centre = mapView?.center;
+  const inNi =
+    a.council?.nation === "Northern Ireland" ||
+    (centre !== undefined &&
+      (mapView?.zoom ?? 0) >= 8 &&
+      centre[0] >= NI_BOX.west &&
+      centre[0] <= NI_BOX.east &&
+      centre[1] >= NI_BOX.south &&
+      centre[1] <= NI_BOX.north);
+  if (!inNi || !ni) return null;
+  return (
+    <section className="panel-section" aria-labelledby="ni-note-heading">
+      <h3 id="ni-note-heading" className="panel-section__title">
+        Northern Ireland coverage
+      </h3>
+      <p className="control-hint">
+        GEOLYTIX maps {ni.retailers.length} retailers in Northern Ireland ({ni.retailers.join(", ")}):{" "}
+        {formatCount(ni.byLayer.supermarket)} supermarkets and {formatCount(ni.byLayer.convenience)}{" "}
+        convenience stores. Symbol groups such as SuperValu, Mace, Vivo, Costcutter, Nisa and Premier, and
+        independent grocers, are not in it.
+      </p>
+      <div className="button-row">
+        {!storeLayers.includes("convenience") && (
+          <button type="button" className="chip-btn" onClick={() => toggleLayer("convenience")}>
+            <StoreSymbol layer="convenience" /> Show convenience stores
+          </button>
+        )}
+        <button
+          type="button"
+          className="chip-btn"
+          aria-pressed={niGrocers}
+          onClick={() => setNiGrocers(!niGrocers)}
+        >
+          <span className="grocer-symbol" aria-hidden="true" /> {niGrocers ? "Hide" : "Show"} other NI grocers
+          (FSA register)
+        </button>
+      </div>
+      {niGrocers && (
+        <p className="control-hint">
+          <ProvenanceBadge cls="measured" />{" "}
+          {a.grocersStatus === "ready" ? formatCount(a.grocers?.points.length) : "…"} grocers from the Food
+          Standards Agency register (S29) that GEOLYTIX does not map: shown as hollow diamonds, never added to
+          any count or rate. A registration is not proof of a grocery offer or opening hours.
+        </p>
+      )}
     </section>
   );
 }
@@ -484,6 +548,7 @@ export function AccessInsights() {
       <ProvisionNoteBlock />
       {a.selected && <StoreCard a={a} store={a.selected} />}
       {a.council && <CouncilCard a={a} />}
+      <NiCoverageNote a={a} />
       {a.nearby && <ProximityResults a={a} />}
       <Comparison a={a} />
       <DensityTable a={a} />
