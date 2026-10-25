@@ -1,0 +1,87 @@
+{
+  "description": "Configuration of the Stage 6 Risk Explorer datasets (build-risk; John's Stage 6 brief and decisions, 25 Oct 2026). Every value here is either a published threshold, a mapping between two official classifications checked by hand against the cached files, or a choice recorded in docs/03-DATA-SOURCES.md.",
+  "verified": "2026-10-25",
+  "waterStress": {
+    "sourceId": "S30",
+    "item": "worldbank.water_stress",
+    "countries": "worldbank.countries",
+    "indicator": "ER.H2O.FWST.ZS",
+    "classSource": "FAO and UN-Water, SDG indicator 6.4.2 level of water stress: no stress below 25 %, low 25-50 %, medium 50-75 %, high 75-100 %, critical above 100 % (Progress on Level of Water Stress, 2021)",
+    "classes": [
+      { "id": "none", "label": "No stress", "min": 0, "max": 25 },
+      { "id": "low", "label": "Low", "min": 25, "max": 50 },
+      { "id": "medium", "label": "Medium", "min": 50, "max": 75 },
+      { "id": "high", "label": "High", "min": 75, "max": 100 },
+      { "id": "critical", "label": "Critical", "min": 100, "max": null }
+    ],
+    "classRule": "A value on a threshold takes the higher class (25 % is low), except 100 %, which is high: critical means withdrawals above 100 % of available freshwater resources."
+  },
+  "ports": {
+    "sourceId": "S23",
+    "firstYear": 2015,
+    "domesticRegion": "United Kingdom (inc CHI & IOM)",
+    "unspecifiedRegion": "Unspecified",
+    "agriculturalCategory": 23,
+    "agriculturalLabel": "Agricultural products (eg grain, soya, tapioca)",
+    "cargoGroups": ["Liquid Bulk", "Dry Bulk", "Containers", "Ro-Ro Self Propelled", "Ro-Ro Non-Self Propelled", "Other General Cargo"],
+    "regions": [
+      "European Union (excl. United Kingdom)",
+      "Other Europe (excl. European Union) & Mediterranean",
+      "Africa (excl. Mediterranean)",
+      "America",
+      "Asia (excl. Mediterranean)",
+      "Australasia",
+      "United Kingdom (inc CHI & IOM)",
+      "Unspecified"
+    ]
+  },
+  "portOfEntry": {
+    "sourceId": "S03",
+    "note": "UKFSR 2024 table 3_2_2a groups ports as recorded for food, feed and drink imports (HMRC port of entry). Each group is linked to the DfT statistical port that contains it, for highlighting on the map only; the percentages are never added to DfT tonnages.",
+    "groups": [
+      { "label": "Dover/Folkestone/Eurotunnel", "locodes": ["GBDVR"], "linkNote": "Includes the Channel Tunnel (Folkestone), which is not a seaport in DfT's statistics; linked to Dover." },
+      { "label": "Liverpool", "locodes": ["GBLIV"] },
+      { "label": "London (inc Tilbury)", "locodes": ["GBLON"], "linkNote": "DfT's London statistical port includes Tilbury and London Gateway." },
+      { "label": "London Gateway", "locodes": ["GBLON"], "linkNote": "DfT's London statistical port includes Tilbury and London Gateway." },
+      { "label": "Immingham", "locodes": ["GBIMM"], "linkNote": "Part of DfT's Grimsby & Immingham statistical port." },
+      { "label": "Felixstowe", "locodes": ["GBFXT"] },
+      { "label": "Belfast", "locodes": ["GBBEL"] },
+      { "label": "Hull", "locodes": ["GBHUL"] },
+      { "label": "Middlesbrough", "locodes": ["GBMME"], "linkNote": "Part of DfT's Tees & Hartlepool statistical port." },
+      { "label": "Southampton", "locodes": ["GBSOU"] },
+      { "label": "Harwich International", "locodes": ["GBHRW"], "linkNote": "Part of DfT's Harwich statistical port." },
+      { "label": "Other recorded ports", "locodes": [] },
+      { "label": "No port recorded", "locodes": [] }
+    ]
+  },
+  "farming": {
+    "sourceIds": ["S31", "S33"],
+    "year": 2025,
+    "englandRegions": [
+      { "defraName": "North East", "itl1": ["TLC"] },
+      { "defraName": "North West and Merseyside", "itl1": ["TLD"] },
+      { "defraName": "Yorkshire and The Humber", "itl1": ["TLE"] },
+      { "defraName": "East Midlands", "itl1": ["TLF"] },
+      { "defraName": "West Midlands", "itl1": ["TLG"] },
+      { "defraName": "Eastern", "itl1": ["TLH"] },
+      { "defraName": "South East (incl. London)", "itl1": ["TLI", "TLJ"], "pointFrom": "TLJ" },
+      { "defraName": "South West", "itl1": ["TLK"] }
+    ],
+    "nations": [
+      { "nation": "Wales", "itl1": "TLL", "column": "Wales" },
+      { "nation": "Scotland", "itl1": "TLM", "column": "Scotland" },
+      { "nation": "Northern Ireland", "itl1": "TLN", "column": "Northern Ireland" }
+    ],
+    "measures": [
+      { "id": "wheat", "label": "Wheat area", "unit": "hectares", "regionColumn": "Wheat", "countrySheet": "Wheat", "countryScale": 1000 },
+      { "id": "cattle", "label": "Cattle and calves", "unit": "head", "regionColumn": "Total cattle", "countrySheet": "Cattle", "countryScale": 1 },
+      { "id": "sheep", "label": "Sheep and lambs", "unit": "head", "regionColumn": "Total sheep", "countrySheet": "Sheep", "countryScale": 1 },
+      { "id": "pigs", "label": "Pigs", "unit": "head", "regionColumn": "Total pigs", "countrySheet": "Pigs", "countryScale": 1 },
+      { "id": "poultry", "label": "Poultry", "unit": "birds", "regionColumn": "Total poultry", "countrySheet": "Poultry", "countryScale": 1000000 }
+    ]
+  },
+  "ppfi": {
+    "sourceIds": ["S13", "S15", "S32", "S19"],
+    "priorityDeciles": [1, 2]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "risk.roads",
+  "title": "Strategic road corridors in Great Britain: motorways, trunk roads and primary A roads (OS Open Roads)",
+  "role": "reference",
+  "path": "snapshots/2026-10-25/risk/roads.geojson",
+  "format": "geojson",
+  "schemaId": "risk-roads",
+  "sha256": "f9cf696805f7c1a77e3e7b24d59fbdbc69974e7ffa53fe39d5121065c36aad41",
+  "bytes": 1970577,
+  "featureCount": 792,
+  "sourceIds": [
+    "S35"
+  ],
+  "referencePeriod": "OS Open Roads as downloaded 2026-10-25",
+  "coverage": "Great Britain. Northern Ireland: not included (OSNI's open transport service could not be reached from the data pipeline)",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Contains OS data © Crown copyright and database right 2026",
+  "expectedCadence": "irregular",
+  "retrieval": {
+    "method": "Extracted on GitHub Actions (fetch-open-roads) from the OS Open Roads GeoPackage",
+    "source": "https://api.os.uk/downloads/v1/products/OpenRoads/downloads?area=GB&format=GeoPackage&redirect (oproad_gpkg_gb.zip, md5 2ee5d30899c4a44df321e5e1a66989ac)",
+    "retrievedAt": "2026-10-25T20:42:47Z",
+    "notes": "Links merged by road number and category, simplified at 60.0 m in EPSG:27700: 'strategic' = motorways and trunk roads (the national highway authorities' networks), 'primary' = other primary-route A roads. Lines show road corridors, not freight flows."
+  }
+}

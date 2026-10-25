@@ -1,0 +1,28 @@
+{
+  "id": "risk.council_ppfi",
+  "title": "Priority Places for Food Index by council: small areas in each nation's highest-priority deciles",
+  "role": "statistical",
+  "path": "snapshots/2026-10-25/risk/council-ppfi.json",
+  "format": "json",
+  "schemaId": "council-ppfi",
+  "sha256": "aa9e3e09de7faae63bda5478393c0f42ef062c0529ebde9ff46ea9d82bf0bb85",
+  "bytes": 185186,
+  "sourceIds": [
+    "S13",
+    "S15",
+    "S19",
+    "S32"
+  ],
+  "referencePeriod": "Index v2.1 (2024); May 2025 councils",
+  "coverage": "All 361 UK councils: 43538 small areas (three domains without data in Northern Ireland)",
+  "provenance": "derived",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Priority Places for Food Index v2.1, Healthy & Sustainable Places Data Service (HASP) / CDRC, DOI 10.82147/003 (OGL v3.0). Source: Office for National Statistics licensed under the Open Government Licence v.3.0",
+  "expectedCadence": "irregular",
+  "retrieval": {
+    "method": "Derived offline from the committed index (provided by John) and the official lookups",
+    "source": "hasp_ppfi_v2.1.csv (provided, sha256 51f96ce7a792…); https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LSOA21_WD25_LAD25_EW_LU_v2/FeatureServer/0 (36 pages, sha256 460711ee6d39…); https://data.gov.scot/dataset/2011_data_zone_lookup/resource/20ad5f65-c5c2-407e-8355-7c25bf579e87/download (sha256 688416b87573…); https://www.nisra.gov.uk/files/nisra/publications/NIMDM17_SOAresults.xls (sha256 3738edf2d264…)",
+    "retrievedAt": "2026-10-25T20:58:29Z",
+    "notes": "Counts of small areas per council, as published deciles; shares and within-nation ranks are computed in the app. Scotland's index uses 2011 Data Zones."
+  }
+}

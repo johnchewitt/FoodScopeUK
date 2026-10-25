@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/risk-port-entry.schema.json",
+  "title": "RiskPortEntry",
+  "description": "UK Food Security Report 2024 (S03), theme 3 chart data as published: food, feed and drink imports by port of entry (3_2_2a), the Short Straits share by food group (3_2_2b) and the average delay on England's Strategic Road Network (3_2_1a). Written by `foodscope-pipeline build-risk`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "portOfEntry", "shortStraits", "srnDelay"],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "portOfEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "table", "title", "unit", "years", "note", "groups"],
+      "properties": {
+        "sourceId": {
+          "const": "S03"
+        },
+        "table": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "years": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "note": {
+          "type": "string"
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["label", "locodes", "values"],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "locodes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "linkNote": {
+                "type": "string"
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "shortStraits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "table", "title", "unit", "years", "foods"],
+      "properties": {
+        "sourceId": {
+          "const": "S03"
+        },
+        "table": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "years": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "foods": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["food", "values"],
+            "properties": {
+              "food": {
+                "type": "string"
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "srnDelay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "table", "title", "unit", "coverage", "months", "monthly", "yearEnding"],
+      "properties": {
+        "sourceId": {
+          "const": "S03"
+        },
+        "table": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "coverage": {
+          "type": "string"
+        },
+        "months": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$"
+          }
+        },
+        "monthly": {
+          "type": "array",
+          "items": {
+            "type": ["number", "null"]
+          }
+        },
+        "yearEnding": {
+          "type": "array",
+          "items": {
+            "type": ["number", "null"]
+          }
+        }
+      }
+    }
+  }
+}

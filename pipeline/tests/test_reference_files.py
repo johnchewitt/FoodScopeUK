@@ -168,7 +168,7 @@ def test_stage6_set_fetches_each_publisher_once(monkeypatch: pytest.MonkeyPatch,
     monkeypatch.setattr(ons_files, "fetch", fake_fetch)
     monkeypatch.setattr(cli, "RAW", tmp_path)
     assert cli.main(["fetch-reference", "--snapshot", "2026-10-25", "--set", "stage6"]) == 0
-    assert [c[0] for c in calls] == ["worldbank", "dft", "defra", "scotgov", "emodnet", "ons", "osni", "os"]
+    assert [c[0] for c in calls] == ["worldbank", "dft", "defra", "scotgov", "emodnet", "ons", "os"]
     files = [f for _, fs, _ in calls for f in fs]
     queries = [q for _, _, qs in calls for q in qs]
     assert set(files) == set(s6.WORLDBANK_FILES + s6.DFT_FILES + s6.DEFRA_FILES + s6.SCOTGOV_FILES

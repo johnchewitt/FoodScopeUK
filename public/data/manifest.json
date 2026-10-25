@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-25T11:49:18Z",
+  "generatedAt": "2026-10-25T20:58:30Z",
   "generator": "foodscope-pipeline 0.1.0",
   "snapshotId": "2026-10-25",
   "snapshots": {
@@ -8,6 +8,7 @@
     "context": "2026-10-25",
     "local": "2026-10-24",
     "register": "2026-10-24",
+    "risk": "2026-10-25",
     "trade": "2026-10-23"
   },
   "datasets": [
@@ -338,6 +339,188 @@
       }
     },
     {
+      "id": "risk.council_ppfi",
+      "title": "Priority Places for Food Index by council: small areas in each nation's highest-priority deciles",
+      "role": "statistical",
+      "path": "snapshots/2026-10-25/risk/council-ppfi.json",
+      "format": "json",
+      "schemaId": "council-ppfi",
+      "sha256": "aa9e3e09de7faae63bda5478393c0f42ef062c0529ebde9ff46ea9d82bf0bb85",
+      "bytes": 185186,
+      "sourceIds": [
+        "S13",
+        "S15",
+        "S19",
+        "S32"
+      ],
+      "referencePeriod": "Index v2.1 (2024); May 2025 councils",
+      "coverage": "All 361 UK councils: 43538 small areas (three domains without data in Northern Ireland)",
+      "provenance": "derived",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Priority Places for Food Index v2.1, Healthy & Sustainable Places Data Service (HASP) / CDRC, DOI 10.82147/003 (OGL v3.0). Source: Office for National Statistics licensed under the Open Government Licence v.3.0",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "Derived offline from the committed index (provided by John) and the official lookups",
+        "source": "hasp_ppfi_v2.1.csv (provided, sha256 51f96ce7a792…); https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LSOA21_WD25_LAD25_EW_LU_v2/FeatureServer/0 (36 pages, sha256 460711ee6d39…); https://data.gov.scot/dataset/2011_data_zone_lookup/resource/20ad5f65-c5c2-407e-8355-7c25bf579e87/download (sha256 688416b87573…); https://www.nisra.gov.uk/files/nisra/publications/NIMDM17_SOAresults.xls (sha256 3738edf2d264…)",
+        "retrievedAt": "2026-10-25T20:58:29Z",
+        "notes": "Counts of small areas per council, as published deciles; shares and within-nation ranks are computed in the app. Scotland's index uses 2011 Data Zones."
+      }
+    },
+    {
+      "id": "risk.farming",
+      "title": "Agricultural production regions: crop area and livestock, June 2025 (Defra)",
+      "role": "statistical",
+      "path": "snapshots/2026-10-25/risk/farming.json",
+      "format": "json",
+      "schemaId": "risk-farming",
+      "sha256": "733c3441922a4c8f507f2185914c55761c456cf5f28d39361d681dc5c5014d1c",
+      "bytes": 4594,
+      "sourceIds": [
+        "S31",
+        "S33"
+      ],
+      "referencePeriod": "1 June 2025",
+      "coverage": "England by Defra region (commercial holdings); Wales, Scotland and Northern Ireland as countries",
+      "provenance": "official_estimate",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: Department for Environment, Food & Rural Affairs, licensed under the Open Government Licence v3.0. Source: Office for National Statistics licensed under the Open Government Licence v.3.0",
+      "expectedCadence": "annual",
+      "retrieval": {
+        "method": "Read offline from the committed Defra June survey datasets (fetch-reference --set stage6)",
+        "source": "https://assets.publishing.service.gov.uk/media/69e0b1fb6c6ccf244be42e2e/structure-england-june-regions-16apr26.ods (sha256 ec727c4cfdd0…); https://assets.publishing.service.gov.uk/media/69381cbbcfacd5e888491c57/UK_key_results_by_country_1866-2025.ods (sha256 40c048c62cd1…)",
+        "retrievedAt": "2026-10-25T20:33:15Z",
+        "notes": "Survey estimates rounded to whole units; England's regions add up to the England row."
+      }
+    },
+    {
+      "id": "risk.farming_regions",
+      "title": "Agricultural statistics regions: Defra regions of England and the devolved countries (ONS ITL1)",
+      "role": "reference",
+      "path": "snapshots/2026-10-25/risk/farming-regions.geojson",
+      "format": "geojson",
+      "schemaId": "farming-regions",
+      "sha256": "352dadac3097020026493f50fb58a38b29a08a34d734f3168b8da95190809a69",
+      "bytes": 312575,
+      "featureCount": 11,
+      "sourceIds": [
+        "S33"
+      ],
+      "referencePeriod": "International Territorial Levels (January 2025)",
+      "coverage": "United Kingdom: 8 regions of England (London with the South East) and 3 countries",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "ONS feature service (fetch-reference --set stage6), coverage-simplified offline",
+        "source": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/ITL1_JAN_2025_UK_BGC/FeatureServer/0 (1 page, sha256 7a12b23d6391…)",
+        "retrievedAt": "2026-10-25T20:33:20Z",
+        "notes": "ITL1 BGC regions in EPSG:27700, London and the South East merged, coverage-simplified at 500 m, islands under 1 km² dropped, WGS84 to 6 decimals."
+      }
+    },
+    {
+      "id": "risk.port_entry",
+      "title": "Food, feed and drink imports by port of entry; Short Straits share by food group; SRN delay (UKFSR 2024)",
+      "role": "statistical",
+      "path": "snapshots/2026-10-25/risk/port-entry.json",
+      "format": "json",
+      "schemaId": "risk-port-entry",
+      "sha256": "cb0be99b6121ba85aa36975c1e1d2a0885bdecdaf48b89cb9ed2d7b0ac6837d4",
+      "bytes": 4912,
+      "sourceIds": [
+        "S03"
+      ],
+      "referencePeriod": "Port of entry 2022 and 2023; SRN delay 2015-04 to 2023-12",
+      "coverage": "United Kingdom (port of entry); England (Strategic Road Network)",
+      "provenance": "official_estimate",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: Department for Environment, Food & Rural Affairs, licensed under the Open Government Licence v3.0",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "Read offline from the committed UKFSR 2024 theme 3 chart data (fetch-reference --set stage6)",
+        "source": "https://assets.publishing.service.gov.uk/media/6756c6a1a63e1781efb87778/FSR-theme3-241211.ods (sha256 1ab86d002057…)",
+        "retrievedAt": "2026-10-25T20:33:13Z",
+        "notes": "Values as published in the UK Food Security Report 2024 (next report due December 2027)."
+      }
+    },
+    {
+      "id": "risk.ports",
+      "title": "UK major ports: freight tonnage by direction, cargo group and region of loading (DfT)",
+      "role": "statistical",
+      "path": "snapshots/2026-10-25/risk/ports.json",
+      "format": "json",
+      "schemaId": "risk-ports",
+      "sha256": "3fb35d1d7cf66048202d95f7fe862a920e5d14ee7f78da61c86aaf3770cee85e",
+      "bytes": 122637,
+      "sourceIds": [
+        "S23",
+        "S36"
+      ],
+      "referencePeriod": "Calendar years 2015–2025",
+      "coverage": "The 51 major ports with data in 2025 (located: {'dft': 27, 'emodnet': 24})",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0 (DfT); Creative Commons Attribution 4.0 International (CC BY 4.0) (EMODnet locations)",
+      "attribution": "Source: Department for Transport, Port freight statistics, licensed under the Open Government Licence v3.0. Port locations without a DfT map point: EMODnet Human Activities, Main ports (originators Eurofish International Organisation and Cogea Srl), CC BY 4.0",
+      "expectedCadence": "annual",
+      "retrieval": {
+        "method": "Read offline from the committed DfT and EMODnet files (fetch-reference --set stage6)",
+        "source": "https://assets.publishing.service.gov.uk/media/6888c795048fff613a4d5ae9/Major_and_Minor_Port_List_for_Freight_Statistics.ods (sha256 8281034b5430…); https://assets.publishing.service.gov.uk/media/6a7315f0011ff6453dece53a/port0499.ods (sha256 2eabae5c0bf8…); https://assets.publishing.service.gov.uk/media/6a6221092dc18ebe4c3b2b0b/port0304.ods (sha256 f0c66f347ee1…); https://ows.emodnet-humanactivities.eu/wfs?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=emodnet:portlocations&OUTPUTFORMAT=application/json (sha256 8febbe841ee6…)",
+        "retrievedAt": "2026-10-25T20:58:30Z",
+        "notes": "PORT0499 summed by port and year; 2025 totals reconcile with PORT0304 for 33 ports. Tonnage of all cargo, not food: only the agricultural products category is food- or feed-related."
+      }
+    },
+    {
+      "id": "risk.roads",
+      "title": "Strategic road corridors in Great Britain: motorways, trunk roads and primary A roads (OS Open Roads)",
+      "role": "reference",
+      "path": "snapshots/2026-10-25/risk/roads.geojson",
+      "format": "geojson",
+      "schemaId": "risk-roads",
+      "sha256": "f9cf696805f7c1a77e3e7b24d59fbdbc69974e7ffa53fe39d5121065c36aad41",
+      "bytes": 1970577,
+      "featureCount": 792,
+      "sourceIds": [
+        "S35"
+      ],
+      "referencePeriod": "OS Open Roads as downloaded 2026-10-25",
+      "coverage": "Great Britain. Northern Ireland: not included (OSNI's open transport service could not be reached from the data pipeline)",
+      "provenance": "measured",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Contains OS data © Crown copyright and database right 2026",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "Extracted on GitHub Actions (fetch-open-roads) from the OS Open Roads GeoPackage",
+        "source": "https://api.os.uk/downloads/v1/products/OpenRoads/downloads?area=GB&format=GeoPackage&redirect (oproad_gpkg_gb.zip, md5 2ee5d30899c4a44df321e5e1a66989ac)",
+        "retrievedAt": "2026-10-25T20:42:47Z",
+        "notes": "Links merged by road number and category, simplified at 60.0 m in EPSG:27700: 'strategic' = motorways and trunk roads (the national highway authorities' networks), 'primary' = other primary-route A roads. Lines show road corridors, not freight flows."
+      }
+    },
+    {
+      "id": "risk.water_stress",
+      "title": "Level of water stress by country (SDG 6.4.2, FAO AQUASTAT)",
+      "role": "statistical",
+      "path": "snapshots/2026-10-25/risk/water-stress.json",
+      "format": "json",
+      "schemaId": "risk-water-stress",
+      "sha256": "74fc89627957001cd80d513edd1b4ec1f46f724d767416267a3908d3845eeb63",
+      "bytes": 74049,
+      "sourceIds": [
+        "S30"
+      ],
+      "referencePeriod": "Latest year per country, 2021–2022; series from 2000",
+      "coverage": "178 countries with a value; 39 World Bank economies without one (listed)",
+      "provenance": "official_estimate",
+      "licence": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "attribution": "FAO AQUASTAT, via World Bank World Development Indicators (ER.H2O.FWST.ZS), CC BY 4.0",
+      "expectedCadence": "annual",
+      "retrieval": {
+        "method": "World Bank API v2 (fetch-reference --set stage6, GitHub Actions)",
+        "source": "https://api.worldbank.org/v2/country/all/indicator/ER.H2O.FWST.ZS?format=json&per_page=20000&date=2000:2025 (sha256 03827cc1c41a…); https://api.worldbank.org/v2/country?format=json&per_page=400 (sha256 c9acf3932785…)",
+        "retrievedAt": "2026-10-25T20:33:09Z",
+        "notes": "API last updated 2026-10-08. Values as published (rounded to 3 decimals); classes from FAO's SDG 6.4.2 thresholds. A national figure for the whole country."
+      }
+    },
+    {
       "id": "trade.bananas",
       "title": "Recorded UK imports: bananas (HS 0803)",
       "role": "statistical",
@@ -513,6 +696,15 @@
       "notes": "Context only (Evidence page caveat on the Netherlands dispatch effect). Not used for figures: it covers only trade where both origin and dispatch were declared."
     },
     {
+      "id": "S03",
+      "title": "United Kingdom Food Security Report 2024, theme 3 (food supply chain resilience): chart data",
+      "publisher": "Department for Environment, Food & Rural Affairs",
+      "url": "https://www.gov.uk/government/statistics/united-kingdom-food-security-report-2024",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Theme 3 dataset FSR-theme3-241211.ods: 3_2_2a food, feed and drink imports by port of entry (2022, 2023), 3_2_2b Short Straits share by food group, 3_2_1a average delay on England's Strategic Road Network. Values as published; next report due December 2027."
+    },
+    {
       "id": "S09",
       "title": "Horticulture statistics 2025",
       "publisher": "Department for Environment, Food & Rural Affairs",
@@ -546,7 +738,7 @@
       "url": "https://priorityplaces.cdrc.ac.uk/",
       "licence": "Open Government Licence v3.0",
       "status": "verified",
-      "notes": "Ranks and deciles within each nation (England 33,755 LSOAs, Wales 1,917, Scotland 6,976 Data Zones, Northern Ireland 890 SOAs 2011) for the combined index and seven domains; three domains have no Northern Ireland data. Decile 1 = highest priority: the publisher's documentation does not state the direction; it was checked against the deprivation indices. Never compared across nations. File provided by John (HASP download, 25 Oct 2026)."
+      "notes": "Ranks and deciles within each nation (England 33,755 LSOAs, Wales 1,917, Scotland 6,976 Data Zones (2011), Northern Ireland 890 SOAs 2011) for the combined index and seven domains; three domains have no Northern Ireland data. Decile 1 = highest priority: the publisher's documentation does not state the direction; it was checked against the deprivation indices. Never compared across nations. File provided by John (HASP download, 25 Oct 2026)."
     },
     {
       "id": "S14",
@@ -564,7 +756,7 @@
       "url": "https://geoportal.statistics.gov.uk/",
       "licence": "Open Government Licence v3.0",
       "status": "verified",
-      "notes": "Lower layer Super Output Areas (December 2021) BGC V5, population-weighted centroids V4 and the LSOA 2021 → ward 2025 → council 2025 lookup, for the Manchester deep profile. Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025."
+      "notes": "Lower layer Super Output Areas (December 2021) BGC V5, population-weighted centroids V4 and the LSOA 2021 → ward 2025 → council 2025 lookup, for the Manchester deep profile; the lookup for every LSOA assigns the Priority Places index to councils in England and Wales (Stage 6). Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025."
     },
     {
       "id": "S16",
@@ -612,6 +804,15 @@
       "notes": "England and Wales: ONS 2021 Rural Urban Classification of councils (LAD 2024) and LSOAs (2021). Northern Ireland: NISRA 2015 default urban/rural class per SOA (from the NIMDM 2017 file; no council-level class, no Census 2021-based edition). Scotland not included. Classifications differ by nation and are never compared."
     },
     {
+      "id": "S23",
+      "title": "Port freight annual statistics 2025 (PORT0499, PORT0304, major and minor port list)",
+      "publisher": "Department for Transport",
+      "url": "https://www.gov.uk/government/statistics/port-freight-annual-statistics-2025",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Accredited official statistics. PORT0499: major-port tonnage by year (2000-2025), direction, cargo group and category, and region and country of the port of load or unload; reconciled with PORT0304 for 2025. The port list gives UN/LOCODEs, nations and a rough map location for 27 of 53 statistical ports. Tonnage of all cargo: only 'agricultural products (eg grain, soya, tapioca)' is food- or feed-related; unitised traffic (containers, roll-on/roll-off) is not recorded by commodity."
+    },
+    {
       "id": "S24",
       "title": "Natural Earth Admin 0 countries (1:110m outlines, 1:50m label points)",
       "publisher": "Natural Earth",
@@ -637,6 +838,60 @@
       "licence": "Open Government Licence v3.0",
       "status": "verified",
       "notes": "Register of food businesses for the 11 Northern Ireland councils; used only to show grocers that GEOLYTIX does not map (supplementary layer, never counted in rates). A registration is not proof of a grocery offer or opening hours."
+    },
+    {
+      "id": "S30",
+      "title": "Level of water stress (SDG 6.4.2), FAO AQUASTAT, through the World Bank API",
+      "publisher": "Food and Agriculture Organization of the United Nations (AQUASTAT); World Bank (World Development Indicators)",
+      "url": "https://data.worldbank.org/indicator/ER.H2O.FWST.ZS",
+      "licence": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "status": "verified",
+      "notes": "Freshwater withdrawal as a percentage of available freshwater resources, by country; latest year 2022 (2021 for two countries). FAO's SDG 6.4.2 classes: no stress below 25 %, low, medium, high, critical above 100 %. A national figure for the whole country; it does not describe the growing region, season or irrigation of any import."
+    },
+    {
+      "id": "S31",
+      "title": "Structure of the agricultural industry in England and the UK at June: England regions and UK key results by country",
+      "publisher": "Department for Environment, Food & Rural Affairs",
+      "url": "https://www.gov.uk/government/statistical-data-sets/structure-of-the-agricultural-industry-in-england-and-the-uk-at-june",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "June 2025 survey results: wheat area, cattle, sheep, pigs and poultry for the 8 Defra regions of England (commercial holdings; London counted with the South East) and for Wales, Scotland and Northern Ireland (each country's own survey or census). England's regional cattle (commercial holdings) total less than the all-holdings England figure."
+    },
+    {
+      "id": "S32",
+      "title": "2011 Data Zone Lookup (Scotland)",
+      "publisher": "Scottish Government",
+      "url": "https://data.gov.scot/dataset/2011_data_zone_lookup",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Assigns Scotland's 6,976 2011 Data Zones (the geography of the Priority Places index in Scotland) to the 32 current councils. Windows-1252 text."
+    },
+    {
+      "id": "S33",
+      "title": "International Territorial Level 1 (January 2025) Boundaries UK BGC",
+      "publisher": "Office for National Statistics",
+      "url": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/ITL1_JAN_2025_UK_BGC/FeatureServer/0",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "12 ITL1 regions (EPSG:27700), used to draw Defra's agricultural statistics regions (London merged with the South East) and the three devolved countries. Contains OS data © Crown copyright and database right 2025."
+    },
+    {
+      "id": "S35",
+      "title": "OS Open Roads (Great Britain)",
+      "publisher": "Ordnance Survey",
+      "url": "https://api.os.uk/downloads/v1/products/OpenRoads/downloads",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "GeoPackage (about 1 GB) processed on GitHub Actions: motorways and trunk roads ('strategic': the national highway authorities' networks) and other primary-route A roads ('primary'), merged by road number and simplified at 60 m. Great Britain only. Road corridors, not freight flows. Contains OS data © Crown copyright and database right."
+    },
+    {
+      "id": "S36",
+      "title": "EMODnet Human Activities, Main ports: port locations",
+      "publisher": "EMODnet Human Activities (originators Eurofish International Organisation and Cogea Srl)",
+      "url": "https://emodnet.ec.europa.eu/geonetwork/srv/eng/catalog.search#/metadata/379d0425-8924-4a41-a088-1a002d2ea748",
+      "licence": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "status": "verified",
+      "notes": "Port points keyed by UN/LOCODE (as in DfT's port list), georeferenced from Eurostat GISCO 'Ports 2013' where possible, otherwise UN/LOCODE or other sources (recorded per port). Used only for DfT statistical ports without a DfT map location (24 of 51)."
     }
   ]
 }

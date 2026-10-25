@@ -1,0 +1,25 @@
+{
+  "id": "risk.port_entry",
+  "title": "Food, feed and drink imports by port of entry; Short Straits share by food group; SRN delay (UKFSR 2024)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-25/risk/port-entry.json",
+  "format": "json",
+  "schemaId": "risk-port-entry",
+  "sha256": "cb0be99b6121ba85aa36975c1e1d2a0885bdecdaf48b89cb9ed2d7b0ac6837d4",
+  "bytes": 4912,
+  "sourceIds": [
+    "S03"
+  ],
+  "referencePeriod": "Port of entry 2022 and 2023; SRN delay 2015-04 to 2023-12",
+  "coverage": "United Kingdom (port of entry); England (Strategic Road Network)",
+  "provenance": "official_estimate",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: Department for Environment, Food & Rural Affairs, licensed under the Open Government Licence v3.0",
+  "expectedCadence": "irregular",
+  "retrieval": {
+    "method": "Read offline from the committed UKFSR 2024 theme 3 chart data (fetch-reference --set stage6)",
+    "source": "https://assets.publishing.service.gov.uk/media/6756c6a1a63e1781efb87778/FSR-theme3-241211.ods (sha256 1ab86d002057…)",
+    "retrievedAt": "2026-10-25T20:33:13Z",
+    "notes": "Values as published in the UK Food Security Report 2024 (next report due December 2027)."
+  }
+}

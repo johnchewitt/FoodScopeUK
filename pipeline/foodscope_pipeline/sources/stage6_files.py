@@ -213,7 +213,10 @@ ONS_QUERIES: tuple[OnsQuery, ...] = (
 # motorways, A, B and C class roads, minor roads. OS Open Roads: OS Downloads API product list.
 OSNI_TRANSPORT = "https://services.spatialni.gov.uk/opendata/rest/services/OSNIVector/OSNIOpenData_Transport_50K/MapServer"
 
-PROBE_FILES: tuple[OnsFile, ...] = (
+# OSNI closed the connection to GitHub's runners in all three runs of 25 Oct 2026 ("Remote end
+# closed connection without response"); the sandbox cannot reach it either. Kept for a retry, but
+# not part of the stage6 set (docs/03-DATA-SOURCES.md, S34): Northern Ireland roads are not shown.
+OSNI_PROBE_FILES: tuple[OnsFile, ...] = (
     OnsFile(
         id="osni.transport50k_service",
         filename="osni-transport-50k-service.json",
@@ -232,6 +235,9 @@ PROBE_FILES: tuple[OnsFile, ...] = (
         description="OSNI Open Data 50K Transport: layer 2 metadata (fields, domains, record limits)",
         json_kind="any",
     ),
+)
+
+PROBE_FILES: tuple[OnsFile, ...] = (
     OnsFile(
         id="os.open_roads_downloads",
         filename="os-open-roads-downloads.json",
