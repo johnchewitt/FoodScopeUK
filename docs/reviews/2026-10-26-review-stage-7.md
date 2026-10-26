@@ -1,7 +1,7 @@
 # Review of Stage 7 (Scenario Lab): verification and five improvements
 
 - Date: 26 October 2026
-- Branch: `review/stage-7`, from `stage/7-scenario-lab` (PR #22, d6c0d33). Committed locally, not pushed or deployed (John's instruction).
+- Branch: `review/stage-7`, from `stage/7-scenario-lab` (PR #22, d6c0d33). Committed locally first (John's instruction), then pushed with his agreement as PR #23 to main.
 - Brief (John): "Review the completed FOODSCOPE UK development stage as a principal ArcGIS engineer, senior React developer, award-winning UX designer and UK food-security data analyst." Verify the new functionality and its data; implement the five highest-impact improvements without breaking anything; validate spatial operations, statistics, field mappings and attribution; check mobile, tablet, loading states, accessibility and map responsiveness; run every check; update the documentation and the roadmap; commit; do not begin Stage 8.
 
 ## Merge state found
@@ -131,7 +131,7 @@ Opening Scenario B still runs one long task: parsing and validating the closure 
 - **Other browsers:** only Chromium was used.
 
 ## 8. Recommendations before Stage 8
-1. **Get Stage 7 onto main.** Push `review/stage-7`, open a pull request to main and check its base, then run the live checks (B48, B64) on the deployed site.
+1. **Get Stage 7 onto main.** Merge PR #23 (base main), then run the live checks (B48, B64) on the deployed site.
 2. **Measure B59 on a real phone.** If opening Scenario B blocks for more than about 200 ms there, move the closure inputs to typed-array columns parsed in a worker.
 3. **Settle B56 and B57 with John** (several closures at once; the Short Straits) before the Stage 8 brief: both change what the Consulting Insights pages could cite.
 4. **Fix the shared mobile layout** (B61) in Stage 9 hardening; it affects every map-led module.

@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | 04 — Staged delivery plan |
-| **Version** | 0.9 — 26 October 2026 (review of Stage 7: five improvements on `review/stage-7`, docs/reviews/2026-10-26-review-stage-7.md; Stage 7's module PR #22 merged into `data/stage-7-inputs`, not main, so it is not deployed yet. Earlier the same day, 0.8: the sixteen Food Origins baskets: data step on `data/trade-16-baskets`, gate G3 cleared, §5.3 item done. Earlier the same day, 0.7: Stage 6 merged to main through PR #17 and deployed; Northern Ireland road corridors from OpenStreetMap, S38, gate G16 cleared. Earlier, 0.6 — 25 October 2026: Stage 6 Risk Explorer built on `stage/6-risk-explorer`, awaiting review; earlier the same day, 0.5: Stages renumbered for John's Stage 6 brief: 6 Risk Explorer, 7 Scenario Lab, 8 Consulting Insights, 9 Hardening and Release 1; Stage 6 data step built, gates G6 and G14–G18 recorded) |
+| **Version** | 0.9 — 26 October 2026 (review of Stage 7: five improvements on `review/stage-7`, docs/reviews/2026-10-26-review-stage-7.md; Stage 7's module PR #22 merged into `data/stage-7-inputs`, not main, so it reaches main with the review through PR #23. Earlier the same day, 0.8: the sixteen Food Origins baskets: data step on `data/trade-16-baskets`, gate G3 cleared, §5.3 item done. Earlier the same day, 0.7: Stage 6 merged to main through PR #17 and deployed; Northern Ireland road corridors from OpenStreetMap, S38, gate G16 cleared. Earlier, 0.6 — 25 October 2026: Stage 6 Risk Explorer built on `stage/6-risk-explorer`, awaiting review; earlier the same day, 0.5: Stages renumbered for John's Stage 6 brief: 6 Risk Explorer, 7 Scenario Lab, 8 Consulting Insights, 9 Hardening and Release 1; Stage 6 data step built, gates G6 and G14–G18 recorded) |
 | **Approach** | Small, demonstrable stages. Each stage ends with working software, passing checks and a short stage report. No stage starts while its verification gates are open. |
 
 ---
@@ -19,7 +19,7 @@
 | **4** | **Supermarket network** ✅ merged (PR #9) and deployed | R1 | 3, G7 ✅, and the LAD/GEOLYTIX data built in the pre-Stage 4 data step (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth; basemap choice: dark grey, light grey, imagery (SH-08) |
 | **5** | **Local Authority Profiles** ✅ merged (PR #14) and deployed | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
 | **6** | **UK Food Resilience — Risk Explorer** (supply exposure, logistics, community access) ✅ merged (PRs #15 and #17) and deployed; live checks to do | R1 | 2, 3, 5, G6, G14–G18 | Tomatoes: concentration, partners' water stress and an estimated exposure to one supplier; ports and road corridors; councils' priority places within each nation — each with "Explain this risk" |
-| 7 | Scenario Lab (import disruption, store closure; port and production shocks as far as the data allows) — data step PR #21 merged to main; module PR #22 merged into the data branch, not main; review on `review/stage-7`, not pushed | R1 | 3, 5, 6, G19 | Spanish tomato preset; close a supermarket anywhere in the UK and see the nearest-store change for every small area |
+| 7 | Scenario Lab (import disruption, store closure; port and production shocks as far as the data allows) — data step PR #21 merged to main; module PR #22 merged into the data branch, not main; module and review to main as PR #23 | R1 | 3, 5, 6, G19 | Spanish tomato preset; close a supermarket anywhere in the UK and see the nearest-store change for every small area |
 | 8 | Consulting Insights + PDF export | R1 | 5, 6, 7, D3, D7 | One-click profile PDF that matches the screen |
 | 9 | Hardening and Release 1 | R1 | 1–8 | Release 1 tagged and deployed; acceptance criteria evidenced |
 | 10 | Release 2 | R2 | 9 | National access layers, Scenarios B/C, Ask FOODSCOPE, 3D globe |
@@ -309,7 +309,7 @@ Status later on 26 October 2026:
 - **Merges.**
   - PR #21 (data) merged to main.
   - PR #22 (module) merged into `data/stage-7-inputs` after #21 had merged. GitHub did not retarget it because the data branch was kept, so main and the live site do not have the Scenario Lab yet.
-  - A pull request from `review/stage-7` (or from `data/stage-7-inputs`) to main is needed. It has not been pushed: John asked for a local commit only.
+  - A pull request from `review/stage-7` to main was needed. With John's agreement it was pushed as **PR #23** (base main), which carries Stage 7 and the review.
 - **Review.** John asked for a review as principal ArcGIS engineer, senior React developer, UX designer and food-security analyst. The data verification and five improvements are in `docs/reviews/2026-10-26-review-stage-7.md`:
   - Scenario D charts the disrupted months and names agricultural dry bulk;
   - Scenario A's baseline outline is visible;
