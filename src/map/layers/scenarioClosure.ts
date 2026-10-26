@@ -7,6 +7,7 @@ import SimpleLineSymbol from "@arcgis/core/symbols/SimpleLineSymbol";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
 import {
   selectMapColourStyle,
+  selectMapModule,
   selectReducedMotion,
   type AppState,
   type HoverScenario,
@@ -77,7 +78,7 @@ export class ScenarioClosureController implements LayerController {
 
   update(state: AppState): void {
     const m = state.scenarioMap;
-    const visible = state.module === "scenarios" && state.scenarioKind === "closure" && m !== null;
+    const visible = selectMapModule(state) === "scenarios" && state.scenarioKind === "closure" && m !== null;
     if (visible !== this.visible) {
       this.visible = visible;
       if (this.layer) this.layer.visible = visible;

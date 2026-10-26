@@ -9,7 +9,13 @@ import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
 import SimpleLineSymbol from "@arcgis/core/symbols/SimpleLineSymbol";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
 import { hexToRgb } from "@/analysis/colour";
-import { selectMapColourStyle, type AppState, type HoverRisk, type RiskMapModel } from "@/state/store";
+import {
+  selectMapColourStyle,
+  selectMapModule,
+  type AppState,
+  type HoverRisk,
+  type RiskMapModel,
+} from "@/state/store";
 import { MAP_COLOURS, type MapStyle } from "@/styles/palette";
 import { ensureHoverHighlight, HOVER_HIGHLIGHT } from "../highlight";
 import { createCreditLayer, type CreditLayer } from "./creditLayer";
@@ -157,8 +163,8 @@ export class RiskLogisticsController implements LayerController {
     // Also the Scenario Lab's port disruption (Scenario D), which publishes its own model.
     const visible =
       m !== null &&
-      ((state.module === "risks" && state.riskView === "logistics") ||
-        (state.module === "scenarios" && state.scenarioKind === "port"));
+      ((selectMapModule(state) === "risks" && state.riskView === "logistics") ||
+        (selectMapModule(state) === "scenarios" && state.scenarioKind === "port"));
     if (visible !== this.visible) {
       this.visible = visible;
       for (const l of this.layers()) l.visible = visible;

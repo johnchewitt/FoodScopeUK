@@ -5,6 +5,7 @@ import {
   selectImageryAvailable,
   selectLocalScale,
   selectMapColourStyle,
+  selectMapModule,
   selectReducedMotion,
   selectRequestedMapStyle,
   selectTradeMapModule,
@@ -338,5 +339,38 @@ describe("Risk Explorer selection (RK-01 – RK-04)", () => {
       rankNation: "Wales",
       lad: "W06000015",
     });
+  });
+});
+
+describe("Consulting Insights map (Stage 8, ADR-0027)", () => {
+  it("shows the map of the module each assessment draws on", () => {
+    expect(selectMapModule({ module: "origins" })).toBe("origins");
+    expect(selectMapModule({ module: "insights", insightsKind: "authority" })).toBe("profiles");
+    expect(selectMapModule({ module: "insights", insightsKind: "commodity" })).toBe("origins");
+    expect(selectMapModule({ module: "insights", insightsKind: "scenario" })).toBe("scenarios");
+    const base = { riskView: "supply" as const, scenarioKind: "import" as const };
+    expect(selectTradeMapModule({ ...base, module: "insights", insightsKind: "commodity" })).toBe(true);
+    expect(selectTradeMapModule({ ...base, module: "insights", insightsKind: "scenario" })).toBe(true);
+    expect(selectTradeMapModule({ ...base, module: "insights", insightsKind: "authority" })).toBe(false);
+    expect(
+      selectTradeMapModule({
+        ...base,
+        scenarioKind: "closure",
+        module: "insights",
+        insightsKind: "scenario",
+      }),
+    ).toBe(false);
+  });
+
+  it("offers imagery at local scale for council and scenario assessments", () => {
+    const local = { mapView: { zoom: LOCAL_ZOOM + 1, center: [0, 0] as [number, number] } };
+    expect(selectImageryAvailable({ ...local, module: "insights", insightsKind: "authority" })).toBe(true);
+    expect(selectImageryAvailable({ ...local, module: "insights", insightsKind: "commodity" })).toBe(false);
+  });
+
+  it("changes the assessment type and clears hovers", () => {
+    s().setInsightsKind("commodity");
+    expect(s().insightsKind).toBe("commodity");
+    expect(selectUrlState(s()).insightsKind).toBe("commodity");
   });
 });

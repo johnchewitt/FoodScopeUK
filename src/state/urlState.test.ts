@@ -357,3 +357,21 @@ describe("Scenario Lab state (SC-05)", () => {
     );
   });
 });
+
+describe("Consulting Insights URL state (CI-02, Stage 8)", () => {
+  it("reads and writes the assessment type, defaulting to a local authority", () => {
+    expect(parseUrlState("?m=insights").insightsKind).toBe("authority");
+    expect(parseUrlState("?m=insights&ia=commodity").insightsKind).toBe("commodity");
+    expect(parseUrlState("?m=insights&ia=scenario").insightsKind).toBe("scenario");
+    expect(parseUrlState("?m=insights&ia=report").insightsKind).toBe("authority");
+    expect(
+      serializeUrlState({ ...DEFAULT_URL_STATE, module: "insights", insightsKind: "commodity" }),
+    ).toContain("ia=commodity");
+    expect(serializeUrlState({ ...DEFAULT_URL_STATE, module: "insights" })).not.toContain("ia=");
+  });
+
+  it("pushes a history entry when the assessment type changes", () => {
+    const a = { ...DEFAULT_URL_STATE, module: "insights" as const };
+    expect(historyModeFor(a, { ...a, insightsKind: "scenario" })).toBe("push");
+  });
+});

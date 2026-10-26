@@ -12,6 +12,7 @@ import {
   type CouncilLayer,
   type FarmLayer,
   type HeatmapMode,
+  type InsightsKind,
   type Measure,
   type Nation,
   type Overlay,
@@ -179,6 +180,8 @@ export interface AppState extends UrlState {
   /** Restores the current kind's default settings. */
   restoreScenarioDefaults: () => void;
   setScenarioView: (view: ScenarioView) => void;
+  /** ConsultingWhere Insights (CI-02): the assessment type; the map follows the module it draws on. */
+  setInsightsKind: (kind: InsightsKind) => void;
   setScenarioMap: (model: ScenarioClosureMapModel | null) => void;
   setHoverScenario: (hover: HoverScenario | null) => void;
 
@@ -467,15 +470,32 @@ export interface HoverScenario {
 }
 
 /**
- * True when the trade map (partners and connections) is drawn: Food Origins, Seasonal, Risk
- * Explorer supply, and the Scenario Lab's international supply disruption (Scenario A).
+ * The module whose map the view shows. Consulting Insights has no map of its own: each assessment
+ * shows the map of the module it draws on (a council's profile, a commodity's recorded partners,
+ * the scenario's map), so the existing layer controllers draw it unchanged (Stage 8, ADR-0027).
  */
-export function selectTradeMapModule(s: Pick<AppState, "module" | "riskView" | "scenarioKind">): boolean {
+export function selectMapModule(
+  s: Pick<AppState, "module"> & Partial<Pick<AppState, "insightsKind">>,
+): ModuleId {
+  if (s.module !== "insights") return s.module;
+  const kind = s.insightsKind ?? "authority";
+  return kind === "authority" ? "profiles" : kind === "commodity" ? "origins" : "scenarios";
+}
+
+/**
+ * True when the trade map (partners and connections) is drawn: Food Origins, Seasonal, Risk
+ * Explorer supply, the Scenario Lab's international supply disruption (Scenario A), and the
+ * commodity and Scenario A assessments of Consulting Insights.
+ */
+export function selectTradeMapModule(
+  s: Pick<AppState, "module" | "riskView" | "scenarioKind"> & Partial<Pick<AppState, "insightsKind">>,
+): boolean {
+  const module = selectMapModule(s);
   return (
-    s.module === "origins" ||
-    s.module === "seasonal" ||
-    (s.module === "risks" && s.riskView === "supply") ||
-    (s.module === "scenarios" && s.scenarioKind === "import")
+    module === "origins" ||
+    module === "seasonal" ||
+    (module === "risks" && s.riskView === "supply") ||
+    (module === "scenarios" && s.scenarioKind === "import")
   );
 }
 
@@ -663,6 +683,12 @@ export const useAppStore = create<AppState>()((set, get) => ({
   resetScenarioToBaseline: () => set((s) => baselineFor(s.scenarioKind)),
   restoreScenarioDefaults: () => set((s) => defaultsFor(s.scenarioKind)),
   setScenarioView: (scenarioView) => set({ scenarioView }),
+  setInsightsKind: (insightsKind) =>
+    set((s) =>
+      s.insightsKind === insightsKind
+        ? {}
+        : { insightsKind, hoverScenario: null, hoverPartner: null, hoverAccess: null, hoverRisk: null },
+    ),
   setScenarioMap: (scenarioMap) => set({ scenarioMap }),
   setHoverScenario: (hoverScenario) => set({ hoverScenario }),
   setMapView: (mapView) => {
@@ -777,6 +803,7 @@ export function selectUrlState(s: AppState): UrlState {
     portReduction: s.portReduction,
     portMonths: s.portMonths,
     scenarioView: s.scenarioView,
+    insightsKind: s.insightsKind,
   };
 }
 
@@ -795,8 +822,10 @@ export function selectLocalScale(s: Pick<AppState, "mapView">): boolean {
 }
 
 /** True when imagery can be shown: a local-scale module, zoomed in to local scale. */
-export function selectImageryAvailable(s: Pick<AppState, "module" | "mapView">): boolean {
-  return IMAGERY_MODULES.includes(s.module) && selectLocalScale(s);
+export function selectImageryAvailable(
+  s: Pick<AppState, "module" | "mapView"> & Partial<Pick<AppState, "insightsKind">>,
+): boolean {
+  return IMAGERY_MODULES.includes(selectMapModule(s)) && selectLocalScale(s);
 }
 
 /**
