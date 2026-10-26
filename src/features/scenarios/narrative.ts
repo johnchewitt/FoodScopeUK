@@ -25,7 +25,9 @@ export function formatDelta(value: number | null, unit: string): string {
     case "HHI":
       return `${sign}${formatHhi(abs)}`;
     case "km (straight-line)":
-      return `${sign}${formatKm(abs)}`;
+      // P13: a real change below the 0.1 km display step is "< 0.1 km", never "+0.0 km" beside a
+      // non-zero relative change (e.g. 0.70 km to 0.74 km, +6.1 %).
+      return sign !== "±" && abs < 0.05 ? `${sign}< 0.1 km` : `${sign}${formatKm(abs)}`;
     case "residents (small areas)":
       return `${sign}${formatPopulation(abs, "small_area")}`;
     default:

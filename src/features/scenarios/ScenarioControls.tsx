@@ -22,7 +22,17 @@ const ICONS: Record<ScenarioKind, typeof Ship> = {
   port: Anchor,
 };
 
-/** The four scenarios as selectable cards (one radio group; arrows, Home and End move). */
+/** Visible tile title: the full title when it is short, else its short form (the full title is the name). */
+function tileTitle(k: ScenarioKind): string {
+  const t = SCENARIO_TITLES[k];
+  return t.title.length <= 20 ? t.title : t.short;
+}
+
+/**
+ * The four scenarios as a compact 2 × 2 picker (one radio group; arrows, Home and End move). The
+ * active scenario's full title and description sit under the tiles, so the settings start higher
+ * in the panel on laptops and tablets (review of Stage 7).
+ */
 function ScenarioCards() {
   const kind = useAppStore((s) => s.scenarioKind);
   const setKind = useAppStore((s) => s.setScenarioKind);
@@ -49,7 +59,12 @@ function ScenarioCards() {
       <h3 id="scenario-kind-heading" className="panel-section__title">
         Scenario
       </h3>
-      <div className="scenario-cards" role="radiogroup" aria-labelledby="scenario-kind-heading">
+      <div
+        className="scenario-cards scenario-cards--compact"
+        role="radiogroup"
+        aria-labelledby="scenario-kind-heading"
+        aria-describedby="scenario-kind-hint"
+      >
         {SCENARIO_KINDS.map((k, i) => {
           const Icon = ICONS[k];
           const t = SCENARIO_TITLES[k];
@@ -62,6 +77,8 @@ function ScenarioCards() {
               type="button"
               role="radio"
               aria-checked={kind === k}
+              aria-label={t.title}
+              title={`${SCENARIO_LETTERS[k]} · ${t.title}: ${t.hint}`}
               tabIndex={kind === k ? 0 : -1}
               className="scenario-card"
               data-kind={k}
@@ -71,15 +88,20 @@ function ScenarioCards() {
               <span className="scenario-card__letter" aria-hidden="true">
                 {SCENARIO_LETTERS[k]}
               </span>
-              <Icon size={16} className="scenario-card__icon" aria-hidden="true" />
-              <span className="scenario-card__text">
-                <span className="scenario-card__title">{t.title}</span>
-                <span className="scenario-card__hint">{t.hint}</span>
+              <Icon size={15} className="scenario-card__icon" aria-hidden="true" />
+              <span className="scenario-card__title" aria-hidden="true">
+                {tileTitle(k)}
               </span>
             </button>
           );
         })}
       </div>
+      <p id="scenario-kind-hint" className="scenario-cards__hint">
+        <strong>
+          {SCENARIO_LETTERS[kind]} · {SCENARIO_TITLES[kind].title}.
+        </strong>{" "}
+        {SCENARIO_TITLES[kind].hint}.
+      </p>
     </section>
   );
 }

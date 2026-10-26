@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "@/app/App";
@@ -94,6 +94,16 @@ describe("Scenario Lab", { timeout: 90_000 }, () => {
     });
     expect(await within(kpis()).findByText("22.6 kt", {}, T)).toBeInTheDocument();
     expect(window.location.search).toContain("sr=100");
+    // Review (WCAG 4.1.3): the new result is announced once the setting rests, not on first display.
+    const status = within(kpis()).getByRole("status");
+    expect(status).toBeEmptyDOMElement();
+    await waitFor(
+      () =>
+        expect(status).toHaveTextContent(
+          /^Scenario A updated\. Recorded imports affected: 22\.6 kt; Share of recorded imports affected: 22\.4 %\.$/,
+        ),
+      T,
+    );
     auditWording(document.body.textContent ?? "");
   });
 
@@ -130,6 +140,11 @@ describe("Scenario Lab", { timeout: 90_000 }, () => {
     expect(kpi("Average extra distance (straight-line)")).toHaveTextContent("0.8 km");
     expect(kpi("Supermarkets within 2 km")).toHaveTextContent("2");
     expect(kpi(/Residents > 2 km/)).toHaveTextContent("4,560");
+    // Review: cards show short labels; the full label stays each card's accessible name.
+    expect(kpi("Supermarkets within 2 km")).toHaveTextContent("Supermarkets ≤ 2 km");
+    expect(kpi(/Residents > 2 km/)).toHaveTextContent("Manchester · 0 before · straight-line");
+    // The compact picker describes the active scenario under its tiles.
+    expect(cards).toHaveAccessibleDescription(/B · Supermarket closure\. One supermarket closes/);
     expect(window.location.search).toContain("st=1010002389");
     // The map: affected areas (closure layer) and the supermarkets and councils (Access layers).
     const s = useAppStore.getState();
@@ -173,6 +188,10 @@ describe("Scenario Lab", { timeout: 90_000 }, () => {
     expect(await within(kpis()).findByText("521.4 kt", {}, T)).toBeInTheDocument();
     expect(kpi("Share of UK major-port inwards")).toHaveTextContent("2.6 %");
     expect(kpi("Food, feed and drink entry share")).toHaveTextContent("Not applicable");
+    // Review: Dover's zero is agricultural dry bulk only, beside its Ro-Ro and container share.
+    expect(kpi("Agricultural dry bulk affected")).toHaveTextContent(
+      /None recorded as dry bulk · 97\.6 % of inwards here is Ro-Ro or containers/,
+    );
     expect(within(insights()).getAllByText(/includes the Channel Tunnel/).length).toBeGreaterThan(0);
     const dover = useAppStore.getState().riskMap?.ports.find((p) => p.locode === "GBDVR");
     expect(dover?.scenarioRadius).toBeLessThan(dover?.radius ?? 0);

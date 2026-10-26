@@ -59,7 +59,7 @@ export function ScenarioKpisLazy() {
   return (
     <Suspense
       fallback={KPI_LABELS[kind].map((l) => (
-        <KpiCard key={l} label={l} state="loading" />
+        <KpiCard key={l.label} label={l.label} shortLabel={l.short} state="loading" />
       ))}
     >
       <Kpis />

@@ -9,6 +9,11 @@ export type KpiState = "loading" | "empty" | "error" | "ready";
 
 interface Props {
   label: string;
+  /**
+   * A shorter visible label for cards whose full label would be cut off on laptops and tablets. The
+   * full label stays the card's accessible name and leads the label's tooltip.
+   */
+  shortLabel?: string;
   state: KpiState;
   indicator?: Indicator<number | string> | null;
   /** Explains an empty or error state. */
@@ -27,6 +32,7 @@ interface Props {
 /** Floating KPI card. Shows a value only when a provenance-complete indicator is supplied. */
 export function KpiCard({
   label,
+  shortLabel,
   state,
   indicator,
   note,
@@ -42,8 +48,22 @@ export function KpiCard({
       data-state={state}
       data-caution={showCaution ? "true" : undefined}
     >
-      <h3 className="kpi-card__label" title={indicator?.method ?? label}>
-        <span className="kpi-card__label-text">{label}</span>
+      <h3
+        className="kpi-card__label"
+        title={
+          shortLabel && shortLabel !== label
+            ? `${label}${indicator?.method ? `. ${indicator.method}` : ""}`
+            : (indicator?.method ?? label)
+        }
+      >
+        {shortLabel && shortLabel !== label ? (
+          <span className="kpi-card__label-text">
+            <span aria-hidden="true">{shortLabel}</span>
+            <span className="visually-hidden">{label}</span>
+          </span>
+        ) : (
+          <span className="kpi-card__label-text">{label}</span>
+        )}
         {showCaution && (
           <span className="kpi-card__caution" role="img" aria-label={`Caution: ${caution}`} title={caution!}>
             <TriangleAlert size={13} aria-hidden="true" />

@@ -3021,8 +3021,13 @@ li[data-hidden-at-scale] .grocer-symbol {
 }
 .field-pair {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, …): a select's 130 px minimum must not push the pair past the panel (1366 px). */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 8px;
+}
+.field-pair .select {
+  min-width: 0;
+  width: 100%;
 }
 .unavailable-list {
   display: grid;
@@ -3216,6 +3221,56 @@ li[data-hidden-at-scale] .grocer-symbol {
 }
 .scenario-slider {
   margin-top: 6px;
+  /* .field-row's space-between sized the grid column to the label, so tracks differed in length. */
+  grid-template-columns: minmax(0, 1fr);
+}
+.scenario-slider .range {
+  width: 100%;
+}
+/* Touch: a 24 px hit area for the slider (WCAG 2.5.8), the track unchanged. */
+@media (pointer: coarse) {
+  .scenario-slider .range {
+    min-height: 28px;
+  }
+}
+/* Compact 2 × 2 scenario picker (review of Stage 7): letter, icon and short title per tile. */
+.scenario-cards--compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.scenario-cards--compact .scenario-card {
+  /* Letter and icon on top, the title under them: two-word titles fit 126 px tiles (1366 px). */
+  grid-template-columns: 20px minmax(0, 1fr);
+  grid-template-areas:
+    "letter icon"
+    "title title";
+  align-items: center;
+  align-content: start;
+  min-height: 44px;
+  padding: 7px 8px 8px;
+  column-gap: 6px;
+  row-gap: 5px;
+}
+.scenario-cards--compact .scenario-card__letter {
+  grid-area: letter;
+}
+.scenario-cards--compact .scenario-card__icon {
+  grid-area: icon;
+  margin-top: 0;
+}
+.scenario-cards--compact .scenario-card__title {
+  grid-area: title;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+.scenario-cards__hint {
+  margin: 8px 0 0;
+  font-size: var(--fs-text-xs);
+  line-height: 1.4;
+  color: var(--fs-text-muted);
+}
+.scenario-cards__hint strong {
+  color: var(--fs-text);
+  font-weight: 600;
 }
 .scenario-store {
   display: grid;

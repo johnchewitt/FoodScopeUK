@@ -1021,7 +1021,7 @@ export function buildClosureModel(
       detail:
         result.maxIncrease === null
           ? "No area's nearest supermarket changes"
-          : `Up to ${formatKm(result.maxIncrease / 1000)} · population-weighted · not travel time`,
+          : `Average · up to ${formatKm(result.maxIncrease / 1000)} · population-weighted · not travel time`,
     },
     {
       id: "nearby",
@@ -1033,7 +1033,7 @@ export function buildClosureModel(
       id: "beyond",
       label: `Residents > 2 km, ${council.name}`,
       indicator: beyond(t2, "after"),
-      detail: `${t2.before.toLocaleString("en-GB")} before · straight-line · council`,
+      detail: `${council.name} · ${t2.before.toLocaleString("en-GB")} before · straight-line`,
     },
   ];
 
