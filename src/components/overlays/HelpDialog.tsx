@@ -61,9 +61,11 @@ export function HelpDialog() {
               2019). UK Food Access maps GEOLYTIX grocery stores (June 2026) with stores per 10,000 residents
               by council (ONS mid-2025) and straight-line distances from a point you choose. Local Authority
               Profiles bring each council&rsquo;s figures together, and the Risk Explorer shows supply
-              exposure, logistics and community access as separate views. The Scenario Lab and Consulting
-              Insights do not load statistics yet: each panel says which build stage adds its data, and no
-              placeholder figures are shown.
+              exposure, logistics and community access as separate views. The Scenario Lab runs transparent
+              what-if calculations on those published baselines: a recorded import partner&rsquo;s disruption,
+              a supermarket closure, a domestic production shock and a port disruption, each labelled
+              Scenario-modelled with its assumptions and method. Consulting Insights does not load statistics
+              yet, and no placeholder figures are shown.
             </p>
           </section>
         </div>

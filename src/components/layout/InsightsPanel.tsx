@@ -10,6 +10,7 @@ import { OriginsInsights } from "@/features/origins/OriginsInsights";
 import { AccessInsightsLazy } from "@/features/access/lazy";
 import { ProfileInsightsLazy } from "@/features/profiles/lazy";
 import { RiskInsightsLazy } from "@/features/risks/lazy";
+import { ScenarioInsightsLazy } from "@/features/scenarios/lazy";
 import { SeasonalInsightsLazy } from "@/features/seasonal/lazy";
 import { BASEMAP_STATUS_ID, REFERENCE_DATASET_ID, REFERENCE_LAYER_ID } from "@/map/layerIds";
 import { basemapMode, readArcgisEnv } from "@/services/arcgis/env";
@@ -66,6 +67,7 @@ export function InsightsPanel() {
   const contextSnapshot = familySnapshot(manifest.data, "context");
   const registerSnapshot = familySnapshot(manifest.data, "register");
   const riskSnapshot = familySnapshot(manifest.data, "risk");
+  const scenarioSnapshot = familySnapshot(manifest.data, "scenario");
 
   const failed: string[] = [];
   if (config.isError) failed.push("app configuration (defaults used)");
@@ -110,6 +112,10 @@ export function InsightsPanel() {
         ) : module === "risks" ? (
           <ErrorBoundary region="Risk Explorer">
             <RiskInsightsLazy />
+          </ErrorBoundary>
+        ) : module === "scenarios" ? (
+          <ErrorBoundary region="Scenario Lab">
+            <ScenarioInsightsLazy />
           </ErrorBoundary>
         ) : (
           <section className="panel-section" aria-labelledby="about-heading">
@@ -181,6 +187,13 @@ export function InsightsPanel() {
                   detail="FAO water stress (World Bank), DfT major ports 2015–2025, UKFSR 2024 port and road evidence, OS Open Roads, Defra June survey 2025 by region and the Priority Places for Food Index by council. Used by the Risk Explorer."
                 />
               )}
+              {scenarioSnapshot && (
+                <StatusItem
+                  tone="ok"
+                  title={`Scenario inputs snapshot ${scenarioSnapshot}`}
+                  detail="Every small area of the UK (LSOAs 2021, Data Zones 2022 and 2021) with its Census population and three nearest supermarkets by straight line. Used by the Scenario Lab's supermarket closure."
+                />
+              )}
               {manifest.isError ? (
                 <StatusItem
                   tone="warn"
@@ -242,7 +255,8 @@ export function InsightsPanel() {
           module !== "seasonal" &&
           module !== "access" &&
           module !== "profiles" &&
-          module !== "risks" && (
+          module !== "risks" &&
+          module !== "scenarios" && (
             <section className="panel-section">
               <ChartFrame
                 title="Trend"

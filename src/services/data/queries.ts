@@ -79,6 +79,8 @@ export const FAMILY_LABELS: Record<string, string> = {
   areas: "Small areas",
   context: "Council context and UK production",
   register: "NI food register",
+  risk: "Risk evidence",
+  scenario: "Scenario inputs",
 };
 
 /** Shorter family names for the compact freshness pill (tablet header). */
