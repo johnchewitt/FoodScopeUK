@@ -20,8 +20,11 @@ import {
   type PpfiMeasure,
   type RiskFill,
   type RiskView,
+  type ScenarioKind,
+  type ScenarioView,
   type UrlState,
 } from "./urlState";
+import { baselineFor, defaultsFor, stateFromParams, type ScenarioParams } from "./scenarioParams";
 
 export type MapStatus = "idle" | "loading" | "ready" | "error";
 export type LayerStatus = "loading" | "ready" | "error";
@@ -94,6 +97,11 @@ export interface AppState extends UrlState {
   /** Port or farming region under the pointer on the logistics map (not in the URL). */
   hoverRisk: HoverRisk | null;
 
+  /** Scenario Lab closure map model (serialisable; written by the feature, read by the map). */
+  scenarioMap: ScenarioClosureMapModel | null;
+  /** Small area under the pointer on the closure map (not in the URL). */
+  hoverScenario: HoverScenario | null;
+
   // Actions
   setModule: (module: ModuleId) => void;
   setMonth: (month: number | null) => void;
@@ -161,6 +169,19 @@ export interface AppState extends UrlState {
   setRiskMap: (model: RiskMapModel | null) => void;
   setHoverRisk: (hover: HoverRisk | null) => void;
 
+  setScenarioKind: (kind: ScenarioKind) => void;
+  /** Changes some of the current scenario's settings (only the scenario fields are taken). */
+  updateScenario: (patch: Partial<Pick<UrlState, ScenarioField>>) => void;
+  /** Applies a whole scenario (a preset or a saved scenario): kind and settings. */
+  applyScenario: (params: ScenarioParams) => void;
+  /** Removes the disruption of the current kind (SC-03): the scenario equals the baseline. */
+  resetScenarioToBaseline: () => void;
+  /** Restores the current kind's default settings. */
+  restoreScenarioDefaults: () => void;
+  setScenarioView: (view: ScenarioView) => void;
+  setScenarioMap: (model: ScenarioClosureMapModel | null) => void;
+  setHoverScenario: (hover: HoverScenario | null) => void;
+
   setBreakpoint: (bp: Breakpoint) => void;
   toggleFilterPanel: (open?: boolean) => void;
   toggleInsights: (open?: boolean) => void;
@@ -173,6 +194,40 @@ export interface AppState extends UrlState {
   setLayerStatus: (layerId: string, status: LayerStatus, message?: string) => void;
   issueMapCommand: (command: MapCommandInput) => void;
 }
+
+/** URL fields a scenario may change (SC-05). */
+export type ScenarioField =
+  | "commodity"
+  | "partner"
+  | "measure"
+  | "store"
+  | "port"
+  | "scenarioYear"
+  | "scenarioMonth"
+  | "scenarioReduction"
+  | "scenarioDuration"
+  | "scenarioRecovery"
+  | "scenarioSubstitution"
+  | "productionReduction"
+  | "portReduction"
+  | "portMonths";
+
+const SCENARIO_FIELDS: readonly ScenarioField[] = [
+  "commodity",
+  "partner",
+  "measure",
+  "store",
+  "port",
+  "scenarioYear",
+  "scenarioMonth",
+  "scenarioReduction",
+  "scenarioDuration",
+  "scenarioRecovery",
+  "scenarioSubstitution",
+  "productionReduction",
+  "portReduction",
+  "portMonths",
+];
 
 /** Country under the pointer on the Food Origins map (key = partner key or ISO code). */
 export interface HoverPartner {
@@ -203,6 +258,11 @@ export interface OriginsMapPartner {
    * (1 = no stress … 5 = critical), or null for a partner without a value (no-data hatch).
    */
   stressClass?: number | null;
+  /**
+   * Scenario Lab (Scenario A): the connection's baseline width, drawn as a dashed outline behind
+   * the scenario's narrower connection, so the reduction is seen against what was recorded.
+   */
+  ghostWidth?: number;
 }
 
 export interface OriginsMapModel {
@@ -290,7 +350,7 @@ export interface AccessMapModel {
    * comparison councils dashed; no choropleth or proximity tool); or the Risk Explorer's community
    * access view (councils shaded by the Priority Places share on the risk ramp; no stores).
    */
-  mode: "access" | "profile" | "risk";
+  mode: "access" | "profile" | "risk" | "scenario";
   /** Comparison councils (profile mode). */
   compareCouncils: string[];
   /** NI grocers from the FSA register (S29) when the supplementary layer is on; never in any rate. */
@@ -336,6 +396,11 @@ export interface RiskMapPort {
   valueText: string;
   /** Linked to a UKFSR port-of-entry group (food, feed and drink imports, S03). */
   foodEntry: boolean;
+  /**
+   * Scenario Lab (Scenario D): the symbol radius after the capacity reduction; the baseline radius
+   * is then drawn as a dashed ring around it.
+   */
+  scenarioRadius?: number;
 }
 
 /** Risk Explorer logistics map (RK-03; serialisable, built by the feature from validated data). */
@@ -365,15 +430,59 @@ export interface HoverRisk {
   y: number;
 }
 
-/** True when the trade map (partners and connections) is drawn: Food Origins, Seasonal, Risk Explorer supply. */
-export function selectTradeMapModule(s: Pick<AppState, "module" | "riskView">): boolean {
+/** One small area on the closure map (Scenario B), WGS84. */
+export interface ScenarioMapArea {
+  code: string;
+  point: [number, number];
+  /** Symbol radius in px (area ∝ residents). */
+  radius: number;
+  /** Class (0–4) of the increase in straight-line distance; null when no supermarket remains in the data. */
+  cls: number | null;
+  /** The nearest supermarket before (the closed one) and after the closure. */
+  from: [number, number];
+  to: [number, number] | null;
+}
+
+/**
+ * Scenario Lab supermarket-closure map (Scenario B; serialisable, built by the feature from the
+ * validated closure inputs). The small areas whose nearest supermarket is the closed one, each
+ * linked by a straight line (never a route) to its nearest supermarket before or after.
+ */
+export interface ScenarioClosureMapModel {
+  /** Changes when the closed store changes (the camera frames it once). */
+  key: string;
+  view: ScenarioView;
+  closed: { id: number; point: [number, number] } | null;
+  areas: ScenarioMapArea[];
+  /** Supermarkets that become the nearest for at least one area. */
+  takeover: { id: number; point: [number, number] }[];
+  frame: { key: string; bbox: [number, number, number, number] } | null;
+}
+
+/** Small area under the pointer on the closure map, with screen position. */
+export interface HoverScenario {
+  code: string;
+  x: number;
+  y: number;
+}
+
+/**
+ * True when the trade map (partners and connections) is drawn: Food Origins, Seasonal, Risk
+ * Explorer supply, and the Scenario Lab's international supply disruption (Scenario A).
+ */
+export function selectTradeMapModule(s: Pick<AppState, "module" | "riskView" | "scenarioKind">): boolean {
   return (
-    s.module === "origins" || s.module === "seasonal" || (s.module === "risks" && s.riskView === "supply")
+    s.module === "origins" ||
+    s.module === "seasonal" ||
+    (s.module === "risks" && s.riskView === "supply") ||
+    (s.module === "scenarios" && s.scenarioKind === "import")
   );
 }
 
 /** True when the map can frame the recorded partners (a trade view with drawn connections). */
-export function canFramePartners(s: Pick<AppState, "module" | "riskView" | "originsMap">): boolean {
+export function canFramePartners(
+  s: Pick<AppState, "module" | "riskView" | "scenarioKind" | "originsMap">,
+): boolean {
   return selectTradeMapModule(s) && Boolean(s.originsMap?.frame);
 }
 
@@ -423,6 +532,8 @@ export const initialState = {
   areaHighlight: null,
   riskMap: null,
   hoverRisk: null,
+  scenarioMap: null,
+  hoverScenario: null,
 };
 
 export const useAppStore = create<AppState>()((set, get) => ({
@@ -529,6 +640,31 @@ export const useAppStore = create<AppState>()((set, get) => ({
   setRankNation: (rankNation) => set({ rankNation }),
   setRiskMap: (riskMap) => set({ riskMap }),
   setHoverRisk: (hoverRisk) => set({ hoverRisk }),
+  // A new kind has its own map: hovers from the previous one are cleared.
+  setScenarioKind: (scenarioKind) =>
+    set((s) =>
+      s.scenarioKind === scenarioKind
+        ? {}
+        : { scenarioKind, hoverScenario: null, hoverPartner: null, hoverAccess: null, hoverRisk: null },
+    ),
+  updateScenario: (patch) => {
+    const next: Partial<AppState> = {};
+    for (const key of SCENARIO_FIELDS)
+      if (key in patch) (next as Record<string, unknown>)[key] = patch[key as keyof typeof patch];
+    set(next);
+  },
+  applyScenario: (params) =>
+    set((s) => ({
+      ...stateFromParams(params),
+      ...(params.kind !== s.scenarioKind
+        ? { hoverScenario: null, hoverPartner: null, hoverAccess: null, hoverRisk: null }
+        : {}),
+    })),
+  resetScenarioToBaseline: () => set((s) => baselineFor(s.scenarioKind)),
+  restoreScenarioDefaults: () => set((s) => defaultsFor(s.scenarioKind)),
+  setScenarioView: (scenarioView) => set({ scenarioView }),
+  setScenarioMap: (scenarioMap) => set({ scenarioMap }),
+  setHoverScenario: (hoverScenario) => set({ hoverScenario }),
   setMapView: (mapView) => {
     const prev = get().mapView;
     const same =
@@ -630,6 +766,17 @@ export function selectUrlState(s: AppState): UrlState {
     farmLayer: s.farmLayer,
     ppfiMeasure: s.ppfiMeasure,
     rankNation: s.rankNation,
+    scenarioKind: s.scenarioKind,
+    scenarioYear: s.scenarioYear,
+    scenarioMonth: s.scenarioMonth,
+    scenarioReduction: s.scenarioReduction,
+    scenarioDuration: s.scenarioDuration,
+    scenarioRecovery: s.scenarioRecovery,
+    scenarioSubstitution: s.scenarioSubstitution,
+    productionReduction: s.productionReduction,
+    portReduction: s.portReduction,
+    portMonths: s.portMonths,
+    scenarioView: s.scenarioView,
   };
 }
 
@@ -640,7 +787,7 @@ export function selectUrlState(s: AppState): UrlState {
 export const LOCAL_ZOOM = 12;
 
 /** Modules that work at local scale, where the imagery basemap is offered (SH-08). */
-export const IMAGERY_MODULES: readonly ModuleId[] = ["access", "profiles"];
+export const IMAGERY_MODULES: readonly ModuleId[] = ["access", "profiles", "scenarios"];
 
 /** True when the map is at local scale (stationary zoom ≥ LOCAL_ZOOM, with a small tolerance). */
 export function selectLocalScale(s: Pick<AppState, "mapView">): boolean {

@@ -302,3 +302,58 @@ describe("Local Authority Profiles URL state (LP-01, LP-06, LP-07)", () => {
     expect(serializeUrlState({ ...DEFAULT_URL_STATE, module: "profiles" })).toBe("?m=profiles");
   });
 });
+
+describe("Scenario Lab state (SC-05)", () => {
+  it("reads and writes every scenario setting", () => {
+    const qs = "?m=scenarios&sk=import&c=tomatoes&p=ES&sy=2025&smo=1&sr=30&sd=3&srk=2&ss=10&sv=baseline";
+    const state = parseUrlState(qs);
+    expect(state).toMatchObject({
+      module: "scenarios",
+      scenarioKind: "import",
+      partner: "ES",
+      scenarioYear: 2025,
+      scenarioMonth: 1,
+      scenarioReduction: 30,
+      scenarioDuration: 3,
+      scenarioRecovery: 2,
+      scenarioSubstitution: 10,
+      scenarioView: "baseline",
+    });
+    expect(parseUrlState(serializeUrlState(state))).toEqual(state);
+    const port = parseUrlState("?m=scenarios&sk=port&pt=GBDVR&sdr=40&sdm=3");
+    expect(port).toMatchObject({ scenarioKind: "port", port: "GBDVR", portReduction: 40, portMonths: 3 });
+    expect(parseUrlState(serializeUrlState(port))).toEqual(port);
+    const closure = parseUrlState("?m=scenarios&sk=closure&st=1010000001");
+    expect(closure).toMatchObject({ scenarioKind: "closure", store: 1010000001 });
+    expect(parseUrlState("?sk=production&spr=15").productionReduction).toBe(15);
+  });
+
+  it("leaves the defaults out of the URL (the default reduction is 30 %)", () => {
+    expect(serializeUrlState({ ...DEFAULT_URL_STATE, module: "scenarios" })).toBe("?m=scenarios");
+    expect(serializeUrlState({ ...DEFAULT_URL_STATE, scenarioReduction: 0 })).toBe("?sr=0");
+  });
+
+  it.each([
+    ["?sk=flood", "scenarioKind", "import"],
+    ["?sr=101", "scenarioReduction", 30],
+    ["?sr=-5", "scenarioReduction", 30],
+    ["?sr=2.5", "scenarioReduction", 30],
+    ["?sd=0", "scenarioDuration", 1],
+    ["?sd=13", "scenarioDuration", 1],
+    ["?srk=7", "scenarioRecovery", 0],
+    ["?ss=abc", "scenarioSubstitution", 0],
+    ["?smo=13", "scenarioMonth", null],
+    ["?sy=25", "scenarioYear", null],
+    ["?sdm=0", "portMonths", 1],
+    ["?sv=both", "scenarioView", "scenario"],
+  ])("falls back safely for %s", (qs, key, expected) => {
+    expect(parseUrlState(qs)[key as keyof typeof DEFAULT_URL_STATE]).toBe(expected);
+  });
+
+  it("makes a change of scenario a history entry; a slider replaces it", () => {
+    expect(historyModeFor(DEFAULT_URL_STATE, { ...DEFAULT_URL_STATE, scenarioKind: "closure" })).toBe("push");
+    expect(historyModeFor(DEFAULT_URL_STATE, { ...DEFAULT_URL_STATE, scenarioReduction: 55 })).toBe(
+      "replace",
+    );
+  });
+});
