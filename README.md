@@ -2,8 +2,8 @@
 
 **Food Security & Supply Chain Intelligence** — a map-centred demonstrator showing where the UK's recorded food imports come from, how sourcing changes through the year, where supermarket provision and food-access vulnerability sit, and how exposed the system is to plausible disruptions. Built for ConsultingWhere with React 19, TypeScript, Vite and the ArcGIS Maps SDK for JavaScript 5.1.
 
-> **Status:** Stage 6 built (awaiting review). Five modules use real data:
-> - **Food Origins** (Stage 2) and **Seasonal Supply** (Stage 3): HMRC Overseas Trade Statistics for tomatoes, strawberries, bananas, potatoes and wheat, monthly from January 2019 (snapshot 2026-10-23).
+> **Status:** Stages 1–6 merged and deployed. Five modules use real data:
+> - **Food Origins** (Stage 2) and **Seasonal Supply** (Stage 3): HMRC Overseas Trade Statistics for sixteen commodities in five groups (fruit and vegetables, cereals, meat, dairy, and sugar, coffee and cocoa), monthly from January 2019 (snapshot 2026-10-26).
 > - **UK Food Access** (Stage 4): about 19,000 GEOLYTIX grocery stores (June 2026), stores per 10,000 residents for the 361 councils (ONS mid-2025), straight-line proximity, and a basemap choice (dark grey, light grey, imagery at local scale).
 > - **Local Authority Profiles** (Stage 5): a profile for any UK council, deep profiles for Belfast and Manchester (small-area accessibility, Priority Places for Food Index, deprivation within each nation, car availability), national supply context and a side-by-side comparison that never ranks across nations.
 > - **UK Food Resilience — Risk Explorer** (Stage 6): three separate views, each with its own map, cards, charts and "Explain this risk": international supply exposure (partner concentration, HHI, monthly concentration, estimated exposure to one supplier, partners' national water stress), food logistics (DfT major ports, UKFSR port-of-entry and Short Straits shares, road corridors in Great Britain and Northern Ireland, railway lines in Northern Ireland, farming regions) and community food access (every council's priority places for food, ranked within its own nation). No score combines them.
@@ -107,8 +107,8 @@ Full source terms: `docs/03-DATA-SOURCES.md`; every dataset's licence and attrib
 
 ## Known limitations (Stage 6)
 
-- Food Origins and Seasonal Supply cover five of the 16 planned commodities; the others and the remaining modules follow in later stages.
-- Seasonal Supply shows imports only: Defra publishes UK production of these commodities annually, not monthly, so none is shown and none is estimated from imports. The annual figures are national context in the profiles.
+- Food Origins and Seasonal Supply cover all sixteen planned commodities. Milk products and cocoa add unlike products by net mass (the value measure compares them on a common basis); the Scenario Lab and Consulting Insights follow in later stages.
+- Seasonal Supply shows imports only: Defra publishes UK production of most of these commodities annually, and its monthly meat and milk series are not verified yet, so none is shown and none is estimated from imports. Annual figures are national context in the profiles and the Risk Explorer where Defra publishes a supply balance.
 - Months HMRC has not yet published are shown as missing, never estimated.
 - Recorded import partner = HMRC's country of dispatch, not where food was grown. Connections on the map are symbolic, not shipping routes.
 - Store counts and distances describe physical provision only, not affordability, choice or nutritional access. Distances are straight-line, not travel times.

@@ -3,8 +3,8 @@
 | | |
 |---|---|
 | **Document** | 03 — Verified data catalogue and manifest |
-| **Version** | 0.9 — 26 October 2026 (S38 added: OpenStreetMap roads for Northern Ireland, from John's file; S37 NIR railway lines in the summary table; S34 still unreachable. Earlier: Stage 6 module: figures shown by the Risk Explorer checked against the raw files, §11. Earlier: Stage 6 data step: S03 theme 3 tables and S23 verified; S30–S33, S35 and S36 added and verified; S34 (OSNI roads) unreachable; S13, S15 and S17 notes updated. Earlier: pre-Stage 5 data steps S13, S15, S16, S19, S20, S29, gates G8–G11; context step S09, S10, S21) |
-| **Verification date** | 23 October 2026; S11, S12, S14 and S18 re-verified 24 October 2026; S09, S10 and S21 verified 25 October 2026; S03, S23, S30–S33, S35 and S36 verified 25 October 2026 (Stage 6 data step); S37 verified 25 October 2026; S38 verified 26 October 2026 |
+| **Version** | 1.0 — 26 October 2026 (the sixteen Food Origins baskets: S01 snapshot 2026-10-26 for the other eleven baskets of spec §6.1; gate G3 cleared against S05 Defra trade codes, now verified; S10 adds AUK chapter 8 and Table 7.6b; S09 Table 12 apples. Earlier the same day, 0.9: S38 added, OpenStreetMap roads for Northern Ireland from John's file; S37 NIR railway lines in the summary table; S34 still unreachable. Earlier, 0.8 — 25 October 2026: Stage 6 module: figures shown by the Risk Explorer checked against the raw files, §11. Earlier: Stage 6 data step: S03 theme 3 tables and S23 verified; S30–S33, S35 and S36 added and verified; S34 (OSNI roads) unreachable; S13, S15 and S17 notes updated. Earlier: pre-Stage 5 data steps S13, S15, S16, S19, S20, S29, gates G8–G11; context step S09, S10, S21) |
+| **Verification date** | 23 October 2026; S11, S12, S14 and S18 re-verified 24 October 2026; S09, S10 and S21 verified 25 October 2026; S03, S23, S30–S33, S35 and S36 verified 25 October 2026 (Stage 6 data step); S37 verified 25 October 2026; S38 verified 26 October 2026; S01 (sixteen baskets), S05 and S10 chapter 8 verified 26 October 2026 |
 | **Machine-readable form** | Generated into `public/data/snapshots/<date>/catalogue.json` by the pipeline from Stage 2 |
 
 ## How to read this document
@@ -28,16 +28,16 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 
 | ID | Source | Publisher | Status | Used by | Release |
 |---|---|---|---|---|---|
-| S01 | Overseas Trade Statistics API (uktradeinfo) | HMRC | ✅ | Origins, Seasonal, Scenarios, Risks | R1 |
+| S01 | Overseas Trade Statistics API (uktradeinfo) | HMRC | ✅ (sixteen baskets, 26 Oct 2026) | Origins, Seasonal, Scenarios, Risks, Profiles | R1 |
 | S02 | UK import trade by country of origin and country of dispatch, 2024 | HMRC | ✅ (context) | Evidence page, caveats | R1 |
 | S03 | United Kingdom Food Security Report 2024 | Defra | ✅ theme 3 tables 3_2_1a, 3_2_2a, 3_2_2b (25 Oct 2026); 🟡 other themes | Risk Explorer (logistics), Profiles (national context), Scenario B | R1 |
 | S04 | United Kingdom Food Security Digest 2025 | Defra | 🟡 | National context | R1 |
-| S05 | Food statistics in your pocket (+ Defra trade codes) | Defra | 🟡 | Commodity definitions, prices, production-to-supply | R1 |
+| S05 | Food statistics in your pocket (+ Defra trade codes) | Defra | ✅ trade codes (gate G3, 26 Oct 2026); 🟡 pocketbook CSVs | Basket definitions (G3), "not grown in the UK" (indigeneity); prices and production-to-supply later | R1 |
 | S06 | Monthly UK cattle, sheep and pig slaughter and meat production | Defra | 🟡 | Seasonal (production) | R2 |
 | S07 | Monthly UK hatcheries and poultry slaughterhouse statistics | Defra | 🟡 | Seasonal (production) | R2 |
 | S08 | Milk utilisation by dairies (monthly) | Defra | 🟡 | Seasonal (production) | R2 |
-| S09 | Horticulture statistics 2025 (annual dataset) | Defra | ✅ (tomatoes, strawberries: supply balance; 25 Oct 2026) | Profiles (national context) | R1 |
-| S10 | Agriculture in the United Kingdom 2025, chapter 7 (crops) | Defra | ✅ (wheat, potatoes: supply and use; 25 Oct 2026) | Profiles (national context), Scenario C | R1/R2 |
+| S09 | Horticulture statistics 2025 (annual dataset) | Defra | ✅ (tomatoes, strawberries, apples: supply balance; 25–26 Oct 2026) | Profiles, Risk Explorer (national context) | R1 |
+| S10 | Agriculture in the United Kingdom 2025, chapters 7 (crops) and 8 (livestock) | Defra | ✅ (wheat, potatoes, sugar; beef, mutton and lamb, poultry meat: supply and use; 25–26 Oct 2026) | Profiles, Risk Explorer (national context), Scenario C | R1/R2 |
 | S11 | Grocery / Supermarket Retail Points (v46, June 2026) | GEOLYTIX | ✅ | Supermarkets, Profiles, Access, Scenario D | R1 |
 | S12 | Number of chain supermarkets across LADs and smaller areas in the UK | ONS | ✅ (LAD tables 1–4) | Validation of store counts | R1 |
 | S13 | Priority Places for Food Index (v2.1) | CDRC / Leeds HASP | ✅ (all four nations; Scotland on 2011 Data Zones; NI on SOAs 2011, three domains without data) | Access, Profiles, Risk Explorer (every council) | R1 |
@@ -83,7 +83,7 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | Access | Open, no authorisation header. **Not reachable from the build sandbox** (proxy denies the host); reachable from GitHub Actions runners and from a desktop browser |
 | Limits | **60 requests per minute** (the pipeline uses ≤ 50); responses capped at **40,000 items**, paging via `@odata.nextLink`; "aggregations and filtering are still made across the whole dataset before the limit is applied" |
 | Refresh | Monthly. August 2026 data published 15 Oct 2026; September 2026 due 12 Nov 2026 (HMRC release calendar, methodology notes) |
-| Latest period | **August 2026** (`MonthId` 202608) — confirmed on 23 Oct 2026 by the pipeline: August has records, September (202609) has none |
+| Latest period | **August 2026** (`MonthId` 202608) — confirmed on 23 Oct 2026 by the pipeline, and again on 26 Oct 2026 (snapshot 2026-10-26): August has records, September (202609) has none |
 | Endpoints used | `/OTS`, `/Commodity`, `/Country` |
 | Verified OTS fields | `MonthId`, `FlowTypeId`, `SuppressionIndex`, `CommodityId`, `CountryId`, `PortId`, `Value`, `NetMass` (also `CommoditySitcId`, `SuppUnit`, not used) |
 | Verified Commodity fields | `CommodityId`, `Cn8Code`, `Hs2Code`, `Hs4Code`, `Hs6Code`, `Hs2Description`, `Hs4Description`, `Hs6Description`, `SitcCommodityCode`, `Cn8LongDescription`. `/Commodity` lists **current and discontinued** CN8 codes under each heading (e.g. tomatoes `07020000` and `07020010/91/99`), so baskets filtered by HS heading are continuous across nomenclature changes |
@@ -94,13 +94,13 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | Net mass quality | About a third of Intrastat goods need no weight declaration and are estimated; customs records with missing mass get an estimate from Eurostat commodity factors (same report; HMRC policies and methodologies page) |
 | Revisions (gate G2 ✅) | "Published data is provisional for up to 18 months after it is published" (uktradeinfo suppressions and revisions page). The app marks months first published within 18 months of retrieval as **provisional** (from Mar 2025 in the 23 Oct 2026 snapshot; estimated with a ~6-week publication lag) |
 | Low-value trade | Individual consignments ≤ £873 are aggregated under commodity `99500000`, so they never appear in the food baskets |
-| Query options | `$filter`, `$select`, `$expand`, `$top`, `$skip`, `$apply` (`filter(…)/groupby((…),aggregate(… with sum as …, $count as …))`), `$count`, `$format`. `$orderby` is not documented and returned a client error in planning — not used |
+| Query options | `$filter`, `$select`, `$expand`, `$top`, `$skip`, `$apply` (`filter(…)/groupby((…),aggregate(… with sum as …, $count as …))`), `$count`, `$format`. `$orderby` is not documented and returned a client error in planning — not used. **Filter size:** a `/Commodity` filter of 24 OR-ed comparisons answered HTTP 400 (26 Oct 2026, a URL of about 750 characters); the largest OR-lists answered are 10 commodity codes, so the pipeline never sends more than 10 per query (`MAX_OR_CLAUSES`) |
 | `$apply` aggregation (gate G1 ✅) | Verified 23 Oct 2026: `groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex))` with `NetMass`/`Value` sums matches the sum of unaggregated `/OTS` rows exactly for five basket-months (tomatoes Jan 2025: 117 rows, 33,060,038 kg, £57,382,707; strawberries Jun 2024; bananas Jul 2024; potatoes Mar 2025; wheat Nov 2023) — `pipeline/reports/hmrc-reconciliation-2026-10-23.json` |
 | Grain | One row per month × flow × CN8 commodity × country × port × suppression index; the pipeline aggregates server-side to month × flow × country × CN8 × suppression |
 | Suppression | `SuppressionIndex` 0 = not suppressed; 1–5 per the API documentation (1 complete; 2 countries and ports; 3 countries, ports and total quantity; 4 quantity for countries and ports; 5 quantity for countries, ports and total). Present elsewhere in OTS (levels 2 and 3 in Jan–Mar 2025), **but no rows with `SuppressionIndex` > 0 exist for the five Food Origins baskets since Jan 2019** (pipeline check). Suppressed rows would be kept in their own bucket with quantity `null` where withheld |
 | CORS | Not verified. Not needed: the browser never calls the API (ADR-01) |
 
-**Food Origins baskets (gate G3, partly cleared).** Verified against `/Commodity` on 23 Oct 2026. The Defra trade-code comparison (S05 ODS) is still to do; the definitions below follow HMRC's HS headings and are shown in the UI.
+**Food Origins baskets (gate G3 ✅, 26 Oct 2026).** The five Stage 2 baskets were verified against `/Commodity` on 23 Oct 2026; the other eleven of spec §6.1 (John, 26 Oct 2026) on 26 Oct 2026, and all sixteen against Defra's trade codes (S05; `foodscope-pipeline check-baskets`, report `pipeline/reports/basket-codes-2026-10-26.json`). The definitions follow HMRC's HS headings and are shown in the UI.
 
 | Basket | HS scope | CN8 codes in the snapshot (current and discontinued) |
 |---|---|---|
@@ -109,6 +109,32 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | Bananas | 0803 — incl. plantains, fresh or dried | 08030011, 08030019, 08030090, 08031010, 08031090, 08039010, 08039011, 08039019, 08039090 |
 | Potatoes | 0701 — fresh or chilled, incl. seed (excl. frozen/processed) | 07011000, 07019010, 07019050, 07019090 |
 | Wheat | 1001 — wheat and meslin, incl. durum and seed | 10011000, 10011100, 10011900, 10019010, 10019091, 10019099, 10019110, 10019120, 10019190, 10019900 |
+
+The eleven baskets added on 26 Oct 2026 (snapshot 2026-10-26; each basket file lists its codes, descriptions and the months they carry imports in `commodity.cn8`):
+
+| Basket (group) | HS scope | CN8 codes listed by `/Commodity` (with imports since Jan 2019) |
+|---|---|---|
+| Apples (fruit and vegetables) | 0808 10 — fresh, incl. cider apples in bulk | 5 (2) |
+| Oranges (fruit and vegetables) | 0805 10 — fresh or dried | 8 (4) |
+| Rice (cereals) | 1006 — in the husk, husked, milled, broken | 45 (37) |
+| Beef and veal (meat) | 0201, 0202 — fresh, chilled or frozen; no offal | 14 (14) |
+| Sheep and goat meat (meat) | 0204 — fresh, chilled or frozen; HS does not separate lamb, mutton and goat | 27 (26) |
+| Poultry meat (meat) | 0207 — meat and edible offal, fresh, chilled or frozen | 155 (107) |
+| Milk products, not cheese (dairy) | 0401–0405 — milk, cream, powders, yoghurt, buttermilk, whey, butter | 136 (119) |
+| Cheese (dairy) | 0406 — cheese and curd | 57 (42) |
+| Sugar (sugar, coffee and cocoa) | 1701 — cane or beet sugar, raw or refined | 11 (9) |
+| Coffee (sugar, coffee and cocoa) | 0901 — roasted or not; husks; substitutes containing coffee | 6 (6) |
+| Cocoa (sugar, coffee and cocoa) | 1801, 1803–1805 — beans, paste, butter, powder; no shells or chocolate | 5 (5) |
+
+Groups follow the SITC divisions Defra uses (05 vegetables and fruit, 04 cereals, 01 meat, 02 dairy, 06 sugars, 07 coffee and cocoa); G3 confirms each basket's codes sit in one division. Two baskets add unlike products by mass: milk products (liquid milk with powders and butter, not converted to milk equivalent) and cocoa (beans with paste, butter and powder, not converted to bean equivalent); their definitions say so, and the value measure (£) compares them on a common basis.
+
+**Gate G3 result (26 Oct 2026).** Every basket's codes are in one SITC division. Eight definitional differences from Defra's own most detailed groups ("Brigade" level 3), all stated in the basket definitions:
+- Defra's coffee group also holds extracts and instant coffee (2101), left out of the basket;
+- its cocoa group also holds cocoa shells (1802) and chocolate (1806), left out as spec §6.1 says;
+- goat meat (within 0204) sits in Defra's "edible offal and other meat" group with 0205, 0206 and 0208, not with lamb and mutton; the basket is labelled "sheep and goat meat";
+- one potato code sits in Defra's starch group with 1108 and 1903.
+
+The only HMRC codes with imports that Defra's 2022 table does not list were introduced from 2023 (tomatoes 2025, bananas 2024, six rice codes 2023). Defra classes every code in oranges, rice, coffee, cocoa and bananas as non-indigenous, and every code in the meat, dairy, sugar, potato and strawberry baskets as indigenous.
 
 **Commodity-code history (Stage 3).** The offline build also writes, for every CN8 code in a basket:
 - `firstMonth` and `lastMonth` (first and last month with recorded import rows);
@@ -128,7 +154,7 @@ It also writes basket-level `codeChanges`: months where one code's records end a
 
 The wording says when a code is *recorded*: the API gives no validity dates, so the app does not claim when a code was introduced.
 
-**Ingestion (Stage 2).** `pipeline/foodscope_pipeline/sources/hmrc_ots.py` (online) fetches `/Commodity`, `/Country`, one `$apply` aggregate per basket from Jan 2019, the raw rows for one reconciliation month per basket, and probes the latest and next month — 15 requests on 23 Oct 2026. Every response is stored byte-for-byte in `pipeline/raw/hmrc/<snapshot>/` with URL, timestamp and SHA-256. `trade.py` (offline) builds `public/data/snapshots/<snapshot>/trade/<basket>.json` and fails if the reconciliation does not match. It runs in GitHub Actions (`refresh-trade-data.yml`), never in the browser.
+**Ingestion (Stage 2).** `pipeline/foodscope_pipeline/sources/hmrc_ots.py` (online) fetches `/Commodity`, `/Country`, one `$apply` aggregate per basket from Jan 2019, the raw rows for one reconciliation month per basket, and probes the latest and next month — 15 requests on 23 Oct 2026. **Sixteen baskets (26 Oct 2026):** a basket with more than ten CN8 codes is fetched as several queries over consecutive runs of at most ten codes (`<prefix>-cNN`; poultry 16 parts, milk products 14), and `/Commodity` in queries of at most ten headings; 122 requests in about four minutes (Actions run 40297475958). All sixteen reconciliation months match the raw rows exactly, no basket has a suppressed row since Jan 2019, and the five Stage 2 baskets are identical to the 23 Oct 2026 snapshot (fingerprint tests). Every response is stored byte-for-byte in `pipeline/raw/hmrc/<snapshot>/` with URL, timestamp and SHA-256. `trade.py` (offline) builds `public/data/snapshots/<snapshot>/trade/<basket>.json` and fails if the reconciliation does not match. It runs in GitHub Actions (`refresh-trade-data.yml`), never in the browser.
 
 **Interpretation caveats (verified)**
 
@@ -185,7 +211,7 @@ The wording says when a code is *recorded*: the API gives no validity dates, so 
 
 Annual official statistics; 2025 edition published 11 December 2025. The next digest is expected towards the end of 2026; there will be no digest in 2027 (replaced by the triennial report). URL: https://www.gov.uk/government/collections/united-kingdom-food-security-digest. **Check for the 2026 edition** before Release 1 sign-off.
 
-### S05 — Food statistics in your pocket 🟡
+### S05 — Food statistics in your pocket 🟡 (pocketbook CSVs); trade codes ✅ (below)
 
 | Field | Detail |
 |---|---|
@@ -194,9 +220,20 @@ Annual official statistics; 2025 edition published 11 December 2025. The next di
 | Formats | HTML; CSV chart data (e.g. production-to-supply ratio 1956–2023; CPIH food since 2020; consumer price change by food group); **ODS "Defra trade codes and descriptions"** |
 | Licence | OGL v3.0 |
 | Use | (1) Align commodity baskets with Defra's trade code groupings (spec §6.1); (2) national production-to-supply ratio; (3) food price context (S27) |
-| To verify | CSV column names; whether commodity-level self-sufficiency figures are available (the overall ratio is; per-commodity is not confirmed) |
+| To verify | CSV column names; whether commodity-level self-sufficiency figures are available (the overall ratio is; per-commodity is not confirmed). The trade codes ODS is verified (next section) |
+
+#### S05, part 2 — Defra trade codes and descriptions ✅ (gate G3, 26 Oct 2026)
+
+`Defra-trade-codes-and-descriptions-15nov22.ods`, linked from the "Food statistics in your pocket" page (last updated 29 July 2026) beside the HTML guide "A guide to Defra trade codes and classifications"; `https://assets.publishing.service.gov.uk/media/6373bde8e90e07284de6da0c/…`, 993,349 bytes, OGL v3.0. Fetched by `fetch-reference --set trade` (Actions run 40296749254) into `pipeline/raw/defra/2026-10-26/`.
+
+- **Structure:** one sheet, `CN_CODES_MASTER_TABLE`, 8,031 rows, 32 columns. Used: `Com Code` (nine digits: the CN8 code and a one-digit suffix; 124 codes stored as numbers, which drops leading zeros, restored by the reader), `Com Description`, `DIV Code` and `DIV Description` (SITC division), `HS4 code`, `HS4 Description`, `Indig Description` (`Indigenous`, `Non-indigenous`, `Not entered`), `DOP Description` (degree of processing), `Brigade1`–`Brigade3` (Defra's classification, level 3 most detailed). Also present, not used: `FFD`, `FFD DESC`, `AUK DESC`, `FFD +`, `Introduced`, geographical-indication and products-of-animal-origin columns.
+- **Indigeneity:** the guide defines it as whether a product "can be grown in the UK on a commercially viable level", allocated by Defra's Food and Trade Statistics team. The app cites it for the baskets with no UK production (oranges, rice, coffee, cocoa, bananas).
+- **Limits:** dated 15 Nov 2022, so codes introduced from 2023 are absent (tested). Groups are Defra's analytical groupings, not statistics; the basket definitions follow HMRC's HS headings and state where Defra's groups differ.
 
 ### S06–S08 — Monthly domestic production series 🟡
+
+**26 Oct 2026.** With the sixteen baskets these series now concern beef and sheep meat (S06), poultry meat (S07) and the dairy baskets (S08). They are still not verified, so Seasonal Supply says a monthly Defra series exists but is not shown yet (planned for Release 2), rather than that none exists.
+
 
 | ID | Title | Latest seen | Use |
 |---|---|---|---|
@@ -227,7 +264,13 @@ Verified from the files themselves (fetched by `fetch-reference --set context` o
 | 2025 values (read by the build) | Tomatoes: HPM 79.0, imports 389.8, exports 1.2, supply 467.6 thousand tonnes; HPM 16.9 % of supply. Strawberries: 92.9, 72.8, 1.2, 164.5; 56.5 % | Wheat (provisional): production 11,958, imports 2,674, exports 207, total new supply 14,425; 82.9 %. Potatoes (provisional): 5,083, 2,496, 430, 7,149; 71.1 % |
 | Caveats | Defra's trade figures are HMRC "fresh produce where distinguishable" with Defra's product definitions: not the Food Origins basket. No per-crop supply for other crops is needed | Potato production in the supply table is for human consumption and seed; harvested production (Table 7.10a) is larger. Potato trade includes processed potatoes in raw equivalent. Cereals are standardised to 14.5 % moisture |
 
-The build checks, for the year it shows, that total supply = production + imports − exports and that the share = production ÷ total supply (both exact for 2025). **Bananas:** Defra publishes no UK production statistics; the profile says so. Config: `pipeline/foodscope_pipeline/config/national_production.json`. The Seasonal Supply text (SS-07) still calls S09/S10 "not yet verified"; Stage 5 updates it (monthly production is still not published).
+**Added 26 Oct 2026 (the sixteen baskets).**
+- **S09:** apples, Table 12 ("Apples:" crop, same rows as strawberries): 2025 HPM 256.9, imports 294.2, exports 9.2, supply 541.8 thousand tonnes; 47.4 %.
+- **S10, chapter 7:** sugar, Table 7.6b "All sugar (thousand tonnes)", refined basis: `Production`, imports and exports from and to the EU and the rest of the world, `Total new supply`, `Production as % of total new supply for use in UK`. 2025 (provisional): 997, 772.0, 131.9, 1,637.2; 60.9 %. Sugar leaving the factory early in the new year counts towards the previous year (Defra note 10).
+- **S10, chapter 8** (`AUK-chapter8-20260709i.ods`, `https://assets.publishing.service.gov.uk/media/6a994f51f5b35599aec19158/…`, poultry revised 3 Sept 2026; fetched by `fetch-reference --set trade` into `pipeline/raw/defra/2026-10-26/`): Tables 8.2d beef and veal, 8.4d mutton and lamb and 8.5d poultry meat, supply and use in thousand tonnes dressed carcase weight equivalent, same layout as chapter 7. 2025: beef home-fed production 897.8, imports 309.5, exports 142.4, new supply 1,064.9, 84.3 %; mutton and lamb 281.7, 91.1, 98.6, 274.2, 102.7 %; poultry 1,999.6, 699.7, 211.8, 2,487.5, 80.4 %. Defra's notes: the beef balance leaves out offal and preserved or manufactured meat and converts boneless meat to bone-in weight (note 6); poultry trade is fresh, chilled and frozen meat without offal and leaves out processed poultry (notes 7, 14); poultry figures were revised on 3 Sept 2026 (note 30). Table 8.6d balances raw milk in litres only, and no table balances cheese, so the dairy baskets have no supply balance.
+- **Not published:** oranges, rice, coffee, cocoa and bananas are "not grown commercially in the UK" by Defra's own classification (S05, indigeneity); milk products and cheese have no Defra product balance in these files.
+
+The build checks, for the year it shows, that total supply = production + imports − exports and that the share = production ÷ total supply (exact for every basket, 2025). The context snapshot 2026-10-26 reads chapter 8 from the 2026-10-26 raw folder and everything else from 2026-10-25 (`build-context --raw-snapshot 2026-10-25 --extra-defra-snapshot 2026-10-26`). Config: `pipeline/foodscope_pipeline/config/national_production.json`. The Seasonal Supply text (SS-07) still calls S09/S10 "not yet verified"; Stage 5 updates it (monthly production is still not published).
 
 ---
 
@@ -720,3 +763,15 @@ Figures shown by the Risk Explorer, recomputed from the raw files with independe
 | S38 build output | Distinct `ref` values per class in the `.dbf` vs `roads-ni.geojson` | 8 motorway groups (M1, M2, M3, M5, M12, M22, A8(M), unnumbered) and 49 primary; the output has 8 `strategic` and 49 `primary` features |
 | S38 extent | Lines in EPSG:2157 against the union of the 11 NI council outlines (S14, 50 m tolerance) | 1,357 km in all; 5.2 km outside (coastal A2 and M5; 0.25 km of the N54) |
 | S38 repack | Members of the received and stored ZIPs hashed | The five data files identical; `.shp.xml`, `.sbn`, `.sbx` left out |
+
+### Sixteen baskets (26 October 2026)
+
+| Check | Method | Result |
+|---|---|---|
+| S01 ingest | `refresh-trade-data.yml` on `data-refresh/2026-10-26` (run 40297475958, after HTTP 400 on a 24-clause filter in run 40297034978) | 122 requests; latest month Aug 2026 confirmed; no suppressed rows |
+| S01 `$apply` vs raw rows (G1) | Build: one reconciliation month per basket, a different month each, 2019–2026 | 16 of 16 match exactly (`pipeline/reports/hmrc-reconciliation-2026-10-26.json`) |
+| S01 figures shown | Independent script over the raw pages (single or split queries), no pipeline or app code: HHI, partners, top partner and share, Sep 2025 – Aug 2026, net mass | Equal to the app's for all sixteen (asserted in `src/features/risks/model.test.ts`); e.g. beef HHI 4,271.292, Ireland 63.406 %; cocoa Côte d'Ivoire 42.009 %; no row appears in two parts |
+| S01 continuity | Stage 2 fingerprints on the five original baskets in the new snapshot | Identical |
+| S05 vs baskets (G3) | `check-baskets` (`pipeline/reports/basket-codes-2026-10-26.json`) | One SITC division per basket; eight definitional differences, all stated |
+| S10 chapter 8, S10 Table 7.6b, S09 Table 12 | Build: supply identity and share for 2025 | Exact for beef, mutton and lamb, poultry, sugar and apples |
+

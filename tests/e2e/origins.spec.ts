@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 /**
- * Food Origins explorer (Stage 2) against the real committed HMRC snapshot 2026-10-23.
+ * Food Origins explorer (Stage 2) against the real committed HMRC snapshot 2026-10-26 (the five Stage 2 baskets are identical to 2026-10-23).
  * Expected values are the same reconciled figures used in src/analysis/trade.test.ts.
  */
 

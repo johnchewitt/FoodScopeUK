@@ -133,7 +133,7 @@ The brief asks for a complete, tested first release over an extensive unfinished
 
 **Data**: HMRC Overseas Trade Statistics (OTS) via pre-built snapshots (§S01), commodity baskets (§6.1), country geometries (§S24).
 
-- **FO-01** Commodity selector with icon, search and keyboard navigation for the 16 initial commodities: tomatoes, strawberries, apples, potatoes, bananas, oranges, wheat, rice, beef, lamb (sheep meat — see §6.1), poultry, cheese, milk products, sugar, coffee, cocoa.
+- **FO-01** Commodity selector with icon, search and keyboard navigation for the 16 initial commodities: tomatoes, strawberries, apples, potatoes, bananas, oranges, wheat, rice, beef, lamb (sheep meat — see §6.1), poultry, cheese, milk products, sugar, coffee, cocoa. *(26 Oct 2026: all sixteen in the data; grouped by the SITC divisions Defra uses; search by name, group, definition or commodity code; lamb shown as "Sheep and goat meat", ADR-0025.)*
 - **FO-02** For the selected commodity and period, shade recorded import partners by share of recorded import net mass (default) or value (toggle). Non-partners render neutral; suppressed/unallocated trade is listed separately (P12).
 - **FO-03** Draw symbolic curved connections (smooth curves in map space, deliberately not great-circle or shipping routes — ADR-0005) from each partner's representative point (Natural Earth label point) to a single UK anchor. Width scales linearly with recorded net mass within stated min/max clamps shown in the legend. Top-N partners (default 12, adjustable) plus an "all others" aggregate in the side panel avoid visual clutter.
 - **FO-04** Subtle animated flow along arcs and a soft glow on selected partners. Disabled when `prefers-reduced-motion` is set or the user turns motion off. (Stage 2: moving markers on a canvas overlay, ADR-0015.)
@@ -336,7 +336,9 @@ All formulas are implemented as pure, unit-tested functions in `src/analysis/` (
 
 Baskets map the 16 commodities to HMRC commodity codes. The table below is the **proposed** mapping; it must be confirmed against Defra's published trade codes (§S05) and the HMRC `/Commodity` endpoint before any figure is shown. Labels in the UI use the definition column, not just the short name.
 
-**Stage 2 status (23 Oct 2026):** tomatoes, strawberries, bananas, potatoes and wheat are **confirmed against `/Commodity`** and in use; their CN8 lists (current and discontinued codes) are in `docs/03-DATA-SOURCES.md` §S01. The Defra trade-code comparison and the other 11 baskets follow in Stage 3.
+**Stage 2 status (23 Oct 2026):** tomatoes, strawberries, bananas, potatoes and wheat are **confirmed against `/Commodity`** and in use; their CN8 lists (current and discontinued codes) are in `docs/03-DATA-SOURCES.md` §S01.
+
+**Status 26 Oct 2026 (John's request):** all sixteen are **confirmed against `/Commodity` and Defra's trade codes** (gate G3 ✅, report `pipeline/reports/basket-codes-2026-10-26.json`) and in use, with the scopes below. UI labels: "Beef and veal", "Sheep and goat meat", "Poultry meat", "Milk products (not cheese)". Milk products and cocoa add unlike products by net mass (liquid milk with powders and butter; beans with paste, butter and powder), without conversion to a milk or bean equivalent; their definitions say so. Where Defra's own groups are wider (instant coffee 2101; cocoa shells and chocolate 1802, 1806; goat meat grouped with other meat), the definitions state it.
 
 | Commodity | Proposed HS scope | Definition shown in UI / notes |
 |---|---|---|

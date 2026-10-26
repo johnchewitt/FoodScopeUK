@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 /**
  * The five review improvements (docs/reviews/2026-10-review.md): map framing, legend-true share
  * colours with highlight-based hover, comparability cautions, data-first loading and KPI cards
- * that are never hidden. Real committed snapshot 2026-10-23; label points from Natural Earth.
+ * that are never hidden. Real committed snapshot 2026-10-26; label points from Natural Earth.
  */
 
 const POINTS = {
