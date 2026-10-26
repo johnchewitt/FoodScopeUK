@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { TradeIndex } from "@/types/generated/trade-index";
 import {
+  bestMatch,
   codeInScope,
   commoditySections,
   filterSections,
@@ -117,8 +118,35 @@ describe("matchesCommodity", () => {
 
 describe("filterSections", () => {
   it("keeps only matching items and drops sections left empty", () => {
-    const s = filterSections(commoditySections(GROUPED), "chocolate");
+    const s = filterSections(commoditySections(GROUPED), "beans");
     expect(s.map((x) => x.items.map((c) => c.id))).toEqual([["cocoa"]]);
     expect(filterSections(commoditySections(GROUPED), "zzz")).toEqual([]);
+  });
+
+  it("never finds a basket by what it excludes", () => {
+    // Cocoa excludes chocolate; milk products exclude cheese (in the definition and the "(not …)" label).
+    expect(filterSections(commoditySections(GROUPED), "chocolate")).toEqual([]);
+    expect(filterSections(commoditySections(GROUPED), "cheese")).toEqual([]);
+  });
+});
+
+describe("bestMatch (Enter)", () => {
+  const index: TradeIndex = {
+    ...GROUPED,
+    commodities: [...GROUPED.commodities, entry("cheese", "Cheese", "HS 0406", "g2", "Cheese and curd.")],
+  };
+  const sections = commoditySections(index);
+  it("prefers a name over the group or the definition, and never picks on an empty query", () => {
+    expect(bestMatch(sections, "cheese")).toBe("cheese");
+    expect(bestMatch(sections, "dairy")).toBe("milk"); // group match: first in order
+    expect(bestMatch(sections, "butter")).toBe("milk");
+    expect(bestMatch(sections, "   ")).toBeNull();
+    expect(bestMatch(sections, "")).toBeNull();
+    expect(bestMatch(sections, "zzz")).toBeNull();
+  });
+  it("reads codes with or without a leading HS", () => {
+    expect(bestMatch(sections, "0406")).toBe("cheese");
+    expect(bestMatch(sections, "HS 0403")).toBe("milk");
+    expect(bestMatch(sections, "hs0702")).toBe("a");
   });
 });

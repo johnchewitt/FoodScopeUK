@@ -14,8 +14,9 @@ snapshot (each basket's CN8 codes as HMRC lists them, with the months they carry
   degree of processing, as counts of codes;
 - HMRC codes with imports that Defra's 2022 table does not list (codes introduced since).
 
-Defra's codes have nine digits: the CN8 code and a one-digit suffix. 124 are stored as numbers, which
-drops leading zeros; they are restored to nine digits.
+Defra's codes have nine digits: the CN8 code and a one-digit suffix. 124 are stored as numbers rather
+than text (none starts with a zero in this edition); the reader turns them into nine-digit strings,
+restoring a leading zero should one appear.
 """
 
 from __future__ import annotations
@@ -126,6 +127,7 @@ def compare_basket(basket: Basket, defra: list[DefraCode], snapshot: dict[str, A
 
     listed = snapshot["commodity"]["cn8"]
     defra_cn8 = {d.cn8 for d in defra}
+    hmrc_cn8 = {c["code"] for c in listed}
     with_imports = [c for c in listed if c["monthsRecorded"] > 0]
     not_in_defra = [
         {"code": c["code"], "description": c["description"], "firstMonth": c["firstMonth"]}
@@ -144,6 +146,8 @@ def compare_basket(basket: Basket, defra: list[DefraCode], snapshot: dict[str, A
             "degreeOfProcessing": dict(sorted(Counter(d.processing for d in mine).items())),
         },
         "hmrcCodesWithImportsNotInDefra": not_in_defra,
+        # The other direction: codes Defra lists under the headings that HMRC's /Commodity no longer lists.
+        "defraCodesNotListedByHmrc": sorted({d.cn8 for d in mine} - hmrc_cn8),
         "differences": differences,
     }
 

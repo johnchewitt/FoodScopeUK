@@ -63,17 +63,58 @@ export function codeInScope(code: string, hsScope: string): boolean {
   });
 }
 
+/** What a basket includes: its definition up to "Excludes …", so a search never finds what it leaves out. */
+export function includedText(definition: string): string {
+  const i = definition.search(/\bExcludes\b/);
+  return i < 0 ? definition : definition.slice(0, i);
+}
+
+/** A label without its "(not …)" qualifier: "Milk products (not cheese)" → "Milk products". */
+function labelText(label: string): string {
+  return label.replace(/\(\s*not\b[^)]*\)/gi, " ");
+}
+
+/** The digits of a code search ("0403", "HS 0403", "0402.10"), or null when the query is not a code. */
+function codeQuery(q: string): string | null {
+  const digits = q.replace(/^hs\s*/, "").replace(/[\s.]/g, "");
+  return /^\d{2,10}$/.test(digits) ? digits : null;
+}
+
 /**
- * Whether a commodity matches the search: a commodity code (digits, spaces and dots ignored) by
- * its HS scope, otherwise every word in its name, group or definition.
+ * How well a commodity matches the search: 0 its name starts with the query, 1 every word is in its
+ * name, 2 every word is in its name, group or what it includes, 3 a code under its HS scope; null
+ * when it does not match. Words after "Excludes" in a definition and "(not …)" in a name never match.
  */
-export function matchesCommodity(c: CommodityEntry, groupLabel: string | null, query: string): boolean {
+export function matchRank(c: CommodityEntry, groupLabel: string | null, query: string): number | null {
   const q = normaliseQuery(query);
-  if (q === "") return true;
-  const digits = q.replace(/[\s.]/g, "");
-  if (/^\d{2,10}$/.test(digits)) return codeInScope(digits, c.hsScope);
-  const haystack = normaliseQuery([c.label, groupLabel ?? "", c.definition, c.hsScope].join(" "));
-  return q.split(" ").every((word) => haystack.includes(word));
+  if (q === "") return 2;
+  const code = codeQuery(q);
+  if (code) return codeInScope(code, c.hsScope) ? 3 : null;
+  const words = q.split(" ");
+  const name = normaliseQuery(labelText(c.label));
+  if (name.startsWith(q)) return 0;
+  if (words.every((w) => name.includes(w))) return 1;
+  const haystack = normaliseQuery(
+    [labelText(c.label), groupLabel ?? "", includedText(c.definition)].join(" "),
+  );
+  return words.every((w) => haystack.includes(w)) ? 2 : null;
+}
+
+/** Whether a commodity matches the search (by name, group, what it includes or commodity code). */
+export function matchesCommodity(c: CommodityEntry, groupLabel: string | null, query: string): boolean {
+  return matchRank(c, groupLabel, query) !== null;
+}
+
+/** The best match for Enter: the lowest rank, then the order shown; null for an empty query or no match. */
+export function bestMatch(sections: CommoditySection[], query: string): string | null {
+  if (normaliseQuery(query) === "") return null;
+  let best: { id: string; rank: number } | null = null;
+  for (const s of sections)
+    for (const c of s.items) {
+      const rank = matchRank(c, s.label, query);
+      if (rank !== null && (best === null || rank < best.rank)) best = { id: c.id, rank };
+    }
+  return best?.id ?? null;
 }
 
 /** The sections with only the matching commodities, empty sections dropped. */

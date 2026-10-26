@@ -100,7 +100,8 @@ class FakeApi:
                 doc["@odata.nextLink"] = next_link
             return 200, json.dumps(doc).encode()
         if "/Commodity?" in q:
-            return body(COMMODITIES)
+            heads = set(re.findall(r"Hs4Code eq '(\d+)'", q))
+            return body([c for c in COMMODITIES if not heads or c["Hs4Code"] in heads])
         if q.endswith("/Country"):
             return body(COUNTRIES)
         if "$apply=" in q:
@@ -392,12 +393,54 @@ def test_the_sixteen_baskets_follow_the_specification() -> None:
 
 def test_split_commodity_list_is_read_back_whole(env, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(h, "MAX_OR_CLAUSES", 1)
-    baskets = [
-        h.Basket("testfruit", "Test fruit", "Synthetic basket", "HS 9901", ("9901",), ()),
-    ]
-    two = [h.Basket("testfruit", "Test fruit", "Synthetic basket", "HS 9901 and 9902", ("9901", "9902"), ())]
+    # Two headings, one query each; the synthetic codes are all under 9901, so 9902 answers nothing.
+    two = [h.Basket("testfruit", "Test fruit", "Synthetic basket", "HS 9901, 9902", ("9901", "9902"), ())]
     assert len(h.commodity_queries(two)) == 2
-    cache = h.ingest("2026-10-23", env["raw"], baskets, client=make_client(FakeApi()), now=env["now"])
-    assert cache.parts("commodity") == ["commodity"]
+    cache = h.ingest("2026-10-23", env["raw"], two, client=make_client(FakeApi()), now=env["now"])
+    assert cache.parts("commodity") == ["commodity-c01", "commodity-c02"]
+    assert {c["CommodityId"] for c in cache.part_items("commodity")} == {99010010, 99010090}
     # One code per OTS query.
     assert cache.parts("ots-aggregate-testfruit") == ["ots-aggregate-testfruit-c01", "ots-aggregate-testfruit-c02"]
+    build_trade("2026-10-23", env["raw"], env["data"], env["reports"], two, env["points"], env["crosswalk"])
+    snap = json.loads((env["data"] / "snapshots/2026-10-23/trade/testfruit.json").read_text())
+    assert [c["code"] for c in snap["commodity"]["cn8"]] == ["99010010", "99010090"]
+    prov = json.loads((env["data"] / "snapshots/2026-10-23/trade/index.provenance.json").read_text())
+    assert prov["retrieval"]["source"].startswith("2 queries of at most ten headings")
+
+
+def test_cache_names_never_match_another_basket(tmp_path: Path) -> None:
+    cache = h.RawCache(tmp_path)
+    body = json.dumps({"value": [{"x": 1}]}).encode()
+    for name in ("ots-aggregate-milk-p001", "ots-aggregate-milk-products-c01-p001", "ots-aggregate-milk-products-c02-p001"):
+        cache.put(name, h.API_BASE + "/OTS?" + name, body, "2026-10-26T00:00:00Z")
+    assert cache.parts("ots-aggregate-milk") == ["ots-aggregate-milk"]
+    assert len(cache.items("ots-aggregate-milk")) == 1
+    assert cache.parts("ots-aggregate-milk-products") == ["ots-aggregate-milk-products-c01", "ots-aggregate-milk-products-c02"]
+    with pytest.raises(h.HmrcError):
+        cache.parts("ots-aggregate-mil")
+
+
+def test_ingest_refuses_an_existing_snapshot(env):
+    run(env)
+    with pytest.raises(h.HmrcError, match="already holds"):
+        h.ingest("2026-10-23", env["raw"], BASKETS, client=make_client(FakeApi()), now=env["now"])
+
+
+def test_build_fails_on_duplicate_rows_across_parts(env, monkeypatch: pytest.MonkeyPatch):
+    """If two parts returned the same group, reconciliation must fail rather than overwrite it."""
+    monkeypatch.setattr(h, "MAX_URL_CHARS", len(h.aggregate_query([99010090])) + 5)
+    dup = AGGREGATE + [agg(201901, 1, 1, 99010010, 1000, 2000)]
+    with pytest.raises(TradeBuildError, match="appears twice"):
+        run(env, FakeApi(aggregate=dup))
+
+
+def test_build_checks_the_parts_name_the_basket_codes(env, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(h, "MAX_URL_CHARS", len(h.aggregate_query([99010090])) + 5)
+    h.ingest("2026-10-23", env["raw"], BASKETS, client=make_client(FakeApi()), now=env["now"])
+    cache = h.RawCache(env["raw"] / "2026-10-23")
+    # Drop one part, as if a query had been lost: the build must notice.
+    for name in [n for n in cache.entries if n.startswith("ots-aggregate-testfruit-c02")]:
+        del cache.entries[name]
+    cache.write_index(cache.meta)
+    with pytest.raises(TradeBuildError, match="name 1 commodity ids, the basket has 2"):
+        build_trade("2026-10-23", env["raw"], env["data"], env["reports"], BASKETS, env["points"], env["crosswalk"])

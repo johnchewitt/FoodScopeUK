@@ -25,7 +25,7 @@ const HORTICULTURE =
   "Defra's horticulture statistics (S09) publish UK production once a year, not monthly. The 2025 figure is shown as national context in Local Authority Profiles.";
 
 const NOT_GROWN =
-  "Defra publishes no UK production statistics for this commodity: its trade codes class every code in the basket as non-indigenous, not grown in the UK on a commercially viable scale (S05).";
+  "Defra publishes no UK production statistics for this commodity: its trade codes class every code it lists under these headings as non-indigenous, not grown in the UK on a commercially viable scale (S05).";
 
 const STATUS: Record<string, DomesticProductionStatus> = {
   tomatoes: { status: "annual_only", sourceIds: ["S09"], detail: HORTICULTURE },
@@ -42,11 +42,7 @@ const STATUS: Record<string, DomesticProductionStatus> = {
     detail:
       "Defra's Agriculture in the UK (S10) publishes wheat production and supply once a year (harvest), not monthly. The 2025 figure is shown as national context in Local Authority Profiles.",
   },
-  bananas: {
-    status: "none_identified",
-    sourceIds: [],
-    detail: "Defra publishes no UK production statistics for this commodity.",
-  },
+  bananas: { status: "none_identified", sourceIds: ["S05"], detail: NOT_GROWN },
   apples: { status: "annual_only", sourceIds: ["S09"], detail: HORTICULTURE },
   sugar: {
     status: "annual_only",

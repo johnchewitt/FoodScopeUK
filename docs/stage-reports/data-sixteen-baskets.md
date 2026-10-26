@@ -125,4 +125,31 @@ New tests:
 
 1. **Milk products and cocoa** add unlike products by mass, as the spec defines them: liquid milk with powders and butter, beans with butter and powder. Partner shares by value compare them fairly; shares by mass are dominated by bulky products. Keep them as one basket each, or split them (B52)?
 2. **The matrix** now compares a commodity with its own group, because sixteen columns do not fit the panel. Is that the comparison you want, or would you prefer a choice of commodities?
-3. **Lamb** is shown as "Sheep and goat meat" because the trade codes do not separate them. Defra's own balance (AUK) is mutton and lamb only, and the profile says so. Is that wording right for your audience?
+3. **Lamb** is shown as "Sheep and goat meat": the basket is HS 0204, lamb and mutton plus goat meat (0204 50: 3.2 % of its recorded net mass, Sep 2025 – Aug 2026). Defra's balance (AUK) is mutton and lamb only; since PR #20 the profile and the Risk Explorer show that scope beside the figure. Keep goat in the basket, or restrict it to lamb and mutton?
+
+## Addendum: independent review and fixes (PR #20, 26 Oct 2026)
+
+An independent review of PR #19, run after its merge, found no error in the trade figures. It re-derived every split query, the reconciliations and the shown figures from the raw responses. It did find the following, all fixed in PR #20:
+
+- **Goat meat.** The sheep and goat basket said the trade codes do not separate goat meat. They do (HS 0204 50, 12 codes). The definition, the spec's §6.1 row and the docs are corrected; the basket keeps HS 0204 (question 3 above).
+- **Contradictory production text.** Seasonal Supply's data notes and the Evidence page still said Defra publishes production of every commodity once a year. The note now comes from each basket's status; the Evidence caveat covers annual, monthly-not-verified and not-grown-in-the-UK.
+- **Defra's scope not shown.** Each published production figure now carries a short scope from the config (e.g. "Defra: mutton and lamb only (no goat meat), carcase weight"). It is shown beside the figure in the profiles and the Risk Explorer, and is in the indicators' coverage. The Risk Explorer also shows Defra's notes. The poultry production label now matches Defra's row ("Production"), and the apples note adds Table 12's footnote (non-commercial orchards).
+- **Picker.**
+  - Enter in an empty search box no longer changes the commodity.
+  - Search ignores what a definition excludes and "(not …)" in a name, so "cheese" no longer finds milk products, and "offal" no longer finds beef.
+  - Enter picks the best match, a name first; "HS 0403" works like "0403".
+  - The result count is announced on the first change, and the tab stop moves to the best match when the search hides the selection.
+  - A component test covers the keyboard behaviour.
+- **Pipeline hardening.**
+  - Cache names are matched exactly, so a future `milk` basket can never read `milk-products` pages.
+  - Ingest refuses to write into an existing snapshot.
+  - The build checks that each basket's query parts name disjoint codes that together make the basket's codes.
+  - Reconciliation fails on a group that appears twice instead of overwriting it.
+  - Provenance records all three `/Commodity` queries, and gives the real reason for split queries (ten codes per query, not URL length).
+  - G3 also lists Defra codes HMRC no longer lists.
+  - The split commodity-list test now really splits.
+- **Wording.**
+  - "Not grown commercially in the UK" now says "every trade code Defra lists under these headings", since newer HMRC codes are not in Defra's 2022 table.
+  - Stale stage numbers (Scenario Lab 7, Consulting Insights 8, PDF export 8) are corrected.
+  - "routes" in a consulting suggestion becomes "ports of entry".
+

@@ -43,7 +43,7 @@ const TRADE_CAVEATS = [
   "Seasonal Supply: months HMRC has not yet published are shown hatched and are never estimated or interpolated. Partial years are compared like for like, and annual figures need all 12 months.",
   "Seasonal Supply: connection widths use one fixed scale for every month and year (12 px = the largest monthly value from one partner), and heatmap classes are the same for every year, so months and years compare directly.",
   "Commodity codes change over time (e.g. tomatoes split into three codes from January 2025). Each basket includes every current and discontinued code, so its totals are continuous; the Seasonal panel lists when each code was recorded.",
-  "UK seasonal production is not shown: Defra publishes production of these commodities once a year, not monthly (S09, S10). Imports are never used to estimate domestic production.",
+  "UK seasonal production is not shown. For most baskets Defra publishes production once a year (S09, S10); its monthly meat and milk series (S06–S08) are not verified yet; oranges, rice, coffee, cocoa and bananas are not grown commercially in the UK (Defra trade codes, S05). Imports are never used to estimate domestic production.",
 ];
 
 const LOCAL_CAVEATS = [

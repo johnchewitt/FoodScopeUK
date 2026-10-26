@@ -17,6 +17,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
@@ -351,6 +352,9 @@ def reconcile(basket: Basket, month: int, aggregate_rows: list[dict[str, Any]],
     agg: dict[tuple[int, int, int, int], tuple[int, int]] = {}
     for r in aggregate_rows:
         if int(r["MonthId"]) == month:
+            if key(r) in agg:
+                # A group appears twice (e.g. in two query parts): never overwrite, that would hide it.
+                raise TradeBuildError(f"{basket.id} {month}: aggregate group {key(r)} appears twice")
             agg[key(r)] = (_as_int(r["SumNetMass"], "SumNetMass"), _as_int(r["SumValue"], "SumValue"))
     raw: dict[tuple[int, int, int, int], list[int]] = defaultdict(lambda: [0, 0])
     for r in raw_rows:
@@ -377,6 +381,19 @@ def reconcile(basket: Basket, month: int, aggregate_rows: list[dict[str, Any]],
 # ---------------------------------------------------------------------------------------------
 # Writing
 # ---------------------------------------------------------------------------------------------
+
+
+def _check_parts(cache: RawCache, prefix: str, ids: list[int]) -> None:
+    """The query parts cached for `prefix` name disjoint sets of commodity ids that together are the basket's."""
+    named: list[set[int]] = []
+    for part in cache.parts(prefix):
+        url = cache.entries[f"{part}-p001"].url
+        named.append({int(i) for i in re.findall(r"CommodityId%20eq%20(\d+)", url)})
+    union = set().union(*named) if named else set()
+    if sum(len(s) for s in named) != len(union):
+        raise TradeBuildError(f"{prefix}: a commodity id is in two query parts")
+    if union != set(ids):
+        raise TradeBuildError(f"{prefix}: the query parts name {len(union)} commodity ids, the basket has {len(ids)}")
 
 
 def _dump(doc: Any) -> str:
@@ -451,10 +468,12 @@ def build_trade(snapshot_id: str, raw_root: Path, data_dir: Path, reports_dir: P
     for basket in baskets:
         prefix = f"ots-aggregate-{basket.id}"
         parts = cache.parts(prefix)
+        _check_parts(cache, prefix, basket_commodity_ids(basket, commodities))
         rows = cache.part_items(prefix)
         first_page = cache.entries[f"{parts[0]}-p001"]
         retrieval_source = first_page.url if len(parts) == 1 else (
-            f"{len(parts)} queries over consecutive runs of the basket's CN8 codes (URL length), first: {first_page.url}"
+            f"{len(parts)} queries over consecutive runs of the basket's CN8 codes (at most ten codes per query), "
+            f"first: {first_page.url}"
         )
         snapshot = build_basket(basket, rows, commodities, partners_by_id, latest, first_page.retrieved_at,
                                 accounting)
@@ -495,6 +514,7 @@ def build_trade(snapshot_id: str, raw_root: Path, data_dir: Path, reports_dir: P
         })
         month = RECONCILE_MONTHS.get(basket.id)
         if month:
+            _check_parts(cache, f"ots-raw-{basket.id}-{month}", basket_commodity_ids(basket, commodities))
             recon.append(reconcile(basket, month, rows, cache.part_items(f"ots-raw-{basket.id}-{month}")))
 
     index_doc: dict[str, Any] = {"schemaVersion": 1, "snapshotId": snapshot_id}
@@ -507,6 +527,10 @@ def build_trade(snapshot_id: str, raw_root: Path, data_dir: Path, reports_dir: P
     index_rel = f"snapshots/{snapshot_id}/trade/index.json"
     (data_dir / index_rel).write_text(index_body, encoding="utf-8")
     written.append(data_dir / index_rel)
+    commodity_parts = cache.parts("commodity")
+    commodity_source = "; ".join(cache.entries[f"{part}-p001"].url for part in commodity_parts)
+    if len(commodity_parts) > 1:
+        commodity_source = f"{len(commodity_parts)} queries of at most ten headings: {commodity_source}"
     first = min(e["months"]["first"] for e in index_entries)
     last = max(e["months"]["last"] for e in index_entries)
     index_prov = _provenance(
@@ -516,7 +540,7 @@ def build_trade(snapshot_id: str, raw_root: Path, data_dir: Path, reports_dir: P
         index_body,
         "trade-index",
         f"{_month_text(first)} – {_month_text(last)}",
-        cache.entries[f"{cache.parts('commodity')[0]}-p001"].url,
+        commodity_source,
         cache.entries[f"{cache.parts('commodity')[0]}-p001"].retrieved_at,
         "Basket definitions (pipeline/foodscope_pipeline/config/trade_baskets.json) with the CN8 codes HMRC lists under each heading.",
         ["S01"],

@@ -351,7 +351,7 @@ Baskets map the 16 commodities to HMRC commodity codes. The table below is the *
 | Wheat | 1001 | Wheat and meslin |
 | Rice | 1006 | Rice (all stages) |
 | Beef | 0201, 0202 | Bovine meat, fresh/chilled/frozen |
-| Lamb | 0204 | **Sheep and goat meat** — HS does not separate lamb from mutton/goat; label accordingly |
+| Lamb | 0204 | **Sheep and goat meat** — lamb and mutton (0204 10–43) and goat meat (0204 50); apart from lamb carcases and some frozen lamb, the codes do not separate lamb from mutton; label accordingly. *(Corrected 26 Oct 2026: this row first said HS does not separate goat; it does, under 0204 50.)* |
 | Poultry | 0207 | Poultry meat and offal |
 | Cheese | 0406 | Cheese and curd |
 | Milk products | 0401–0405 | Milk, cream, concentrated milk, buttermilk/yoghurt, whey, butter — **excludes cheese** to avoid double counting |
