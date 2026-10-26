@@ -155,10 +155,15 @@ test.describe("Basemap choice", () => {
     await zoomTo(page, -2.5, 54, 6);
     await expect.poll(() => styleOnView(page)).toBe("dark");
     await expect(page).toHaveURL(/bm=imagery/);
+    const beforeZoomIn = requested.length;
     await zoomTo(page, -2.2426, 53.4808, 13);
     await expect.poll(() => styleOnView(page)).toBe("imagery");
-    // Two page loads on dark grey, then imagery, dark grey when zoomed out, imagery again.
-    expect(runs(requested)).toEqual(["dark-gray", "imagery", "dark-gray", "imagery"]);
+    // Up to the zoom back in: two page loads on dark grey, then imagery, then dark grey when zoomed
+    // out (never imagery while zoomed out).
+    expect(runs(requested.slice(0, beforeZoomIn))).toEqual(["dark-gray", "imagery", "dark-gray"]);
+    // Back at local scale the view shows imagery (asserted above). It may reuse the imagery style it
+    // already loaded, so a new request is not guaranteed (B49), but no other style is requested.
+    expect(requested.slice(beforeZoomIn).every((s) => s === "imagery")).toBe(true);
   });
 
   test("a style that fails falls back to the outline map and the dark colour set", async ({ page }) => {

@@ -152,4 +152,11 @@ An independent review of PR #19, run after its merge, found no error in the trad
   - "Not grown commercially in the UK" now says "every trade code Defra lists under these headings", since newer HMRC codes are not in Defra's 2022 table.
   - Stale stage numbers (Scenario Lab 7, Consulting Insights 8, PDF export 8) are corrected.
   - "routes" in a consulting suggestion becomes "ports of entry".
+- **B49 (intermittent basemap E2E).** It failed in two of three full runs on 26 Oct. Playwright's routing disables the HTTP cache, so the missing last imagery request was the view reusing the imagery style it had already loaded. The test still checks that imagery is never requested while zoomed out, and that the view shows imagery when back at local scale. It no longer requires a fresh request. It passed 5 of 5 alone.
+
+**Checks for PR #20 (sandbox):**
+- typecheck, lint, format and banned imports pass;
+- `npm test`: 517 passed;
+- pipeline: 302 passed, 1 skipped (by design);
+- full E2E: 74 of 75, where the one failure was B49, then fixed as above and passing 5 of 5.
 
