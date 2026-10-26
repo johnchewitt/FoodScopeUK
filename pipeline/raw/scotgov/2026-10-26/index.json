@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-26",
+  "files": [
+    {
+      "id": "scotgov.dz2022_centroids",
+      "file": "SG_DataZoneCent_2022.zip",
+      "url": "https://maps.gov.scot/ATOM/shapefiles/SG_DataZoneCent_2022.zip",
+      "sourceId": "S17",
+      "licence": "Open Government Licence v3.0",
+      "description": "Data Zone Centroids 2022 (population-weighted, with Census 2022 population), Scottish Government",
+      "httpStatus": 200,
+      "bytes": 326108,
+      "sha256": "cc19bcaf4053993ecbc7fae2040109b1a30ca85c1a5cb115f84815816d7fe7ba",
+      "retrievedAt": "2026-10-26T11:05:59Z"
+    }
+  ]
+}
