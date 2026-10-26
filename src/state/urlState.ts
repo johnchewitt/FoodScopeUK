@@ -44,6 +44,40 @@ export type AreaMeasure = (typeof AREA_MEASURES)[number];
 /** Councils compared with the selected one (LP-07: 2–4 councils in all). */
 export const MAX_COMPARE = 3;
 
+/** Risk Explorer views (RK-01): international supply, logistics and infrastructure, community access. */
+export const RISK_VIEWS = ["supply", "logistics", "access"] as const;
+export type RiskView = (typeof RISK_VIEWS)[number];
+/** Supply view map fill (RK-02): share of recorded imports, or partners' national water stress (S30). */
+export const RISK_FILLS = ["share", "stress"] as const;
+export type RiskFill = (typeof RISK_FILLS)[number];
+/** Port symbol size (RK-03, DfT tonnage): from abroad, agricultural products, roll-on/roll-off. */
+export const PORT_MEASURES = ["international", "agricultural", "roro"] as const;
+export type PortMeasureId = (typeof PORT_MEASURES)[number];
+/** Farming regions layer (RK-03, Defra June survey 2025): a density, or off. */
+export const FARM_LAYERS = ["off", "wheat", "cattle", "sheep", "pigs", "poultry"] as const;
+export type FarmLayer = (typeof FARM_LAYERS)[number];
+/** Community access measure (RK-04): the Priority Places index, combined or one domain. */
+export const PPFI_MEASURES = [
+  "combined",
+  "supermarket_proximity",
+  "supermarket_accessibility",
+  "ecommerce_access",
+  "socio_demographic",
+  "nonsupermarket_proximity",
+  "food_for_families",
+  "fuel_poverty",
+] as const;
+export type PpfiMeasure = (typeof PPFI_MEASURES)[number];
+/** Nations, for within-nation rankings (P11). */
+export const NATIONS = ["England", "Wales", "Scotland", "Northern Ireland"] as const;
+export type Nation = (typeof NATIONS)[number];
+const NATION_PARAM: Record<Nation, string> = {
+  England: "E",
+  Wales: "W",
+  Scotland: "S",
+  "Northern Ireland": "N",
+};
+
 /** State mirrored in the query string (ADR-13, SH-04). */
 export interface UrlState {
   module: ModuleId;
@@ -75,6 +109,16 @@ export interface UrlState {
   compare: string[];
   /** Northern Ireland grocers from the FSA register that GEOLYTIX does not map (supplementary layer, S29). */
   niGrocers: boolean;
+  /** Risk Explorer (RK-01 – RK-04): view, supply map fill, selected port (UN/LOCODE), port measure, road corridors, railway lines, farming layer, access measure, ranking nation (null = the selected council's, else England). */
+  riskView: RiskView;
+  riskFill: RiskFill;
+  port: string | null;
+  portMeasure: PortMeasureId;
+  roads: boolean;
+  rail: boolean;
+  farmLayer: FarmLayer;
+  ppfiMeasure: PpfiMeasure;
+  rankNation: Nation | null;
 }
 
 export const DEFAULT_URL_STATE: UrlState = {
@@ -99,6 +143,15 @@ export const DEFAULT_URL_STATE: UrlState = {
   area: null,
   compare: [],
   niGrocers: false,
+  riskView: "supply",
+  riskFill: "share",
+  port: null,
+  portMeasure: "international",
+  roads: true,
+  rail: true,
+  farmLayer: "off",
+  ppfiMeasure: "combined",
+  rankNation: null,
 };
 
 const LAYER_PARAM: Record<StoreLayer, string> = { supermarket: "s", convenience: "c", other: "o" };
@@ -134,6 +187,8 @@ function parseRetailers(v: string | null): string[] | null {
 const PERIOD_PARAM: Record<PeriodMode, string> = { rolling12: "r12", month: "m", year: "y" };
 const COMMODITY_ID = /^[a-z][a-z0-9-]{0,39}$/;
 const PARTNER_KEY = /^([A-Z]{2}|hmrc-\d{1,5})$/;
+/** DfT port codes: UN/LOCODEs (GBDVR) and DfT's own statistical codes (GB221). */
+const PORT_CODE = /^GB[A-Z0-9]{3}$/;
 
 /** GSS codes for UK local authority districts: E/N/S/W followed by eight digits. */
 const GSS_CODE = /^[ENSW]\d{8}$/;
@@ -185,6 +240,15 @@ export function parseUrlState(search: string): UrlState {
   const sa = params.get("sa");
   const cmp = params.get("cmp");
   const ng = params.get("ng");
+  const rv = params.get("rv");
+  const rf = params.get("rf");
+  const pt = params.get("pt");
+  const pms = params.get("pms");
+  const rd = params.get("rd");
+  const rl = params.get("rl");
+  const fm = params.get("fm");
+  const pf = params.get("pf");
+  const rn = params.get("rn");
 
   const monthNum = mo !== null && /^\d{1,2}$/.test(mo) ? Number(mo) : NaN;
   const yearNum = y !== null && /^\d{4}$/.test(y) ? Number(y) : NaN;
@@ -223,6 +287,17 @@ export function parseUrlState(search: string): UrlState {
     area: sa && isSmallAreaCode(sa) ? sa : null,
     compare: cmp ? cleanCompare(cmp.split(","), ladCode) : [],
     niGrocers: ng === "1",
+    riskView: (RISK_VIEWS as readonly string[]).includes(rv ?? "") ? (rv as RiskView) : "supply",
+    riskFill: rf === "stress" ? "stress" : "share",
+    port: pt && PORT_CODE.test(pt.toUpperCase()) ? pt.toUpperCase() : null,
+    portMeasure: (PORT_MEASURES as readonly string[]).includes(pms ?? "")
+      ? (pms as PortMeasureId)
+      : "international",
+    roads: rd !== "0",
+    rail: rl !== "0",
+    farmLayer: (FARM_LAYERS as readonly string[]).includes(fm ?? "") ? (fm as FarmLayer) : "off",
+    ppfiMeasure: (PPFI_MEASURES as readonly string[]).includes(pf ?? "") ? (pf as PpfiMeasure) : "combined",
+    rankNation: (Object.keys(NATION_PARAM) as Nation[]).find((n) => NATION_PARAM[n] === rn) ?? null,
   };
 }
 
@@ -248,6 +323,15 @@ export function serializeUrlState(state: UrlState): string {
   if (state.basemap !== DEFAULT_URL_STATE.basemap) params.set("bm", state.basemap);
   if (state.areaMeasure !== DEFAULT_URL_STATE.areaMeasure) params.set("am", state.areaMeasure);
   if (state.niGrocers) params.set("ng", "1");
+  if (state.riskView !== DEFAULT_URL_STATE.riskView) params.set("rv", state.riskView);
+  if (state.riskFill !== DEFAULT_URL_STATE.riskFill) params.set("rf", state.riskFill);
+  if (state.port !== null) params.set("pt", state.port);
+  if (state.portMeasure !== DEFAULT_URL_STATE.portMeasure) params.set("pms", state.portMeasure);
+  if (!state.roads) params.set("rd", "0");
+  if (!state.rail) params.set("rl", "0");
+  if (state.farmLayer !== DEFAULT_URL_STATE.farmLayer) params.set("fm", state.farmLayer);
+  if (state.ppfiMeasure !== DEFAULT_URL_STATE.ppfiMeasure) params.set("pf", state.ppfiMeasure);
+  if (state.rankNation !== null) params.set("rn", NATION_PARAM[state.rankNation]);
   if (state.lad !== null) params.set("lad", state.lad);
   if (state.area !== null) params.set("sa", state.area);
   if (state.compare.length) params.set("cmp", state.compare.join(","));
@@ -261,7 +345,8 @@ export function historyModeFor(prev: UrlState, next: UrlState): "push" | "replac
   return prev.module !== next.module ||
     prev.overlay !== next.overlay ||
     prev.lad !== next.lad ||
-    prev.commodity !== next.commodity
+    prev.commodity !== next.commodity ||
+    prev.riskView !== next.riskView
     ? "push"
     : "replace";
 }

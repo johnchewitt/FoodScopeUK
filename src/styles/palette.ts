@@ -74,7 +74,37 @@ export interface MapColours {
   proximity: string;
   proximityPoint: string;
   proximityPointOutline: string;
+  /**
+   * Risk Explorer (Stage 6): six fixed classes of a vulnerability measure (water stress, priority
+   * places, concentration), warm hue, in the same reading order as `seq` (more = more salient).
+   * Kept apart from the teal `seq`, which shows volumes and shares, so "warm = vulnerability" holds
+   * across the module.
+   */
+  risk: readonly string[];
+  /** Road corridors (OS Open Roads): strategic (motorway and trunk) wider than primary; width is the second encoding. */
+  roadStrategic: string;
+  roadPrimary: string;
+  /** Port symbols (proportional circles) and their ring. */
+  portFill: string;
+  portOutline: string;
+  /** Railway lines (dashed). Validated pairwise against roads, port rings, the farm ramp and the selection. */
+  rail: string;
 }
+
+/**
+ * Risk ramp on dark grey and on the dark panels: one warm hue (OKLCH h 48–76°), lightness
+ * 0.54 → 0.90. Dataviz validator, ordinal (25 Oct 2026): monotone, adjacent ΔL ≥ 0.06, hue spread
+ * 31°; lowest class 2.06:1 on the dark grey land (#3d3d3d), 2.64:1 on the offline map (#093138),
+ * 2.57:1 on the panel (#073435).
+ */
+export const RISK_DARK = ["#9d5b38", "#bb6d3b", "#d68241", "#ed9a4e", "#fbb76e", "#ffd696"] as const;
+
+/**
+ * Risk ramp on light grey: the same hue family, light → dark (lightness 0.665 → 0.33). Validator,
+ * ordinal: monotone, adjacent ΔL ≥ 0.06, hue spread 26°; lightest class 2.18:1 on #d6d6d6, 2.76:1 on
+ * #efefef, 2.88:1 on #f4f4f4, 2.10:1 on the water (#cfd3d4).
+ */
+export const RISK_LIGHT = ["#d17c28", "#bf6319", "#a94e17", "#8e3d1a", "#72301b", "#572317"] as const;
 
 /**
  * Light grey basemap sequential ramp: one teal hue (OKLCH h ≈ 205°), lightness 0.64 → 0.29.
@@ -114,6 +144,15 @@ const DARK: MapColours = {
   proximity: "#f184c0",
   proximityPoint: BRAND.text,
   proximityPointOutline: BRAND.navy,
+  risk: RISK_DARK,
+  // Light, low-chroma lines under the symbols: the near-white text colour and the muted grey-teal.
+  roadStrategic: BRAND.text,
+  roadPrimary: BRAND.muted,
+  portFill: BRAND.text,
+  portOutline: BRAND.navy,
+  // Violet (as storeOther; stores are never drawn in the logistics view): normal ΔE ≥ 15.8 and
+  // CVD ≥ 11.8 against roads, port rings, selection and the teal ramp on #3d3d3d; ≥ 3:1.
+  rail: "#9085e9",
 };
 
 /**
@@ -151,6 +190,13 @@ export const MAP_COLOURS: Record<MapStyle, MapColours> = {
     proximity: "#9c0a73",
     proximityPoint: BRAND.navy,
     proximityPointOutline: "#ffffff",
+    risk: RISK_LIGHT,
+    roadStrategic: BRAND.navy,
+    roadPrimary: "#5f7175",
+    portFill: BRAND.navy,
+    portOutline: "#ffffff",
+    // Normal ΔE ≥ 19.5, CVD ≥ 17.9 against roads, port and ramp colours on #d6d6d6; ≥ 3:1.
+    rail: "#5a3fc0",
   },
   imagery: {
     ...DARK,
@@ -177,6 +223,11 @@ export const MAP_TOKENS: Record<string, keyof MapColours> = {
   "--fs-map-cluster-fill": "clusterFill",
   "--fs-map-cluster-ring": "clusterRing",
   "--fs-map-proximity": "proximity",
+  "--fs-map-road-strategic": "roadStrategic",
+  "--fs-map-road-primary": "roadPrimary",
+  "--fs-map-port-fill": "portFill",
+  "--fs-map-port-outline": "portOutline",
+  "--fs-map-rail": "rail",
 };
 
 /**

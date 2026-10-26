@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | 04 — Staged delivery plan |
-| **Version** | 0.5 — 25 October 2026 (Stages renumbered for John's Stage 6 brief: 6 Risk Explorer, 7 Scenario Lab, 8 Consulting Insights, 9 Hardening and Release 1; Stage 6 data step built, gates G6 and G14–G18 recorded) |
+| **Version** | 0.6 — 25 October 2026 (Stage 6 Risk Explorer built on `stage/6-risk-explorer`, awaiting review; earlier the same day, 0.5: Stages renumbered for John's Stage 6 brief: 6 Risk Explorer, 7 Scenario Lab, 8 Consulting Insights, 9 Hardening and Release 1; Stage 6 data step built, gates G6 and G14–G18 recorded) |
 | **Approach** | Small, demonstrable stages. Each stage ends with working software, passing checks and a short stage report. No stage starts while its verification gates are open. |
 
 ---
@@ -18,7 +18,7 @@
 | **3** | **Seasonal Supply Explorer** ✅ merged (PR #5) and deployed | R1 | 2 | Play tomatoes January → December 2025; compare January with July; partner-by-month heatmap; year-on-year change — the same real HMRC data as Food Origins |
 | **4** | **Supermarket network** ✅ merged (PR #9) and deployed | R1 | 3, G7 ✅, and the LAD/GEOLYTIX data built in the pre-Stage 4 data step (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth; basemap choice: dark grey, light grey, imagery (SH-08) |
 | **5** | **Local Authority Profiles** ✅ merged (PR #14) and deployed | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
-| 6 | UK Food Resilience — Risk Explorer (supply exposure, logistics, community access) | R1 | 2, 3, 5, G6, G14–G18 | Tomatoes: concentration, partners' water stress and an estimated exposure to one supplier; ports and road corridors; councils' priority places within each nation — each with "Explain this risk" |
+| **6** | **UK Food Resilience — Risk Explorer** (supply exposure, logistics, community access) 🟡 built (PR #16, on the data PR #15), awaiting review | R1 | 2, 3, 5, G6, G14–G18 | Tomatoes: concentration, partners' water stress and an estimated exposure to one supplier; ports and road corridors; councils' priority places within each nation — each with "Explain this risk" |
 | 7 | Scenario Lab (import disruption, store closure) | R1 | 3, 5, 6 | Spanish tomato preset; close a store and see the access change |
 | 8 | Consulting Insights + PDF export | R1 | 5, 6, 7, D3, D7 | One-click profile PDF that matches the screen |
 | 9 | Hardening and Release 1 | R1 | 1–8 | Release 1 tagged and deployed; acceptance criteria evidenced |
@@ -265,6 +265,14 @@ Deliverables: a "UK Food Resilience — Risk Explorer" module with three views (
 
 Exit: statistics reproduced independently from the raw files; HHI, shares, time filtering, aggregation, missing data, commodity codes, source dates, map selection and explanations unit-tested; E2E across the three views; Stages 1–5 unchanged.
 
+Status on 25 October 2026 (evidence in `docs/stage-reports/stage-6.md`): built on `stage/6-risk-explorer` (ADR-0024), on top of the data step. In the sandbox, every exit criterion is met:
+- the statistics shown were reproduced from the raw HMRC, World Bank, DfT and PPFI files with independent scripts;
+- the listed behaviours are unit- and component-tested;
+- four E2E tests cover the three views, map clicks and view switching;
+- the Stage 1–5 tests pass unchanged.
+
+RK-05 (user weights and sensitivity) is deferred to Release 2 (spec §5.6). Not yet done: the live checks with a real GPU and the Esri basemap, after merge (with Stage 5's).
+
 ## 9. Stage 7 — Scenario Lab
 
 Deliverables: scenario framework (SC-01..05); SC-A/E import disruption with Spanish tomato preset; SC-D store closure. Formula tests from spec §6.5; assumptions panel; baseline vs scenario views; URL-reproducible runs.
@@ -366,3 +374,5 @@ Rules of engagement:
 | 2026-10-25 | Stage 6 data first, in its own pull request; FAO water stress (SDG 6.4.2) the only country climate/water indicator; the Priority Places index for every council, ranked within nation | John (decisions); S13, S30 |
 | 2026-10-25 | Port symbols: DfT's rough location where given, otherwise EMODnet's location for the same UN/LOCODE; food-specific port dependence only from UKFSR's published shares, never derived from DfT tonnage | S03, S23, S36 |
 | 2026-10-25 | Not shown, with the reason stated: Northern Ireland roads (OSNI service unreachable), rail freight routes and distribution centres (no open official dataset found) | S34; 03-DATA-SOURCES §9 |
+| 2026-10-25 | Northern Ireland transport (John's links): the Translink NIR railway network is fetched and shown as Northern Ireland's railway lines (S37); DfI's Highway Network has no open geometry and OSNI's Hub download failed, so Northern Ireland's roads wait for a file from John | S34, S37 |
+| 2026-10-25 | Stage 6 built: three views on one map, never combined; the supply view reuses the trade map with a water-stress fill; ports as graphics (the only hit-tested logistics layer); councils in a risk mode of the Access layers, ranked within nation; a warm risk ramp for vulnerability measures, teal for volumes; "Explain this risk" built from indicators with a separate interpretation; RK-05 weights deferred to Release 2 | ADR-0024; spec §5.6, §6.6 |

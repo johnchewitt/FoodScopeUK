@@ -6,6 +6,8 @@ import {
   CATEGORICAL,
   LIGHT_SEQ,
   MAP_COLOURS,
+  RISK_DARK,
+  RISK_LIGHT,
   MAP_TOKENS,
   SEQ_MIX_PERCENT,
   SHARE_CLASS_HEX,
@@ -98,6 +100,39 @@ describe("per-basemap colour sets (SH-08, ADR-0022)", () => {
   it("the light ramp reads light to dark (OKLab lightness strictly decreasing)", () => {
     const lightness = LIGHT_SEQ.map((hex) => rgbToOklab(hexToRgb(hex))[0]);
     for (let i = 1; i < lightness.length; i++) expect(lightness[i]! - lightness[i - 1]!).toBeLessThan(-0.06);
+  });
+});
+
+describe("risk ramp (Stage 6)", () => {
+  const root = block(":root");
+  const light = block('[data-map-style="light"]');
+
+  it("tokens.css mirrors the dark and light risk ramps; the panel uses the dark one", () => {
+    RISK_DARK.forEach((hex, i) => {
+      expect(root.get(`--fs-risk-${i}`)).toBe(hex);
+      expect(root.get(`--fs-map-risk-${i}`)).toBe(`var(--fs-risk-${i})`);
+    });
+    RISK_LIGHT.forEach((hex, i) => expect(light.get(`--fs-map-risk-${i}`)).toBe(hex));
+    expect(MAP_COLOURS.dark.risk).toEqual(RISK_DARK);
+    expect(MAP_COLOURS.light.risk).toEqual(RISK_LIGHT);
+    expect(MAP_COLOURS.imagery.risk).toEqual(RISK_DARK);
+  });
+
+  it("reads in the same order as the share ramp: lighter = more on dark, darker = more on light", () => {
+    const L = (hex: string) => rgbToOklab(hexToRgb(hex))[0];
+    for (let i = 1; i < 6; i++) {
+      expect(L(RISK_DARK[i]!) - L(RISK_DARK[i - 1]!)).toBeGreaterThan(0.06);
+      expect(L(RISK_LIGHT[i]!) - L(RISK_LIGHT[i - 1]!)).toBeLessThan(-0.06);
+    }
+  });
+
+  it("legend swatches for risk classes use the map tokens, opaque", () => {
+    for (let i = 0; i < 6; i++) {
+      const rule = new RegExp(`\\.swatch\\[data-risk="${i}"\\][^{]*\\{([^}]*)\\}`).exec(css);
+      expect(rule, `risk swatch ${i}`).not.toBeNull();
+      expect(rule![1]).toContain(`var(--fs-map-risk-${i})`);
+      expect(rule![1]).not.toMatch(/opacity/);
+    }
   });
 });
 

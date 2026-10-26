@@ -109,11 +109,27 @@ export function formatDensity(v: number | null | undefined): string {
   return v < 100 ? nf(0).format(Math.round(v)) : nf(0).format(Math.round(v / 10) * 10);
 }
 
+/** Seconds per vehicle per mile (England's Strategic Road Network delay, UKFSR): one decimal place. */
+export function formatDelay(v: number | null | undefined): string {
+  if (!isFiniteNumber(v)) return "—";
+  return `${nf(1, 1).format(v)} s`;
+}
+
+/** Animals or birds per km²: whole numbers (one decimal below 10). */
+export function formatPerKm2Count(v: number | null | undefined): string {
+  if (!isFiniteNumber(v)) return "—";
+  return Math.abs(v) < 10 ? nf(1, 1).format(v) : nf(0).format(Math.round(v));
+}
+
 /** Formats a value according to its unit string (used by <Metric>). */
 export function formatByUnit(value: number | string | null, unit: string): string {
   if (value === null) return "—";
   if (typeof value === "string") return value;
+  if (unit.endsWith(" per km²") && unit !== "stores per km²" && unit !== "residents per km²")
+    return formatPerKm2Count(value);
   switch (unit) {
+    case "seconds per vehicle per mile":
+      return formatDelay(value);
     case "t":
       return formatTonnes(value);
     case "GBP":

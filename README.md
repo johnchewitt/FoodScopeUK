@@ -2,13 +2,14 @@
 
 **Food Security & Supply Chain Intelligence** — a map-centred demonstrator showing where the UK's recorded food imports come from, how sourcing changes through the year, where supermarket provision and food-access vulnerability sit, and how exposed the system is to plausible disruptions. Built for ConsultingWhere with React 19, TypeScript, Vite and the ArcGIS Maps SDK for JavaScript 5.1.
 
-> **Status:** Stage 5 built (awaiting review). Four modules use real data:
+> **Status:** Stage 6 built (awaiting review). Five modules use real data:
 > - **Food Origins** (Stage 2) and **Seasonal Supply** (Stage 3): HMRC Overseas Trade Statistics for tomatoes, strawberries, bananas, potatoes and wheat, monthly from January 2019 (snapshot 2026-10-23).
 > - **UK Food Access** (Stage 4): about 19,000 GEOLYTIX grocery stores (June 2026), stores per 10,000 residents for the 361 councils (ONS mid-2025), straight-line proximity, and a basemap choice (dark grey, light grey, imagery at local scale).
 > - **Local Authority Profiles** (Stage 5): a profile for any UK council, deep profiles for Belfast and Manchester (small-area accessibility, Priority Places for Food Index, deprivation within each nation, car availability), national supply context and a side-by-side comparison that never ranks across nations.
-> - Other modules still show what they will contain and when.
+> - **UK Food Resilience — Risk Explorer** (Stage 6): three separate views, each with its own map, cards, charts and "Explain this risk": international supply exposure (partner concentration, HHI, monthly concentration, estimated exposure to one supplier, partners' national water stress), food logistics (DfT major ports, UKFSR port-of-entry and Short Straits shares, road corridors in Great Britain, railway lines in Northern Ireland, farming regions) and community food access (every council's priority places for food, ranked within its own nation). No score combines them.
+> - Other modules (Scenario Lab, Consulting Insights) still show what they will contain and when.
 >
-> See `docs/stage-reports/` (stage 5 is the latest) and `docs/reviews/2026-10-23-review.md`.
+> See `docs/stage-reports/` (stage 6 is the latest) and `docs/reviews/2026-10-23-review.md`.
 >
 > Site: https://johnchewitt.github.io/FoodScopeUK/
 
@@ -104,7 +105,7 @@ Code licence: to be confirmed by ConsultingWhere. Data shown in this build:
 
 Full source terms: `docs/03-DATA-SOURCES.md`; every dataset's licence and attribution is also on the app's Evidence page.
 
-## Known limitations (Stage 5)
+## Known limitations (Stage 6)
 
 - Food Origins and Seasonal Supply cover five of the 16 planned commodities; the others and the remaining modules follow in later stages.
 - Seasonal Supply shows imports only: Defra publishes UK production of these commodities annually, not monthly, so none is shown and none is estimated from imports. The annual figures are national context in the profiles.
@@ -113,5 +114,6 @@ Full source terms: `docs/03-DATA-SOURCES.md`; every dataset's licence and attrib
 - Store counts and distances describe physical provision only, not affordability, choice or nutritional access. Distances are straight-line, not travel times.
 - Small-area figures are published for Belfast and Manchester only; other councils follow in Release 2. Deprivation and the Priority Places for Food Index rank areas within each nation and are never compared across nations. Scotland's census (2022) and urban/rural classification are not included yet.
 - In Northern Ireland GEOLYTIX maps ten retailers; other grocers from the FSA register are an optional layer, never counted.
+- Risk Explorer: water stress is a national figure (FAO, mostly 2022), not the growing region; port tonnage is all cargo, not food (only UKFSR's published shares are food-specific); road corridors cover Great Britain only and railway lines Northern Ireland only (Translink, 2015); rail freight routes and distribution centres are not shown (no open official dataset). User-weighted composites (RK-05) follow in Release 2; no score combines the three views.
 - The Esri basemap and the HMRC API cannot be reached from the development sandbox; the live site is checked after each deploy, and HMRC and reference data are fetched by GitHub Actions.
 - The initial JavaScript bundle is above the architecture budget; reduction is in `docs/backlog.md`.
