@@ -347,6 +347,8 @@ export interface RiskMapModel {
   /** Port symbol attribution (DfT; EMODnet locations). */
   portsCopyright: string;
   roads: { url: string; copyright: string } | null;
+  /** Road corridors in Northern Ireland (OpenStreetMap, S38; shown with `roads`), or null when off or not published. */
+  roadsNi: { url: string; copyright: string } | null;
   /** Railway lines in Northern Ireland (Translink NIR network, S37), or null when off or not published. */
   rail: { url: string; copyright: string } | null;
   /** Farming regions: outlines URL and, when a measure is on, the class (0–4) of each region id. */

@@ -17,6 +17,7 @@ import {
   RISK_RAIL_LAYER_ID,
   RISK_REGIONS_LAYER_ID,
   RISK_ROADS_LAYER_ID,
+  RISK_ROADS_NI_LAYER_ID,
 } from "../layerIds";
 import type { HitResult, LayerController, LayerStatusReporter, ViewLike, ViewPointerEvent } from "../types";
 
@@ -25,8 +26,8 @@ import type { HitResult, LayerController, LayerStatusReporter, ViewLike, ViewPoi
  * - agricultural statistics regions (Defra regions of England, the devolved countries), outlined,
  *   and shaded by a farming density in five fixed classes when a measure is chosen (teal ramp:
  *   a magnitude, not a vulnerability);
- * - road corridors from OS Open Roads (Great Britain): strategic (motorway and trunk) wider than
- *   primary A roads; corridors, not freight flows;
+ * - road corridors from OS Open Roads (Great Britain) and OpenStreetMap (Northern Ireland, S38):
+ *   strategic (motorways, and trunk roads in GB) wider than primary roads; corridors, not freight;
  * - railway lines in Northern Ireland (Translink NIR network, 2015), dashed in their own colour;
  *   where the railway runs, not services or freight;
  * - DfT major ports as proportional circles (area ∝ tonnage), largest first so small ports stay on
@@ -136,15 +137,17 @@ export class RiskLogisticsController implements LayerController {
   private report: LayerStatusReporter | null = null;
   private regions: GeoJSONLayer | null = null;
   private roads: GeoJSONLayer | null = null;
+  private roadsNi: GeoJSONLayer | null = null;
   private rail: GeoJSONLayer | null = null;
   private ports: GraphicsLayer | null = null;
   private regionsUrl: string | null = null;
   private roadsUrl: string | null = null;
+  private roadsNiUrl: string | null = null;
   private railUrl: string | null = null;
   private handles: { remove(): void }[] = [];
   private visible = false;
   private style: MapStyle = "dark";
-  private signature = { regions: "", roads: "", rail: "", ports: "" };
+  private signature = { regions: "", roads: "", roadsNi: "", rail: "", ports: "" };
   private layerView: HighlightableLayerView | null = null;
   private hoverHighlight: { remove(): void } | null = null;
   private highlighted: string | null = null;
@@ -185,6 +188,7 @@ export class RiskLogisticsController implements LayerController {
     }
     this.updateRegions(m, style);
     this.updateRoads(m, style);
+    this.updateRoadsNi(m, style);
     this.updateRail(m, style);
     this.updatePorts(m, style);
   }
@@ -198,16 +202,16 @@ export class RiskLogisticsController implements LayerController {
       view.map?.remove(l);
       l.destroy();
     }
-    this.regions = this.roads = this.rail = this.ports = null;
-    this.regionsUrl = this.roadsUrl = this.railUrl = null;
+    this.regions = this.roads = this.roadsNi = this.rail = this.ports = null;
+    this.regionsUrl = this.roadsUrl = this.roadsNiUrl = this.railUrl = null;
     this.layerView = null;
-    this.signature = { regions: "", roads: "", rail: "", ports: "" };
+    this.signature = { regions: "", roads: "", roadsNi: "", rail: "", ports: "" };
     this.view = null;
     this.report = null;
   }
 
   private layers(): (GeoJSONLayer | GraphicsLayer)[] {
-    return [this.regions, this.roads, this.rail, this.ports].filter(
+    return [this.regions, this.roads, this.roadsNi, this.rail, this.ports].filter(
       (l): l is GeoJSONLayer | GraphicsLayer => l !== null,
     );
   }
@@ -245,7 +249,7 @@ export class RiskLogisticsController implements LayerController {
         listMode: "hide",
         visible: this.visible,
       });
-      view.map?.add(this.regions, this.below(this.roads, this.rail, this.ports));
+      view.map?.add(this.regions, this.below(this.roads, this.roadsNi, this.rail, this.ports));
       this.signature.regions = "";
     }
     if (this.regions) this.regions.visible = this.visible && r !== null;
@@ -278,7 +282,7 @@ export class RiskLogisticsController implements LayerController {
         listMode: "hide",
         visible: this.visible,
       });
-      view.map?.add(this.roads, this.below(this.rail, this.ports));
+      view.map?.add(this.roads, this.below(this.roadsNi, this.rail, this.ports));
       this.signature.roads = "";
       const layer = this.roads;
       view.whenLayerView(layer).catch((err: unknown) => {
@@ -292,6 +296,43 @@ export class RiskLogisticsController implements LayerController {
     this.signature.roads = sig;
     const container = this.view?.container;
     if (container) container.dataset.riskRoads = r ? "on" : "off";
+  }
+
+  /** Northern Ireland's corridors (OpenStreetMap, S38): the same symbols as GB's, its own credit. */
+  private updateRoadsNi(m: RiskMapModel, style: MapStyle): void {
+    const view = this.view!;
+    const r = m.roadsNi;
+    if (r && r.url !== this.roadsNiUrl) {
+      if (this.roadsNi) {
+        view.map?.remove(this.roadsNi);
+        this.roadsNi.destroy();
+      }
+      this.roadsNiUrl = r.url;
+      this.roadsNi = new GeoJSONLayer({
+        id: RISK_ROADS_NI_LAYER_ID,
+        url: r.url,
+        title: "Road corridors, Northern Ireland (OpenStreetMap)",
+        copyright: r.copyright,
+        outFields: ["road", "category"],
+        popupEnabled: false,
+        legendEnabled: false,
+        listMode: "hide",
+        visible: this.visible,
+      });
+      view.map?.add(this.roadsNi, this.below(this.rail, this.ports));
+      this.signature.roadsNi = "";
+      const layer = this.roadsNi;
+      view.whenLayerView(layer).catch((err: unknown) => {
+        if (this.roadsNi === layer)
+          this.report?.("error", err instanceof Error ? err.message : "Road corridors failed to load");
+      });
+    }
+    if (this.roadsNi) this.roadsNi.visible = this.visible && r !== null;
+    const sig = r ? style : "off";
+    if (sig !== this.signature.roadsNi && this.roadsNi && r) this.roadsNi.renderer = roadRenderer(style);
+    this.signature.roadsNi = sig;
+    const container = this.view?.container;
+    if (container) container.dataset.riskRoadsNi = r ? "on" : "off";
   }
 
   private updateRail(m: RiskMapModel, style: MapStyle): void {

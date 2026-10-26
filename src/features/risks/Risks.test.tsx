@@ -109,11 +109,12 @@ describe("UK Food Resilience — Risk Explorer", { timeout: 60_000 }, () => {
     // The explanation can switch to the road corridors.
     await user.click(within(explain).getByRole("radio", { name: "Roads and rail" }));
     expect(within(explain).getByText("Road and rail corridors")).toBeInTheDocument();
-    expect(within(explain).getByText(/Northern Ireland's roads are not shown/)).toBeInTheDocument();
+    expect(within(explain).getByText(/Northern Ireland's roads come from OpenStreetMap/)).toBeInTheDocument();
     expect(
       within(explain).getByText(/Railway lines are shown for Northern Ireland only/),
     ).toBeInTheDocument();
     expect(useAppStore.getState().riskMap?.rail?.url).toMatch(/risk\/rail\.geojson$/);
+    expect(useAppStore.getState().riskMap?.roadsNi?.url).toMatch(/risk\/roads-ni\.geojson$/);
   });
 
   it("maps a farming measure by region (RK-03, S31)", async () => {

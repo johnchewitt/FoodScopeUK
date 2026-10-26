@@ -120,9 +120,12 @@ test.describe("UK Food Resilience — Risk Explorer", () => {
     await expect.poll(() => viewData(page, "riskPorts"), { timeout: 20_000 }).toBe("51");
     expect(await viewData(page, "riskRoads")).toBe("on");
     await expect.poll(() => viewData(page, "riskRail")).toBe("on");
+    await expect.poll(() => viewData(page, "riskRoadsNi")).toBe("on");
     expect(await viewData(page, "riskRegions")).toBe("outlines");
     const layers = await visibleLayers(page);
-    expect(layers).toEqual(expect.arrayContaining(["risk-ports", "risk-roads", "risk-rail", "risk-regions"]));
+    expect(layers).toEqual(
+      expect.arrayContaining(["risk-ports", "risk-roads", "risk-roads-ni", "risk-rail", "risk-regions"]),
+    );
     expect(layers).not.toContain("origins-partners");
 
     await settled(page);
@@ -142,6 +145,7 @@ test.describe("UK Food Resilience — Risk Explorer", () => {
     await controls(page).getByRole("switch", { name: "Strategic road corridors" }).click();
     await expect(page).toHaveURL(/rd=0/);
     await expect.poll(() => viewData(page, "riskRoads")).toBe("off");
+    expect(await viewData(page, "riskRoadsNi")).toBe("off");
     // Northern Ireland's railway lines (Translink NIR network) can be switched off too.
     await expect(page.getByText("Railway lines (Northern Ireland)")).toBeVisible();
     await controls(page).getByRole("switch", { name: "Railway lines" }).click();

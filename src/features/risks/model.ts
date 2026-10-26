@@ -281,6 +281,7 @@ export function farmingRows(doc: RiskFarming, measure: FarmMeasure | null): Farm
 
 export interface LogisticsSources {
   roads: { url: string; copyright: string } | null;
+  roadsNi: { url: string; copyright: string } | null;
   rail: { url: string; copyright: string } | null;
   regions: { url: string; copyright: string } | null;
   portsCopyright: string;
@@ -362,6 +363,7 @@ export function buildLogisticsModel(
     portKey: `${sel.measure}|${year}`,
     portsCopyright: sources.portsCopyright,
     roads: sel.roads ? sources.roads : null,
+    roadsNi: sel.roads ? sources.roadsNi : null,
     rail: sel.rail ? sources.rail : null,
     regions: sources.regions
       ? {

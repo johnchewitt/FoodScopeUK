@@ -144,17 +144,23 @@ function LogisticsLegend() {
       </ul>
       {roads && (
         <>
-          <p className="map-legend__title">Road corridors (Great Britain)</p>
+          <p className="map-legend__title">Road corridors</p>
           <ul className="map-legend__classes">
             <li>
               <span className="road-sample road-sample--strategic" aria-hidden="true" />
-              Motorway or trunk
+              Motorway or trunk (GB)
             </li>
             <li>
               <span className="road-sample road-sample--primary" aria-hidden="true" />
-              Primary A road
+              Primary road
             </li>
           </ul>
+          {model.map.roadsNi && (
+            <p className="map-legend__note">
+              GB: OS Open Roads. Northern Ireland: OpenStreetMap motorways and primary roads
+              (community-mapped, not official data).
+            </p>
+          )}
         </>
       )}
       {model.map.rail && (
