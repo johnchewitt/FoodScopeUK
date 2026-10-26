@@ -1,0 +1,27 @@
+{
+  "id": "scenario.closure_ni",
+  "title": "Supermarket closure inputs, Northern Ireland: small areas, supermarkets and nearest distances",
+  "role": "statistical",
+  "path": "snapshots/2026-10-26/scenario/closure-ni.json",
+  "format": "json",
+  "schemaId": "scenario-closure",
+  "sha256": "9f995529e628af0238f583db31b96a1bd303577025eea41ba600a25ac24d4d4d",
+  "bytes": 396312,
+  "sourceIds": [
+    "S11",
+    "S16",
+    "S18"
+  ],
+  "referencePeriod": "Census 2021; June 2026 (GEOLYTIX v46)",
+  "coverage": "Northern Ireland: 3,780 Data Zones (2021) and 186 supermarkets (280 m² and over)",
+  "provenance": "derived",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: NISRA, licensed under the Open Government Licence v3.0. Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0. Contains GEOLYTIX Grocery Retail Points data (v46, June 2026). Councils: Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025",
+  "expectedCadence": "irregular",
+  "retrieval": {
+    "method": "Derived offline (build-scenario) from the committed raw files and the published local family",
+    "source": "https://www.nisra.gov.uk/system/files/statistics/geography-census-2021-population-weighted-centroids-csv.zip; https://www.nisra.gov.uk/files/nisra/publications/geography-dz2021-esri-shapefile.zip; https://www.nisra.gov.uk/system/files/statistics/census-2021-ms-a01.xlsx; stores.geojson (local family)",
+    "retrievedAt": "2026-10-24T22:15:39Z",
+    "notes": "Each small area is represented by its population-weighted centroid. Distances are straight-line, in metres, in the national grid (EPSG:2157); they are not travel times. Each area's three nearest supermarkets are found among all supermarkets of its part of the UK, so stores beyond a council boundary count; Crown Dependency stores are left out, and stores in the Republic of Ireland are not in the data. Deprivation decile: England only (IoD 2025, ranked within England)."
+  }
+}

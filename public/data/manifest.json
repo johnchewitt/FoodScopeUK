@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-26T09:13:25Z",
+  "generatedAt": "2026-10-26T11:05:59Z",
   "generator": "foodscope-pipeline 0.1.0",
   "snapshotId": "2026-10-26",
   "snapshots": {
@@ -9,6 +9,7 @@
     "local": "2026-10-24",
     "register": "2026-10-24",
     "risk": "2026-10-25",
+    "scenario": "2026-10-26",
     "trade": "2026-10-26"
   },
   "datasets": [
@@ -573,6 +574,63 @@
       }
     },
     {
+      "id": "scenario.closure_gb",
+      "title": "Supermarket closure inputs, Great Britain: small areas, supermarkets and nearest distances",
+      "role": "statistical",
+      "path": "snapshots/2026-10-26/scenario/closure-gb.json",
+      "format": "json",
+      "schemaId": "scenario-closure",
+      "sha256": "ffafa174ec54de5f91766e9c29907e30f9bd8ec641bb86acf5e7333eac6c982b",
+      "bytes": 5383783,
+      "sourceIds": [
+        "S11",
+        "S15",
+        "S17",
+        "S18",
+        "S19",
+        "S32"
+      ],
+      "referencePeriod": "Census 2021 (England and Wales), Census 2022 (Scotland); IoD 2025 (England); June 2026 (GEOLYTIX v46)",
+      "coverage": "Great Britain: 43,064 small areas (England and Wales: LSOAs 2021; Scotland: Data Zones 2022) and 6,987 supermarkets (280 m² and over)",
+      "provenance": "derived",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025. Copyright Scottish Government, contains Ordnance Survey data © Crown copyright and database right 2024 (Open Government Licence v3.0). Source: Ministry of Housing, Communities and Local Government, English Indices of Deprivation 2025 (OGL v3.0). Contains GEOLYTIX Grocery Retail Points data (v46, June 2026). Councils: Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "Derived offline (build-scenario) from the committed raw files and the published local family",
+        "source": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LSOA_PopCentroids_EW_2021_V4/FeatureServer/0 (36 pages); https://maps.gov.scot/ATOM/shapefiles/SG_DataZoneCent_2022.zip; census2021-ts001.zip (Nomis); LSOA21_WD25_LAD25_EW_LU_v2 (ONS); dz2022-lookup.csv; IoD 2025 File 7; stores.geojson (local family)",
+        "retrievedAt": "2026-10-26T11:05:59Z",
+        "notes": "Each small area is represented by its population-weighted centroid. Distances are straight-line, in metres, in the national grid (EPSG:27700); they are not travel times. Each area's three nearest supermarkets are found among all supermarkets of its part of the UK, so stores beyond a council boundary count; Crown Dependency stores are left out, and stores in the Republic of Ireland are not in the data. Deprivation decile: England only (IoD 2025, ranked within England)."
+      }
+    },
+    {
+      "id": "scenario.closure_ni",
+      "title": "Supermarket closure inputs, Northern Ireland: small areas, supermarkets and nearest distances",
+      "role": "statistical",
+      "path": "snapshots/2026-10-26/scenario/closure-ni.json",
+      "format": "json",
+      "schemaId": "scenario-closure",
+      "sha256": "9f995529e628af0238f583db31b96a1bd303577025eea41ba600a25ac24d4d4d",
+      "bytes": 396312,
+      "sourceIds": [
+        "S11",
+        "S16",
+        "S18"
+      ],
+      "referencePeriod": "Census 2021; June 2026 (GEOLYTIX v46)",
+      "coverage": "Northern Ireland: 3,780 Data Zones (2021) and 186 supermarkets (280 m² and over)",
+      "provenance": "derived",
+      "licence": "Open Government Licence v3.0",
+      "attribution": "Source: NISRA, licensed under the Open Government Licence v3.0. Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0. Contains GEOLYTIX Grocery Retail Points data (v46, June 2026). Councils: Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "Derived offline (build-scenario) from the committed raw files and the published local family",
+        "source": "https://www.nisra.gov.uk/system/files/statistics/geography-census-2021-population-weighted-centroids-csv.zip; https://www.nisra.gov.uk/files/nisra/publications/geography-dz2021-esri-shapefile.zip; https://www.nisra.gov.uk/system/files/statistics/census-2021-ms-a01.xlsx; stores.geojson (local family)",
+        "retrievedAt": "2026-10-24T22:15:39Z",
+        "notes": "Each small area is represented by its population-weighted centroid. Distances are straight-line, in metres, in the national grid (EPSG:2157); they are not travel times. Each area's three nearest supermarkets are found among all supermarkets of its part of the UK, so stores beyond a council boundary count; Crown Dependency stores are left out, and stores in the Republic of Ireland are not in the data. Deprivation decile: England only (IoD 2025, ranked within England)."
+      }
+    },
+    {
       "id": "trade.apples",
       "title": "Recorded UK imports: apples (HS 0808 10)",
       "role": "statistical",
@@ -1103,7 +1161,7 @@
       "url": "https://geoportal.statistics.gov.uk/",
       "licence": "Open Government Licence v3.0",
       "status": "verified",
-      "notes": "Lower layer Super Output Areas (December 2021) BGC V5, population-weighted centroids V4 and the LSOA 2021 → ward 2025 → council 2025 lookup, for the Manchester deep profile; the lookup for every LSOA assigns the Priority Places index to councils in England and Wales (Stage 6). Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025."
+      "notes": "Lower layer Super Output Areas (December 2021) BGC V5, population-weighted centroids V4 and the LSOA 2021 → ward 2025 → council 2025 lookup, for the Manchester deep profile; the lookup for every LSOA assigns the Priority Places index to councils in England and Wales (Stage 6); every LSOA's population-weighted centroid locates the small areas of the Scenario Lab's supermarket-closure scenario (Stage 7). Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025."
     },
     {
       "id": "S16",
@@ -1112,7 +1170,16 @@
       "url": "https://www.nisra.gov.uk/support/geography/data-zones-census-2021",
       "licence": "Open Government Licence v3.0",
       "status": "verified",
-      "notes": "3,780 Data Zones (Irish Grid TM65, EPSG:29902) and their Census 2021 population-weighted centroids, for the Belfast deep profile. Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0."
+      "notes": "3,780 Data Zones (Irish Grid TM65, EPSG:29902) and their Census 2021 population-weighted centroids, for the Belfast deep profile and the Scenario Lab's supermarket-closure scenario (Stage 7). Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0."
+    },
+    {
+      "id": "S17",
+      "title": "Data Zone Centroids 2022 (Scotland)",
+      "publisher": "Scottish Government",
+      "url": "https://spatialdata.gov.scot/geonetwork/srv/api/records/6755b5a3-5d99-4ca3-bd19-33d5454774ac",
+      "licence": "Open Government Licence v3.0",
+      "status": "verified",
+      "notes": "Population-weighted centroids of Scotland's 7,392 2022 Data Zones (EPSG:27700) with Census 2022 total population (cell-key perturbed, so sums may differ from published totals), for the Scenario Lab's supermarket-closure scenario (Stage 7). Copyright Scottish Government, contains Ordnance Survey data © Crown copyright and database right 2024."
     },
     {
       "id": "S18",
@@ -1206,12 +1273,12 @@
     },
     {
       "id": "S32",
-      "title": "2011 Data Zone Lookup (Scotland)",
+      "title": "Data Zone Lookups 2011 and 2022 (Scotland)",
       "publisher": "Scottish Government",
       "url": "https://data.gov.scot/dataset/2011_data_zone_lookup",
       "licence": "Open Government Licence v3.0",
       "status": "verified",
-      "notes": "Assigns Scotland's 6,976 2011 Data Zones (the geography of the Priority Places index in Scotland) to the 32 current councils. Windows-1252 text."
+      "notes": "Assigns Scotland's 6,976 2011 Data Zones (the geography of the Priority Places index in Scotland) and 7,392 2022 Data Zones (the Scenario Lab's small areas, Stage 7) to the 32 current councils. Windows-1252 text."
     },
     {
       "id": "S33",

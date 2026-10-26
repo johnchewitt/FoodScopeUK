@@ -1,0 +1,73 @@
+{
+  "snapshot": "2026-10-26",
+  "scotlandNameDifferences": [
+    {
+      "code": "S01020747",
+      "centroidFile": "Whitburn Glenisla Court ",
+      "lookup": "Whitburn Glenisla Court"
+    }
+  ],
+  "smallAreas": {
+    "E": 33755,
+    "W": 1917,
+    "S": 7392,
+    "N": 3780
+  },
+  "population": {
+    "E": 56490056,
+    "W": 3107545,
+    "S": 5439565,
+    "N": 1903168
+  },
+  "populationCensusYear": {
+    "E": 2021,
+    "W": 2021,
+    "S": 2022,
+    "N": 2021
+  },
+  "populationAgainstPublished": {
+    "E": {
+      "smallAreas": 56490056,
+      "published": 56490048,
+      "difference": 8
+    },
+    "W": {
+      "smallAreas": 3107545,
+      "published": 3107494,
+      "difference": 51
+    },
+    "N": {
+      "smallAreas": 1903168,
+      "published": 1903175,
+      "difference": -7
+    }
+  },
+  "deprivationDeciles": {
+    "england": 33755
+  },
+  "supermarkets": {
+    "gb": 6987,
+    "ni": 186,
+    "leftOutCrownDependencies": 22
+  },
+  "nearest_gb": {
+    "areas": 43064,
+    "supermarkets": 6987,
+    "medianNearestMetres": 889,
+    "maxNearestMetres": 88804,
+    "maxNearestArea": "S01014306",
+    "populationNearestOver2km": 12111335,
+    "populationNearestOver5km": 4288827,
+    "areasNearestInAnotherCouncil": 3096
+  },
+  "nearest_ni": {
+    "areas": 3780,
+    "supermarkets": 186,
+    "medianNearestMetres": 1463,
+    "maxNearestMetres": 32991,
+    "maxNearestArea": "N20002131",
+    "populationNearestOver2km": 841034,
+    "populationNearestOver5km": 534239,
+    "areasNearestInAnotherCouncil": 231
+  }
+}
