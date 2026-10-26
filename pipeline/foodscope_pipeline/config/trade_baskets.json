@@ -124,7 +124,7 @@
       "hs6": []
     },
     {
-      "id": "sheep_goat",
+      "id": "sheep-goat",
       "label": "Sheep and goat meat",
       "group": "meat",
       "definition": "Meat of sheep or goats, fresh, chilled or frozen (HS 0204). The trade codes do not separate lamb from mutton or goat meat. Excludes offal and processed meat.",
@@ -146,7 +146,7 @@
       "hs6": []
     },
     {
-      "id": "milk_products",
+      "id": "milk-products",
       "label": "Milk products (not cheese)",
       "group": "dairy",
       "definition": "Milk and cream, concentrated and powdered milk, yoghurt, buttermilk, whey and butter (HS 0401–0405). Excludes cheese, which is a separate basket. Net mass adds products as recorded (liquid milk, powders, butter), not converted to a milk equivalent.",

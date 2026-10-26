@@ -374,11 +374,13 @@ def test_the_sixteen_baskets_follow_the_specification() -> None:
         "tomatoes": (("0702",), ()), "potatoes": (("0701",), ()), "strawberries": ((), ("081010",)),
         "apples": ((), ("080810",)), "oranges": ((), ("080510",)), "bananas": (("0803",), ()),
         "wheat": (("1001",), ()), "rice": (("1006",), ()), "beef": (("0201", "0202"), ()),
-        "sheep_goat": (("0204",), ()), "poultry": (("0207",), ()),
-        "milk_products": (("0401", "0402", "0403", "0404", "0405"), ()), "cheese": (("0406",), ()),
+        "sheep-goat": (("0204",), ()), "poultry": (("0207",), ()),
+        "milk-products": (("0401", "0402", "0403", "0404", "0405"), ()), "cheese": (("0406",), ()),
         "sugar": (("1701",), ()), "coffee": (("0901",), ()), "cocoa": (("1801", "1803", "1804", "1805"), ()),
     }
     assert [g.id for g in groups] == ["fruit_veg", "cereals", "meat", "dairy", "sugar_beverages"]
+    # Ids go into the app's URL (`c`), whose pattern is ^[a-z][a-z0-9-]{0,39}$ (src/state/urlState.ts).
+    assert all(re.fullmatch(r"[a-z][a-z0-9-]{0,39}", b.id) for b in baskets)
     assert all(b.group in {g.id for g in groups} for b in baskets)
     assert set(h.RECONCILE_MONTHS) == set(scope)
     assert len(set(h.RECONCILE_MONTHS.values())) == len(scope)  # a different month for each basket
