@@ -303,6 +303,8 @@ def test_chunk_ids_keeps_every_url_short_and_covers_each_id_once() -> None:
     assert len(runs) > 1
     assert [i for run in runs for i in run] == sorted(ids)
     assert all(len(h.aggregate_query(run)) <= h.MAX_URL_CHARS for run in runs)
+    assert all(len(run) <= h.MAX_OR_CLAUSES for run in runs)
+    assert len(runs) == 30
     # Few codes: one query, as before.
     assert h.chunk_ids([7020000, 7020010], h.aggregate_query) == [[7020000, 7020010]]
     with pytest.raises(ValueError):
@@ -380,5 +382,20 @@ def test_the_sixteen_baskets_follow_the_specification() -> None:
     assert all(b.group in {g.id for g in groups} for b in baskets)
     assert set(h.RECONCILE_MONTHS) == set(scope)
     assert len(set(h.RECONCILE_MONTHS.values())) == len(scope)  # a different month for each basket
-    # The commodity query for all sixteen stays one short request.
-    assert len(h.commodity_query(baskets)) < h.MAX_URL_CHARS
+    # 24 headings: the API refused them in one filter (HTTP 400, 26 Oct 2026), so three queries.
+    queries = h.commodity_queries(baskets)
+    assert [q.count(" eq ") + q.count("%20eq%20") for q in queries] == [10, 10, 4]
+    assert h.commodity_queries(baskets[:5]) == [h.commodity_query(baskets[:5])]  # Stage 2's single query
+
+
+def test_split_commodity_list_is_read_back_whole(env, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(h, "MAX_OR_CLAUSES", 1)
+    baskets = [
+        h.Basket("testfruit", "Test fruit", "Synthetic basket", "HS 9901", ("9901",), ()),
+    ]
+    two = [h.Basket("testfruit", "Test fruit", "Synthetic basket", "HS 9901 and 9902", ("9901", "9902"), ())]
+    assert len(h.commodity_queries(two)) == 2
+    cache = h.ingest("2026-10-23", env["raw"], baskets, client=make_client(FakeApi()), now=env["now"])
+    assert cache.parts("commodity") == ["commodity"]
+    # One code per OTS query.
+    assert cache.parts("ots-aggregate-testfruit") == ["ots-aggregate-testfruit-c01", "ots-aggregate-testfruit-c02"]

@@ -6,9 +6,10 @@ This is the only module that talks to `api.uktradeinfo.com`. It never runs in th
 Behaviour (docs/03-DATA-SOURCES.md, S01):
 - At most 50 requests per minute (HMRC's limit is 60); retries with back-off on HTTP 429/5xx.
 - Follows `@odata.nextLink` until the last page (responses are capped at 40,000 items).
-- Keeps every query URL under `MAX_URL_CHARS`: a basket with many CN8 codes (dairy, cheese, meat) is
-  fetched in several queries over disjoint, consecutive runs of its codes, cached as
-  `<prefix>-cNN-pNNN` (`RawCache.parts` reads either form).
+- Keeps every OR-list to at most `MAX_OR_CLAUSES` comparisons and every URL under `MAX_URL_CHARS`:
+  a basket with many CN8 codes (dairy, cheese, meat) is fetched in several queries over disjoint,
+  consecutive runs of its codes, and the commodity list in several queries over its headings,
+  cached as `<prefix>-cNN-pNNN` (`RawCache.parts` reads either form).
 - Every response is stored byte-for-byte (gzip, deterministic) in `pipeline/raw/hmrc/<snapshot>/`
   with its URL, retrieval timestamp, HTTP status, SHA-256 and item count in `index.json`, so the
   snapshot can be rebuilt offline (`build-trade`) and audited.
@@ -40,6 +41,10 @@ FIRST_MONTH = 201901
 # The longest URL used so far was 651 characters (wheat, 10 codes, 23 Oct 2026). Common server
 # defaults limit the query string to 2,048 characters; stay well below.
 MAX_URL_CHARS = 1800
+# The API answered HTTP 400 to a /Commodity filter of 24 OR-ed comparisons (26 Oct 2026, a URL of
+# about 750 characters), so the limit is on the filter's size, not the URL. The largest OR-lists it
+# has answered are 10 commodity codes (wheat, aggregate and raw rows, 23 Oct 2026): never send more.
+MAX_OR_CLAUSES = 10
 USER_AGENT = "foodscope-pipeline (+https://github.com/johnchewitt/FoodScopeUK)"
 # Characters left unescaped in OData query values, for readable cached URLs.
 _SAFE = "(),'/:$"
@@ -125,11 +130,27 @@ def flows_clause(flows: Sequence[int] = IMPORT_FLOWS) -> str:
     return _or(f"FlowTypeId eq {f}" for f in flows)
 
 
-def commodity_query(baskets: Sequence[Basket]) -> str:
-    """All CN8 codes (current and historical) under the baskets' HS headings."""
+def commodity_clauses(baskets: Sequence[Basket]) -> list[str]:
     clauses = [f"Hs4Code eq '{c}'" for b in baskets for c in b.hs4]
     clauses += [f"Hs6Code eq '{c}'" for b in baskets for c in b.hs6]
-    return odata_url("Commodity", [("$filter", " or ".join(sorted(set(clauses))))])
+    return sorted(set(clauses))
+
+
+def commodity_query_for(clauses: Sequence[str]) -> str:
+    if not clauses:
+        raise ValueError("no commodity clauses")
+    return odata_url("Commodity", [("$filter", " or ".join(clauses))])
+
+
+def commodity_query(baskets: Sequence[Basket]) -> str:
+    """All CN8 codes (current and historical) under the baskets' HS headings, in one query."""
+    return commodity_query_for(commodity_clauses(baskets))
+
+
+def commodity_queries(baskets: Sequence[Basket]) -> list[str]:
+    """The same, as queries of at most MAX_OR_CLAUSES headings each (one query for up to ten)."""
+    clauses = commodity_clauses(baskets)
+    return [commodity_query_for(clauses[i:i + MAX_OR_CLAUSES]) for i in range(0, len(clauses), MAX_OR_CLAUSES)]
 
 
 def country_query() -> str:
@@ -168,8 +189,8 @@ def raw_rows_query(commodity_ids: Sequence[int], month: int) -> str:
 
 def chunk_ids(ids: Sequence[int], build: Callable[[Sequence[int]], str],
               limit: int | None = None) -> list[list[int]]:
-    """Splits sorted `ids` into consecutive runs whose query URL (`build(run)`) fits in `limit`
-    (default `MAX_URL_CHARS`).
+    """Splits sorted `ids` into consecutive runs of at most `MAX_OR_CLAUSES` ids whose query URL
+    (`build(run)`) fits in `limit` (default `MAX_URL_CHARS`).
 
     One run when everything fits, so short baskets keep a single query. Deterministic.
     """
@@ -180,7 +201,7 @@ def chunk_ids(ids: Sequence[int], build: Callable[[Sequence[int]], str],
     runs: list[list[int]] = [[]]
     for i in ordered:
         candidate = [*runs[-1], i]
-        if runs[-1] and len(build(candidate)) > limit:
+        if runs[-1] and (len(candidate) > MAX_OR_CLAUSES or len(build(candidate)) > limit):
             runs.append([i])
         else:
             runs[-1] = candidate
@@ -264,7 +285,8 @@ class HmrcClient:
             retryable = status in (0, 429, 500, 502, 503, 504)
             logger.warning("HMRC %s (attempt %d/%d) for %s", status or "network error", attempt, self.max_attempts, url)
             if not retryable or attempt == self.max_attempts:
-                raise HmrcError(f"HTTP {status} for {url}: {body[:300]!r}")
+                # The response text first: the URL can be long enough to hide it.
+                raise HmrcError(f"HTTP {status}: {body[:500]!r} for {url}")
             # HMRC asks callers that hit the limit to wait up to a minute.
             self.sleep(60.0 if status == 429 else min(5.0 * 3 ** (attempt - 1), 120.0))
         raise AssertionError("unreachable")
@@ -436,7 +458,13 @@ def ingest(snapshot_id: str, raw_root: Path, baskets: Sequence[Basket], client: 
     cache = RawCache(raw_root / snapshot_id)
     started = now()
 
-    commodities = fetch_paged(client, cache, "commodity", commodity_query(baskets), now)
+    queries = commodity_queries(baskets)
+    if len(queries) == 1:
+        commodities = fetch_paged(client, cache, "commodity", queries[0], now)
+    else:
+        commodities = []
+        for n, url in enumerate(queries, start=1):
+            commodities.extend(fetch_paged(client, cache, f"commodity-c{n:02d}", url, now))
     fetch_paged(client, cache, "country", country_query(), now)
 
     latest = 0

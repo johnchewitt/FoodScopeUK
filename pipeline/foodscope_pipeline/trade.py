@@ -428,7 +428,7 @@ def build_trade(snapshot_id: str, raw_root: Path, data_dir: Path, reports_dir: P
     latest = int(meta["latestMonthId"])
     accounting = Accounting()
 
-    commodities = cache.items("commodity")
+    commodities = cache.part_items("commodity")
     countries = cache.items("country")
     accounting.record("country list", len(countries), len(countries))
     points = load_points(points_path)
@@ -516,8 +516,8 @@ def build_trade(snapshot_id: str, raw_root: Path, data_dir: Path, reports_dir: P
         index_body,
         "trade-index",
         f"{_month_text(first)} – {_month_text(last)}",
-        cache.entries["commodity-p001"].url,
-        cache.entries["commodity-p001"].retrieved_at,
+        cache.entries[f"{cache.parts('commodity')[0]}-p001"].url,
+        cache.entries[f"{cache.parts('commodity')[0]}-p001"].retrieved_at,
         "Basket definitions (pipeline/foodscope_pipeline/config/trade_baskets.json) with the CN8 codes HMRC lists under each heading.",
         ["S01"],
     )
