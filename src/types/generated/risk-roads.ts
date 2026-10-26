@@ -1,7 +1,7 @@
 /* Generated from schemas/risk-roads.schema.json by scripts/gen-types.mjs — do not edit by hand. */
 
 /**
- * Strategic road corridors in Great Britain from OS Open Roads (S35): motorways and trunk roads ('strategic') and other primary-route A roads ('primary'), one feature per road number and category, WGS84. Written by `foodscope-pipeline build-risk`.
+ * Road corridors, one feature per road number and category, WGS84: in Great Britain from OS Open Roads (S35), motorways and trunk roads ('strategic') and other primary-route A roads ('primary'); in Northern Ireland from OpenStreetMap (S38, a separate file), motorways ('strategic') and primary roads ('primary'). Written by `foodscope-pipeline build-risk`.
  */
 export interface RiskRoads {
   type: "FeatureCollection";

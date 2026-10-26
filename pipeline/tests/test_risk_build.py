@@ -50,7 +50,7 @@ def test_two_builds_are_identical_and_the_report_is_committed(built, tmp_path_fa
     out, reports = built
     again, reports_again = _build(tmp_path_factory)
     names = sorted(p.name for p in out.iterdir())
-    assert len(names) == 16
+    assert len(names) == 18
     for name in names:
         assert (out / name).read_bytes() == (again / name).read_bytes(), name
     report = reports / f"risk-qa-{SNAPSHOT}.json"
@@ -268,3 +268,28 @@ def test_rail_is_the_nir_route_network_in_wgs84(built) -> None:
             assert -8.2 < lon < -5.4 and 54.0 < lat < 55.3
     report = json.loads((built[1] / f"risk-qa-{SNAPSHOT}.json").read_text(encoding="utf-8"))
     assert report["rail"]["leftOut"] == {"Siding": 24}
+
+
+def test_ni_roads_are_osm_motorways_and_primary_roads(built) -> None:
+    """John's OpenStreetMap extract (S38): motorways 'strategic', primary roads 'primary', no secondary."""
+    import pyogrio
+
+    shp = f"/vsizip/{RAW / 'osm-provided' / 'ni-roads-2026' / 'NI_Roads_50kOSMselection_ExportFeatures.zip'}/NI_Roads_50kOSMselection_ExportFeatures.shp"
+    info = pyogrio.read_info(shp)
+    assert info["crs"] == "EPSG:4326" and info["features"] == 10_498
+    roads = _load(built, "roads-ni.geojson")
+    by = defaultdict(set)
+    for f in roads["features"]:
+        by[f["properties"]["category"]].add(f["properties"]["road"])
+    assert {"M1", "M2", "M3", "M12", "M22", "M5", "A8(M)"} <= by["strategic"]
+    assert {"A1", "A2", "A6", "A26", "A29"} <= by["primary"]
+    assert not any(r.startswith("B") for r in by["primary"])  # secondary (B) roads are left out
+    for f in roads["features"]:
+        coords = f["geometry"]["coordinates"]
+        flat = coords if f["geometry"]["type"] == "LineString" else [c for line in coords for c in line]
+        assert all(-8.2 < lon < -5.4 and 54.0 < lat < 55.3 for lon, lat in flat)
+    report = json.loads((built[1] / f"risk-qa-{SNAPSHOT}.json").read_text(encoding="utf-8"))
+    assert report["roadsNorthernIreland"]["linesByClass"] == {"motorway": 251, "primary": 4016, "secondary": 6231}
+    sidecar = json.loads((built[0] / "roads-ni.provenance.json").read_text(encoding="utf-8"))
+    assert sidecar["licence"] == "Open Database License (ODbL) 1.0"
+    assert sidecar["attribution"] == "© OpenStreetMap contributors (ODbL)"

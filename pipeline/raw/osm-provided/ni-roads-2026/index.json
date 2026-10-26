@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "id": "osm.ni_roads_2026",
+      "file": "NI_Roads_50kOSMselection_ExportFeatures.zip",
+      "sourceId": "S38",
+      "description": "OpenStreetMap roads in Northern Ireland (Geofabrik roads layer: osm_id, code, fclass, name, ref, oneway, maxspeed, layer, bridge, tunnel), a selection of motorway, primary and secondary roads exported by John from ArcGIS Pro (26 Oct 2026); shapefile, WGS84 (EPSG:4326), 10,498 lines",
+      "publisherUrl": "https://www.openstreetmap.org/copyright",
+      "licence": "Open Database License (ODbL) 1.0",
+      "attribution": "© OpenStreetMap contributors (ODbL)",
+      "providedBy": "John Hewitt (project owner), attached to the build session",
+      "originalName": "bacba1ff-NI_Roads_50kOSMselection_ExportFeatures.zip",
+      "receivedAt": "2026-10-26T08:12:53Z",
+      "notes": "OpenStreetMap extract downloaded in 2026 (John, 26 Oct 2026; exact date not recorded). Community-mapped, not official data: used for Northern Ireland's road corridors because DfI's Highway Network has no open geometry and OSNI's open transport layer could not be fetched (John's decision, 26 Oct 2026). Repacked on receipt: the ZIP as received also held ArcGIS metadata (.shp.xml), which records file paths on the provider's computer, and Esri spatial index files (.sbn, .sbx). These three were left out of the stored ZIP; the five data files are byte-identical to those received (checksums in 'members'). Never edited.",
+      "bytes": 1970786,
+      "sha256": "395ca8b0759e6ccabfdeb01ff3f0c09c1245a50e7406bb2be300bf4e83c0d081",
+      "received": {
+        "bytes": 2046400,
+        "sha256": "501606ceb5e96acc194939395882df05a3418e108cba6576f0f2d34f30b5a73a",
+        "leftOut": [
+          "NI_Roads_50kOSMselection_ExportFeatures.sbn",
+          "NI_Roads_50kOSMselection_ExportFeatures.sbx",
+          "NI_Roads_50kOSMselection_ExportFeatures.shp.xml"
+        ]
+      },
+      "members": [
+        {
+          "name": "NI_Roads_50kOSMselection_ExportFeatures.cpg",
+          "bytes": 5,
+          "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
+        },
+        {
+          "name": "NI_Roads_50kOSMselection_ExportFeatures.dbf",
+          "bytes": 2026468,
+          "sha256": "27fe5dea93639390e069c7ce6026f680c700b90788a07d5d4ee658eb9e4eeaaf"
+        },
+        {
+          "name": "NI_Roads_50kOSMselection_ExportFeatures.prj",
+          "bytes": 145,
+          "sha256": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4"
+        },
+        {
+          "name": "NI_Roads_50kOSMselection_ExportFeatures.shp",
+          "bytes": 2788132,
+          "sha256": "3d1b52e401d6572fb6bff626ad6dc0111d2884b84e546c4fd86b64f77cc2ffa3"
+        },
+        {
+          "name": "NI_Roads_50kOSMselection_ExportFeatures.shx",
+          "bytes": 84084,
+          "sha256": "ddab818be38d323f0b183d48d5f6c641d0d0437c10cc6cc01108e5f4c5ea4938"
+        }
+      ]
+    }
+  ]
+}

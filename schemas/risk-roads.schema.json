@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/risk-roads.schema.json",
   "title": "RiskRoads",
-  "description": "Strategic road corridors in Great Britain from OS Open Roads (S35): motorways and trunk roads ('strategic') and other primary-route A roads ('primary'), one feature per road number and category, WGS84. Written by `foodscope-pipeline build-risk`.",
+  "description": "Road corridors, one feature per road number and category, WGS84: in Great Britain from OS Open Roads (S35), motorways and trunk roads ('strategic') and other primary-route A roads ('primary'); in Northern Ireland from OpenStreetMap (S38, a separate file), motorways ('strategic') and primary roads ('primary'). Written by `foodscope-pipeline build-risk`.",
   "type": "object",
   "additionalProperties": false,
   "required": ["type", "features"],

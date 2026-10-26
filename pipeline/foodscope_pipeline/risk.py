@@ -72,6 +72,17 @@ OS_SOURCE = "Contains OS data © Crown copyright and database right 2026"
 TRANSLINK_SOURCE = ("Contains public sector information licensed under the Open Government Licence v3.0. "
                     "Source: Translink (NI Railways), OpenDataNI")
 RAIL_SHAPEFILE = "NIR_shp/Rail Line NI_polyline.shp"
+# S38: OpenStreetMap roads for Northern Ireland, provided by John (26 Oct 2026; his decision to use
+# them, labelled as OpenStreetMap, because DfI's Highway Network has no open geometry and OSNI's
+# open transport layer could not be fetched).
+OSM_ROADS_EDITION = "ni-roads-2026"
+OSM_ROADS_SHAPEFILE = "NI_Roads_50kOSMselection_ExportFeatures.shp"
+OSM_SOURCE = "© OpenStreetMap contributors (ODbL)"
+ODBL = "Open Database License (ODbL) 1.0"
+# OpenStreetMap road classes kept for the corridors: motorways as 'strategic', primary roads as
+# 'primary'. Secondary roads are left out, as GB's corridors stop at primary A roads.
+OSM_CATEGORIES = {"motorway": "strategic", "primary": "primary"}
+NI_ROADS_SIMPLIFY_M = 60.0  # as the GB extract (S35), in Irish Transverse Mercator
 RAIL_SIMPLIFY_M = 10.0
 WB_SOURCE = "FAO AQUASTAT, via World Bank World Development Indicators (ER.H2O.FWST.ZS), CC BY 4.0"
 EMODNET_SOURCE = ("EMODnet Human Activities, Main ports (originators Eurofish International Organisation and "
@@ -112,6 +123,7 @@ class RiskInputs:
     ons: Path  # ITL1 pages and the LSOA -> LAD 2025 lookup
     os: Path  # OS Open Roads extract
     translink: Path  # NIR railway network (S37)
+    osm: Path  # OpenStreetMap roads in Northern Ireland, provided by John (S38)
     nisra: Path  # NIMDM 2017 (stage5 snapshot)
     ppfi: Path  # provided by John
     local: Path  # public/data/snapshots/<local snapshot>/local/ (council list)
@@ -129,6 +141,7 @@ def default_inputs(raw_root: Path, config_dir: Path, data_dir: Path, snapshot: s
         ons=raw_root / "ons" / snapshot,
         os=raw_root / "os" / snapshot,
         translink=raw_root / "translink" / snapshot,
+        osm=raw_root / "osm-provided" / OSM_ROADS_EDITION,
         nisra=raw_root / "nisra" / reference_snapshot,
         ppfi=raw_root / "hasp-provided" / PPFI_EDITION,
         local=data_dir / "snapshots" / local_snapshot / "local",
@@ -440,6 +453,61 @@ def _roads(inputs: RiskInputs, qa: dict) -> tuple[list[dict], dict, dict]:
 
 
 # ---------------------------------------------------------------------------------------------
+# Road corridors in Northern Ireland (S38, OpenStreetMap)
+
+
+def _ni_roads(inputs: RiskInputs, qa: dict) -> tuple[list[dict], dict]:
+    """OpenStreetMap motorways and primary roads in Northern Ireland, merged by road number."""
+    path, entry = load_provided(inputs.osm, "osm.ni_roads_2026")
+    meta, _, wkb, fields = read(f"/vsizip/{path}/{OSM_ROADS_SHAPEFILE}", columns=["fclass", "ref"])
+    cols = dict(zip(meta["fields"], fields, strict=True))  # pyogrio returns columns in file order
+    if meta["crs"] != "EPSG:4326":
+        raise RiskBuildError(f"OpenStreetMap roads: CRS {meta['crs']}")
+    to_itm = Transformer.from_crs(4326, 2157, always_xy=True)
+    to_wgs = Transformer.from_crs(2157, 4326, always_xy=True)
+
+    def project(transformer: Transformer, digits: int | None = None):  # noqa: ANN202
+        def run(xy: np.ndarray) -> np.ndarray:
+            x, y = transformer.transform(xy[:, 0], xy[:, 1])
+            out = np.column_stack([x, y])
+            return np.round(out, digits) if digits is not None else out
+        return run
+
+    groups: dict[tuple[str, str], list] = defaultdict(list)
+    counts: dict[str, int] = defaultdict(int)
+    for fclass, ref, geom in zip(cols["fclass"], cols["ref"], shapely.from_wkb(wkb), strict=True):
+        counts[str(fclass)] += 1
+        category = OSM_CATEGORIES.get(str(fclass))
+        if category is None:
+            continue
+        if geom is None or geom.geom_type != "LineString":
+            raise RiskBuildError(f"OpenStreetMap roads: unexpected geometry {geom}")
+        groups[(category, str(ref or "").strip() or "unnumbered")].append(
+            shapely.transform(geom, project(to_itm)))
+    unknown = sorted(set(counts) - set(OSM_CATEGORIES) - {"secondary"})
+    if unknown:
+        raise RiskBuildError(f"OpenStreetMap roads: unexpected classes {unknown}")
+    features = []
+    for (category, road), parts in sorted(groups.items()):
+        merged = shapely.simplify(shapely.line_merge(shapely.union_all(parts)), NI_ROADS_SIMPLIFY_M,
+                                  preserve_topology=False)
+        if merged.is_empty:
+            continue
+        wgs = shapely.transform(merged, project(to_wgs, 5))
+        features.append({"type": "Feature", "properties": {"road": road, "category": category},
+                         "geometry": json.loads(shapely.to_geojson(wgs))})
+    features.sort(key=lambda f: (f["properties"]["category"] != "strategic", f["properties"]["road"]))
+    qa["roadsNorthernIreland"] = {
+        "features": len(features),
+        "linesByClass": dict(sorted(counts.items())),
+        "kept": {c: sum(1 for f in features if f["properties"]["category"] == c) for c in ("strategic", "primary")},
+        "simplifyMetres": NI_ROADS_SIMPLIFY_M,
+        "source": f"{entry['file']} (provided, sha256 {entry['sha256'][:12]}…)",
+    }
+    return features, entry
+
+
+# ---------------------------------------------------------------------------------------------
 # Railway lines in Northern Ireland (S37)
 
 
@@ -449,11 +517,13 @@ def _rail(inputs: RiskInputs, qa: dict) -> tuple[list[dict], dict]:
     e = _entry(index, "translink.nir_railway_network")
     path = f"/vsizip/{inputs.translink / e['file']}/{RAIL_SHAPEFILE}"
     meta, _, wkb, fields = read(path, columns=["ELR_CODE", "DESCRIPTIO", "ROUTE_TYPE"])
+    cols = dict(zip(meta["fields"], fields, strict=True))  # pyogrio returns columns in file order
     if meta["crs"] != "EPSG:29903":  # TM75 Irish Grid, as the publisher says ("Irish Grid projection")
         raise RiskBuildError(f"NIR railway network: CRS {meta['crs']}")
     to_wgs84 = Transformer.from_crs(29903, 4326, always_xy=True)
     features, dropped, km = [], defaultdict(int), 0.0
-    for code, line, route, geom in zip(*fields, shapely.from_wkb(wkb), strict=True):
+    for code, line, route, geom in zip(cols["ELR_CODE"], cols["DESCRIPTIO"], cols["ROUTE_TYPE"],
+                                       shapely.from_wkb(wkb), strict=True):
         if route != "Passenger":
             dropped[str(route)] += 1
             continue
@@ -758,6 +828,9 @@ def build_risk(snapshot: str, inputs: RiskInputs, out_root: Path, reports_dir: P
     road_features, roads_e, roads_meta = _roads(inputs, qa)
     roads_text = _feature_collection(road_features)
     _validate(json.loads(roads_text), schema_dir, "risk-roads")
+    ni_road_features, osm_e = _ni_roads(inputs, qa)
+    ni_roads_text = _feature_collection(ni_road_features)
+    _validate(json.loads(ni_roads_text), schema_dir, "risk-roads")
     rail_features, rail_e = _rail(inputs, qa)
     rail_text = _feature_collection(rail_features)
     _validate(json.loads(rail_text), schema_dir, "risk-rail")
@@ -821,8 +894,8 @@ def build_risk(snapshot: str, inputs: RiskInputs, out_root: Path, reports_dir: P
             "title": "Strategic road corridors in Great Britain: motorways, trunk roads and primary A roads (OS Open Roads)",
             "role": "reference", "format": "geojson", "schemaId": "risk-roads", "sourceIds": ["S35"],
             "referencePeriod": f"OS Open Roads as downloaded {roads_e['retrievedAt'][:10]}",
-            "coverage": ("Great Britain. Northern Ireland: not included (OSNI's open transport service could not be "
-                         "reached from the data pipeline)"),
+            "coverage": ("Great Britain. Northern Ireland's corridors are a separate dataset from OpenStreetMap "
+                         "(risk.roads_ni)"),
             "provenance": "measured", "licence": OGL, "attribution": OS_SOURCE, "expectedCadence": "irregular",
             "featureCount": len(road_features),
             "retrieval": {"method": "Extracted on GitHub Actions (fetch-open-roads) from the OS Open Roads GeoPackage",
@@ -832,6 +905,24 @@ def build_risk(snapshot: str, inputs: RiskInputs, out_root: Path, reports_dir: P
                                     f"{roads_meta.get('simplifyMetres')} m in EPSG:27700: 'strategic' = motorways and "
                                     "trunk roads (the national highway authorities' networks), 'primary' = other "
                                     "primary-route A roads. Lines show road corridors, not freight flows.")},
+        }),
+        ("roads-ni.geojson", ni_roads_text, {
+            "id": "risk.roads_ni",
+            "title": "Road corridors in Northern Ireland: motorways and primary roads (OpenStreetMap)",
+            "role": "reference", "format": "geojson", "schemaId": "risk-roads", "sourceIds": ["S38"],
+            "referencePeriod": "OpenStreetMap extract, 2026 (provided 26 October 2026)",
+            "coverage": ("Northern Ireland: OpenStreetMap motorways ('strategic') and primary roads ('primary'); "
+                         "secondary roads left out. Community-mapped, not official data; classes follow "
+                         "OpenStreetMap, not GB's trunk and primary-route designations"),
+            "provenance": "measured", "licence": ODBL, "attribution": OSM_SOURCE, "expectedCadence": "irregular",
+            "featureCount": len(ni_road_features),
+            "retrieval": {"method": "Read offline from the shapefile John provided (OpenStreetMap roads, exported from ArcGIS Pro)",
+                          "source": f"{osm_e['file']} (provided, sha256 {osm_e['sha256'][:12]}…)",
+                          "retrievedAt": osm_e["receivedAt"],
+                          "notes": (f"Lines merged by road number and class, simplified at {NI_ROADS_SIMPLIFY_M:g} m "
+                                    "in Irish Transverse Mercator (EPSG:2157), WGS84 to 5 decimals. Lines show "
+                                    "road corridors, not freight flows. Published under the ODbL, as a database "
+                                    "derived from OpenStreetMap.")},
         }),
         ("rail.geojson", rail_text, {
             "id": "risk.rail",
