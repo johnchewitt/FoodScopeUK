@@ -27,6 +27,24 @@ def _today() -> str:
     return datetime.now(UTC).date().isoformat()
 
 
+
+def _annotate_error(title: str, exc: BaseException) -> None:
+    """On GitHub Actions, repeat an error as a job annotation (readable through the API)."""
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        print(f"::error title={title}::{str(exc)[:900]}")
+
+
+class _AnnotationHandler(logging.Handler):
+    def emit(self, record: logging.LogRecord) -> None:
+        print(f"::warning title={record.name}::{self.format(record)[:900]}")
+
+
+def _annotate_warnings(logger_name: str) -> None:
+    """On GitHub Actions, repeat a module's warnings (e.g. HTTP retries) as job annotations."""
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        handler = _AnnotationHandler(level=logging.WARNING)
+        logging.getLogger(logger_name).addHandler(handler)
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="foodscope-pipeline", description=__doc__)
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
@@ -75,13 +93,15 @@ def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
     if args.command == "ingest-hmrc":
-        from foodscope_pipeline.sources.hmrc_ots import HmrcError, ingest, load_baskets
+        from foodscope_pipeline.sources.hmrc_ots import ingest, load_baskets
 
         snapshot = args.snapshot or _today()
+        _annotate_warnings("foodscope_pipeline.sources.hmrc_ots")
         try:
             cache = ingest(snapshot, RAW_HMRC, load_baskets(CONFIG / "trade_baskets.json"))
-        except HmrcError as exc:
+        except Exception as exc:  # any failure, so that the job annotation says why
             logging.error("ingest failed: %s", exc)
+            _annotate_error("ingest-hmrc failed", exc)
             return 1
         print(f"cached {len(cache.entries)} responses in {cache.root}")
         return 0
@@ -176,6 +196,7 @@ def main(argv: list[str] | None = None) -> int:
                                   groups=load_groups(CONFIG / "trade_baskets.json"))
         except TradeBuildError as exc:
             logging.error("build-trade failed: %s", exc)
+            _annotate_error("build-trade failed", exc)
             return 1
         print(f"wrote {len(written)} trade files for snapshot {args.snapshot}")
         return 0
