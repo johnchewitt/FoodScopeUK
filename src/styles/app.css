@@ -1289,6 +1289,47 @@
   font-size: var(--fs-text-xs);
   color: var(--fs-text-muted);
 }
+/* Many baskets (B11): a search box, group titles and two compact columns. */
+.commodity-search {
+  margin-bottom: 8px;
+}
+.commodity-group__items {
+  display: grid;
+  gap: 4px;
+}
+.commodity-list--compact {
+  gap: 8px;
+}
+.commodity-list--compact .commodity-group__items {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+}
+.commodity-group__title {
+  margin: 0 0 3px 2px;
+  font-size: var(--fs-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fs-text-muted);
+}
+.commodity-list--compact .commodity-option {
+  align-items: flex-start;
+  gap: 7px;
+  padding: 5px 6px;
+}
+.commodity-list--compact .commodity-option__icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+}
+.commodity-list--compact .commodity-option__label {
+  font-size: var(--fs-text-sm);
+  line-height: 1.2;
+}
+.commodity-list--compact .commodity-option__text {
+  min-width: 0;
+  padding-top: 1px;
+}
 
 .field-row {
   display: flex;

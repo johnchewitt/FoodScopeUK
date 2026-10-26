@@ -19,6 +19,7 @@ import { validateTradeSnapshot } from "@/services/data/validate";
 import { useAppStore, type AccessMapModel } from "@/state/store";
 import type { TradeSnapshot } from "@/types/generated/trade-snapshot";
 import {
+  basketList,
   buildAccessRiskModel,
   buildLogisticsModel,
   buildSupplyModel,
@@ -67,7 +68,7 @@ export function useRiskSupply() {
   const ukAnchor = useUkAnchor(points.data);
   const water = useValidatedDataset(RISK_DATASET_IDS.waterStress, validateWaterStress);
   const production = useValidatedDataset(CONTEXT_PRODUCTION_DATASET_ID, validateUkProduction);
-  const baskets = useMemo(() => index.data?.commodities ?? [], [index.data]);
+  const baskets = useMemo(() => (index.data ? basketList(index.data) : []), [index.data]);
   const snapshots = useQueries({
     queries: baskets.map((b) => ({
       ...validatedDatasetQuery(manifest.data, b.datasetId, validateTradeSnapshot),
@@ -82,7 +83,7 @@ export function useRiskSupply() {
     if (!snapshot || !water.data || !ukAnchor || !snapshots.ready) return null;
     return buildSupplyModel(
       snapshot,
-      baskets.map((b, i) => ({ id: b.id, label: b.label, snapshot: snapshots.data[i] })),
+      baskets.map((b, i) => ({ id: b.id, label: b.label, group: b.group, snapshot: snapshots.data[i] })),
       water.data,
       { period, year, month, measure, partner, flowCount },
       fill,

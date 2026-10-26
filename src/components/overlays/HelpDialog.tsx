@@ -56,11 +56,14 @@ export function HelpDialog() {
           <section>
             <h3>What this build contains</h3>
             <p>
-              Food Origins and Seasonal Supply show recorded UK imports from HMRC for tomatoes, strawberries,
-              bananas, potatoes and wheat (monthly from January 2019). UK Food Access maps GEOLYTIX grocery
-              stores (June 2026) with stores per 10,000 residents by council (ONS mid-2025) and straight-line
-              distances from a point you choose. The other views do not load statistics yet: each panel says
-              which build stage adds its data, and no placeholder figures are shown.
+              Food Origins and Seasonal Supply show recorded UK imports from HMRC for sixteen commodities
+              (fruit and vegetables, cereals, meat, dairy, and sugar, coffee and cocoa; monthly from January
+              2019). UK Food Access maps GEOLYTIX grocery stores (June 2026) with stores per 10,000 residents
+              by council (ONS mid-2025) and straight-line distances from a point you choose. Local Authority
+              Profiles bring each council&rsquo;s figures together, and the Risk Explorer shows supply
+              exposure, logistics and community access as separate views. The Scenario Lab and Consulting
+              Insights do not load statistics yet: each panel says which build stage adds its data, and no
+              placeholder figures are shown.
             </p>
           </section>
         </div>

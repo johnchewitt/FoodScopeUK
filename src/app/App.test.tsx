@@ -142,12 +142,12 @@ describe("App shell", () => {
     const insights = document.getElementById("insights-panel")!;
     expect(await within(insights).findByText("Country outlines")).toBeInTheDocument();
     expect(within(insights).getByText(/Natural Earth v5.1.2, 1:110m, 176 countries/)).toBeInTheDocument();
-    expect(within(insights).getByText("Trade snapshot 2026-10-23")).toBeInTheDocument();
+    expect(within(insights).getByText("Trade snapshot 2026-10-26")).toBeInTheDocument();
     expect(within(insights).getByText("Stores and population snapshot 2026-10-24")).toBeInTheDocument();
     expect(within(insights).getByText("Small areas snapshot 2026-10-25")).toBeInTheDocument();
     expect(
       await screen.findByRole("button", {
-        name: /Data freshness: Data 2026-10-23 to 2026-10-25/,
+        name: /Data freshness: Data 2026-10-24 to 2026-10-26/,
       }),
     ).toBeInTheDocument();
   });

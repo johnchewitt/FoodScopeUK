@@ -174,8 +174,16 @@ export function SeasonalControls() {
         </div>
         <Notice tone="info">
           <span id="domestic-note">
-            <strong>UK seasonal production: not published monthly, not shown.</strong> There is no monthly UK
-            production series for {model.commodity.label.toLowerCase()}. {model.domestic.detail}{" "}
+            {model.domestic.status === "monthly_not_verified" ? (
+              <>
+                <strong>UK seasonal production: not shown yet.</strong> {model.domestic.detail}{" "}
+              </>
+            ) : (
+              <>
+                <strong>UK seasonal production: not published monthly, not shown.</strong> There is no monthly
+                UK production series for {model.commodity.label.toLowerCase()}. {model.domestic.detail}{" "}
+              </>
+            )}
             {DOMESTIC_PRODUCTION_RULE}
           </span>
         </Notice>

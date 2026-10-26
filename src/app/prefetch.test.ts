@@ -38,9 +38,9 @@ describe("prefetchStartupData", () => {
     expect(f.calls[0]).toBe("data/manifest.json");
     expect(new Set(f.calls.slice(1))).toEqual(
       new Set([
-        "data/snapshots/2026-10-23/trade/index.json",
+        "data/snapshots/2026-10-26/trade/index.json",
         "data/reference/world-country-points.json",
-        "data/snapshots/2026-10-23/trade/bananas.json",
+        "data/snapshots/2026-10-26/trade/bananas.json",
       ]),
     );
     expect(f.maxInFlight()).toBe(3); // in parallel, not one after another
@@ -85,7 +85,7 @@ describe("prefetchStartupData", () => {
   it("skips an unknown commodity (the hooks fall back) and never throws", async () => {
     const f = stubFetch();
     await prefetchStartupData(client(), { module: "seasonal", commodity: "durian" });
-    expect(f.calls).not.toContain("data/snapshots/2026-10-23/trade/durian.json");
+    expect(f.calls).not.toContain("data/snapshots/2026-10-26/trade/durian.json");
     expect(f.calls).toHaveLength(3);
     const failing = stubFetch({ failManifest: true });
     const c = client();

@@ -98,12 +98,12 @@
     {
       "basket": "oranges",
       "status": "not_published",
-      "note": "Defra publishes no UK production statistics for oranges: Defra's trade codes class every code in the basket as non-indigenous, that is, not grown in the UK on a commercially viable scale (S05)."
+      "note": "Not grown commercially in the UK: Defra classes the basket's trade codes as non-indigenous (S05)."
     },
     {
       "basket": "bananas",
       "status": "not_published",
-      "note": "Defra publishes no UK production statistics for bananas."
+      "note": "Not grown commercially in the UK: Defra classes the basket's trade codes as non-indigenous (S05)."
     },
     {
       "basket": "wheat",
@@ -146,7 +146,7 @@
     {
       "basket": "rice",
       "status": "not_published",
-      "note": "Defra publishes no UK production statistics for rice: Defra's trade codes class every code in the basket as non-indigenous, that is, not grown in the UK on a commercially viable scale (S05)."
+      "note": "Not grown commercially in the UK: Defra classes the basket's trade codes as non-indigenous (S05)."
     },
     {
       "basket": "beef",
@@ -265,12 +265,12 @@
     {
       "basket": "milk-products",
       "status": "not_published",
-      "note": "Agriculture in the UK (S10) publishes the supply and use of raw milk in litres, and how much milk goes into each product, but no supply balance for the milk products traded (cream, powders, yoghurt, whey, butter). None is shown."
+      "note": "No Defra supply balance for these products: Agriculture in the UK (S10) balances raw milk only."
     },
     {
       "basket": "cheese",
       "status": "not_published",
-      "note": "Agriculture in the UK (S10) publishes how much milk is used to make cheese, but no supply balance for cheese itself. None is shown."
+      "note": "No Defra supply balance for cheese: Agriculture in the UK (S10) gives only the milk used to make it."
     },
     {
       "basket": "sugar",
@@ -313,12 +313,12 @@
     {
       "basket": "coffee",
       "status": "not_published",
-      "note": "Defra publishes no UK production statistics for coffee: Defra's trade codes class every code in the basket as non-indigenous, that is, not grown in the UK on a commercially viable scale (S05)."
+      "note": "Not grown commercially in the UK: Defra classes the basket's trade codes as non-indigenous (S05)."
     },
     {
       "basket": "cocoa",
       "status": "not_published",
-      "note": "Defra publishes no UK production statistics for cocoa: Defra's trade codes class every code in the basket as non-indigenous, that is, not grown in the UK on a commercially viable scale (S05)."
+      "note": "Not grown commercially in the UK: Defra classes the basket's trade codes as non-indigenous (S05)."
     }
   ]
 }

@@ -150,7 +150,7 @@ function SupplyInsights() {
           title={`Partner concentration (HHI), ${o.periodText}`}
           option={ranking?.option ?? null}
           description={ranking?.description}
-          height={150}
+          height={Math.max(150, 20 * model.ranking.length + 16)}
           onEvents={{
             click: (p) => p.dataIndex !== undefined && setCommodity(model.ranking[p.dataIndex]!.id),
           }}
@@ -288,12 +288,15 @@ function SupplyInsights() {
 
       <Section id="risk-matrix" title="Commodity–country exposure" open={false}>
         <ChartFrame
-          title={`Share of each commodity's recorded imports, ${o.periodText}`}
+          title={`${model.matrixGroup ? `${model.matrixGroup.label}: share` : "Share"} of each commodity's recorded imports, ${o.periodText}`}
           option={matrix?.option ?? null}
           description={matrix?.description}
           height={Math.max(160, 18 * model.matrix.partners.length + 30)}
         />
         <p className="control-hint">
+          {model.matrixGroup
+            ? `The commodities in ${o.commodity.label.toLowerCase()}'s group, ${model.matrixGroup.label.toLowerCase()}; pick a commodity in another group to compare that group. `
+            : ""}
           Each commodity&rsquo;s top five partners; &ndash; = none recorded. Partner = country of dispatch.
         </p>
       </Section>

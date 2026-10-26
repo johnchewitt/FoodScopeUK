@@ -108,7 +108,8 @@ def test_boundary_changes_are_explicit(councils, ts045_ltla) -> None:
 
 def test_production_as_published(production) -> None:
     assert production["bananas"] == {"basket": "bananas", "status": "not_published",
-                                     "note": "Defra publishes no UK production statistics for bananas."}
+                                     "note": "Not grown commercially in the UK: Defra classes the basket's trade "
+                                             "codes as non-indigenous (S05)."}
     m = {b: {x["key"]: x["value"] for x in production[b]["measures"]} for b in ("tomatoes", "strawberries", "potatoes", "wheat")}
     # Wheat 2025 (provisional), Table 7.2c: imports are the EU and rest-of-the-world rows added.
     assert production["wheat"]["year"] == 2025 and production["wheat"]["provisional"] is True
@@ -145,7 +146,7 @@ def test_production_for_the_eleven_new_baskets(production) -> None:
     for b in ("oranges", "rice", "coffee", "cocoa"):
         assert production[b]["status"] == "not_published" and "non-indigenous" in production[b]["note"], b
     for b in ("milk-products", "cheese"):
-        assert production[b]["status"] == "not_published" and "no supply balance" in production[b]["note"], b
+        assert production[b]["status"] == "not_published" and "No Defra supply balance" in production[b]["note"], b
 
 
 def test_a_merger_in_the_code_changes_is_refused(tmp_path, tmp_path_factory) -> None:

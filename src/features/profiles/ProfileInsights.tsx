@@ -997,6 +997,8 @@ function NotDeep({ c }: { c: CouncilRow }) {
 
 function National() {
   const n = useNationalContext();
+  // When every basket's 12 months include provisional ones (the usual case), say it once below the table.
+  const allProvisional = Boolean(n.rows && n.rows.length > 0 && n.rows.every((r) => r.imports?.provisional));
   return (
     <Section
       id="national"
@@ -1045,7 +1047,7 @@ function National() {
                       <span className="table-sub">
                         {r.imports?.topPartner ?? "—"} ·{" "}
                         {r.imports ? `${formatCount(r.imports.partners)} partners` : ""}
-                        {r.imports?.provisional ? " · includes provisional months" : ""}
+                        {r.imports?.provisional && !allProvisional ? " · includes provisional months" : ""}
                       </span>
                     </td>
                     <td>
@@ -1088,10 +1090,12 @@ function National() {
         </div>
       )}
       <p className="control-hint">
-        Recorded imports: HMRC (S01) snapshot {n.tradeSnapshot ?? "—"}, the Food Origins baskets. Production:
-        Defra Horticulture statistics 2025 (S09) and Agriculture in the UK 2025 (S10), annual, with
-        Defra&rsquo;s own product definitions; never combined with monthly trade. Food prices, Short Straits
-        dependence and climate risks are not yet included.
+        Recorded imports: HMRC (S01) snapshot {n.tradeSnapshot ?? "—"}, the Food Origins baskets
+        {allProvisional ? "; every commodity's 12 months include provisional months" : ""}. Production: Defra
+        Horticulture statistics 2025 (S09) and Agriculture in the UK 2025 (S10), annual, with Defra&rsquo;s
+        own product definitions; never combined with monthly trade. &ldquo;Not grown commercially in the
+        UK&rdquo; follows Defra&rsquo;s trade codes (S05). Food prices, Short Straits dependence and climate
+        risks are not yet included.
       </p>
     </Section>
   );
