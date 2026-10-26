@@ -1,0 +1,26 @@
+{
+  "id": "trade.cheese",
+  "title": "Recorded UK imports: cheese (HS 0406)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-26/trade/cheese.json",
+  "format": "json",
+  "schemaId": "trade-snapshot",
+  "sha256": "c8e86b62477386be7f0aec16cc7c907bcdcbaf308e734cbe50d6abff6e5aecee",
+  "bytes": 83806,
+  "sourceIds": [
+    "S01",
+    "S24"
+  ],
+  "referencePeriod": "Jan 2019 \u2013 Aug 2026 (monthly)",
+  "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+  "expectedCadence": "monthly",
+  "retrieval": {
+    "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+    "source": "6 queries over consecutive runs of the basket's CN8 codes (URL length), first: https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204061020%20or%20CommodityId%20eq%204061030%20or%20CommodityId%20eq%204061050%20or%20CommodityId%20eq%204061080%20or%20CommodityId%20eq%204062000%20or%20CommodityId%20eq%204062010%20or%20CommodityId%20eq%204062090%20or%20CommodityId%20eq%204063010%20or%20CommodityId%20eq%204063031%20or%20CommodityId%20eq%204063039))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+    "retrievedAt": "2026-10-26T09:13:01Z",
+    "notes": "CN8 codes: 04061020, 04061030, 04061050, 04061080, 04062000, 04062010, 04062090, 04063010, 04063031, 04063039, 04063090, 04064010, 04064050, 04064090, 04069001, 04069002, 04069003, 04069004, 04069005, 04069006, 04069013, 04069015, 04069017, 04069018, 04069019, 04069021, 04069023, 04069025, 04069027, 04069029, 04069031, 04069032, 04069033, 04069035, 04069037, 04069039, 04069050, 04069061, 04069063, 04069069, 04069073, 04069074, 04069075, 04069076, 04069078, 04069079, 04069081, 04069082, 04069084, 04069085, 04069086, 04069087, 04069088, 04069089, 04069092, 04069093, 04069099. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of dispatch recorded by HMRC. Suppressed trade kept separately. Latest month confirmed by probing the following month. Months from provisionalFrom are within HMRC's 18-month revision window (estimated from publication lag)."
+  }
+}

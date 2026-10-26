@@ -1,0 +1,26 @@
+{
+  "id": "trade.sugar",
+  "title": "Recorded UK imports: sugar (HS 1701)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-26/trade/sugar.json",
+  "format": "json",
+  "schemaId": "trade-snapshot",
+  "sha256": "2c695bae32b2afb48793651ecd0178e3bfea11276254b3c9c9d600daf6259a8f",
+  "bytes": 84932,
+  "sourceIds": [
+    "S01",
+    "S24"
+  ],
+  "referencePeriod": "Jan 2019 \u2013 Aug 2026 (monthly)",
+  "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+  "expectedCadence": "monthly",
+  "retrieval": {
+    "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+    "source": "2 queries over consecutive runs of the basket's CN8 codes (URL length), first: https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2017011110%20or%20CommodityId%20eq%2017011190%20or%20CommodityId%20eq%2017011210%20or%20CommodityId%20eq%2017011290%20or%20CommodityId%20eq%2017011310%20or%20CommodityId%20eq%2017011390%20or%20CommodityId%20eq%2017011410%20or%20CommodityId%20eq%2017011490%20or%20CommodityId%20eq%2017019100%20or%20CommodityId%20eq%2017019910))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+    "retrievedAt": "2026-10-26T09:13:17Z",
+    "notes": "CN8 codes: 17011110, 17011190, 17011210, 17011290, 17011310, 17011390, 17011410, 17011490, 17019100, 17019910, 17019990. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of dispatch recorded by HMRC. Suppressed trade kept separately. Latest month confirmed by probing the following month. Months from provisionalFrom are within HMRC's 18-month revision window (estimated from publication lag)."
+  }
+}

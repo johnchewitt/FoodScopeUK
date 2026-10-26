@@ -1,0 +1,972 @@
+{
+  "source": "S01",
+  "api": "https://api.uktradeinfo.com",
+  "snapshotId": "2026-10-26",
+  "startedAt": "2026-10-26T09:10:59Z",
+  "finishedAt": "2026-10-26T09:15:08Z",
+  "requests": 122,
+  "latestMonthId": 202608,
+  "licence": "Open Government Licence v3.0",
+  "responses": [
+    {
+      "name": "commodity-c01-p001",
+      "url": "https://api.uktradeinfo.com/Commodity?$filter=Hs4Code%20eq%20'0201'%20or%20Hs4Code%20eq%20'0202'%20or%20Hs4Code%20eq%20'0204'%20or%20Hs4Code%20eq%20'0207'%20or%20Hs4Code%20eq%20'0401'%20or%20Hs4Code%20eq%20'0402'%20or%20Hs4Code%20eq%20'0403'%20or%20Hs4Code%20eq%20'0404'%20or%20Hs4Code%20eq%20'0405'%20or%20Hs4Code%20eq%20'0406'",
+      "retrievedAt": "2026-10-26T09:10:59Z",
+      "sha256": "2d6532e5aab17933c309fc27cb64526df30b5380001236c1104d8cf173a9fed0",
+      "bytes": 241104,
+      "items": 389
+    },
+    {
+      "name": "commodity-c02-p001",
+      "url": "https://api.uktradeinfo.com/Commodity?$filter=Hs4Code%20eq%20'0701'%20or%20Hs4Code%20eq%20'0702'%20or%20Hs4Code%20eq%20'0803'%20or%20Hs4Code%20eq%20'0901'%20or%20Hs4Code%20eq%20'1001'%20or%20Hs4Code%20eq%20'1006'%20or%20Hs4Code%20eq%20'1701'%20or%20Hs4Code%20eq%20'1801'%20or%20Hs4Code%20eq%20'1803'%20or%20Hs4Code%20eq%20'1804'",
+      "retrievedAt": "2026-10-26T09:11:00Z",
+      "sha256": "0e45c515267ff7823d513a2be9e8c38f01b83eb156fc0ae77380153d6d78461c",
+      "bytes": 34144,
+      "items": 93
+    },
+    {
+      "name": "commodity-c03-p001",
+      "url": "https://api.uktradeinfo.com/Commodity?$filter=Hs4Code%20eq%20'1805'%20or%20Hs6Code%20eq%20'080510'%20or%20Hs6Code%20eq%20'080810'%20or%20Hs6Code%20eq%20'081010'",
+      "retrievedAt": "2026-10-26T09:11:01Z",
+      "sha256": "a33edb2f4e2db97adcb6373ee93df96fb9c6901c3e5c7df87ce598a5e5441e59",
+      "bytes": 5644,
+      "items": 15
+    },
+    {
+      "name": "country-p001",
+      "url": "https://api.uktradeinfo.com/Country",
+      "retrievedAt": "2026-10-26T09:11:03Z",
+      "sha256": "ae5b2cb60e300077c9ef339deb0a877846bd78e37ec09b91bcc615164867151f",
+      "bytes": 75214,
+      "items": 263
+    },
+    {
+      "name": "ots-aggregate-apples-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%208081010%20or%20CommodityId%20eq%208081020%20or%20CommodityId%20eq%208081050%20or%20CommodityId%20eq%208081080%20or%20CommodityId%20eq%208081090))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:11Z",
+      "sha256": "edcf3e0d605047b90cd396c49bba38318767682e767db8aee8028fc8c4ca1452",
+      "bytes": 304271,
+      "items": 1905
+    },
+    {
+      "name": "ots-aggregate-bananas-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%208030011%20or%20CommodityId%20eq%208030019%20or%20CommodityId%20eq%208030090%20or%20CommodityId%20eq%208031010%20or%20CommodityId%20eq%208031090%20or%20CommodityId%20eq%208039010%20or%20CommodityId%20eq%208039011%20or%20CommodityId%20eq%208039019%20or%20CommodityId%20eq%208039090))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:16Z",
+      "sha256": "2fe8ec948d5c66d6a31ced8a63de739758b4ede7b8817d7adb91c0c446b3ae81",
+      "bytes": 644681,
+      "items": 4055
+    },
+    {
+      "name": "ots-aggregate-beef-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202011000%20or%20CommodityId%20eq%202012020%20or%20CommodityId%20eq%202012030%20or%20CommodityId%20eq%202012050%20or%20CommodityId%20eq%202012090%20or%20CommodityId%20eq%202013000%20or%20CommodityId%20eq%202021000%20or%20CommodityId%20eq%202022010%20or%20CommodityId%20eq%202022030%20or%20CommodityId%20eq%202022050))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:34Z",
+      "sha256": "37fedf2c5efd7bad6eea58e6b588b63811f58896edc2b9ec7d5189dd36f598b4",
+      "bytes": 685548,
+      "items": 4348
+    },
+    {
+      "name": "ots-aggregate-beef-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202022090%20or%20CommodityId%20eq%202023010%20or%20CommodityId%20eq%202023050%20or%20CommodityId%20eq%202023090))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:35Z",
+      "sha256": "0bbf9a5a9e02c06c285eef9ce2fb43188f923ec290e7176907f2c372a5fb42f9",
+      "bytes": 473120,
+      "items": 2992
+    },
+    {
+      "name": "ots-aggregate-cheese-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204061020%20or%20CommodityId%20eq%204061030%20or%20CommodityId%20eq%204061050%20or%20CommodityId%20eq%204061080%20or%20CommodityId%20eq%204062000%20or%20CommodityId%20eq%204062010%20or%20CommodityId%20eq%204062090%20or%20CommodityId%20eq%204063010%20or%20CommodityId%20eq%204063031%20or%20CommodityId%20eq%204063039))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:13:01Z",
+      "sha256": "1ba1bb93189679c92598d75377076a3a54effc2ebb9e7231b45b3019a7904c2e",
+      "bytes": 1287237,
+      "items": 8161
+    },
+    {
+      "name": "ots-aggregate-cheese-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204063090%20or%20CommodityId%20eq%204064010%20or%20CommodityId%20eq%204064050%20or%20CommodityId%20eq%204064090%20or%20CommodityId%20eq%204069001%20or%20CommodityId%20eq%204069002%20or%20CommodityId%20eq%204069003%20or%20CommodityId%20eq%204069004%20or%20CommodityId%20eq%204069005%20or%20CommodityId%20eq%204069006))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:13:03Z",
+      "sha256": "2021a2edee63239ab9561a0c39ee6368524f6b1710668da2f696779bde9f1ace",
+      "bytes": 334402,
+      "items": 2141
+    },
+    {
+      "name": "ots-aggregate-cheese-c03-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204069013%20or%20CommodityId%20eq%204069015%20or%20CommodityId%20eq%204069017%20or%20CommodityId%20eq%204069018%20or%20CommodityId%20eq%204069019%20or%20CommodityId%20eq%204069021%20or%20CommodityId%20eq%204069023%20or%20CommodityId%20eq%204069025%20or%20CommodityId%20eq%204069027%20or%20CommodityId%20eq%204069029))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:13:04Z",
+      "sha256": "a02e25a55d2c75938fed83f5a1b2a78d69afb855d8413d0d58924cab0257e151",
+      "bytes": 575219,
+      "items": 3671
+    },
+    {
+      "name": "ots-aggregate-cheese-c04-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204069031%20or%20CommodityId%20eq%204069032%20or%20CommodityId%20eq%204069033%20or%20CommodityId%20eq%204069035%20or%20CommodityId%20eq%204069037%20or%20CommodityId%20eq%204069039%20or%20CommodityId%20eq%204069050%20or%20CommodityId%20eq%204069061%20or%20CommodityId%20eq%204069063%20or%20CommodityId%20eq%204069069))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:13:06Z",
+      "sha256": "03585adcec0974a5ceaf0536de00278fe611dec517c40caadba2ca34ccb5b876",
+      "bytes": 670160,
+      "items": 4283
+    },
+    {
+      "name": "ots-aggregate-cheese-c05-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204069073%20or%20CommodityId%20eq%204069074%20or%20CommodityId%20eq%204069075%20or%20CommodityId%20eq%204069076%20or%20CommodityId%20eq%204069078%20or%20CommodityId%20eq%204069079%20or%20CommodityId%20eq%204069081%20or%20CommodityId%20eq%204069082%20or%20CommodityId%20eq%204069084%20or%20CommodityId%20eq%204069085))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:13:07Z",
+      "sha256": "1d65161cac1295fb5e3e8d1cd96bcabbdfa5126ea36dee0c39fe9090a51cdd70",
+      "bytes": 553725,
+      "items": 3537
+    },
+    {
+      "name": "ots-aggregate-cheese-c06-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204069086%20or%20CommodityId%20eq%204069087%20or%20CommodityId%20eq%204069088%20or%20CommodityId%20eq%204069089%20or%20CommodityId%20eq%204069092%20or%20CommodityId%20eq%204069093%20or%20CommodityId%20eq%204069099))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:13:09Z",
+      "sha256": "31d999d85f13643538283c84619f1fa85cce1751b4dead9368a469deb197ad55",
+      "bytes": 946359,
+      "items": 6014
+    },
+    {
+      "name": "ots-aggregate-cocoa-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2018010000%20or%20CommodityId%20eq%2018031000%20or%20CommodityId%20eq%2018032000%20or%20CommodityId%20eq%2018040000%20or%20CommodityId%20eq%2018050000))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:13:25Z",
+      "sha256": "a22a6fe6c909be894ce673faafc90bf74f5463fa4101276ab710a01212235b46",
+      "bytes": 769029,
+      "items": 4842
+    },
+    {
+      "name": "ots-aggregate-coffee-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%209011100%20or%20CommodityId%20eq%209011200%20or%20CommodityId%20eq%209012100%20or%20CommodityId%20eq%209012200%20or%20CommodityId%20eq%209019010%20or%20CommodityId%20eq%209019090))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:13:23Z",
+      "sha256": "29ad3cafc534a6e6dadfee12d9e34b6bbc1495e1b49b435365a773587ab5039c",
+      "bytes": 1696116,
+      "items": 10749
+    },
+    {
+      "name": "ots-aggregate-milk-products-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204011010%20or%20CommodityId%20eq%204011090%20or%20CommodityId%20eq%204012011%20or%20CommodityId%20eq%204012019%20or%20CommodityId%20eq%204012091%20or%20CommodityId%20eq%204012099%20or%20CommodityId%20eq%204013011%20or%20CommodityId%20eq%204013019%20or%20CommodityId%20eq%204013031%20or%20CommodityId%20eq%204013039))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:26Z",
+      "sha256": "bb9d30f912584d40301fd9fcbb0b6808a9bc0b0a62d8314f5d74abfbc7334071",
+      "bytes": 505046,
+      "items": 3220
+    },
+    {
+      "name": "ots-aggregate-milk-products-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204013091%20or%20CommodityId%20eq%204013099%20or%20CommodityId%20eq%204014010%20or%20CommodityId%20eq%204014090%20or%20CommodityId%20eq%204015011%20or%20CommodityId%20eq%204015019%20or%20CommodityId%20eq%204015031%20or%20CommodityId%20eq%204015039%20or%20CommodityId%20eq%204015091%20or%20CommodityId%20eq%204015099))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:27Z",
+      "sha256": "dbcabde2297c0f632084705a3051d56f85654f13ec79c63f33374fe3f6d9ee4a",
+      "bytes": 473507,
+      "items": 3031
+    },
+    {
+      "name": "ots-aggregate-milk-products-c03-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204021011%20or%20CommodityId%20eq%204021019%20or%20CommodityId%20eq%204021091%20or%20CommodityId%20eq%204021099%20or%20CommodityId%20eq%204022111%20or%20CommodityId%20eq%204022117%20or%20CommodityId%20eq%204022118%20or%20CommodityId%20eq%204022119%20or%20CommodityId%20eq%204022191%20or%20CommodityId%20eq%204022199))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:28Z",
+      "sha256": "e20376c4c219f86e4008494e2e6fd9851cd89e83a67c19ce39a80a359b70a90e",
+      "bytes": 498960,
+      "items": 3186
+    },
+    {
+      "name": "ots-aggregate-milk-products-c04-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204022911%20or%20CommodityId%20eq%204022915%20or%20CommodityId%20eq%204022919%20or%20CommodityId%20eq%204022991%20or%20CommodityId%20eq%204022999%20or%20CommodityId%20eq%204029110%20or%20CommodityId%20eq%204029111%20or%20CommodityId%20eq%204029119%20or%20CommodityId%20eq%204029130%20or%20CommodityId%20eq%204029131))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:29Z",
+      "sha256": "b28faa31cc70ba467451349d1c108d923409218b5d61dd21cee38eee94f35797",
+      "bytes": 228182,
+      "items": 1459
+    },
+    {
+      "name": "ots-aggregate-milk-products-c05-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204029139%20or%20CommodityId%20eq%204029151%20or%20CommodityId%20eq%204029159%20or%20CommodityId%20eq%204029191%20or%20CommodityId%20eq%204029199%20or%20CommodityId%20eq%204029910%20or%20CommodityId%20eq%204029911%20or%20CommodityId%20eq%204029919%20or%20CommodityId%20eq%204029931%20or%20CommodityId%20eq%204029939))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:30Z",
+      "sha256": "213deeefeaf383ac6ad76b2d3ed9807fee9e4129470c2f12f92501a892dd1f05",
+      "bytes": 317356,
+      "items": 2023
+    },
+    {
+      "name": "ots-aggregate-milk-products-c06-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204029991%20or%20CommodityId%20eq%204029999%20or%20CommodityId%20eq%204031011%20or%20CommodityId%20eq%204031013%20or%20CommodityId%20eq%204031019%20or%20CommodityId%20eq%204031031%20or%20CommodityId%20eq%204031033%20or%20CommodityId%20eq%204031039%20or%20CommodityId%20eq%204031051%20or%20CommodityId%20eq%204031053))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:32Z",
+      "sha256": "bf9b0984b410b612c8b293edd6880929185459f1198130c86aa80b4da68029f1",
+      "bytes": 380452,
+      "items": 2437
+    },
+    {
+      "name": "ots-aggregate-milk-products-c07-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204031059%20or%20CommodityId%20eq%204031091%20or%20CommodityId%20eq%204031093%20or%20CommodityId%20eq%204031099%20or%20CommodityId%20eq%204032011%20or%20CommodityId%20eq%204032013%20or%20CommodityId%20eq%204032019%20or%20CommodityId%20eq%204032031%20or%20CommodityId%20eq%204032033%20or%20CommodityId%20eq%204032039))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:33Z",
+      "sha256": "7cfa324b2ec10de55d05bca30f5151dbe4d9cb3999bfba25bac193bbc48d8a68",
+      "bytes": 512365,
+      "items": 3257
+    },
+    {
+      "name": "ots-aggregate-milk-products-c08-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204032041%20or%20CommodityId%20eq%204032049%20or%20CommodityId%20eq%204032051%20or%20CommodityId%20eq%204032053%20or%20CommodityId%20eq%204032059%20or%20CommodityId%20eq%204032091%20or%20CommodityId%20eq%204032093%20or%20CommodityId%20eq%204032099%20or%20CommodityId%20eq%204039011%20or%20CommodityId%20eq%204039013))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:34Z",
+      "sha256": "cee21e600ee4005bf5e2971350b79139ef9a87b104433a833f5ba5ab3b2b5f9d",
+      "bytes": 525171,
+      "items": 3338
+    },
+    {
+      "name": "ots-aggregate-milk-products-c09-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204039019%20or%20CommodityId%20eq%204039031%20or%20CommodityId%20eq%204039033%20or%20CommodityId%20eq%204039039%20or%20CommodityId%20eq%204039051%20or%20CommodityId%20eq%204039053%20or%20CommodityId%20eq%204039059%20or%20CommodityId%20eq%204039061%20or%20CommodityId%20eq%204039063%20or%20CommodityId%20eq%204039069))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:35Z",
+      "sha256": "cd2f331ecbad07eff9021888fb804a0124939477b93ffb3a9102bd4125cec634",
+      "bytes": 490044,
+      "items": 3139
+    },
+    {
+      "name": "ots-aggregate-milk-products-c10-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204039071%20or%20CommodityId%20eq%204039073%20or%20CommodityId%20eq%204039079%20or%20CommodityId%20eq%204039091%20or%20CommodityId%20eq%204039093%20or%20CommodityId%20eq%204039099%20or%20CommodityId%20eq%204041002%20or%20CommodityId%20eq%204041004%20or%20CommodityId%20eq%204041006%20or%20CommodityId%20eq%204041012))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:37Z",
+      "sha256": "ce5dc786534bcece781e9bc2c221df1aee710679f07ac703f9477f712b66e9a6",
+      "bytes": 494492,
+      "items": 3145
+    },
+    {
+      "name": "ots-aggregate-milk-products-c11-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204041014%20or%20CommodityId%20eq%204041016%20or%20CommodityId%20eq%204041026%20or%20CommodityId%20eq%204041028%20or%20CommodityId%20eq%204041032%20or%20CommodityId%20eq%204041034%20or%20CommodityId%20eq%204041036%20or%20CommodityId%20eq%204041038%20or%20CommodityId%20eq%204041048%20or%20CommodityId%20eq%204041052))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:37Z",
+      "sha256": "1b686aa216b44f40d27dafb15c7def3aa1085c07d6ae9421c8cb7ff56610152c",
+      "bytes": 152405,
+      "items": 970
+    },
+    {
+      "name": "ots-aggregate-milk-products-c12-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204041054%20or%20CommodityId%20eq%204041056%20or%20CommodityId%20eq%204041058%20or%20CommodityId%20eq%204041062%20or%20CommodityId%20eq%204041072%20or%20CommodityId%20eq%204041074%20or%20CommodityId%20eq%204041076%20or%20CommodityId%20eq%204041078%20or%20CommodityId%20eq%204041082%20or%20CommodityId%20eq%204041084))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:38Z",
+      "sha256": "42a59ba95b0f464854c77d56910b92ae91b3c9a33b5efbe622370f2d9decd01a",
+      "bytes": 39958,
+      "items": 256
+    },
+    {
+      "name": "ots-aggregate-milk-products-c13-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204049021%20or%20CommodityId%20eq%204049023%20or%20CommodityId%20eq%204049029%20or%20CommodityId%20eq%204049081%20or%20CommodityId%20eq%204049083%20or%20CommodityId%20eq%204049089%20or%20CommodityId%20eq%204051011%20or%20CommodityId%20eq%204051019%20or%20CommodityId%20eq%204051030%20or%20CommodityId%20eq%204051050))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:40Z",
+      "sha256": "6b5b53fa88a9b759d983a1be4a9d586a2284647b2a113e78a379a6a24a59421f",
+      "bytes": 643684,
+      "items": 4109
+    },
+    {
+      "name": "ots-aggregate-milk-products-c14-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204051090%20or%20CommodityId%20eq%204052010%20or%20CommodityId%20eq%204052030%20or%20CommodityId%20eq%204052090%20or%20CommodityId%20eq%204059010%20or%20CommodityId%20eq%204059090))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:42Z",
+      "sha256": "bcbea6092740b28797a15472e7ab391529fb3424ee3ccaa63e0891c7c29f9ff0",
+      "bytes": 398780,
+      "items": 2558
+    },
+    {
+      "name": "ots-aggregate-oranges-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%208051010%20or%20CommodityId%20eq%208051020%20or%20CommodityId%20eq%208051022%20or%20CommodityId%20eq%208051024%20or%20CommodityId%20eq%208051028%20or%20CommodityId%20eq%208051030%20or%20CommodityId%20eq%208051050%20or%20CommodityId%20eq%208051080))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:14Z",
+      "sha256": "acfd72a136ba2926ca66189a45f4bc7797c0cf98c83c0c27d2e225b41d5c672a",
+      "bytes": 492899,
+      "items": 3119
+    },
+    {
+      "name": "ots-aggregate-potatoes-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%207011000%20or%20CommodityId%20eq%207019010%20or%20CommodityId%20eq%207019050%20or%20CommodityId%20eq%207019090))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:07Z",
+      "sha256": "af1c2c365c3c0872f0e77eaf8293cedaf220696c4e5fec5bfac20d62f21a3f5f",
+      "bytes": 306327,
+      "items": 1937
+    },
+    {
+      "name": "ots-aggregate-poultry-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202071110%20or%20CommodityId%20eq%202071130%20or%20CommodityId%20eq%202071190%20or%20CommodityId%20eq%202071210%20or%20CommodityId%20eq%202071290%20or%20CommodityId%20eq%202071310%20or%20CommodityId%20eq%202071320%20or%20CommodityId%20eq%202071330%20or%20CommodityId%20eq%202071340%20or%20CommodityId%20eq%202071350))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:47Z",
+      "sha256": "3691ce6e32636844c74dae2f7e6e4641453617f692c326405d5e002b280749ab",
+      "bytes": 952497,
+      "items": 6031
+    },
+    {
+      "name": "ots-aggregate-poultry-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202071360%20or%20CommodityId%20eq%202071370%20or%20CommodityId%20eq%202071391%20or%20CommodityId%20eq%202071399%20or%20CommodityId%20eq%202071410%20or%20CommodityId%20eq%202071420%20or%20CommodityId%20eq%202071430%20or%20CommodityId%20eq%202071440%20or%20CommodityId%20eq%202071450%20or%20CommodityId%20eq%202071460))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:48Z",
+      "sha256": "da6546b09b86a9e7c944d0f93bcc5912bb301f4dfd070db6576414942b4153ab",
+      "bytes": 974620,
+      "items": 6185
+    },
+    {
+      "name": "ots-aggregate-poultry-c03-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202071470%20or%20CommodityId%20eq%202071491%20or%20CommodityId%20eq%202071499%20or%20CommodityId%20eq%202072410%20or%20CommodityId%20eq%202072490%20or%20CommodityId%20eq%202072510%20or%20CommodityId%20eq%202072590%20or%20CommodityId%20eq%202072610%20or%20CommodityId%20eq%202072620%20or%20CommodityId%20eq%202072630))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:50Z",
+      "sha256": "02758e6a88dbe90634cd41a303ceb0dfd00fba4f662602eb89dc5d32cd80d073",
+      "bytes": 550927,
+      "items": 3515
+    },
+    {
+      "name": "ots-aggregate-poultry-c04-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202072640%20or%20CommodityId%20eq%202072650%20or%20CommodityId%20eq%202072660%20or%20CommodityId%20eq%202072670%20or%20CommodityId%20eq%202072680%20or%20CommodityId%20eq%202072691%20or%20CommodityId%20eq%202072699%20or%20CommodityId%20eq%202072710%20or%20CommodityId%20eq%202072720%20or%20CommodityId%20eq%202072730))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:51Z",
+      "sha256": "978b57f26c157a91b15005e19b84fc7fd75f935633bb0ac42ea926ce3bf0ef8b",
+      "bytes": 363374,
+      "items": 2323
+    },
+    {
+      "name": "ots-aggregate-poultry-c05-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202072740%20or%20CommodityId%20eq%202072750%20or%20CommodityId%20eq%202072760%20or%20CommodityId%20eq%202072770%20or%20CommodityId%20eq%202072780%20or%20CommodityId%20eq%202072791%20or%20CommodityId%20eq%202072799%20or%20CommodityId%20eq%202073211%20or%20CommodityId%20eq%202073215%20or%20CommodityId%20eq%202073219))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:52Z",
+      "sha256": "4198ca928eccfc6421cdf045a74098f14d0ce9dd147f28660637cfd49f2ecce7",
+      "bytes": 220618,
+      "items": 1408
+    },
+    {
+      "name": "ots-aggregate-poultry-c06-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202073251%20or%20CommodityId%20eq%202073259%20or%20CommodityId%20eq%202073290%20or%20CommodityId%20eq%202073311%20or%20CommodityId%20eq%202073319%20or%20CommodityId%20eq%202073351%20or%20CommodityId%20eq%202073359%20or%20CommodityId%20eq%202073390%20or%20CommodityId%20eq%202073410%20or%20CommodityId%20eq%202073490))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:53Z",
+      "sha256": "0b2ca49485253f8b30cd709025025e87cad48adb04eca4b913d3536d65095c2a",
+      "bytes": 157,
+      "items": 0
+    },
+    {
+      "name": "ots-aggregate-poultry-c07-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202073511%20or%20CommodityId%20eq%202073515%20or%20CommodityId%20eq%202073521%20or%20CommodityId%20eq%202073523%20or%20CommodityId%20eq%202073525%20or%20CommodityId%20eq%202073531%20or%20CommodityId%20eq%202073541%20or%20CommodityId%20eq%202073551%20or%20CommodityId%20eq%202073553%20or%20CommodityId%20eq%202073561))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:54Z",
+      "sha256": "0b2ca49485253f8b30cd709025025e87cad48adb04eca4b913d3536d65095c2a",
+      "bytes": 157,
+      "items": 0
+    },
+    {
+      "name": "ots-aggregate-poultry-c08-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202073563%20or%20CommodityId%20eq%202073571%20or%20CommodityId%20eq%202073579%20or%20CommodityId%20eq%202073591%20or%20CommodityId%20eq%202073599%20or%20CommodityId%20eq%202073611%20or%20CommodityId%20eq%202073615%20or%20CommodityId%20eq%202073621%20or%20CommodityId%20eq%202073623%20or%20CommodityId%20eq%202073625))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:55Z",
+      "sha256": "0b2ca49485253f8b30cd709025025e87cad48adb04eca4b913d3536d65095c2a",
+      "bytes": 157,
+      "items": 0
+    },
+    {
+      "name": "ots-aggregate-poultry-c09-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202073631%20or%20CommodityId%20eq%202073641%20or%20CommodityId%20eq%202073651%20or%20CommodityId%20eq%202073653%20or%20CommodityId%20eq%202073661%20or%20CommodityId%20eq%202073663%20or%20CommodityId%20eq%202073671%20or%20CommodityId%20eq%202073679%20or%20CommodityId%20eq%202073681%20or%20CommodityId%20eq%202073685))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:56Z",
+      "sha256": "0b2ca49485253f8b30cd709025025e87cad48adb04eca4b913d3536d65095c2a",
+      "bytes": 157,
+      "items": 0
+    },
+    {
+      "name": "ots-aggregate-poultry-c10-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202073689%20or%20CommodityId%20eq%202073690%20or%20CommodityId%20eq%202074120%20or%20CommodityId%20eq%202074130%20or%20CommodityId%20eq%202074180%20or%20CommodityId%20eq%202074230%20or%20CommodityId%20eq%202074280%20or%20CommodityId%20eq%202074300%20or%20CommodityId%20eq%202074410%20or%20CommodityId%20eq%202074421))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:58Z",
+      "sha256": "24d594189bbbd859619b52289f50835f3199d6fdb0d1774b652e8d300b030a9a",
+      "bytes": 317257,
+      "items": 2023
+    },
+    {
+      "name": "ots-aggregate-poultry-c11-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202074431%20or%20CommodityId%20eq%202074441%20or%20CommodityId%20eq%202074451%20or%20CommodityId%20eq%202074461%20or%20CommodityId%20eq%202074471%20or%20CommodityId%20eq%202074481%20or%20CommodityId%20eq%202074491%20or%20CommodityId%20eq%202074499%20or%20CommodityId%20eq%202074510%20or%20CommodityId%20eq%202074521))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:59Z",
+      "sha256": "3c7fb765db1c2a6a2aa65d9c08199aaad5dfefd09f57f2b637a4c97d5486ed52",
+      "bytes": 195503,
+      "items": 1257
+    },
+    {
+      "name": "ots-aggregate-poultry-c12-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202074531%20or%20CommodityId%20eq%202074541%20or%20CommodityId%20eq%202074551%20or%20CommodityId%20eq%202074561%20or%20CommodityId%20eq%202074571%20or%20CommodityId%20eq%202074581%20or%20CommodityId%20eq%202074593%20or%20CommodityId%20eq%202074595%20or%20CommodityId%20eq%202074599%20or%20CommodityId%20eq%202075110))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:00Z",
+      "sha256": "83153c9a3ffcbc1e1d1225d142bc3cb12a8fb66313bbfaa8b4f85de4502ddf58",
+      "bytes": 262875,
+      "items": 1687
+    },
+    {
+      "name": "ots-aggregate-poultry-c13-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202075190%20or%20CommodityId%20eq%202075210%20or%20CommodityId%20eq%202075290%20or%20CommodityId%20eq%202075300%20or%20CommodityId%20eq%202075410%20or%20CommodityId%20eq%202075421%20or%20CommodityId%20eq%202075431%20or%20CommodityId%20eq%202075441%20or%20CommodityId%20eq%202075451%20or%20CommodityId%20eq%202075461))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:01Z",
+      "sha256": "25a55911909708dd0f95cb39e28bac31e3c8ad2e39ba77a4a08660f4015ec516",
+      "bytes": 45329,
+      "items": 291
+    },
+    {
+      "name": "ots-aggregate-poultry-c14-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202075471%20or%20CommodityId%20eq%202075481%20or%20CommodityId%20eq%202075491%20or%20CommodityId%20eq%202075499%20or%20CommodityId%20eq%202075510%20or%20CommodityId%20eq%202075521%20or%20CommodityId%20eq%202075531%20or%20CommodityId%20eq%202075541%20or%20CommodityId%20eq%202075551%20or%20CommodityId%20eq%202075561))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:02Z",
+      "sha256": "15217f620a74f20d562b7e0c5c5bf108eda6c26309d49872591e3b5b1b1e6083",
+      "bytes": 29671,
+      "items": 190
+    },
+    {
+      "name": "ots-aggregate-poultry-c15-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202075571%20or%20CommodityId%20eq%202075581%20or%20CommodityId%20eq%202075593%20or%20CommodityId%20eq%202075595%20or%20CommodityId%20eq%202075599%20or%20CommodityId%20eq%202076005%20or%20CommodityId%20eq%202076010%20or%20CommodityId%20eq%202076021%20or%20CommodityId%20eq%202076031%20or%20CommodityId%20eq%202076041))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:04Z",
+      "sha256": "f23f908be79bcaa291e1c9bdfba8ade403deb168153a39b20aedc1d48e224197",
+      "bytes": 46847,
+      "items": 301
+    },
+    {
+      "name": "ots-aggregate-poultry-c16-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202076051%20or%20CommodityId%20eq%202076061%20or%20CommodityId%20eq%202076081%20or%20CommodityId%20eq%202076091%20or%20CommodityId%20eq%202076099))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:12:05Z",
+      "sha256": "d3df65d360b952e5a0b30479c3be0e06bad7160b29b262d78568f0f33e106feb",
+      "bytes": 54932,
+      "items": 353
+    },
+    {
+      "name": "ots-aggregate-rice-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010061010%20or%20CommodityId%20eq%2010061021%20or%20CommodityId%20eq%2010061023%20or%20CommodityId%20eq%2010061025%20or%20CommodityId%20eq%2010061027%20or%20CommodityId%20eq%2010061030%20or%20CommodityId%20eq%2010061050%20or%20CommodityId%20eq%2010061071%20or%20CommodityId%20eq%2010061079%20or%20CommodityId%20eq%2010061090))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:21Z",
+      "sha256": "dd895abbae404d2b3d31d6d773af6171f78f4863eacecf02fec02935fb469335",
+      "bytes": 128694,
+      "items": 825
+    },
+    {
+      "name": "ots-aggregate-rice-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010061092%20or%20CommodityId%20eq%2010061094%20or%20CommodityId%20eq%2010061096%20or%20CommodityId%20eq%2010061098%20or%20CommodityId%20eq%2010062011%20or%20CommodityId%20eq%2010062013%20or%20CommodityId%20eq%2010062015%20or%20CommodityId%20eq%2010062017%20or%20CommodityId%20eq%2010062019%20or%20CommodityId%20eq%2010062092))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:22Z",
+      "sha256": "b9c7befc900c25c4b2b33751a7f4002e9a35f6fe2d14143a212e774b869b267a",
+      "bytes": 336561,
+      "items": 2122
+    },
+    {
+      "name": "ots-aggregate-rice-c03-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010062094%20or%20CommodityId%20eq%2010062096%20or%20CommodityId%20eq%2010062098%20or%20CommodityId%20eq%2010062099%20or%20CommodityId%20eq%2010063021%20or%20CommodityId%20eq%2010063023%20or%20CommodityId%20eq%2010063025%20or%20CommodityId%20eq%2010063027%20or%20CommodityId%20eq%2010063029%20or%20CommodityId%20eq%2010063042))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:24Z",
+      "sha256": "c6086330dcb6c6a51957b9e91649996d1eab6bb28a704ec6ac87d8c39e759cb4",
+      "bytes": 682347,
+      "items": 4308
+    },
+    {
+      "name": "ots-aggregate-rice-c04-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010063044%20or%20CommodityId%20eq%2010063046%20or%20CommodityId%20eq%2010063048%20or%20CommodityId%20eq%2010063049%20or%20CommodityId%20eq%2010063061%20or%20CommodityId%20eq%2010063063%20or%20CommodityId%20eq%2010063065%20or%20CommodityId%20eq%2010063067%20or%20CommodityId%20eq%2010063069%20or%20CommodityId%20eq%2010063092))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:25Z",
+      "sha256": "49fb059b639b23a80fe75c743959d52d7a7283fcca2e0cdf206ad73f4ef7f651",
+      "bytes": 728382,
+      "items": 4588
+    },
+    {
+      "name": "ots-aggregate-rice-c05-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010063094%20or%20CommodityId%20eq%2010063096%20or%20CommodityId%20eq%2010063098%20or%20CommodityId%20eq%2010063099%20or%20CommodityId%20eq%2010064000))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:26Z",
+      "sha256": "3208678ae78c14142b3474fd8d0e8c226fb84fe542e5fcee49bb148ba5b5a81b",
+      "bytes": 898360,
+      "items": 5640
+    },
+    {
+      "name": "ots-aggregate-sheep-goat-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202041000%20or%20CommodityId%20eq%202042100%20or%20CommodityId%20eq%202042210%20or%20CommodityId%20eq%202042230%20or%20CommodityId%20eq%202042250%20or%20CommodityId%20eq%202042290%20or%20CommodityId%20eq%202042300%20or%20CommodityId%20eq%202043000%20or%20CommodityId%20eq%202044100%20or%20CommodityId%20eq%202044210))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:39Z",
+      "sha256": "6ae3f12a6e946f5e041cc01421c58dabb5defa6d3c3e99606047edb2b33d169d",
+      "bytes": 402565,
+      "items": 2560
+    },
+    {
+      "name": "ots-aggregate-sheep-goat-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202044230%20or%20CommodityId%20eq%202044250%20or%20CommodityId%20eq%202044290%20or%20CommodityId%20eq%202044310%20or%20CommodityId%20eq%202044390%20or%20CommodityId%20eq%202045011%20or%20CommodityId%20eq%202045013%20or%20CommodityId%20eq%202045015%20or%20CommodityId%20eq%202045019%20or%20CommodityId%20eq%202045031))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:40Z",
+      "sha256": "b22ffabbb1f15c8fa035799d16cbc2aa9b632b6eced15dde4b9ef8d5f7fea8a3",
+      "bytes": 442436,
+      "items": 2796
+    },
+    {
+      "name": "ots-aggregate-sheep-goat-c03-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202045039%20or%20CommodityId%20eq%202045051%20or%20CommodityId%20eq%202045053%20or%20CommodityId%20eq%202045055%20or%20CommodityId%20eq%202045059%20or%20CommodityId%20eq%202045071%20or%20CommodityId%20eq%202045079))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:41Z",
+      "sha256": "b8717370be3d399377c7b64f6b2ba3d5ef0cf4ab5430f7a633c5e368536f8feb",
+      "bytes": 109475,
+      "items": 699
+    },
+    {
+      "name": "ots-aggregate-strawberries-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20CommodityId%20eq%208101000)/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:09Z",
+      "sha256": "b43f67c1a6eaa902f214b81bc71a00018b81237f7299fd3ebcce87b3c986c887",
+      "bytes": 180546,
+      "items": 1139
+    },
+    {
+      "name": "ots-aggregate-sugar-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2017011110%20or%20CommodityId%20eq%2017011190%20or%20CommodityId%20eq%2017011210%20or%20CommodityId%20eq%2017011290%20or%20CommodityId%20eq%2017011310%20or%20CommodityId%20eq%2017011390%20or%20CommodityId%20eq%2017011410%20or%20CommodityId%20eq%2017011490%20or%20CommodityId%20eq%2017019100%20or%20CommodityId%20eq%2017019910))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:13:17Z",
+      "sha256": "aa3098ef1d712a2233a5852bc6490b8342e55c4f55c1ec69a62a0270859bda6c",
+      "bytes": 939641,
+      "items": 5938
+    },
+    {
+      "name": "ots-aggregate-sugar-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20CommodityId%20eq%2017019990)/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:13:18Z",
+      "sha256": "83e4c56f4b888b811f5bbad987a8493ef43e917a9bcfeec5a1548b2766e82929",
+      "bytes": 247214,
+      "items": 1567
+    },
+    {
+      "name": "ots-aggregate-tomatoes-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%207020000%20or%20CommodityId%20eq%207020010%20or%20CommodityId%20eq%207020091%20or%20CommodityId%20eq%207020099))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:04Z",
+      "sha256": "0c55050dc677b654cb14208b6a4e6a3801d9ef0f096f40a4f0925a15255cbc83",
+      "bytes": 265358,
+      "items": 1667
+    },
+    {
+      "name": "ots-aggregate-wheat-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010011000%20or%20CommodityId%20eq%2010011100%20or%20CommodityId%20eq%2010011900%20or%20CommodityId%20eq%2010019010%20or%20CommodityId%20eq%2010019091%20or%20CommodityId%20eq%2010019099%20or%20CommodityId%20eq%2010019110%20or%20CommodityId%20eq%2010019120%20or%20CommodityId%20eq%2010019190%20or%20CommodityId%20eq%2010019900))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+      "retrievedAt": "2026-10-26T09:11:19Z",
+      "sha256": "c5c90a2e5901edb4b3e095d8e7a7382dd1570f4a1e6fa32d779a7b09f07e531b",
+      "bytes": 335576,
+      "items": 2098
+    },
+    {
+      "name": "ots-raw-apples-202410-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202410%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%208081010%20or%20CommodityId%20eq%208081020%20or%20CommodityId%20eq%208081050%20or%20CommodityId%20eq%208081080%20or%20CommodityId%20eq%208081090)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:12Z",
+      "sha256": "30ad6c3c63c79b0248a3048e05e1bf1325bd3a09dcb56a2bb8b440695b4411c0",
+      "bytes": 8483,
+      "items": 60
+    },
+    {
+      "name": "ots-raw-bananas-202407-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202407%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%208030011%20or%20CommodityId%20eq%208030019%20or%20CommodityId%20eq%208030090%20or%20CommodityId%20eq%208031010%20or%20CommodityId%20eq%208031090%20or%20CommodityId%20eq%208039010%20or%20CommodityId%20eq%208039011%20or%20CommodityId%20eq%208039019%20or%20CommodityId%20eq%208039090)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:17Z",
+      "sha256": "b2688a8b6c809aa30720cfd9f30618cc41021e2589e68e15114baef7e1130ed0",
+      "bytes": 10150,
+      "items": 72
+    },
+    {
+      "name": "ots-raw-beef-202105-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202105%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202011000%20or%20CommodityId%20eq%202012020%20or%20CommodityId%20eq%202012030%20or%20CommodityId%20eq%202012050%20or%20CommodityId%20eq%202012090%20or%20CommodityId%20eq%202013000%20or%20CommodityId%20eq%202021000%20or%20CommodityId%20eq%202022010%20or%20CommodityId%20eq%202022030%20or%20CommodityId%20eq%202022050)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:35Z",
+      "sha256": "3ac8c68ef0db10a956f14d03a59a4e706eb0ed6a7ba12fdf00997a1795f9a4db",
+      "bytes": 7271,
+      "items": 52
+    },
+    {
+      "name": "ots-raw-beef-202105-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202105%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202022090%20or%20CommodityId%20eq%202023010%20or%20CommodityId%20eq%202023050%20or%20CommodityId%20eq%202023090)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:37Z",
+      "sha256": "8f42f975bc950126d295cef9998b5566679447bca465f265a4c0fbe77346872d",
+      "bytes": 5090,
+      "items": 36
+    },
+    {
+      "name": "ots-raw-cheese-202212-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202212%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204061020%20or%20CommodityId%20eq%204061030%20or%20CommodityId%20eq%204061050%20or%20CommodityId%20eq%204061080%20or%20CommodityId%20eq%204062000%20or%20CommodityId%20eq%204062010%20or%20CommodityId%20eq%204062090%20or%20CommodityId%20eq%204063010%20or%20CommodityId%20eq%204063031%20or%20CommodityId%20eq%204063039)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:13:09Z",
+      "sha256": "63fde4c00151c0bb137c23a08b4664eb5b8adff433ee842c17e7d2dd4ee23c1b",
+      "bytes": 36137,
+      "items": 262
+    },
+    {
+      "name": "ots-raw-cheese-202212-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202212%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204063090%20or%20CommodityId%20eq%204064010%20or%20CommodityId%20eq%204064050%20or%20CommodityId%20eq%204064090%20or%20CommodityId%20eq%204069001%20or%20CommodityId%20eq%204069002%20or%20CommodityId%20eq%204069003%20or%20CommodityId%20eq%204069004%20or%20CommodityId%20eq%204069005%20or%20CommodityId%20eq%204069006)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:13:10Z",
+      "sha256": "f534d3c221292ca085226bda343c52f5502cafca7eeae4a7fef35409de671761",
+      "bytes": 7094,
+      "items": 51
+    },
+    {
+      "name": "ots-raw-cheese-202212-c03-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202212%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204069013%20or%20CommodityId%20eq%204069015%20or%20CommodityId%20eq%204069017%20or%20CommodityId%20eq%204069018%20or%20CommodityId%20eq%204069019%20or%20CommodityId%20eq%204069021%20or%20CommodityId%20eq%204069023%20or%20CommodityId%20eq%204069025%20or%20CommodityId%20eq%204069027%20or%20CommodityId%20eq%204069029)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:13:12Z",
+      "sha256": "63a04711a11fec8d0a081b72803a3d3d6efeb94357e443a7a6d0f363a8eeb373",
+      "bytes": 11776,
+      "items": 85
+    },
+    {
+      "name": "ots-raw-cheese-202212-c04-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202212%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204069031%20or%20CommodityId%20eq%204069032%20or%20CommodityId%20eq%204069033%20or%20CommodityId%20eq%204069035%20or%20CommodityId%20eq%204069037%20or%20CommodityId%20eq%204069039%20or%20CommodityId%20eq%204069050%20or%20CommodityId%20eq%204069061%20or%20CommodityId%20eq%204069063%20or%20CommodityId%20eq%204069069)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:13:13Z",
+      "sha256": "89964de9b0a1e3632f77d4d7784633244d5c43b831e4a7aa818de647276ab9ce",
+      "bytes": 15276,
+      "items": 111
+    },
+    {
+      "name": "ots-raw-cheese-202212-c05-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202212%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204069073%20or%20CommodityId%20eq%204069074%20or%20CommodityId%20eq%204069075%20or%20CommodityId%20eq%204069076%20or%20CommodityId%20eq%204069078%20or%20CommodityId%20eq%204069079%20or%20CommodityId%20eq%204069081%20or%20CommodityId%20eq%204069082%20or%20CommodityId%20eq%204069084%20or%20CommodityId%20eq%204069085)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:13:14Z",
+      "sha256": "7501cbde1ad9f7e8cf92e3df5522006dc33bba3e376a2fc9360d13ddb6c8a20e",
+      "bytes": 14231,
+      "items": 103
+    },
+    {
+      "name": "ots-raw-cheese-202212-c06-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202212%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204069086%20or%20CommodityId%20eq%204069087%20or%20CommodityId%20eq%204069088%20or%20CommodityId%20eq%204069089%20or%20CommodityId%20eq%204069092%20or%20CommodityId%20eq%204069093%20or%20CommodityId%20eq%204069099)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:13:15Z",
+      "sha256": "a3b9e9eba2187136cec82f132a56c02db354cf7aa6b1322ac07c2ec1d7fef7a7",
+      "bytes": 26027,
+      "items": 189
+    },
+    {
+      "name": "ots-raw-cocoa-202602-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202602%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2018010000%20or%20CommodityId%20eq%2018031000%20or%20CommodityId%20eq%2018032000%20or%20CommodityId%20eq%2018040000%20or%20CommodityId%20eq%2018050000)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:13:26Z",
+      "sha256": "e5cd21319d691711c29edfb82cada728d7915baf96028bc36b321f5fe52edefb",
+      "bytes": 18884,
+      "items": 135
+    },
+    {
+      "name": "ots-raw-coffee-202011-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202011%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%209011100%20or%20CommodityId%20eq%209011200%20or%20CommodityId%20eq%209012100%20or%20CommodityId%20eq%209012200%20or%20CommodityId%20eq%209019010%20or%20CommodityId%20eq%209019090)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:13:24Z",
+      "sha256": "22199e35fba4ab11ec5ca66c45694c4ff7dbd56ac80d095a1c2496e9121a56f4",
+      "bytes": 24726,
+      "items": 179
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204011010%20or%20CommodityId%20eq%204011090%20or%20CommodityId%20eq%204012011%20or%20CommodityId%20eq%204012019%20or%20CommodityId%20eq%204012091%20or%20CommodityId%20eq%204012099%20or%20CommodityId%20eq%204013011%20or%20CommodityId%20eq%204013019%20or%20CommodityId%20eq%204013031%20or%20CommodityId%20eq%204013039)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:42Z",
+      "sha256": "fa6091b11c77fff05e5a850b72f306cee1fab0f5db063ecefcfeb80e1218b564",
+      "bytes": 8367,
+      "items": 60
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204013091%20or%20CommodityId%20eq%204013099%20or%20CommodityId%20eq%204014010%20or%20CommodityId%20eq%204014090%20or%20CommodityId%20eq%204015011%20or%20CommodityId%20eq%204015019%20or%20CommodityId%20eq%204015031%20or%20CommodityId%20eq%204015039%20or%20CommodityId%20eq%204015091%20or%20CommodityId%20eq%204015099)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:43Z",
+      "sha256": "a6b5cc6e78cd27c0f20ce682165e89e516ffd3d6b86e5be29fc6b7f9bb11769f",
+      "bytes": 7101,
+      "items": 51
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c03-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204021011%20or%20CommodityId%20eq%204021019%20or%20CommodityId%20eq%204021091%20or%20CommodityId%20eq%204021099%20or%20CommodityId%20eq%204022111%20or%20CommodityId%20eq%204022117%20or%20CommodityId%20eq%204022118%20or%20CommodityId%20eq%204022119%20or%20CommodityId%20eq%204022191%20or%20CommodityId%20eq%204022199)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:44Z",
+      "sha256": "7ec64b1feb74cdded8343b2e734e7ce8906dc40a51915e42bfe66c3bcd228942",
+      "bytes": 8493,
+      "items": 61
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c04-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204022911%20or%20CommodityId%20eq%204022915%20or%20CommodityId%20eq%204022919%20or%20CommodityId%20eq%204022991%20or%20CommodityId%20eq%204022999%20or%20CommodityId%20eq%204029110%20or%20CommodityId%20eq%204029111%20or%20CommodityId%20eq%204029119%20or%20CommodityId%20eq%204029130%20or%20CommodityId%20eq%204029131)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:46Z",
+      "sha256": "295db96618f39778b45a0a9d7555ed2b5b7f52dc8efc84edba8bfda25de82a29",
+      "bytes": 3986,
+      "items": 28
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c05-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204029139%20or%20CommodityId%20eq%204029151%20or%20CommodityId%20eq%204029159%20or%20CommodityId%20eq%204029191%20or%20CommodityId%20eq%204029199%20or%20CommodityId%20eq%204029910%20or%20CommodityId%20eq%204029911%20or%20CommodityId%20eq%204029919%20or%20CommodityId%20eq%204029931%20or%20CommodityId%20eq%204029939)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:47Z",
+      "sha256": "731fb76a577fe899f681cb381869c8c9287316ef8932798bafaa9064a6600854",
+      "bytes": 8100,
+      "items": 58
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c06-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204029991%20or%20CommodityId%20eq%204029999%20or%20CommodityId%20eq%204031011%20or%20CommodityId%20eq%204031013%20or%20CommodityId%20eq%204031019%20or%20CommodityId%20eq%204031031%20or%20CommodityId%20eq%204031033%20or%20CommodityId%20eq%204031039%20or%20CommodityId%20eq%204031051%20or%20CommodityId%20eq%204031053)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:48Z",
+      "sha256": "4aaab25534f21578c598520a7483945ec5052162a0249214e8b10e2f4f276068",
+      "bytes": 689,
+      "items": 4
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c07-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204031059%20or%20CommodityId%20eq%204031091%20or%20CommodityId%20eq%204031093%20or%20CommodityId%20eq%204031099%20or%20CommodityId%20eq%204032011%20or%20CommodityId%20eq%204032013%20or%20CommodityId%20eq%204032019%20or%20CommodityId%20eq%204032031%20or%20CommodityId%20eq%204032033%20or%20CommodityId%20eq%204032039)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:49Z",
+      "sha256": "abca2b45d56de9927f219c43c696f088758c8eb7afcc04793ede5b0373394c9b",
+      "bytes": 11383,
+      "items": 82
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c08-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204032041%20or%20CommodityId%20eq%204032049%20or%20CommodityId%20eq%204032051%20or%20CommodityId%20eq%204032053%20or%20CommodityId%20eq%204032059%20or%20CommodityId%20eq%204032091%20or%20CommodityId%20eq%204032093%20or%20CommodityId%20eq%204032099%20or%20CommodityId%20eq%204039011%20or%20CommodityId%20eq%204039013)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:50Z",
+      "sha256": "61cf0503213a26ceacba5da63472bc0de60a11587dc05f156d2d28ad431684c0",
+      "bytes": 13978,
+      "items": 101
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c09-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204039019%20or%20CommodityId%20eq%204039031%20or%20CommodityId%20eq%204039033%20or%20CommodityId%20eq%204039039%20or%20CommodityId%20eq%204039051%20or%20CommodityId%20eq%204039053%20or%20CommodityId%20eq%204039059%20or%20CommodityId%20eq%204039061%20or%20CommodityId%20eq%204039063%20or%20CommodityId%20eq%204039069)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:52Z",
+      "sha256": "72e78547d995e38c97cd487cf72987229f365732f12ee3d2cbb5cd911ec1369d",
+      "bytes": 8886,
+      "items": 64
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c10-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204039071%20or%20CommodityId%20eq%204039073%20or%20CommodityId%20eq%204039079%20or%20CommodityId%20eq%204039091%20or%20CommodityId%20eq%204039093%20or%20CommodityId%20eq%204039099%20or%20CommodityId%20eq%204041002%20or%20CommodityId%20eq%204041004%20or%20CommodityId%20eq%204041006%20or%20CommodityId%20eq%204041012)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:53Z",
+      "sha256": "0a7ca2152cac80ae396aab910f6013a271d818e1a37f473cb6fb5c5b5ddbd0ae",
+      "bytes": 8917,
+      "items": 64
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c11-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204041014%20or%20CommodityId%20eq%204041016%20or%20CommodityId%20eq%204041026%20or%20CommodityId%20eq%204041028%20or%20CommodityId%20eq%204041032%20or%20CommodityId%20eq%204041034%20or%20CommodityId%20eq%204041036%20or%20CommodityId%20eq%204041038%20or%20CommodityId%20eq%204041048%20or%20CommodityId%20eq%204041052)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:54Z",
+      "sha256": "be4301ac883b01d15788e00d84c12537a74a49ce7549333708ed9239e78e22ab",
+      "bytes": 2764,
+      "items": 19
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c12-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204041054%20or%20CommodityId%20eq%204041056%20or%20CommodityId%20eq%204041058%20or%20CommodityId%20eq%204041062%20or%20CommodityId%20eq%204041072%20or%20CommodityId%20eq%204041074%20or%20CommodityId%20eq%204041076%20or%20CommodityId%20eq%204041078%20or%20CommodityId%20eq%204041082%20or%20CommodityId%20eq%204041084)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:55Z",
+      "sha256": "5acf0e3272d759b1268e59a01b21169310d13e37d550f250a32b02244b12d115",
+      "bytes": 422,
+      "items": 2
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c13-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204049021%20or%20CommodityId%20eq%204049023%20or%20CommodityId%20eq%204049029%20or%20CommodityId%20eq%204049081%20or%20CommodityId%20eq%204049083%20or%20CommodityId%20eq%204049089%20or%20CommodityId%20eq%204051011%20or%20CommodityId%20eq%204051019%20or%20CommodityId%20eq%204051030%20or%20CommodityId%20eq%204051050)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:56Z",
+      "sha256": "6964ba00e66aeca9c9b340a1f5d262be8d08c638eb4cd0bae5bf21d01f070ef0",
+      "bytes": 10282,
+      "items": 74
+    },
+    {
+      "name": "ots-raw-milk-products-202306-c14-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202306%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204051090%20or%20CommodityId%20eq%204052010%20or%20CommodityId%20eq%204052030%20or%20CommodityId%20eq%204052090%20or%20CommodityId%20eq%204059010%20or%20CommodityId%20eq%204059090)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:58Z",
+      "sha256": "8f3b0f8c090cb3687cb794cee848d23aef4ff7acdbb3a955859032a37b28b89a",
+      "bytes": 5716,
+      "items": 41
+    },
+    {
+      "name": "ots-raw-oranges-202312-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202312%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%208051010%20or%20CommodityId%20eq%208051020%20or%20CommodityId%20eq%208051022%20or%20CommodityId%20eq%208051024%20or%20CommodityId%20eq%208051028%20or%20CommodityId%20eq%208051030%20or%20CommodityId%20eq%208051050%20or%20CommodityId%20eq%208051080)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:15Z",
+      "sha256": "56d227273b5462a0586a2668798ed7864caf9aa9a3a2c5f206de548bacb78ee8",
+      "bytes": 11603,
+      "items": 83
+    },
+    {
+      "name": "ots-raw-potatoes-202503-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202503%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%207011000%20or%20CommodityId%20eq%207019010%20or%20CommodityId%20eq%207019050%20or%20CommodityId%20eq%207019090)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:07Z",
+      "sha256": "565435f3e88935e557ddaa7a542138e2401e1eeb8d1f9bdf9b934913dfc206d7",
+      "bytes": 8993,
+      "items": 64
+    },
+    {
+      "name": "ots-raw-poultry-201909-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202071110%20or%20CommodityId%20eq%202071130%20or%20CommodityId%20eq%202071190%20or%20CommodityId%20eq%202071210%20or%20CommodityId%20eq%202071290%20or%20CommodityId%20eq%202071310%20or%20CommodityId%20eq%202071320%20or%20CommodityId%20eq%202071330%20or%20CommodityId%20eq%202071340%20or%20CommodityId%20eq%202071350)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:06Z",
+      "sha256": "310a2daca69d5bb0ac3cf9cd52487baca9fc9a9d61ac2a4c5bcb9c2518fcf33a",
+      "bytes": 9594,
+      "items": 69
+    },
+    {
+      "name": "ots-raw-poultry-201909-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202071360%20or%20CommodityId%20eq%202071370%20or%20CommodityId%20eq%202071391%20or%20CommodityId%20eq%202071399%20or%20CommodityId%20eq%202071410%20or%20CommodityId%20eq%202071420%20or%20CommodityId%20eq%202071430%20or%20CommodityId%20eq%202071440%20or%20CommodityId%20eq%202071450%20or%20CommodityId%20eq%202071460)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:07Z",
+      "sha256": "51123c816973b8a33b01d2aea911272c532de8856f04f244f6df63d85c499431",
+      "bytes": 10514,
+      "items": 76
+    },
+    {
+      "name": "ots-raw-poultry-201909-c03-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202071470%20or%20CommodityId%20eq%202071491%20or%20CommodityId%20eq%202071499%20or%20CommodityId%20eq%202072410%20or%20CommodityId%20eq%202072490%20or%20CommodityId%20eq%202072510%20or%20CommodityId%20eq%202072590%20or%20CommodityId%20eq%202072610%20or%20CommodityId%20eq%202072620%20or%20CommodityId%20eq%202072630)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:08Z",
+      "sha256": "e72c3daa65c396c5d498b9c77b27acedeb4a14a1beb1d6bc962730473481960e",
+      "bytes": 5577,
+      "items": 40
+    },
+    {
+      "name": "ots-raw-poultry-201909-c04-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202072640%20or%20CommodityId%20eq%202072650%20or%20CommodityId%20eq%202072660%20or%20CommodityId%20eq%202072670%20or%20CommodityId%20eq%202072680%20or%20CommodityId%20eq%202072691%20or%20CommodityId%20eq%202072699%20or%20CommodityId%20eq%202072710%20or%20CommodityId%20eq%202072720%20or%20CommodityId%20eq%202072730)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:09Z",
+      "sha256": "08dc4288d3d1abccd301941d2838463f448f2d41584583e14c7c7f26a53f31ef",
+      "bytes": 3399,
+      "items": 24
+    },
+    {
+      "name": "ots-raw-poultry-201909-c05-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202072740%20or%20CommodityId%20eq%202072750%20or%20CommodityId%20eq%202072760%20or%20CommodityId%20eq%202072770%20or%20CommodityId%20eq%202072780%20or%20CommodityId%20eq%202072791%20or%20CommodityId%20eq%202072799%20or%20CommodityId%20eq%202073211%20or%20CommodityId%20eq%202073215%20or%20CommodityId%20eq%202073219)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:11Z",
+      "sha256": "2da8c0c4a537af93f466a1078ebaf752be0f0ff0ddb5a8b06493a703daeea1a6",
+      "bytes": 2583,
+      "items": 18
+    },
+    {
+      "name": "ots-raw-poultry-201909-c06-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202073251%20or%20CommodityId%20eq%202073259%20or%20CommodityId%20eq%202073290%20or%20CommodityId%20eq%202073311%20or%20CommodityId%20eq%202073319%20or%20CommodityId%20eq%202073351%20or%20CommodityId%20eq%202073359%20or%20CommodityId%20eq%202073390%20or%20CommodityId%20eq%202073410%20or%20CommodityId%20eq%202073490)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:12Z",
+      "sha256": "698770eb7b1fb5f22aace990ad4d93b703845577de90a455ad00df6b94d99b5c",
+      "bytes": 153,
+      "items": 0
+    },
+    {
+      "name": "ots-raw-poultry-201909-c07-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202073511%20or%20CommodityId%20eq%202073515%20or%20CommodityId%20eq%202073521%20or%20CommodityId%20eq%202073523%20or%20CommodityId%20eq%202073525%20or%20CommodityId%20eq%202073531%20or%20CommodityId%20eq%202073541%20or%20CommodityId%20eq%202073551%20or%20CommodityId%20eq%202073553%20or%20CommodityId%20eq%202073561)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:13Z",
+      "sha256": "698770eb7b1fb5f22aace990ad4d93b703845577de90a455ad00df6b94d99b5c",
+      "bytes": 153,
+      "items": 0
+    },
+    {
+      "name": "ots-raw-poultry-201909-c08-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202073563%20or%20CommodityId%20eq%202073571%20or%20CommodityId%20eq%202073579%20or%20CommodityId%20eq%202073591%20or%20CommodityId%20eq%202073599%20or%20CommodityId%20eq%202073611%20or%20CommodityId%20eq%202073615%20or%20CommodityId%20eq%202073621%20or%20CommodityId%20eq%202073623%20or%20CommodityId%20eq%202073625)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:14Z",
+      "sha256": "698770eb7b1fb5f22aace990ad4d93b703845577de90a455ad00df6b94d99b5c",
+      "bytes": 153,
+      "items": 0
+    },
+    {
+      "name": "ots-raw-poultry-201909-c09-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202073631%20or%20CommodityId%20eq%202073641%20or%20CommodityId%20eq%202073651%20or%20CommodityId%20eq%202073653%20or%20CommodityId%20eq%202073661%20or%20CommodityId%20eq%202073663%20or%20CommodityId%20eq%202073671%20or%20CommodityId%20eq%202073679%20or%20CommodityId%20eq%202073681%20or%20CommodityId%20eq%202073685)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:15Z",
+      "sha256": "698770eb7b1fb5f22aace990ad4d93b703845577de90a455ad00df6b94d99b5c",
+      "bytes": 153,
+      "items": 0
+    },
+    {
+      "name": "ots-raw-poultry-201909-c10-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202073689%20or%20CommodityId%20eq%202073690%20or%20CommodityId%20eq%202074120%20or%20CommodityId%20eq%202074130%20or%20CommodityId%20eq%202074180%20or%20CommodityId%20eq%202074230%20or%20CommodityId%20eq%202074280%20or%20CommodityId%20eq%202074300%20or%20CommodityId%20eq%202074410%20or%20CommodityId%20eq%202074421)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:16Z",
+      "sha256": "09192be97c9e4ceffe5b93ddba9030bc03c49e6b389cf2488da4cd0d09832562",
+      "bytes": 3677,
+      "items": 26
+    },
+    {
+      "name": "ots-raw-poultry-201909-c11-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202074431%20or%20CommodityId%20eq%202074441%20or%20CommodityId%20eq%202074451%20or%20CommodityId%20eq%202074461%20or%20CommodityId%20eq%202074471%20or%20CommodityId%20eq%202074481%20or%20CommodityId%20eq%202074491%20or%20CommodityId%20eq%202074499%20or%20CommodityId%20eq%202074510%20or%20CommodityId%20eq%202074521)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:18Z",
+      "sha256": "daaf38faef35ae639ff8be13b24961ba99ab7de71ecc77f6e4d340903ed4b0e0",
+      "bytes": 2441,
+      "items": 17
+    },
+    {
+      "name": "ots-raw-poultry-201909-c12-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202074531%20or%20CommodityId%20eq%202074541%20or%20CommodityId%20eq%202074551%20or%20CommodityId%20eq%202074561%20or%20CommodityId%20eq%202074571%20or%20CommodityId%20eq%202074581%20or%20CommodityId%20eq%202074593%20or%20CommodityId%20eq%202074595%20or%20CommodityId%20eq%202074599%20or%20CommodityId%20eq%202075110)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:19Z",
+      "sha256": "3596d4028087b5886ca784776639122bc682459be3c23c22fb0f90373ad0eed2",
+      "bytes": 1765,
+      "items": 12
+    },
+    {
+      "name": "ots-raw-poultry-201909-c13-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202075190%20or%20CommodityId%20eq%202075210%20or%20CommodityId%20eq%202075290%20or%20CommodityId%20eq%202075300%20or%20CommodityId%20eq%202075410%20or%20CommodityId%20eq%202075421%20or%20CommodityId%20eq%202075431%20or%20CommodityId%20eq%202075441%20or%20CommodityId%20eq%202075451%20or%20CommodityId%20eq%202075461)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:20Z",
+      "sha256": "ed9fc2d73399fab13c1521d3012fab25e0e0be612446f2ba84d509bb5f397cd9",
+      "bytes": 822,
+      "items": 5
+    },
+    {
+      "name": "ots-raw-poultry-201909-c14-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202075471%20or%20CommodityId%20eq%202075481%20or%20CommodityId%20eq%202075491%20or%20CommodityId%20eq%202075499%20or%20CommodityId%20eq%202075510%20or%20CommodityId%20eq%202075521%20or%20CommodityId%20eq%202075531%20or%20CommodityId%20eq%202075541%20or%20CommodityId%20eq%202075551%20or%20CommodityId%20eq%202075561)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:22Z",
+      "sha256": "c29c3acb49e4f6381eeda3e1c06f866fcf880b11f537d2a20a4daa71d5a09cd0",
+      "bytes": 689,
+      "items": 4
+    },
+    {
+      "name": "ots-raw-poultry-201909-c15-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202075571%20or%20CommodityId%20eq%202075581%20or%20CommodityId%20eq%202075593%20or%20CommodityId%20eq%202075595%20or%20CommodityId%20eq%202075599%20or%20CommodityId%20eq%202076005%20or%20CommodityId%20eq%202076010%20or%20CommodityId%20eq%202076021%20or%20CommodityId%20eq%202076031%20or%20CommodityId%20eq%202076041)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:23Z",
+      "sha256": "f757be7c6bdba77477b5fd4a32449064ea97ffa4f85dd2dab1ba9a81e570d87f",
+      "bytes": 817,
+      "items": 5
+    },
+    {
+      "name": "ots-raw-poultry-201909-c16-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20201909%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202076051%20or%20CommodityId%20eq%202076061%20or%20CommodityId%20eq%202076081%20or%20CommodityId%20eq%202076091%20or%20CommodityId%20eq%202076099)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:12:24Z",
+      "sha256": "074df195eb110bf7acf49c5700ef1287ef9f42b1d2c601655ae6009389c7ef34",
+      "bytes": 687,
+      "items": 4
+    },
+    {
+      "name": "ots-raw-rice-202202-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202202%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010061010%20or%20CommodityId%20eq%2010061021%20or%20CommodityId%20eq%2010061023%20or%20CommodityId%20eq%2010061025%20or%20CommodityId%20eq%2010061027%20or%20CommodityId%20eq%2010061030%20or%20CommodityId%20eq%2010061050%20or%20CommodityId%20eq%2010061071%20or%20CommodityId%20eq%2010061079%20or%20CommodityId%20eq%2010061090)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:27Z",
+      "sha256": "c4613f1e392048654b91f68afe51f4d14780a898e6e31395f388befbf0836a2c",
+      "bytes": 968,
+      "items": 6
+    },
+    {
+      "name": "ots-raw-rice-202202-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202202%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010061092%20or%20CommodityId%20eq%2010061094%20or%20CommodityId%20eq%2010061096%20or%20CommodityId%20eq%2010061098%20or%20CommodityId%20eq%2010062011%20or%20CommodityId%20eq%2010062013%20or%20CommodityId%20eq%2010062015%20or%20CommodityId%20eq%2010062017%20or%20CommodityId%20eq%2010062019%20or%20CommodityId%20eq%2010062092)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:28Z",
+      "sha256": "d4e24ef83b9d0a5e9045a71d13f220dcb5aa6cc89ed73183d16fb504a0b22207",
+      "bytes": 4314,
+      "items": 30
+    },
+    {
+      "name": "ots-raw-rice-202202-c03-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202202%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010062094%20or%20CommodityId%20eq%2010062096%20or%20CommodityId%20eq%2010062098%20or%20CommodityId%20eq%2010062099%20or%20CommodityId%20eq%2010063021%20or%20CommodityId%20eq%2010063023%20or%20CommodityId%20eq%2010063025%20or%20CommodityId%20eq%2010063027%20or%20CommodityId%20eq%2010063029%20or%20CommodityId%20eq%2010063042)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:29Z",
+      "sha256": "2487f2f0a611f62af808f436a800b6af02cf653eca9acc70f86ceeb4ba9540fd",
+      "bytes": 7777,
+      "items": 55
+    },
+    {
+      "name": "ots-raw-rice-202202-c04-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202202%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010063044%20or%20CommodityId%20eq%2010063046%20or%20CommodityId%20eq%2010063048%20or%20CommodityId%20eq%2010063049%20or%20CommodityId%20eq%2010063061%20or%20CommodityId%20eq%2010063063%20or%20CommodityId%20eq%2010063065%20or%20CommodityId%20eq%2010063067%20or%20CommodityId%20eq%2010063069%20or%20CommodityId%20eq%2010063092)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:31Z",
+      "sha256": "15d66b305fba1111fb676c76cb626de6e11a28c0b47c4d65375f48f3788e697c",
+      "bytes": 13579,
+      "items": 97
+    },
+    {
+      "name": "ots-raw-rice-202202-c05-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202202%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010063094%20or%20CommodityId%20eq%2010063096%20or%20CommodityId%20eq%2010063098%20or%20CommodityId%20eq%2010063099%20or%20CommodityId%20eq%2010064000)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:32Z",
+      "sha256": "be127fc6bbb042ca54bfdb070c292be6a4c49690be593a2b566874f530f74c0c",
+      "bytes": 17683,
+      "items": 126
+    },
+    {
+      "name": "ots-raw-sheep-goat-202004-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202004%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202041000%20or%20CommodityId%20eq%202042100%20or%20CommodityId%20eq%202042210%20or%20CommodityId%20eq%202042230%20or%20CommodityId%20eq%202042250%20or%20CommodityId%20eq%202042290%20or%20CommodityId%20eq%202042300%20or%20CommodityId%20eq%202043000%20or%20CommodityId%20eq%202044100%20or%20CommodityId%20eq%202044210)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:42Z",
+      "sha256": "10ccdf3ddfbb2c407ca7557d98b7df2790330ec5639661240587e8e31abffda3",
+      "bytes": 5636,
+      "items": 40
+    },
+    {
+      "name": "ots-raw-sheep-goat-202004-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202004%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202044230%20or%20CommodityId%20eq%202044250%20or%20CommodityId%20eq%202044290%20or%20CommodityId%20eq%202044310%20or%20CommodityId%20eq%202044390%20or%20CommodityId%20eq%202045011%20or%20CommodityId%20eq%202045013%20or%20CommodityId%20eq%202045015%20or%20CommodityId%20eq%202045019%20or%20CommodityId%20eq%202045031)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:43Z",
+      "sha256": "37317877f84c536340023cd9ae7e8c00fc6ae78c202acb35b449354e4e8edd0a",
+      "bytes": 7658,
+      "items": 54
+    },
+    {
+      "name": "ots-raw-sheep-goat-202004-c03-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202004%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202045039%20or%20CommodityId%20eq%202045051%20or%20CommodityId%20eq%202045053%20or%20CommodityId%20eq%202045055%20or%20CommodityId%20eq%202045059%20or%20CommodityId%20eq%202045071%20or%20CommodityId%20eq%202045079)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:44Z",
+      "sha256": "52f3891c1107e0a4ce31ff45e771af0e75b0cb3f19a96d54c7adcc1812b62ce1",
+      "bytes": 963,
+      "items": 6
+    },
+    {
+      "name": "ots-raw-strawberries-202406-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202406%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20CommodityId%20eq%208101000&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:10Z",
+      "sha256": "cfced19d236ee270743a5895b33df66e5992e81b523425d113a856af505d829b",
+      "bytes": 3051,
+      "items": 21
+    },
+    {
+      "name": "ots-raw-sugar-202108-c01-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202108%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2017011110%20or%20CommodityId%20eq%2017011190%20or%20CommodityId%20eq%2017011210%20or%20CommodityId%20eq%2017011290%20or%20CommodityId%20eq%2017011310%20or%20CommodityId%20eq%2017011390%20or%20CommodityId%20eq%2017011410%20or%20CommodityId%20eq%2017011490%20or%20CommodityId%20eq%2017019100%20or%20CommodityId%20eq%2017019910)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:13:19Z",
+      "sha256": "ab0bcad91214d8ff67f358a8093b1fb8c6a7ff23fab1b65c3697faac3495dcf5",
+      "bytes": 11008,
+      "items": 79
+    },
+    {
+      "name": "ots-raw-sugar-202108-c02-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202108%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20CommodityId%20eq%2017019990&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:13:20Z",
+      "sha256": "843a5c89047fc498f541cd278157a8d2ac81ab80016103f51e4376ffb03107b4",
+      "bytes": 2762,
+      "items": 19
+    },
+    {
+      "name": "ots-raw-tomatoes-202501-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202501%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%207020000%20or%20CommodityId%20eq%207020010%20or%20CommodityId%20eq%207020091%20or%20CommodityId%20eq%207020099)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:05Z",
+      "sha256": "733592c1cc10f0d47443f05d5c5a38bb9dbea6c1ba9c94ab4d884bcc9a48bf44",
+      "bytes": 16328,
+      "items": 117
+    },
+    {
+      "name": "ots-raw-wheat-202311-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202311%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010011000%20or%20CommodityId%20eq%2010011100%20or%20CommodityId%20eq%2010011900%20or%20CommodityId%20eq%2010019010%20or%20CommodityId%20eq%2010019091%20or%20CommodityId%20eq%2010019099%20or%20CommodityId%20eq%2010019110%20or%20CommodityId%20eq%2010019120%20or%20CommodityId%20eq%2010019190%20or%20CommodityId%20eq%2010019900)&$select=MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value",
+      "retrievedAt": "2026-10-26T09:11:19Z",
+      "sha256": "b23efb7de5c7fc06c3c70f4581ba6880abe7be6b3fff0e073f2b1618e3b72b94",
+      "bytes": 5199,
+      "items": 36
+    },
+    {
+      "name": "probe-202608-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202608%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)&$top=1&$select=MonthId",
+      "retrievedAt": "2026-10-26T09:13:27Z",
+      "sha256": "f91778bd17f3447c409ed67b858989dce278f1132ffe725def5fca919da40129",
+      "bytes": 100,
+      "items": 1
+    },
+    {
+      "name": "probe-202609-p001",
+      "url": "https://api.uktradeinfo.com/OTS?$filter=MonthId%20eq%20202609%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)&$top=1&$select=MonthId",
+      "retrievedAt": "2026-10-26T09:15:08Z",
+      "sha256": "05eb166c4753bb1b08f784293c911bf7644f0e32dee039d4035b13fc64fd722e",
+      "bytes": 82,
+      "items": 0
+    }
+  ]
+}

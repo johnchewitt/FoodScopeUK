@@ -1,0 +1,26 @@
+{
+  "id": "trade.rice",
+  "title": "Recorded UK imports: rice (HS 1006)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-26/trade/rice.json",
+  "format": "json",
+  "schemaId": "trade-snapshot",
+  "sha256": "84856e8cff7bd46e9119f852e6a3b6da3aeceb473677f994661e5e78567066d2",
+  "bytes": 105985,
+  "sourceIds": [
+    "S01",
+    "S24"
+  ],
+  "referencePeriod": "Jan 2019 \u2013 Aug 2026 (monthly)",
+  "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+  "expectedCadence": "monthly",
+  "retrieval": {
+    "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+    "source": "5 queries over consecutive runs of the basket's CN8 codes (URL length), first: https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%2010061010%20or%20CommodityId%20eq%2010061021%20or%20CommodityId%20eq%2010061023%20or%20CommodityId%20eq%2010061025%20or%20CommodityId%20eq%2010061027%20or%20CommodityId%20eq%2010061030%20or%20CommodityId%20eq%2010061050%20or%20CommodityId%20eq%2010061071%20or%20CommodityId%20eq%2010061079%20or%20CommodityId%20eq%2010061090))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+    "retrievedAt": "2026-10-26T09:11:21Z",
+    "notes": "CN8 codes: 10061010, 10061021, 10061023, 10061025, 10061027, 10061030, 10061050, 10061071, 10061079, 10061090, 10061092, 10061094, 10061096, 10061098, 10062011, 10062013, 10062015, 10062017, 10062019, 10062092, 10062094, 10062096, 10062098, 10062099, 10063021, 10063023, 10063025, 10063027, 10063029, 10063042, 10063044, 10063046, 10063048, 10063049, 10063061, 10063063, 10063065, 10063067, 10063069, 10063092, 10063094, 10063096, 10063098, 10063099, 10064000. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of dispatch recorded by HMRC. Suppressed trade kept separately. Latest month confirmed by probing the following month. Months from provisionalFrom are within HMRC's 18-month revision window (estimated from publication lag)."
+  }
+}
