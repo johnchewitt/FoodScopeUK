@@ -3,8 +3,8 @@
 | | |
 |---|---|
 | **Document** | 03 — Verified data catalogue and manifest |
-| **Version** | 1.0 — 26 October 2026 (the sixteen Food Origins baskets: S01 snapshot 2026-10-26 for the other eleven baskets of spec §6.1; gate G3 cleared against S05 Defra trade codes, now verified; S10 adds AUK chapter 8 and Table 7.6b; S09 Table 12 apples. Earlier the same day, 0.9: S38 added, OpenStreetMap roads for Northern Ireland from John's file; S37 NIR railway lines in the summary table; S34 still unreachable. Earlier, 0.8 — 25 October 2026: Stage 6 module: figures shown by the Risk Explorer checked against the raw files, §11. Earlier: Stage 6 data step: S03 theme 3 tables and S23 verified; S30–S33, S35 and S36 added and verified; S34 (OSNI roads) unreachable; S13, S15 and S17 notes updated. Earlier: pre-Stage 5 data steps S13, S15, S16, S19, S20, S29, gates G8–G11; context step S09, S10, S21) |
-| **Verification date** | 23 October 2026; S11, S12, S14 and S18 re-verified 24 October 2026; S09, S10 and S21 verified 25 October 2026; S03, S23, S30–S33, S35 and S36 verified 25 October 2026 (Stage 6 data step); S37 verified 25 October 2026; S38 verified 26 October 2026; S01 (sixteen baskets), S05 and S10 chapter 8 verified 26 October 2026 |
+| **Version** | 1.1 — 26 October 2026 (Stage 7 data step: S17 verified, Scotland's Data Zone Centroids 2022 with Census 2022 population; S15 population-weighted centroids for every LSOA; S32 2022 lookup now used; S16, S18 and S19 notes for the Scenario Lab. Earlier the same day, 1.0: the sixteen Food Origins baskets: S01 snapshot 2026-10-26 for the other eleven baskets of spec §6.1; gate G3 cleared against S05 Defra trade codes, now verified; S10 adds AUK chapter 8 and Table 7.6b; S09 Table 12 apples. Earlier the same day, 0.9: S38 added, OpenStreetMap roads for Northern Ireland from John's file; S37 NIR railway lines in the summary table; S34 still unreachable. Earlier, 0.8 — 25 October 2026: Stage 6 module: figures shown by the Risk Explorer checked against the raw files, §11. Earlier: Stage 6 data step: S03 theme 3 tables and S23 verified; S30–S33, S35 and S36 added and verified; S34 (OSNI roads) unreachable; S13, S15 and S17 notes updated. Earlier: pre-Stage 5 data steps S13, S15, S16, S19, S20, S29, gates G8–G11; context step S09, S10, S21) |
+| **Verification date** | 23 October 2026; S11, S12, S14 and S18 re-verified 24 October 2026; S09, S10 and S21 verified 25 October 2026; S03, S23, S30–S33, S35 and S36 verified 25 October 2026 (Stage 6 data step); S37 verified 25 October 2026; S38 verified 26 October 2026; S01 (sixteen baskets), S05 and S10 chapter 8 verified 26 October 2026; S15 (every centroid), S17 and S32 (2022 lookup) verified 26 October 2026 (Stage 7 data step) |
 | **Machine-readable form** | Generated into `public/data/snapshots/<date>/catalogue.json` by the pipeline from Stage 2 |
 
 ## How to read this document
@@ -42,10 +42,10 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S12 | Number of chain supermarkets across LADs and smaller areas in the UK | ONS | ✅ (LAD tables 1–4) | Validation of store counts | R1 |
 | S13 | Priority Places for Food Index (v2.1) | CDRC / Leeds HASP | ✅ (all four nations; Scotland on 2011 Data Zones; NI on SOAs 2011, three domains without data) | Access, Profiles, Risk Explorer (every council) | R1 |
 | S14 | Local Authority Districts (May 2025) Boundaries UK, BGC (display) and BFE (store assignment) | ONS | ✅ | All UK views, Profiles | R1 |
-| S15 | LSOA 2021 boundaries and population-weighted centroids (E&W); LSOA → council lookup | ONS | ✅ (boundaries for Manchester, G11; lookup for all 35,672 LSOAs, Stage 6) | Access, Profiles (Manchester), Risk Explorer | R1 |
-| S16 | Data Zones 2021 (and Super Data Zones) | NISRA | ✅ (boundaries, centroids; G9) | Access, Profiles (Belfast) | R1 |
-| S17 | Data Zones 2022 | Scottish Government / NRS | 🔴 | Access (Scotland) | R2 |
-| S18 | Mid-year population estimates (ONS UK tables, mid-2025) | ONS (with NRS and NISRA) | ✅ (council level; Census 2021 small areas for Manchester and Belfast) | All per-capita indicators | R1 |
+| S15 | LSOA 2021 boundaries and population-weighted centroids (E&W); LSOA → council lookup | ONS | ✅ (boundaries for Manchester, G11; lookup for all 35,672 LSOAs, Stage 6; centroids for all 35,672 LSOAs, Stage 7) | Access, Profiles (Manchester), Risk Explorer, Scenario Lab | R1 |
+| S16 | Data Zones 2021 (and Super Data Zones) | NISRA | ✅ (boundaries, centroids; G9) | Access, Profiles (Belfast), Scenario Lab | R1 |
+| S17 | Data Zone Centroids 2022 (population-weighted, with Census 2022 population) | Scottish Government / NRS | ✅ (centroids, 26 Oct 2026; boundaries not fetched) | Scenario Lab; Access (Scotland, R2) | R1 (centroids) |
+| S18 | Mid-year population estimates (ONS UK tables, mid-2025) | ONS (with NRS and NISRA) | ✅ (council level; Census 2021 small areas for Manchester and Belfast, then for every LSOA and Data Zone in the Scenario Lab; Scotland's Census 2022 Data Zones through S17) | All per-capita indicators | R1 |
 | S19 | Deprivation indices (IoD 2025, WIMD 2025, SIMD, NIMDM 2017) | MHCLG / Welsh Gov / Scottish Gov / NISRA | ✅ England (IoD 2025), Northern Ireland (NIMDM 2017); 🟡 Wales, Scotland | Access, Profiles, Scenario D | R1 (Eng, NI) |
 | S20 | Car or van availability (Census 2021 / Scotland's Census 2022) | ONS / NISRA / NRS | ✅ England & Wales (TS045), Northern Ireland (table builder, file from John); 🔴 Scotland | Access, Profiles | R1 (Eng, NI) |
 | S21 | Rural–urban classifications | ONS / Scottish Gov / NISRA | ✅ England & Wales (ONS 2021, councils and LSOAs); Northern Ireland 2015 class per SOA (NIMDM file); 🔴 Scotland | Profiles, Access | R1 (E&W, NI small areas) |
@@ -369,6 +369,7 @@ Indices are **relative rankings within each nation** and are not comparable acro
 - **Northern Ireland, NIMDM 2017** (NISRA, 23 Nov 2017; still the latest): `https://www.nisra.gov.uk/files/nisra/publications/NIMDM17_SOAresults.xls` (read with `xlrd`), sheet `MDM`. Columns: `LGD2014NAME`, `2015 Default Urban/Rural`, `SOA2001` (the SOA code, e.g. `95AA01S1`), `SOA2001_name`, `Multiple Deprivation Measure Rank (where 1 is most deprived)` and the seven domain ranks. 890 SOAs ranked 1–890. Most indicators relate to 2015/16 (metadata sheet). NISRA publishes ranks only. The app's deciles are derived, 89 SOAs each, and labelled as derived.
 - **SOA 2011 boundaries:** `https://www.nisra.gov.uk/files/nisra/publications/SOA2011_Esri_Shapefile_0.zip` (2 Sep 2013), EPSG:29902, fields `SOA_CODE`, `SOA_LABEL`, 890 SOAs matching NIMDM's codes. The OpenDataNI record lists them under the OGL v3.0.
 - **Belfast:** 174 SOAs have `LGD2014NAME = Belfast` (172 urban, 2 mixed urban/rural). They predate the 2015 council boundaries. Together they cover 141.3 km² against 137.7 km² for Belfast's Data Zones, and 13.3 km² differ. The profile says so and shows NIMDM on these SOAs, never reallocated (John's decision, 24 Oct 2026).
+- **Scenario Lab (Stage 7):** the closure scenario breaks results down by deprivation decile in **England only** (IoD 2025 decile on each LSOA). Wales (WIMD 2025: no direct file URL verified), Scotland (SIMD on 2011 Data Zones, not the 2022 Data Zones of S17; SIMD 2026 not confirmed) and Northern Ireland (NIMDM 2017 on SOAs 2011, not Data Zones) have no decile on the scenario's small areas; the app says so rather than borrowing another geography.
 
 ### S20 — Car or van availability ✅ England & Wales, Northern Ireland; 🔴 Scotland
 
@@ -446,6 +447,7 @@ Fetched by `fetch-reference` on GitHub Actions (run 40137753934) into `pipeline/
 | Boundaries | `Lower_layer_Super_Output_Areas_December_2021_Boundaries_EW_BGC_V5` (generalised to 20 m, clipped) | `LSOA21CD`, `LSOA21NM`, `LSOA21NMW`, `BNG_E`, `BNG_N`, `LAT`, `LONG`; EPSG:27700 | A box around Manchester (378,300–390,900 E, 382,100–405,900 N): 714 LSOAs, 8 pages of 100, count checked |
 | Population-weighted centroids | `LSOA_PopCentroids_EW_2021_V4` | `LSOA21CD`; points in EPSG:27700 | The same box: 651 points |
 
+- **Stage 7 (26 Oct 2026):** the population-weighted centroids fetched for every LSOA (`ons.lsoa21_pwc_all`, `fetch-reference --set stage7`, run 40312453094, 36 pages of 1,000 in `pipeline/raw/ons/2026-10-26/`): 35,672 points in EPSG:27700, each LSOA once, matching the count query and the lookup's LSOAs exactly. They locate the small areas of the Scenario Lab's supermarket-closure scenario (`build-scenario`).
 - **Stage 6 (25 Oct 2026):** the same lookup service fetched for every LSOA (`ons.lsoa21_lad25_all`, 36 pages of 1,000, `pipeline/raw/ons/2026-10-25/`): 35,672 LSOAs, each once, matching the count query; 318 councils, all May 2025 councils of England and Wales. Used to assign the Priority Places index to councils (best fit).
 - **Checks:** every Manchester LSOA in the lookup has a boundary and a centroid; names agree between lookup and boundaries. Two centroids lie on or 1.6 m outside their generalised boundary (BGC generalisation), recorded in `pipeline/reports/areas-qa-2026-10-24.json`.
 - **Licence and attribution:** OGL v3.0; "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025" (G5 wording).
@@ -459,11 +461,22 @@ Fetched by `fetch-reference` on GitHub Actions (run 40137753934) into `pipeline/
 - **Coverage quality:** 36 of Belfast's Data Zones have edges that do not match their neighbours exactly (overlaps totalling 0.01 m² and hairline gaps). The display build cleans them (1.1 m² moved in total) before simplifying; recorded in the QA report.
 - **Population-weighted centroids:** "Census 2021 population weighted centroids for Data Zones and Super Data Zones" (6 Oct 2023), CSV zip `https://www.nisra.gov.uk/system/files/statistics/geography-census-2021-population-weighted-centroids-csv.zip`. Member `census-2021-population-weighted-centroids-data-zone.csv`, columns `DZ2021_code`, `DZ2021_name`, `X`, `Y`. The CRS is not stated; all 3,780 centroids lie inside their own Data Zone in EPSG:29902, which confirms the Irish Grid.
 - **Transformation to WGS84:** PROJ's "Irish Grid + TM65 to WGS 84 (2)" (pyproj 3.8.0). Accuracy is about a metre, well inside the display and straight-line distance precision.
+- **Stage 7 (26 Oct 2026):** the cached centroids, boundaries (for each Data Zone's council, `LGD2014_cd`) and MS-A01 populations of all 3,780 Data Zones feed the Scenario Lab's closure scenario. Distances are measured in Irish Transverse Mercator (EPSG:2157); the centroids are converted from the Irish Grid with PROJ's "Inverse of Irish Grid + TM65 to WGS 84 (2) + Inverse of IRENET95 to WGS 84 (1) + Irish Transverse Mercator".
 - **DZ2021 ↔ SOA 2011 lookup:** NISRA publishes none (its information papers describe approximations). Not needed: John decided on 24 Oct 2026 that NIMDM 2017 is shown on its own SOAs (S19).
 
-### S17 — Scotland Data Zones 2022 🔴
+### S17 — Scotland Data Zone Centroids 2022 ✅ (centroids, 26 Oct 2026)
 
-Release 2 (national access layers). The Priority Places index uses Scotland's **2011** Data Zones (S13), so the Stage 6 council aggregation needs only the 2011 lookup (S32), not 2022 boundaries.
+**Record:** "Data Zone Centroids 2022", Scottish Government, spatialdata.gov.scot record `6755b5a3-5d99-4ca3-bd19-33d5454774ac` (https://spatialdata.gov.scot/geonetwork/srv/api/records/6755b5a3-5d99-4ca3-bd19-33d5454774ac, read 26 Oct 2026). Published 16 Dec 2024, reference date 20 March 2022 (Census Day), updates not planned. OGL. The record's attribution: "Copyright Scottish Government, contains Ordnance Survey data © Crown copyright and database right (insert year)"; the pipeline writes 2024.
+
+**What the record says about the method:** population-weighted, not geometric, centres. For 2011 and 2022 the median easting and northing of the Output Area centroids in a Data Zone gives a notional centre, and the Output Area centroid closest to it is the Data Zone centroid; the 2022 centroids are weighted by household residents (as in 2011) and were computed from data without disclosure control. The attribute table carries NRS's Census 2022 total population, household residents and household counts, all with cell-key perturbation, so sums of Data Zones "may not match published totals".
+
+**Fetched:** `fetch-reference --set stage7` on GitHub Actions (run 40312453094), the record's shapefile download `https://maps.gov.scot/ATOM/shapefiles/SG_DataZoneCent_2022.zip` (326 KB) into `pipeline/raw/scotgov/2026-10-26/`.
+
+**Verified structure:** member `SG_DataZone_Cent_2022.shp`, points in EPSG:27700; fields `dzcode`, `dzname`, `totpop2022`, `hhres2022`, `hhcnt2022`, `easting`, `northing` (the point geometry equals `easting`, `northing`). 7,392 Data Zones, codes `S01013482`–`S01020873`, each once, exactly the 7,392 of the 2022 lookup (S32). `totpop2022` holds whole numbers and sums to 5,439,565; NRS's rounded first result for Scotland is 5,436,600 (https://www.scotlandscensus.gov.uk/news-and-events/scotland-s-census-first-results/), a difference of 0.05 % consistent with the perturbation the record describes. One name differs from the lookup only by a trailing non-breaking space (`S01020747`); the lookup's names are used.
+
+**Used for:** the Scenario Lab's supermarket-closure scenario (`build-scenario`, `scenario` family): every Scottish Data Zone's point, council (from S32) and Census 2022 population. Population figures for Scotland are therefore a year later than those of England, Wales and Northern Ireland (Census 2021); the app says so wherever they are combined.
+
+**Not fetched:** 2022 Data Zone boundaries (Release 2, national access layers). The Priority Places index uses Scotland's **2011** Data Zones (S13), so the Stage 6 council aggregation needs only the 2011 lookup (S32).
 
 ### S18 — Population ✅ (council level, mid-2025)
 
@@ -482,6 +495,7 @@ Release 2 (national access layers). The Priority Places index uses Scotland's **
   - **England and Wales:** Nomis bulk download `https://www.nomisweb.co.uk/output/census/2021/census2021-ts001.zip`, member `census2021-ts001-lsoa.csv` (35,672 LSOAs), columns `date`, `geography`, `geography code`, `Residence type: Total; measures: Value`.
   - **Northern Ireland:** NISRA MS-A01 `https://www.nisra.gov.uk/system/files/statistics/census-2021-ms-a01.xlsx`, sheet `DZ` (header `Geography`, `Geography Code`, `All usual residents`; 3,780 Data Zones) and sheet `LGD` (`Geography code`).
   - **Totals:** small areas do not sum exactly to council tables because both offices perturb counts for confidentiality. Manchester's LSOAs sum to 551,919 against 551,938 in the council table; Belfast's Data Zones sum to 345,423 against 345,418. Values are used as published, with the difference reported.
+  - **Stage 7 (every small area, 26 Oct 2026):** all 35,672 LSOAs from TS001 (England sums to 56,490,056 against the published 56,490,048 in the same file's country table; Wales 3,107,545 against 3,107,494), all 3,780 Data Zones from MS-A01 (1,903,168 against the `NI` sheet's 1,903,175), and Scotland's 7,392 Data Zones from S17 (**Census 2022**, 20 March 2022; 5,439,565). Checked by `build-scenario` (tolerance 0.01 %) and recorded in `pipeline/reports/scenario-qa-2026-10-26.json`.
 
 ### S24 — Country geometries ✅
 
@@ -501,7 +515,7 @@ Release 2 (national access layers). The Priority Places index uses Scotland's **
 | File | Source | Verified structure |
 |---|---|---|
 | `dz2011-lookup.csv` | https://data.gov.scot/dataset/2011_data_zone_lookup (CSV, 3.1 MB, updated 19 Aug 2026, OGL v3.0) | Windows-1252 text; columns `DZ2011_Code`, `DZ2011_Name`, `IZ2011_Code`, …, `LA_Code`, `LA_Name`, …, `UR2_Code`–`UR8_Name`, `Country_Code`, `Country_Name`; 6,976 Data Zones, each once, in 32 councils whose codes are all May 2025 council codes. Every PPFI Scotland code is in it |
-| `dz2022-lookup.csv` | https://data.gov.scot/dataset/2022_data_zone_lookup (fetched first; not used) | 7,392 Data Zones (2022) — not the PPFI geography |
+| `dz2022-lookup.csv` | https://data.gov.scot/dataset/2022_data_zone_lookup (fetched 25 Oct 2026; used from Stage 7) | Windows-1252 text; columns `DZ22_Code`, `DZ22_Name`, `IZ22_Code`, …, `LA_Code`, `LA_Name`, …, `Country_Code`, `Country_Name`; 7,392 Data Zones (2022), each once, all `Country_Name = Scotland`, in the 32 councils (`S12…`, all May 2025 council codes). Not the PPFI geography; assigns the Scenario Lab's Scottish Data Zones (S17) to councils |
 
 ### S33 — ONS International Territorial Level 1 (January 2025) ✅ (25 Oct 2026)
 
@@ -647,6 +661,7 @@ Defra pocketbook CSV of CPIH food and non-alcoholic beverages since 2020 (S05) f
 - Level of water stress: FAO AQUASTAT, via World Bank World Development Indicators (ER.H2O.FWST.ZS), CC BY 4.0.
 - Port locations (where DfT gives none): EMODnet Human Activities, Main ports (Eurofish, Cogea), CC BY 4.0.
 - Road corridors: Contains OS data © Crown copyright and database right 2026 (OS Open Roads). Northern Ireland: © OpenStreetMap contributors (ODbL), with a link to https://www.openstreetmap.org/copyright.
+- Scotland's Data Zone centroids (Scenario Lab): Copyright Scottish Government, contains Ordnance Survey data © Crown copyright and database right 2024 (the record's own statement).
 - Railway lines (Northern Ireland): Contains public sector information licensed under the Open Government Licence v3.0. Source: Translink (NI Railways), OpenDataNI.
 - Basemap © Esri and its data providers (rendered by the SDK).
 
