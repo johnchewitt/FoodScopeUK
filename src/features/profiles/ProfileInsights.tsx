@@ -1061,11 +1061,13 @@ function National() {
                               prod.sourceId,
                               `${prod.year}${prod.provisional ? " (provisional)" : ""}`,
                               share.label,
+                              prod.scope,
                             )}
                           />
                           <span className="table-sub">
                             {prod.year}
                             {prod.provisional ? ", provisional" : ""} · {prod.sourceId}
+                            {prod.scope ? ` · ${prod.scope}` : ""}
                           </span>
                         </>
                       ) : (
@@ -1133,7 +1135,7 @@ function Consulting({ p, c }: { p: ProfileData; c: CouncilRow }) {
         <span>
           Possible lines of further analysis suggested by the figures above, linked to ConsultingWhere
           workstreams. Not a statement that {c.name} has a requirement, budget or procurement. Expanded in the
-          Consulting Insights module (build stage 7).
+          Consulting Insights module (build stage 8).
         </span>
       </p>
       {list.length === 0 ? (

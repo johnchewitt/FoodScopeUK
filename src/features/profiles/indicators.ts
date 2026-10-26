@@ -263,6 +263,7 @@ export function productionShareIndicator(
   sourceId: string,
   period: string,
   measureLabel: string,
+  defraScope?: string,
 ): Indicator<number> {
   return {
     id: `profile.national.production.${label.toLowerCase()}`,
@@ -272,8 +273,8 @@ export function productionShareIndicator(
     provenance: "official_estimate",
     sourceIds: [sourceId],
     referencePeriod: period,
-    coverage: "United Kingdom (national context)",
-    method: `${measureLabel}, as published by Defra (annual). National: not a council figure, and never combined with monthly trade.`,
+    coverage: `United Kingdom (national context)${defraScope ? `; ${defraScope}` : ""}`,
+    method: `${measureLabel}, as published by Defra (annual), with Defra's own product definition. National: not a council figure, and never combined with monthly trade.`,
     scope: "national_context",
     ...(value === null ? { missingReason: "not_published" as const } : {}),
   };

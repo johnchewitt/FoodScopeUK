@@ -19,7 +19,8 @@
       },
       "notes": [
         "Defra: trade figures relate to fresh produce where distinguishable (source HMRC). Defra's product definitions differ from the Food Origins basket, so its import figure is not the one Food Origins shows."
-      ]
+      ],
+      "scope": "Defra: fresh tomatoes; trade where distinguishable"
     },
     {
       "basket": "potatoes",
@@ -55,7 +56,8 @@
       },
       "notes": [
         "Defra revised its potato methodology in 2017 (figures from 2011). Harvested production (Table 7.10a) is larger than the supply-and-use production because it also includes stockfeed and waste. Trade includes processed potatoes in raw equivalent."
-      ]
+      ],
+      "scope": "Defra: potatoes for human consumption and seed; trade in raw equivalent, incl. processed"
     },
     {
       "basket": "strawberries",
@@ -74,7 +76,8 @@
       },
       "notes": [
         "Defra: trade figures relate to fresh produce where distinguishable (source HMRC). Defra's product definitions differ from the Food Origins basket, so its import figure is not the one Food Origins shows."
-      ]
+      ],
+      "scope": "Defra: fresh strawberries; trade where distinguishable"
     },
     {
       "basket": "apples",
@@ -92,18 +95,20 @@
         "productionShare": "Home production marketed as % of total supply"
       },
       "notes": [
-        "Defra: trade figures relate to fresh produce where distinguishable (source HMRC). Defra's product definitions differ from the Food Origins basket, so its import figure is not the one Food Origins shows."
-      ]
+        "Defra: trade figures relate to fresh produce where distinguishable (source HMRC). Defra's product definitions differ from the Food Origins basket, so its import figure is not the one Food Origins shows.",
+        "Home production marketed includes non-commercial orchards (Table 12, footnote a)."
+      ],
+      "scope": "Defra: apples; production incl. non-commercial orchards"
     },
     {
       "basket": "oranges",
       "status": "not_published",
-      "note": "Not grown commercially in the UK: Defra classes the basket's trade codes as non-indigenous (S05)."
+      "note": "Not grown commercially in the UK: Defra classes every trade code it lists under these headings as non-indigenous (S05)."
     },
     {
       "basket": "bananas",
       "status": "not_published",
-      "note": "Not grown commercially in the UK: Defra classes the basket's trade codes as non-indigenous (S05)."
+      "note": "Not grown commercially in the UK: Defra classes every trade code it lists under these headings as non-indigenous (S05)."
     },
     {
       "basket": "wheat",
@@ -141,12 +146,13 @@
       },
       "notes": [
         "Imports and exports are the sums of Defra's EU and rest-of-the-world rows. Cereal production is standardised to 14.5 % moisture (Defra note 2)."
-      ]
+      ],
+      "scope": "Defra: wheat, standardised to 14.5 % moisture"
     },
     {
       "basket": "rice",
       "status": "not_published",
-      "note": "Not grown commercially in the UK: Defra classes the basket's trade codes as non-indigenous (S05)."
+      "note": "Not grown commercially in the UK: Defra classes every trade code it lists under these headings as non-indigenous (S05)."
     },
     {
       "basket": "beef",
@@ -184,7 +190,8 @@
       },
       "notes": [
         "Thousand tonnes, dressed carcase weight equivalent: Defra converts boneless meat to bone-in weights, and its balance leaves out offal and preserved or manufactured meat (Defra note 6), so its import figure is not the one Food Origins shows. Imports and exports are the sums of Defra's EU and rest-of-the-world rows; imports include meat from live finished animals imported (note 8)."
-      ]
+      ],
+      "scope": "Defra: beef and veal, carcase weight; no offal or preserved meat"
     },
     {
       "basket": "sheep-goat",
@@ -221,8 +228,9 @@
         "productionShare": "Home-fed production as % of new supply for use in the UK"
       },
       "notes": [
-        "Defra's balance is for mutton and lamb (sheep meat) only; the Food Origins basket also includes goat meat, which the trade codes do not separate. Thousand tonnes, dressed carcase weight equivalent. Imports and exports are the sums of Defra's EU and rest-of-the-world rows. A share above 100 % means the UK produced more than it used."
-      ]
+        "Defra's balance is for mutton and lamb (sheep meat) only; the Food Origins basket also includes goat meat (HS 0204 50), which the trade codes record separately. Thousand tonnes, dressed carcase weight equivalent. Imports and exports are the sums of Defra's EU and rest-of-the-world rows. A share above 100 % means the UK produced more than it used."
+      ],
+      "scope": "Defra: mutton and lamb only (no goat meat), carcase weight"
     },
     {
       "basket": "poultry",
@@ -252,7 +260,7 @@
         ]
       },
       "labels": {
-        "production": "Home-fed production (dressed carcase weight equivalent)",
+        "production": "Production (dressed carcase weight equivalent)",
         "imports": "Imports (EU and rest of the world)",
         "exports": "Exports (EU and rest of the world)",
         "totalSupply": "Total new supply",
@@ -260,7 +268,8 @@
       },
       "notes": [
         "Thousand tonnes, dressed carcase weight equivalent. Defra's trade figures are fresh, chilled and frozen meat without offal (notes 7 and 14), and leave out the large trade in processed poultry; the Food Origins basket includes poultry offal. Poultry figures were revised on 3 September 2026 (note 30). Imports and exports are the sums of Defra's EU and rest-of-the-world rows."
-      ]
+      ],
+      "scope": "Defra: poultry meat, carcase weight; no offal or processed poultry"
     },
     {
       "basket": "milk-products",
@@ -308,17 +317,18 @@
       },
       "notes": [
         "All sugar on a refined basis; UK production comes from sugar beet, and sugar leaving the factory early in the new year counts towards the previous year (Defra note 10). Imports and exports are the sums of Defra's EU and rest-of-the-world rows."
-      ]
+      ],
+      "scope": "Defra: all sugar, refined basis"
     },
     {
       "basket": "coffee",
       "status": "not_published",
-      "note": "Not grown commercially in the UK: Defra classes the basket's trade codes as non-indigenous (S05)."
+      "note": "Not grown commercially in the UK: Defra classes every trade code it lists under these headings as non-indigenous (S05)."
     },
     {
       "basket": "cocoa",
       "status": "not_published",
-      "note": "Not grown commercially in the UK: Defra classes the basket's trade codes as non-indigenous (S05)."
+      "note": "Not grown commercially in the UK: Defra classes every trade code it lists under these headings as non-indigenous (S05)."
     }
   ]
 }

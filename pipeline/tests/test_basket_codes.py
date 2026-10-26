@@ -38,7 +38,11 @@ def test_codes_keep_their_leading_zeros() -> None:
 def test_defra_table_structure() -> None:
     codes = read_defra_codes(ODS)
     assert len(codes) == 8031
-    assert all(len(c.code9) == 9 and c.cn8 == c.code9[:8] for c in codes)
+    by = {c.code9: c for c in codes}
+    # Read from known rows of the file, not from the reader's own construction.
+    assert by["010110100"].description == "Live horses:pure bred breeding animals"
+    assert by["070200000"].hs4[0] == "0702" and by["070200000"].division[0] == "05"
+    assert by["121160000"].description.startswith("Bark of african cherry")  # stored as a number in the file
 
 
 def test_every_basket_is_one_sitc_division(report) -> None:
@@ -72,6 +76,14 @@ def test_non_indigenous_baskets_back_the_apps_statement(report) -> None:
         assert set(report[b]["defra"]["indigeneity"]) == {"Non-indigenous"}, b
     for b in ("beef", "sheep-goat", "poultry", "milk-products", "cheese", "sugar", "potatoes", "strawberries"):
         assert set(report[b]["defra"]["indigeneity"]) == {"Indigenous"}, b
+
+
+def test_defra_codes_hmrc_no_longer_lists(report) -> None:
+    # The reverse direction: e.g. poultry has 243 Defra rows (many pre-2019 codes), HMRC lists 155 CN8 codes.
+    gone = report["poultry"]["defraCodesNotListedByHmrc"]
+    assert gone and all(c.startswith("0207") for c in gone)
+    assert report["strawberries"]["defraCodesNotListedByHmrc"] == [] or all(
+        c.startswith("081010") for c in report["strawberries"]["defraCodesNotListedByHmrc"])
 
 
 def test_new_hmrc_codes_postdate_defras_table(report) -> None:

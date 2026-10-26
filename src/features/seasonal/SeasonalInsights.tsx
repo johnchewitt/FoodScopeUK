@@ -256,9 +256,8 @@ function DataHandling({ model }: { model: SeasonalModel }) {
           is on the other side.
         </li>
         <li>
-          <strong>UK seasonal production</strong> is not shown: Defra publishes production of these
-          commodities once a year, not monthly; the annual figures are national context in Local Authority
-          Profiles. {DOMESTIC_PRODUCTION_RULE}
+          <strong>UK seasonal production</strong> is not shown. {model.domestic.detail}{" "}
+          {DOMESTIC_PRODUCTION_RULE}
         </li>
       </ul>
       <details className="data-details">

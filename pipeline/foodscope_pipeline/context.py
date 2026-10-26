@@ -279,6 +279,7 @@ def _commodity(spec: dict, folders: list[tuple[Path, dict]], qa: dict, used: dic
         ],
         "shareSeries": [{"year": y, "value": round(v, 2)} for y, v in series[-SERIES_YEARS:]],
         "notes": spec.get("notes", []),
+        **({"scope": spec["scope"]} if spec.get("scope") else {}),
     }
 
 
@@ -414,8 +415,9 @@ def build_context(snapshot: str, inputs: ContextInputs, out_root: Path, reports_
             "sourceIds": sorted({c["sourceId"] for c in commodities if c["status"] == "published"}),
             "referencePeriod": ", ".join(f"{c['basket']} {c['year']}{' (provisional)' if c['provisional'] else ''}"
                                          for c in commodities if c["status"] == "published"),
-            "coverage": (f"United Kingdom; {', '.join(published)}"
-                         + (f" (no Defra supply balance used: {', '.join(unpublished)})" if unpublished else "")),
+            "coverage": (f"United Kingdom; Defra supply balances, each with Defra's own definition (its scope), for: "
+                         f"{', '.join(published)}"
+                         + (f". None used for: {', '.join(unpublished)}" if unpublished else "")),
             "provenance": "official_estimate", "licence": OGL,
             "attribution": DEFRA_SOURCE,
             "expectedCadence": "annual",

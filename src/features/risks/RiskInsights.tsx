@@ -325,12 +325,18 @@ function SupplyInsights() {
                 provenance: "official_estimate",
                 sourceIds: [production.sourceId],
                 referencePeriod: String(production.year),
-                coverage: "United Kingdom",
+                coverage: `United Kingdom${production.scope ? `; ${production.scope}` : ""}`,
                 method: `${production.table}: ${production.measures.find((m) => m.key === "productionShare")?.label ?? "production share"}, as published.`,
                 scope: "national_context",
               }}
             />
           </dl>
+        )}
+        {production?.status === "published" && (
+          <p className="control-hint">
+            {production.scope ? `${production.scope}. ` : ""}
+            {production.notes.join(" ")}
+          </p>
         )}
       </Section>
 

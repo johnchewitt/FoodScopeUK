@@ -83,7 +83,7 @@ export function TopBar() {
         <PlannedTool
           icon={<Download size={17} aria-hidden="true" />}
           label="Export"
-          plannedFor="profile PDF export arrives in build stage 7"
+          plannedFor="profile PDF export arrives in build stage 8"
         />
         <span className="tool-sep hide-compact" aria-hidden="true" />
         <button

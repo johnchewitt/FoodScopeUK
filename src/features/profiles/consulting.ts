@@ -117,8 +117,8 @@ export function opportunities(x: ConsultingInputs): Opportunity[] {
           ", ",
         )} — the largest recorded import partner has half or more of UK imports over 12 months. The same for every council.`,
       analysis:
-        "Which recorded import partners and routes the UK relies on for these foods, and what a disruption would mean nationally (Scenario Lab, Stage 6).",
-      data: "Port-level trade and route data; Defra food security indicators.",
+        "Which recorded import partners and ports of entry the UK relies on for these foods, and what a disruption would mean nationally (Scenario Lab, Stage 7).",
+      data: "Port-level trade data; Defra food security indicators.",
       scope: "national_context",
     });
   return out;

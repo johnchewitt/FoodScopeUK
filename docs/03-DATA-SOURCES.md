@@ -118,7 +118,7 @@ The eleven baskets added on 26 Oct 2026 (snapshot 2026-10-26; each basket file l
 | Oranges (fruit and vegetables) | 0805 10 — fresh or dried | 8 (4) |
 | Rice (cereals) | 1006 — in the husk, husked, milled, broken | 45 (37) |
 | Beef and veal (meat) | 0201, 0202 — fresh, chilled or frozen; no offal | 14 (14) |
-| Sheep and goat meat (meat) | 0204 — fresh, chilled or frozen; HS does not separate lamb, mutton and goat | 27 (26) |
+| Sheep and goat meat (meat) | 0204 — lamb and mutton (0204 10–43) and goat meat (0204 50, 12 codes), fresh, chilled or frozen; most cuts do not separate lamb from mutton | 27 (26) |
 | Poultry meat (meat) | 0207 — meat and edible offal, fresh, chilled or frozen | 155 (107) |
 | Milk products, not cheese (dairy) | 0401–0405 — milk, cream, powders, yoghurt, buttermilk, whey, butter | 136 (119) |
 | Cheese (dairy) | 0406 — cheese and curd | 57 (42) |
@@ -226,7 +226,7 @@ Annual official statistics; 2025 edition published 11 December 2025. The next di
 
 `Defra-trade-codes-and-descriptions-15nov22.ods`, linked from the "Food statistics in your pocket" page (last updated 29 July 2026) beside the HTML guide "A guide to Defra trade codes and classifications"; `https://assets.publishing.service.gov.uk/media/6373bde8e90e07284de6da0c/…`, 993,349 bytes, OGL v3.0. Fetched by `fetch-reference --set trade` (Actions run 40296749254) into `pipeline/raw/defra/2026-10-26/`.
 
-- **Structure:** one sheet, `CN_CODES_MASTER_TABLE`, 8,031 rows, 32 columns. Used: `Com Code` (nine digits: the CN8 code and a one-digit suffix; 124 codes stored as numbers, which drops leading zeros, restored by the reader), `Com Description`, `DIV Code` and `DIV Description` (SITC division), `HS4 code`, `HS4 Description`, `Indig Description` (`Indigenous`, `Non-indigenous`, `Not entered`), `DOP Description` (degree of processing), `Brigade1`–`Brigade3` (Defra's classification, level 3 most detailed). Also present, not used: `FFD`, `FFD DESC`, `AUK DESC`, `FFD +`, `Introduced`, geographical-indication and products-of-animal-origin columns.
+- **Structure:** one sheet, `CN_CODES_MASTER_TABLE`, 8,031 rows, 32 columns. Used: `Com Code` (nine digits: the CN8 code and a one-digit suffix; 124 codes are stored as numbers rather than text, none starting with a zero in this edition; the reader turns them into nine-digit strings), `Com Description`, `DIV Code` and `DIV Description` (SITC division), `HS4 code`, `HS4 Description`, `Indig Description` (`Indigenous`, `Non-indigenous`, `Not entered`), `DOP Description` (degree of processing), `Brigade1`–`Brigade3` (Defra's classification, level 3 most detailed). Also present, not used: `FFD`, `FFD DESC`, `AUK DESC`, `FFD +`, `Introduced`, geographical-indication and products-of-animal-origin columns.
 - **Indigeneity:** the guide defines it as whether a product "can be grown in the UK on a commercially viable level", allocated by Defra's Food and Trade Statistics team. The app cites it for the baskets with no UK production (oranges, rice, coffee, cocoa, bananas).
 - **Limits:** dated 15 Nov 2022, so codes introduced from 2023 are absent (tested). Groups are Defra's analytical groupings, not statistics; the basket definitions follow HMRC's HS headings and state where Defra's groups differ.
 

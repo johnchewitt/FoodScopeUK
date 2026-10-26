@@ -53,6 +53,17 @@
           "firstMonth": "2025-01"
         }
       ],
+      "defraCodesNotListedByHmrc": [
+        "07020015",
+        "07020020",
+        "07020025",
+        "07020030",
+        "07020035",
+        "07020040",
+        "07020045",
+        "07020050",
+        "07020090"
+      ],
       "differences": []
     },
     {
@@ -129,6 +140,10 @@
         }
       },
       "hmrcCodesWithImportsNotInDefra": [],
+      "defraCodesNotListedByHmrc": [
+        "07019051",
+        "07019059"
+      ],
       "differences": [
         "Defra's group 'Starch' (potatoes) also includes HS 1108 (Starches and inulin), which the basket leaves out.",
         "Defra's group 'Starch' (potatoes) also includes HS 1903 (Tapioca and substitutes prepared from starch in flakes, grains, etc), which the basket leaves out."
@@ -170,6 +185,12 @@
         }
       },
       "hmrcCodesWithImportsNotInDefra": [],
+      "defraCodesNotListedByHmrc": [
+        "08101005",
+        "08101010",
+        "08101080",
+        "08101090"
+      ],
       "differences": []
     },
     {
@@ -236,6 +257,29 @@
         }
       },
       "hmrcCodesWithImportsNotInDefra": [],
+      "defraCodesNotListedByHmrc": [
+        "08081031",
+        "08081033",
+        "08081039",
+        "08081051",
+        "08081053",
+        "08081059",
+        "08081061",
+        "08081063",
+        "08081069",
+        "08081071",
+        "08081073",
+        "08081079",
+        "08081081",
+        "08081083",
+        "08081089",
+        "08081091",
+        "08081092",
+        "08081093",
+        "08081094",
+        "08081098",
+        "08081099"
+      ],
       "differences": []
     },
     {
@@ -274,6 +318,43 @@
         }
       },
       "hmrcCodesWithImportsNotInDefra": [],
+      "defraCodesNotListedByHmrc": [
+        "08051001",
+        "08051005",
+        "08051009",
+        "08051011",
+        "08051015",
+        "08051019",
+        "08051021",
+        "08051025",
+        "08051029",
+        "08051031",
+        "08051032",
+        "08051033",
+        "08051034",
+        "08051035",
+        "08051036",
+        "08051037",
+        "08051038",
+        "08051039",
+        "08051041",
+        "08051042",
+        "08051044",
+        "08051045",
+        "08051046",
+        "08051049",
+        "08051051",
+        "08051055",
+        "08051059",
+        "08051061",
+        "08051065",
+        "08051069",
+        "08051070",
+        "08051082",
+        "08051084",
+        "08051086",
+        "08051090"
+      ],
       "differences": []
     },
     {
@@ -331,6 +412,9 @@
           "description": "Bananas, fresh (excl. plantains and Pl tano de Canarias)",
           "firstMonth": "2024-01"
         }
+      ],
+      "defraCodesNotListedByHmrc": [
+        "08030010"
       ],
       "differences": []
     },
@@ -416,6 +500,10 @@
         }
       },
       "hmrcCodesWithImportsNotInDefra": [],
+      "defraCodesNotListedByHmrc": [
+        "10011010",
+        "10011090"
+      ],
       "differences": []
     },
     {
@@ -566,6 +654,15 @@
           "firstMonth": "2023-01"
         }
       ],
+      "defraCodesNotListedByHmrc": [
+        "10061091",
+        "10061099",
+        "10062010",
+        "10062090",
+        "10063011",
+        "10063019",
+        "10063091"
+      ],
       "differences": []
     },
     {
@@ -604,6 +701,18 @@
         }
       },
       "hmrcCodesWithImportsNotInDefra": [],
+      "defraCodesNotListedByHmrc": [
+        "02011010",
+        "02011090",
+        "02012011",
+        "02012019",
+        "02012021",
+        "02012029",
+        "02012031",
+        "02012039",
+        "02012051",
+        "02012059"
+      ],
       "differences": []
     },
     {
@@ -667,6 +776,9 @@
         }
       },
       "hmrcCodesWithImportsNotInDefra": [],
+      "defraCodesNotListedByHmrc": [
+        "02044300"
+      ],
       "differences": [
         "Defra's group 'Edible offal and other meat' (meat and edible offal) also includes HS 0205 (Meat of horses, asses, mules or hinnies, fresh, chilled or frozen), which the basket leaves out.",
         "Defra's group 'Edible offal and other meat' (meat and edible offal) also includes HS 0206 (Edible offal of bovine, swine, sheep, goat, horse etc. fresh, chilled or frozen), which the basket leaves out.",
@@ -718,6 +830,96 @@
         }
       },
       "hmrcCodesWithImportsNotInDefra": [],
+      "defraCodesNotListedByHmrc": [
+        "02071011",
+        "02071015",
+        "02071019",
+        "02071031",
+        "02071039",
+        "02071051",
+        "02071055",
+        "02071059",
+        "02071071",
+        "02071079",
+        "02071090",
+        "02072110",
+        "02072190",
+        "02072210",
+        "02072290",
+        "02072311",
+        "02072319",
+        "02072351",
+        "02072359",
+        "02072390",
+        "02073100",
+        "02073110",
+        "02073190",
+        "02073911",
+        "02073913",
+        "02073915",
+        "02073917",
+        "02073921",
+        "02073923",
+        "02073925",
+        "02073927",
+        "02073931",
+        "02073933",
+        "02073935",
+        "02073937",
+        "02073941",
+        "02073943",
+        "02073945",
+        "02073947",
+        "02073951",
+        "02073953",
+        "02073955",
+        "02073957",
+        "02073961",
+        "02073963",
+        "02073965",
+        "02073967",
+        "02073971",
+        "02073973",
+        "02073975",
+        "02073977",
+        "02073981",
+        "02073983",
+        "02073985",
+        "02073990",
+        "02074110",
+        "02074111",
+        "02074121",
+        "02074131",
+        "02074141",
+        "02074151",
+        "02074171",
+        "02074190",
+        "02074210",
+        "02074211",
+        "02074221",
+        "02074231",
+        "02074241",
+        "02074251",
+        "02074259",
+        "02074271",
+        "02074290",
+        "02074311",
+        "02074315",
+        "02074321",
+        "02074323",
+        "02074325",
+        "02074331",
+        "02074341",
+        "02074351",
+        "02074353",
+        "02074361",
+        "02074363",
+        "02074371",
+        "02074381",
+        "02074390",
+        "02075010",
+        "02075090"
+      ],
       "differences": []
     },
     {
@@ -820,6 +1022,40 @@
         }
       },
       "hmrcCodesWithImportsNotInDefra": [],
+      "defraCodesNotListedByHmrc": [
+        "04031002",
+        "04031004",
+        "04031006",
+        "04031012",
+        "04031014",
+        "04031016",
+        "04031022",
+        "04031024",
+        "04031026",
+        "04031032",
+        "04031034",
+        "04031036",
+        "04041011",
+        "04041019",
+        "04041091",
+        "04041099",
+        "04049011",
+        "04049013",
+        "04049019",
+        "04049031",
+        "04049033",
+        "04049039",
+        "04049051",
+        "04049053",
+        "04049059",
+        "04049091",
+        "04049093",
+        "04049099",
+        "04050010",
+        "04050011",
+        "04050019",
+        "04050090"
+      ],
       "differences": []
     },
     {
@@ -858,6 +1094,23 @@
         }
       },
       "hmrcCodesWithImportsNotInDefra": [],
+      "defraCodesNotListedByHmrc": [
+        "04061010",
+        "04061090",
+        "04064000",
+        "04069007",
+        "04069008",
+        "04069009",
+        "04069011",
+        "04069012",
+        "04069014",
+        "04069016",
+        "04069071",
+        "04069077",
+        "04069083",
+        "04069091",
+        "04069097"
+      ],
       "differences": []
     },
     {
@@ -941,6 +1194,7 @@
         }
       },
       "hmrcCodesWithImportsNotInDefra": [],
+      "defraCodesNotListedByHmrc": [],
       "differences": []
     },
     {
@@ -987,6 +1241,10 @@
         }
       },
       "hmrcCodesWithImportsNotInDefra": [],
+      "defraCodesNotListedByHmrc": [
+        "09013000",
+        "09014000"
+      ],
       "differences": [
         "Defra's group 'Coffee' (coffee) also includes HS 2101 (Extracts, essences and concentrates, of coffee, tea or mat‚ and preparations with a basis of these products or with a basis of coffee, tea or mat‚/ roasted chicory and other roasted coffee substitutes, and extracts, essen), which the basket leaves out."
       ]
@@ -1039,6 +1297,7 @@
         }
       },
       "hmrcCodesWithImportsNotInDefra": [],
+      "defraCodesNotListedByHmrc": [],
       "differences": [
         "Defra's group 'Cocoa' (cocoa) also includes HS 1802 (Cocoa shells, husks, skins and other cocoa waste), which the basket leaves out.",
         "Defra's group 'Cocoa' (cocoa) also includes HS 1806 (Chocolate and other food preparations containing cocoa), which the basket leaves out."

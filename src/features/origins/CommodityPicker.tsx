@@ -5,7 +5,7 @@ import { Notice } from "@/components/states/Notice";
 import { useAppStore } from "@/state/store";
 import type { TradeIndex } from "@/types/generated/trade-index";
 import { CommodityIcon } from "./CommodityIcon";
-import { commoditySections, filterSections } from "./commodityGroups";
+import { bestMatch, commoditySections, filterSections, normaliseQuery } from "./commodityGroups";
 import { resolveCommodity } from "./useOrigins";
 
 /** From this many baskets, the picker offers a search box and compact, grouped columns (B11). */
@@ -15,7 +15,7 @@ export const COMMODITY_SEARCH_FROM = 8;
  * Commodity selector (FO-01): one radio group with icons and HS scope; arrow keys, Home and End
  * move the selection through the options shown. With many baskets the options are grouped (the
  * snapshot's groups: SITC divisions as Defra uses them) and a search box filters them by name,
- * group, definition or commodity code; Enter picks the first match, Escape clears the search.
+ * group, what it includes or commodity code; Enter picks the best match (a name first), Escape clears.
  * Shared by Food Origins, Seasonal Supply and the Risk Explorer (the commodity is shared state).
  */
 export function CommodityPicker({
@@ -36,8 +36,8 @@ export function CommodityPicker({
   const sections = useMemo(() => commoditySections(index), [index]);
   const visible = useMemo(() => (many ? filterSections(sections, query) : sections), [many, sections, query]);
   const ids = visible.flatMap((s) => s.items.map((c) => c.id));
-  // Roving focus: the selected option, or the first one shown when the search hides it.
-  const tabStop = active && ids.includes(active.id) ? active.id : ids[0];
+  // Roving focus: the selected option, or the best match shown when the search hides it.
+  const tabStop = active && ids.includes(active.id) ? active.id : (bestMatch(visible, query) ?? ids[0]);
   const activeHidden = Boolean(active && !ids.includes(active.id));
 
   // Ids match ^[a-z][a-z0-9-]*$ (URL pattern), so they need no escaping in a selector.
@@ -59,9 +59,13 @@ export function CommodityPicker({
   };
 
   const onSearchKey = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && ids.length > 0) {
-      e.preventDefault();
-      setCommodity(ids[0]!);
+    if (e.key === "Enter") {
+      // Only a search picks: Enter in an empty box changes nothing.
+      const best = bestMatch(visible, query);
+      if (best) {
+        e.preventDefault();
+        setCommodity(best);
+      }
     } else if (e.key === "Escape" && query !== "") {
       e.preventDefault();
       setQuery("");
@@ -97,11 +101,14 @@ export function CommodityPicker({
           />
         </label>
       )}
-      {many && query.trim() !== "" && (
+      {many && (
+        // Always mounted, so screen readers hear the first change as well as later ones.
         <p className="visually-hidden" aria-live="polite">
-          {ids.length === 0
-            ? "No commodity matches."
-            : `${ids.length} of ${index.commodities.length} commodities shown.`}
+          {normaliseQuery(query) === ""
+            ? ""
+            : ids.length === 0
+              ? "No commodity matches."
+              : `${ids.length} of ${index.commodities.length} commodities shown.`}
         </p>
       )}
       <div

@@ -5,14 +5,14 @@
   "path": "snapshots/2026-10-26/context/uk-production.json",
   "format": "json",
   "schemaId": "uk-production",
-  "sha256": "65a33afde4be6a7b83d3bcb1b9995c0cc14e3f247b08ece32e3c736b9e17175a",
-  "bytes": 12828,
+  "sha256": "3cbbdb5af3d21465180297edbd4460527d9a0dc50cd5ea973eaaa0aaffe61629",
+  "bytes": 13638,
   "sourceIds": [
     "S09",
     "S10"
   ],
   "referencePeriod": "tomatoes 2025, potatoes 2025 (provisional), strawberries 2025, apples 2025, wheat 2025 (provisional), beef 2025, sheep-goat 2025, poultry 2025, sugar 2025 (provisional)",
-  "coverage": "United Kingdom; tomatoes, potatoes, strawberries, apples, wheat, beef and veal, sheep and goat meat, poultry meat, sugar (no Defra supply balance used: oranges, bananas, rice, milk products (not cheese), cheese, coffee, cocoa)",
+  "coverage": "United Kingdom; Defra supply balances, each with Defra's own definition (its scope), for: tomatoes, potatoes, strawberries, apples, wheat, beef and veal, sheep and goat meat, poultry meat, sugar. None used for: oranges, bananas, rice, milk products (not cheese), cheese, coffee, cocoa",
   "provenance": "official_estimate",
   "licence": "Open Government Licence v3.0",
   "attribution": "Source: Department for Environment, Food & Rural Affairs, licensed under the Open Government Licence v3.0",

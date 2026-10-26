@@ -127,7 +127,7 @@
       "id": "sheep-goat",
       "label": "Sheep and goat meat",
       "group": "meat",
-      "definition": "Meat of sheep or goats, fresh, chilled or frozen (HS 0204). The trade codes do not separate lamb from mutton or goat meat. Excludes offal and processed meat.",
+      "definition": "Lamb and mutton (HS 0204 10–0204 43) and goat meat (HS 0204 50), fresh, chilled or frozen. Apart from lamb carcases and some frozen lamb, the codes record sheep meat without separating lamb from mutton. Excludes offal and processed meat.",
       "hsScope": "HS 0204",
       "hs4": [
         "0204"

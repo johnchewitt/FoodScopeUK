@@ -22,6 +22,7 @@ import hashlib
 import io
 import json
 import logging
+import re
 import time
 import urllib.error
 import urllib.parse
@@ -346,8 +347,10 @@ class RawCache:
         return json.loads(self.body(name))
 
     def pages(self, prefix: str) -> list[dict[str, Any]]:
-        """All pages stored under `<prefix>-pNNN`, in order."""
-        names = sorted(n for n in self.entries if n.startswith(prefix + "-p"))
+        """All pages stored under exactly `<prefix>-pNNN`, in order (never another basket's: a basket id
+        may be a hyphen-prefix of another, e.g. `milk` and `milk-products`)."""
+        pattern = re.compile(rf"^{re.escape(prefix)}-p\d{{3}}$")
+        names = sorted(n for n in self.entries if pattern.match(n))
         if not names:
             raise HmrcError(f"no cached pages for {prefix}")
         return [self.json(n) for n in names]
@@ -359,7 +362,8 @@ class RawCache:
         """The cached queries for `prefix`: `[prefix]` for one query, else its `<prefix>-cNN` parts."""
         if f"{prefix}-p001" in self.entries:
             return [prefix]
-        parts = sorted({n.rsplit("-p", 1)[0] for n in self.entries if n.startswith(prefix + "-c")})
+        pattern = re.compile(rf"^({re.escape(prefix)}-c\d{{2}})-p\d{{3}}$")
+        parts = sorted({m.group(1) for n in self.entries if (m := pattern.match(n))})
         if not parts:
             raise HmrcError(f"no cached pages for {prefix}")
         return parts
@@ -455,6 +459,9 @@ def ingest(snapshot_id: str, raw_root: Path, baskets: Sequence[Basket], client: 
            now: Callable[[], str] = utc_now) -> RawCache:
     """Online step: fetch everything `build-trade` needs into the raw cache."""
     client = client or HmrcClient()
+    if (raw_root / snapshot_id / "index.json").exists():
+        # A rerun into a cached snapshot would mix old and new parts; snapshots are written once.
+        raise HmrcError(f"{raw_root / snapshot_id} already holds a cached snapshot; use a new snapshot id")
     cache = RawCache(raw_root / snapshot_id)
     started = now()
 

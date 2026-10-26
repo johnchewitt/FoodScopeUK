@@ -61,6 +61,10 @@ export interface UkProduction {
           value: number;
         }[];
         notes: string[];
+        /**
+         * What Defra's balance covers, in a few words (e.g. 'Defra: mutton and lamb only (no goat meat), carcase weight'), for display beside the figure.
+         */
+        scope?: string;
       }
   )[];
 }
