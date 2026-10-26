@@ -1,0 +1,264 @@
+{
+  "snapshotId": "2026-10-26",
+  "gate": "G1",
+  "description": "HMRC $apply groupby/aggregate totals compared with sums of unaggregated /OTS rows for the same month, keyed by country \u00d7 flow \u00d7 CN8 \u00d7 suppression index.",
+  "checks": [
+    {
+      "basket": "tomatoes",
+      "month": "2025-01",
+      "rawRows": 117,
+      "aggregateGroups": 37,
+      "netMassKg": {
+        "aggregate": 33060038,
+        "raw": 33060038
+      },
+      "valueGbp": {
+        "aggregate": 57382707,
+        "raw": 57382707
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "potatoes",
+      "month": "2025-03",
+      "rawRows": 64,
+      "aggregateGroups": 24,
+      "netMassKg": {
+        "aggregate": 12151055,
+        "raw": 12151055
+      },
+      "valueGbp": {
+        "aggregate": 6766500,
+        "raw": 6766500
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "strawberries",
+      "month": "2024-06",
+      "rawRows": 21,
+      "aggregateGroups": 10,
+      "netMassKg": {
+        "aggregate": 783958,
+        "raw": 783958
+      },
+      "valueGbp": {
+        "aggregate": 3750393,
+        "raw": 3750393
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "apples",
+      "month": "2024-10",
+      "rawRows": 60,
+      "aggregateGroups": 25,
+      "netMassKg": {
+        "aggregate": 20773765,
+        "raw": 20773765
+      },
+      "valueGbp": {
+        "aggregate": 21215227,
+        "raw": 21215227
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "oranges",
+      "month": "2023-12",
+      "rawRows": 83,
+      "aggregateGroups": 41,
+      "netMassKg": {
+        "aggregate": 15892184,
+        "raw": 15892184
+      },
+      "valueGbp": {
+        "aggregate": 14601156,
+        "raw": 14601156
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "bananas",
+      "month": "2024-07",
+      "rawRows": 72,
+      "aggregateGroups": 49,
+      "netMassKg": {
+        "aggregate": 86847066,
+        "raw": 86847066
+      },
+      "valueGbp": {
+        "aggregate": 55199501,
+        "raw": 55199501
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "wheat",
+      "month": "2023-11",
+      "rawRows": 36,
+      "aggregateGroups": 21,
+      "netMassKg": {
+        "aggregate": 172816930,
+        "raw": 172816930
+      },
+      "valueGbp": {
+        "aggregate": 43804216,
+        "raw": 43804216
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "rice",
+      "month": "2022-02",
+      "rawRows": 314,
+      "aggregateGroups": 154,
+      "netMassKg": {
+        "aggregate": 70894500,
+        "raw": 70894500
+      },
+      "valueGbp": {
+        "aggregate": 40457187,
+        "raw": 40457187
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "beef",
+      "month": "2021-05",
+      "rawRows": 88,
+      "aggregateGroups": 76,
+      "netMassKg": {
+        "aggregate": 17404950,
+        "raw": 17404950
+      },
+      "valueGbp": {
+        "aggregate": 75182087,
+        "raw": 75182087
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "sheep-goat",
+      "month": "2020-04",
+      "rawRows": 100,
+      "aggregateGroups": 68,
+      "netMassKg": {
+        "aggregate": 8259460,
+        "raw": 8259460
+      },
+      "valueGbp": {
+        "aggregate": 46103105,
+        "raw": 46103105
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "poultry",
+      "month": "2019-09",
+      "rawRows": 300,
+      "aggregateGroups": 300,
+      "netMassKg": {
+        "aggregate": 35363606,
+        "raw": 35363606
+      },
+      "valueGbp": {
+        "aggregate": 94346233,
+        "raw": 94346233
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "milk-products",
+      "month": "2023-06",
+      "rawRows": 709,
+      "aggregateGroups": 364,
+      "netMassKg": {
+        "aggregate": 68615842,
+        "raw": 68615842
+      },
+      "valueGbp": {
+        "aggregate": 101475827,
+        "raw": 101475827
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "cheese",
+      "month": "2022-12",
+      "rawRows": 801,
+      "aggregateGroups": 300,
+      "netMassKg": {
+        "aggregate": 41664217,
+        "raw": 41664217
+      },
+      "valueGbp": {
+        "aggregate": 170569030,
+        "raw": 170569030
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "sugar",
+      "month": "2021-08",
+      "rawRows": 98,
+      "aggregateGroups": 89,
+      "netMassKg": {
+        "aggregate": 55686075,
+        "raw": 55686075
+      },
+      "valueGbp": {
+        "aggregate": 19532989,
+        "raw": 19532989
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "coffee",
+      "month": "2020-11",
+      "rawRows": 179,
+      "aggregateGroups": 128,
+      "netMassKg": {
+        "aggregate": 15100154,
+        "raw": 15100154
+      },
+      "valueGbp": {
+        "aggregate": 65834471,
+        "raw": 65834471
+      },
+      "mismatches": [],
+      "match": true
+    },
+    {
+      "basket": "cocoa",
+      "month": "2026-02",
+      "rawRows": 135,
+      "aggregateGroups": 68,
+      "netMassKg": {
+        "aggregate": 17646050,
+        "raw": 17646050
+      },
+      "valueGbp": {
+        "aggregate": 127192170,
+        "raw": 127192170
+      },
+      "mismatches": [],
+      "match": true
+    }
+  ],
+  "allMatch": true
+}

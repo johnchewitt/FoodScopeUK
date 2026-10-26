@@ -1,0 +1,26 @@
+{
+  "id": "trade.milk-products",
+  "title": "Recorded UK imports: milk products (not cheese) (HS 0401\u20130405)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-26/trade/milk-products.json",
+  "format": "json",
+  "schemaId": "trade-snapshot",
+  "sha256": "e8cf656c48870131f8da3580b788da91d7f85acab69e2bd7136bb0d0be0fa475",
+  "bytes": 125386,
+  "sourceIds": [
+    "S01",
+    "S24"
+  ],
+  "referencePeriod": "Jan 2019 \u2013 Aug 2026 (monthly)",
+  "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+  "expectedCadence": "monthly",
+  "retrieval": {
+    "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+    "source": "14 queries over consecutive runs of the basket's CN8 codes (URL length), first: https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%204011010%20or%20CommodityId%20eq%204011090%20or%20CommodityId%20eq%204012011%20or%20CommodityId%20eq%204012019%20or%20CommodityId%20eq%204012091%20or%20CommodityId%20eq%204012099%20or%20CommodityId%20eq%204013011%20or%20CommodityId%20eq%204013019%20or%20CommodityId%20eq%204013031%20or%20CommodityId%20eq%204013039))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+    "retrievedAt": "2026-10-26T09:12:26Z",
+    "notes": "CN8 codes: 04011010, 04011090, 04012011, 04012019, 04012091, 04012099, 04013011, 04013019, 04013031, 04013039, 04013091, 04013099, 04014010, 04014090, 04015011, 04015019, 04015031, 04015039, 04015091, 04015099, 04021011, 04021019, 04021091, 04021099, 04022111, 04022117, 04022118, 04022119, 04022191, 04022199, 04022911, 04022915, 04022919, 04022991, 04022999, 04029110, 04029111, 04029119, 04029130, 04029131, 04029139, 04029151, 04029159, 04029191, 04029199, 04029910, 04029911, 04029919, 04029931, 04029939, 04029991, 04029999, 04031011, 04031013, 04031019, 04031031, 04031033, 04031039, 04031051, 04031053, 04031059, 04031091, 04031093, 04031099, 04032011, 04032013, 04032019, 04032031, 04032033, 04032039, 04032041, 04032049, 04032051, 04032053, 04032059, 04032091, 04032093, 04032099, 04039011, 04039013, 04039019, 04039031, 04039033, 04039039, 04039051, 04039053, 04039059, 04039061, 04039063, 04039069, 04039071, 04039073, 04039079, 04039091, 04039093, 04039099, 04041002, 04041004, 04041006, 04041012, 04041014, 04041016, 04041026, 04041028, 04041032, 04041034, 04041036, 04041038, 04041048, 04041052, 04041054, 04041056, 04041058, 04041062, 04041072, 04041074, 04041076, 04041078, 04041082, 04041084, 04049021, 04049023, 04049029, 04049081, 04049083, 04049089, 04051011, 04051019, 04051030, 04051050, 04051090, 04052010, 04052030, 04052090, 04059010, 04059090. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of dispatch recorded by HMRC. Suppressed trade kept separately. Latest month confirmed by probing the following month. Months from provisionalFrom are within HMRC's 18-month revision window (estimated from publication lag)."
+  }
+}

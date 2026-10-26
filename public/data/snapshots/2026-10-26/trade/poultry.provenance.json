@@ -1,0 +1,26 @@
+{
+  "id": "trade.poultry",
+  "title": "Recorded UK imports: poultry meat (HS 0207)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-26/trade/poultry.json",
+  "format": "json",
+  "schemaId": "trade-snapshot",
+  "sha256": "7789fca408a0058578e1a814e59a3e6c63cadc863186edae5b658a330e3a9715",
+  "bytes": 102929,
+  "sourceIds": [
+    "S01",
+    "S24"
+  ],
+  "referencePeriod": "Jan 2019 \u2013 Aug 2026 (monthly)",
+  "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+  "expectedCadence": "monthly",
+  "retrieval": {
+    "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+    "source": "16 queries over consecutive runs of the basket's CN8 codes (URL length), first: https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%202071110%20or%20CommodityId%20eq%202071130%20or%20CommodityId%20eq%202071190%20or%20CommodityId%20eq%202071210%20or%20CommodityId%20eq%202071290%20or%20CommodityId%20eq%202071310%20or%20CommodityId%20eq%202071320%20or%20CommodityId%20eq%202071330%20or%20CommodityId%20eq%202071340%20or%20CommodityId%20eq%202071350))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+    "retrievedAt": "2026-10-26T09:11:47Z",
+    "notes": "CN8 codes: 02071110, 02071130, 02071190, 02071210, 02071290, 02071310, 02071320, 02071330, 02071340, 02071350, 02071360, 02071370, 02071391, 02071399, 02071410, 02071420, 02071430, 02071440, 02071450, 02071460, 02071470, 02071491, 02071499, 02072410, 02072490, 02072510, 02072590, 02072610, 02072620, 02072630, 02072640, 02072650, 02072660, 02072670, 02072680, 02072691, 02072699, 02072710, 02072720, 02072730, 02072740, 02072750, 02072760, 02072770, 02072780, 02072791, 02072799, 02073211, 02073215, 02073219, 02073251, 02073259, 02073290, 02073311, 02073319, 02073351, 02073359, 02073390, 02073410, 02073490, 02073511, 02073515, 02073521, 02073523, 02073525, 02073531, 02073541, 02073551, 02073553, 02073561, 02073563, 02073571, 02073579, 02073591, 02073599, 02073611, 02073615, 02073621, 02073623, 02073625, 02073631, 02073641, 02073651, 02073653, 02073661, 02073663, 02073671, 02073679, 02073681, 02073685, 02073689, 02073690, 02074120, 02074130, 02074180, 02074230, 02074280, 02074300, 02074410, 02074421, 02074431, 02074441, 02074451, 02074461, 02074471, 02074481, 02074491, 02074499, 02074510, 02074521, 02074531, 02074541, 02074551, 02074561, 02074571, 02074581, 02074593, 02074595, 02074599, 02075110, 02075190, 02075210, 02075290, 02075300, 02075410, 02075421, 02075431, 02075441, 02075451, 02075461, 02075471, 02075481, 02075491, 02075499, 02075510, 02075521, 02075531, 02075541, 02075551, 02075561, 02075571, 02075581, 02075593, 02075595, 02075599, 02076005, 02076010, 02076021, 02076031, 02076041, 02076051, 02076061, 02076081, 02076091, 02076099. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of dispatch recorded by HMRC. Suppressed trade kept separately. Latest month confirmed by probing the following month. Months from provisionalFrom are within HMRC's 18-month revision window (estimated from publication lag)."
+  }
+}

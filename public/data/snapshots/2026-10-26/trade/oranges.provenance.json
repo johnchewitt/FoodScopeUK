@@ -1,0 +1,26 @@
+{
+  "id": "trade.oranges",
+  "title": "Recorded UK imports: oranges (HS 0805 10)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-26/trade/oranges.json",
+  "format": "json",
+  "schemaId": "trade-snapshot",
+  "sha256": "2f3415a4aeb6e75f4042a4e60502a520467629ede5e7219d2becd8b0d1f8ce38",
+  "bytes": 40647,
+  "sourceIds": [
+    "S01",
+    "S24"
+  ],
+  "referencePeriod": "Jan 2019 \u2013 Aug 2026 (monthly)",
+  "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+  "expectedCadence": "monthly",
+  "retrieval": {
+    "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+    "source": "https://api.uktradeinfo.com/OTS?$apply=filter(MonthId%20ge%20201901%20and%20(FlowTypeId%20eq%201%20or%20FlowTypeId%20eq%203)%20and%20(CommodityId%20eq%208051010%20or%20CommodityId%20eq%208051020%20or%20CommodityId%20eq%208051022%20or%20CommodityId%20eq%208051024%20or%20CommodityId%20eq%208051028%20or%20CommodityId%20eq%208051030%20or%20CommodityId%20eq%208051050%20or%20CommodityId%20eq%208051080))/groupby((MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex),aggregate(NetMass%20with%20sum%20as%20SumNetMass,Value%20with%20sum%20as%20SumValue,$count%20as%20Rows))",
+    "retrievedAt": "2026-10-26T09:11:14Z",
+    "notes": "CN8 codes: 08051010, 08051020, 08051022, 08051024, 08051028, 08051030, 08051050, 08051080. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of dispatch recorded by HMRC. Suppressed trade kept separately. Latest month confirmed by probing the following month. Months from provisionalFrom are within HMRC's 18-month revision window (estimated from publication lag)."
+  }
+}
