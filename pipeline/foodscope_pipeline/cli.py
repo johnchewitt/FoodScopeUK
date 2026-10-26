@@ -85,6 +85,10 @@ def main(argv: list[str] | None = None) -> int:
     context.add_argument("--extra-defra-snapshot", action="append", default=[], help="another pipeline/raw/defra/<snapshot>/ folder for production items (repeatable)")
     context.add_argument("--out", default=None, help="output root (default: public/data)")
 
+    g3 = sub.add_parser("check-baskets", help="OFFLINE: gate G3 — the baskets against Defra's trade codes (S05) and HMRC's codes → reports/basket-codes-<snapshot>.json")
+    g3.add_argument("--snapshot", required=True, help="trade snapshot YYYY-MM-DD (public/data/snapshots/<snapshot>/trade/)")
+    g3.add_argument("--defra-snapshot", required=True, help="raw snapshot holding the Defra trade codes (pipeline/raw/defra/<snapshot>/)")
+
     risk = sub.add_parser("build-risk", help="OFFLINE: Stage 6 Risk Explorer data (water stress, ports, port of entry, roads, farming regions, Priority Places by council) → <out>/snapshots/<snapshot>/risk/ + reports/risk-qa-<snapshot>.json")
     risk.add_argument("--snapshot", required=True, help="raw snapshot of the stage6 set YYYY-MM-DD")
     risk.add_argument("--reference-snapshot", required=True, help="raw snapshot of the stage5 set (NISRA NIMDM 2017)")
@@ -254,6 +258,24 @@ def main(argv: list[str] | None = None) -> int:
             logging.error("build-context failed: %s", exc)
             return 1
         print(f"wrote {len(written)} files for context snapshot {args.snapshot}")
+        return 0
+
+    if args.command == "check-baskets":
+        from foodscope_pipeline.basket_codes import BasketCodesError, check_baskets
+        from foodscope_pipeline.sources.hmrc_ots import load_baskets
+        from foodscope_pipeline.sources.ons_files import files_for, load_index
+
+        defra_dir = RAW / "defra" / args.defra_snapshot
+        try:
+            entry = files_for(load_index(defra_dir), "defra.trade_codes")[0]
+            report = check_baskets(args.snapshot, load_baskets(CONFIG / "trade_baskets.json"), defra_dir / entry["file"],
+                                   DATA_DIR / "snapshots" / args.snapshot / "trade", REPORTS)
+        except (BasketCodesError, OSError, KeyError) as exc:
+            logging.error("check-baskets failed: %s", exc)
+            return 1
+        n = sum(len(b["differences"]) for b in report["baskets"])
+        print(f"G3: {len(report['baskets'])} baskets, {n} definitional differences, "
+              f"one SITC division each: {report['oneSitcDivisionEach']}")
         return 0
 
     if args.command == "build-risk":

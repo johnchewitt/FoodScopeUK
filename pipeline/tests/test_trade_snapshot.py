@@ -162,10 +162,12 @@ def _stage2_fingerprint(snap: dict) -> str:
     return hashlib.sha256(body.encode()).hexdigest()
 
 
-@pytest.mark.parametrize("basket", sorted(STAGE2_FINGERPRINTS))
-def test_stage2_figures_unchanged(rebuilt: tuple[Path, Path], basket: str) -> None:
-    data_dir, _ = rebuilt
-    snap = json.loads((data_dir / "snapshots" / SNAPSHOT / "trade" / f"{basket}.json").read_text())
+@pytest.mark.parametrize(("snapshot", "basket"), [(s, b) for s in SNAPSHOTS for b in sorted(STAGE2_FINGERPRINTS)])
+def test_stage2_figures_unchanged(rebuilt_all, snapshot: str, basket: str) -> None:
+    # Holds in the sixteen-basket snapshot too: HMRC published nothing new between 23 and 26 Oct 2026,
+    # and the five baskets' definitions did not change.
+    data_dir, _ = rebuilt_all[snapshot]
+    snap = json.loads((data_dir / "snapshots" / snapshot / "trade" / f"{basket}.json").read_text())
     assert _stage2_fingerprint(snap) == STAGE2_FINGERPRINTS[basket]
 
 

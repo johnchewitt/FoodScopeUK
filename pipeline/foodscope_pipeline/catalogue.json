@@ -27,13 +27,22 @@
     "notes": "Theme 3 dataset FSR-theme3-241211.ods: 3_2_2a food, feed and drink imports by port of entry (2022, 2023), 3_2_2b Short Straits share by food group, 3_2_1a average delay on England's Strategic Road Network. Values as published; next report due December 2027."
   },
   {
+    "id": "S05",
+    "title": "Defra trade codes and descriptions (Food statistics in your pocket)",
+    "publisher": "Department for Environment, Food & Rural Affairs (Defra)",
+    "url": "https://www.gov.uk/government/statistics/food-statistics-pocketbook",
+    "licence": "Open Government Licence v3.0",
+    "status": "verified",
+    "notes": "ODS of 15 Nov 2022: 8,031 commodity codes with Defra's groupings (SITC division, FFD, Brigades), indigeneity and degree of processing. Used to check the sixteen baskets against Defra's own groupings (gate G3) and to state which baskets Defra classes as not grown in the UK (non-indigenous)."
+  },
+  {
     "id": "S09",
     "title": "Horticulture statistics 2025",
     "publisher": "Department for Environment, Food & Rural Affairs",
     "url": "https://www.gov.uk/government/statistics/latest-horticulture-statistics/horticulture-statistics-2025",
     "licence": "Open Government Licence v3.0",
     "status": "verified",
-    "notes": "Accompanying dataset hort-dataset-25-20260625.ods (published 25 June 2026): tomatoes (Table 23) and strawberries (Table 12) — home production marketed, imports, exports, total supply and home production as a share of supply, calendar years. Annual national context only; Defra's trade figures use its own product definitions (fresh produce where distinguishable), not the Food Origins baskets."
+    "notes": "Accompanying dataset hort-dataset-25-20260625.ods (published 25 June 2026): tomatoes (Table 23), strawberries and apples (Table 12) — home production marketed, imports, exports, total supply and home production as a share of supply, calendar years. Annual national context only; Defra's trade figures use its own product definitions (fresh produce where distinguishable), not the Food Origins baskets."
   },
   {
     "id": "S10",
@@ -42,7 +51,7 @@
     "url": "https://www.gov.uk/government/statistics/agriculture-in-the-united-kingdom-2025/chapter-7-crops",
     "licence": "Open Government Licence v3.0",
     "status": "verified",
-    "notes": "Dataset AUK-chapter7-20260709.ods (published 9 July 2026, updated 3 September 2026): wheat (Table 7.2c) and potatoes (Table 7.10c) supply and use, with production as a percentage of total new supply; 2025 provisional. Annual national context only."
+    "notes": "Datasets AUK-chapter7-20260709.ods (published 9 July 2026, updated 3 September 2026): wheat (Table 7.2c), potatoes (Table 7.10c) and all sugar on a refined basis (Table 7.6b); and AUK-chapter8-20260709i.ods (poultry revised 3 September 2026): beef and veal (Table 8.2d), mutton and lamb (Table 8.4d) and poultry meat (Table 8.5d), in dressed carcase weight equivalent. Supply and use, with production as a percentage of total new supply; 2025 (wheat, potatoes and sugar provisional). Annual national context only."
   },
   {
     "id": "S11",
