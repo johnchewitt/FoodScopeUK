@@ -642,6 +642,18 @@ export interface StoreOption {
   retailer: string;
   council: string;
   part: ClosurePart;
+  /** Name, retailer and council, case- and accent-folded once (searchStores). */
+  search: string;
+}
+
+/**
+ * Case- and accent-insensitive form used by the supermarket search. Unicode normalisation is slow,
+ * so plain ASCII (almost every store name) skips it.
+ */
+function fold(s: string): string {
+  // eslint-disable-next-line no-control-regex
+  const ascii = /^[\x00-\x7f]*$/.test(s);
+  return (ascii ? s : s.normalize("NFD").replace(/\p{Diacritic}/gu, "")).toLowerCase();
 }
 
 /**
@@ -685,13 +697,10 @@ export function storeOptions(parts: ClosureParts, councils: Map<string, CouncilI
     const d = parts[part];
     d.stores.id.forEach((id, i) => {
       const code = d.councils[d.stores.council[i]!]!;
-      out.push({
-        id,
-        name: d.stores.name[i]!,
-        retailer: d.stores.retailer[i]!,
-        council: councils.get(code)?.name ?? code,
-        part,
-      });
+      const name = d.stores.name[i]!;
+      const retailer = d.stores.retailer[i]!;
+      const council = councils.get(code)?.name ?? code;
+      out.push({ id, name, retailer, council, part, search: fold(`${name} ${retailer} ${council}`) });
     });
   }
   return out.sort((a, b) => a.name.localeCompare(b.name) || a.id - b.id);
@@ -699,19 +708,16 @@ export function storeOptions(parts: ClosureParts, councils: Map<string, CouncilI
 
 /** Search by store name, retailer or council (case- and accent-insensitive); at most `limit`. */
 export function searchStores(options: readonly StoreOption[], query: string, limit = 25): StoreOption[] {
-  const norm = (s: string) =>
-    s
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "")
-      .toLowerCase();
-  const words = norm(query).split(/\s+/).filter(Boolean);
+  const words = fold(query).split(/\s+/).filter(Boolean);
   if (words.length === 0) return [];
-  return options
-    .filter((o) => {
-      const hay = norm(`${o.name} ${o.retailer} ${o.council}`);
-      return words.every((w) => hay.includes(w));
-    })
-    .slice(0, limit);
+  const out: StoreOption[] = [];
+  for (const o of options) {
+    if (words.every((w) => o.search.includes(w))) {
+      out.push(o);
+      if (out.length >= limit) break;
+    }
+  }
+  return out;
 }
 
 /**

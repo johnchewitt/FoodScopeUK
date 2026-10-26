@@ -55,6 +55,27 @@ describe("prefetchStartupData", () => {
     expect(c.getQueryData(["dataset", "trade.index", "static-snapshot", "validated"])).toBeDefined();
   });
 
+  it("Scenario Lab: Scenario A's trade data loads with the page; other scenarios load their own (review)", async () => {
+    const f = stubFetch();
+    const c = client();
+    await prefetchStartupData(c, { module: "scenarios", commodity: "tomatoes", scenarioKind: "import" });
+    expect(new Set(f.calls.slice(1))).toEqual(
+      new Set([
+        "data/snapshots/2026-10-26/trade/index.json",
+        "data/reference/world-country-points.json",
+        "data/snapshots/2026-10-26/trade/tomatoes.json",
+      ]),
+    );
+    expect(c.getQueryData(["dataset", "trade.tomatoes", "static-snapshot", "validated"])).toBeDefined();
+    // A link without `sk` opens Scenario A too.
+    const g = stubFetch();
+    await prefetchStartupData(client(), { module: "scenarios", commodity: "tomatoes" });
+    expect(g.calls).toHaveLength(4);
+    const h = stubFetch();
+    await prefetchStartupData(client(), { module: "scenarios", commodity: "tomatoes", scenarioKind: "port" });
+    expect(h.calls).toEqual(["data/manifest.json"]);
+  });
+
   it("only loads the data index for views without data yet", async () => {
     const f = stubFetch();
     await prefetchStartupData(client(), { module: "risks", commodity: "tomatoes" });

@@ -5,8 +5,21 @@
 
 const LOCALE = "en-GB";
 
+/**
+ * Number formatters are cached: constructing an Intl.NumberFormat is far slower than using one,
+ * and every card, table row, tooltip and map label formats through here (a Scenario Lab slider step
+ * formatted thousands of values with a new formatter each; review of Stage 7).
+ */
+const FORMATTERS = new Map<string, Intl.NumberFormat>();
+
 function nf(maximumFractionDigits: number, minimumFractionDigits = 0): Intl.NumberFormat {
-  return new Intl.NumberFormat(LOCALE, { maximumFractionDigits, minimumFractionDigits });
+  const key = `${maximumFractionDigits}|${minimumFractionDigits}`;
+  let f = FORMATTERS.get(key);
+  if (!f) {
+    f = new Intl.NumberFormat(LOCALE, { maximumFractionDigits, minimumFractionDigits });
+    FORMATTERS.set(key, f);
+  }
+  return f;
 }
 
 function isFiniteNumber(v: number | null | undefined): v is number {
