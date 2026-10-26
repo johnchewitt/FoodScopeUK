@@ -97,7 +97,7 @@ Further checks:
 | `npm test` | **509 passed** (36 files; 498 before) |
 | `cd pipeline && uv run pytest` | **296 passed, 1 skipped** (the index rebuild of the five-basket 2026-10-23 snapshot, by design) |
 | `VITE_ARCGIS_ASSETS=local npm run build`; `npm run build:e2e-basemap` | Both succeed |
-| `npm run e2e` | First full run (before merging main): 74 of 75 passed; the failure was the smoke test's trade snapshot date (2026-10-23 → 2026-10-26), fixed. Rerun after merging main (PR #18): RERUN_RESULT |
+| `npm run e2e` | First full run (before merging main): 74 of 75 passed; the failure was the smoke test's trade snapshot date (2026-10-23 → 2026-10-26), fixed. Rerun after merging main (PR #18): **74 of 75 passed** (15.4 min); the failure is the intermittent basemap request count (B49, same symptom: the last imagery request does not reach the stub), which passed in the first run and in 2 of 3 isolated reruns |
 | `uv run foodscope-pipeline check-baskets --snapshot 2026-10-26 --defra-snapshot 2026-10-26` | "16 baskets, 8 definitional differences, one SITC division each: True" |
 | Screenshots (Origins with cocoa; Risk Explorer with beef; matrix for fruit and vegetables and for meat; Profiles national context; Seasonal with beef) | Picker, ranking and matrix legible; figures as in the table above |
 
