@@ -1,6 +1,12 @@
 import type { StoreApi, UseBoundStore } from "zustand";
 import { fitBBox, type BBox, type FitOptions } from "@/analysis/frame";
-import { LOCAL_ZOOM, selectReducedMotion, type AppState, type MapCommand } from "@/state/store";
+import {
+  LOCAL_ZOOM,
+  selectReducedMotion,
+  selectTradeMapModule,
+  type AppState,
+  type MapCommand,
+} from "@/state/store";
 import { getModule } from "@/app/modules";
 import {
   computeViewPadding,
@@ -13,26 +19,30 @@ import { FLIGHT_DURATION_MS, GO_TO_TARGETS, type LayerController, type ViewLike 
 
 type Store = UseBoundStore<StoreApi<AppState>>;
 
-/** Modules whose map frames the recorded partners (Food Origins, Seasonal Supply). */
-const TRADE_MODULES: readonly string[] = ["origins", "seasonal"];
+type FrameFamily = "trade" | "access" | "profile" | "riskLogistics" | "riskAccess" | null;
 
 /**
- * Which frame a module uses: the trade views share one (switching between them keeps the camera
- * while the commodity is the same); UK Food Access and Local Authority Profiles have their own;
- * other modules none.
+ * Which frame a view uses: the trade views (Food Origins, Seasonal Supply, Risk Explorer supply)
+ * share one, so switching between them keeps the camera while the commodity is the same; UK Food
+ * Access, Local Authority Profiles and the other two Risk Explorer views have their own; other
+ * modules none.
  */
-function frameFamily(module: string): "trade" | "access" | "profile" | null {
-  if (TRADE_MODULES.includes(module)) return "trade";
-  if (module === "access") return "access";
-  return module === "profiles" ? "profile" : null;
+function frameFamily(state: Pick<AppState, "module" | "riskView">): FrameFamily {
+  if (selectTradeMapModule(state)) return "trade";
+  if (state.module === "access") return "access";
+  if (state.module === "profiles") return "profile";
+  if (state.module === "risks") return state.riskView === "logistics" ? "riskLogistics" : "riskAccess";
+  return null;
 }
 
-/** The frame the current module asks for, if any. */
+/** The frame the current view asks for, if any. */
 function moduleFrame(state: AppState): { key: string; bbox: BBox } | null {
-  const family = frameFamily(state.module);
+  const family = frameFamily(state);
   if (family === "trade") return state.originsMap?.frame ?? null;
   if (family === "access") return state.accessMap?.mode === "access" ? state.accessMap.frame : null;
   if (family === "profile") return state.accessMap?.mode === "profile" ? state.accessMap.frame : null;
+  if (family === "riskLogistics") return state.riskMap?.frame ?? null;
+  if (family === "riskAccess") return state.accessMap?.mode === "risk" ? state.accessMap.frame : null;
   return null;
 }
 
@@ -43,9 +53,11 @@ function moduleFrame(state: AppState): { key: string; bbox: BBox } | null {
  * very small council (City of London) being framed at street level.
  */
 export const PROFILE_MAX_ZOOM = 13;
-const FIT_OPTIONS: Partial<Record<string, FitOptions>> = {
+const FIT_OPTIONS: Partial<Record<NonNullable<FrameFamily>, FitOptions>> = {
   access: { minSpanLon: 0, minSpanLat: 0 },
-  profiles: { minSpanLon: 0, minSpanLat: 0, maxZoom: PROFILE_MAX_ZOOM },
+  profile: { minSpanLon: 0, minSpanLat: 0, maxZoom: PROFILE_MAX_ZOOM },
+  riskLogistics: { minSpanLon: 0, minSpanLat: 0 },
+  riskAccess: { minSpanLon: 0, minSpanLat: 0 },
 };
 
 /**
@@ -59,14 +71,15 @@ const FIT_OPTIONS: Partial<Record<string, FitOptions>> = {
  * recorded partners" re-applies the frame on request. UK Food Access fits its mapped stores once
  * when it opens, unless the map is already at local scale (a store or postcode already chosen).
  * Local Authority Profiles fits the selected council (or the UK) on opening and whenever the
- * council changes (LP-01 fly-to), whatever the scale.
+ * council changes (LP-01 fly-to), whatever the scale. The Risk Explorer's supply view frames like
+ * Food Origins; its logistics and community access views fit the UK once per visit.
  */
 export class MapController {
   private view: ViewLike | null = null;
   private unsubscribe: (() => void) | null = null;
   private lastCommandId: number | null = null;
   private lastFrameKey: string | null = null;
-  private lastFrameFamily: ReturnType<typeof frameFamily> = null;
+  private lastFrameFamily: FrameFamily = null;
   private framedOnce = false;
   private syncing = false;
   private resync = false;
@@ -143,7 +156,7 @@ export class MapController {
     }
 
     const frame = moduleFrame(state);
-    const family = frameFamily(state.module);
+    const family = frameFamily(state);
     // Each visit to a family is framed afresh (e.g. back from UK Food Access to Food Origins).
     if (family !== this.lastFrameFamily) this.lastFrameKey = null;
     this.lastFrameFamily = family;
@@ -153,7 +166,12 @@ export class MapController {
         this.lastFrameKey = frame.key;
       } else if (
         // The first frame replaces the default world view instantly; later ones fly (unless reduced).
-        this.fit(frame.bbox, !this.framedOnce || selectReducedMotion(state), state, FIT_OPTIONS[state.module])
+        this.fit(
+          frame.bbox,
+          !this.framedOnce || selectReducedMotion(state),
+          state,
+          family ? FIT_OPTIONS[family] : undefined,
+        )
       ) {
         this.lastFrameKey = frame.key;
         this.framedOnce = true;
@@ -167,7 +185,7 @@ export class MapController {
     const view = this.view;
     if (!view) return;
     if (command.type === "goTo" && command.target === "partners") {
-      const frame = TRADE_MODULES.includes(state.module) ? state.originsMap?.frame : null;
+      const frame = selectTradeMapModule(state) ? state.originsMap?.frame : null;
       if (frame) this.fit(frame.bbox, reducedMotion, state);
       return;
     }

@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | 03 — Verified data catalogue and manifest |
-| **Version** | 0.7 — 25 October 2026 (Stage 6 data step: S03 theme 3 tables and S23 verified; S30–S33, S35 and S36 added and verified; S34 (OSNI roads) unreachable; S13, S15 and S17 notes updated. Earlier: pre-Stage 5 data steps S13, S15, S16, S19, S20, S29, gates G8–G11; context step S09, S10, S21) |
+| **Version** | 0.8 — 25 October 2026 (Stage 6 module: figures shown by the Risk Explorer checked against the raw files, §11. Earlier: Stage 6 data step: S03 theme 3 tables and S23 verified; S30–S33, S35 and S36 added and verified; S34 (OSNI roads) unreachable; S13, S15 and S17 notes updated. Earlier: pre-Stage 5 data steps S13, S15, S16, S19, S20, S29, gates G8–G11; context step S09, S10, S21) |
 | **Verification date** | 23 October 2026; S11, S12, S14 and S18 re-verified 24 October 2026; S09, S10 and S21 verified 25 October 2026; S03, S23, S30–S33, S35 and S36 verified 25 October 2026 (Stage 6 data step) |
 | **Machine-readable form** | Generated into `public/data/snapshots/<date>/catalogue.json` by the pipeline from Stage 2 |
 
@@ -482,6 +482,12 @@ Published 29 July 2026 (accredited official statistics); OGL v3.0. URL: https://
 
 data.gov.uk record "OSNI Open Data - 50K Transport - Transport lines" (OpenDataNI, OGL / LPS Open Government Data Licence): the only resource is the Esri REST layer `services.spatialni.gov.uk/opendata/rest/services/OSNIVector/OSNIOpenData_Transport_50K/MapServer/2`. Three GitHub Actions runs (25 Oct 2026) got "Remote end closed connection without response" for the service metadata, and the build sandbox cannot reach the host. The probe (`stage6_files.OSNI_PROBE_FILES`) was then taken out of the `stage6` set so that each push does not fail on it. Northern Ireland's roads are therefore **not shown**; the map and the panel say so. To retry before Release 1 sign-off.
 
+**Second attempt (25 Oct 2026, John's links).**
+- **DfI Roads "Highway Network"** (OpenDataNI; data.gov.uk record `411c9fc1-1192-4efe-8456-44eafc362387`, OGL). The CSV and XML (`https://dfi.highway-iams.uk/OpenData/HIGHWAY_NETWORK.CSV`) have section attributes only: `SECTION_CODE`, `SECTION_NAME`, `SECTION_OFFICE_NAME`, `DIVISION_NAME`, `SECTION_TYPE_NAME`, `ADOPTION_STATUS_NAME`, `DIGITAL_LENGTH`, `CLASS`. They carry no geometry. The line work is in an ArcGIS map whose service (`utility.arcgis.com/usrsvcs/servers/f0baf747…/rest/services/Transport/HighwayNetworkDFI/MapServer`, item "DFI ROADS Road Network", EPSG:29900) answers HTTP 403. The Spatial NI developer guide says these proxies hold credentials and only serve whitelisted application domains. Not usable openly.
+- **The same OSNI 50K transport lines through OSNI's ArcGIS Hub** (`osni-spatialni.opendata.arcgis.com/api/download/v1/items/476bb4e6f8e64f60a08ae84888733bd4/geojson?layers=2`, listed on data.gov.uk record `092bebf4…`). This route answered HTTP 400 to the GitHub runner (run 40244203513). The Spatial NI open data directory disallows automated access (robots.txt).
+
+The roads remain **not shown**. John has been asked to download the layer by hand. If he provides it, it will be added as a provided file with its checksum.
+
 ### S35 — OS Open Roads ✅ (extract, 25 Oct 2026)
 
 OS Downloads API `https://api.os.uk/downloads/v1/products/OpenRoads/downloads` (OGL v3.0): GB GeoPackage `oproad_gpkg_gb.zip`, 1,016,021,285 bytes, MD5 checked. Too large to commit: `fetch-open-roads` (GitHub Actions) downloads it to a temporary folder, records its schema (`open-roads-schema.json`: layer `road_link`, 3,961,077 links, EPSG:27700; fields `road_classification`, `road_classification_number`, `primary_route`, `trunk_road`, …) and writes the extract `open-roads-strategic.geojson` (115,947 links → 792 roads).
@@ -495,6 +501,22 @@ EMODnet catalogue record `379d0425-8924-4a41-a088-1a002d2ea748` ("Main Ports, Go
 
 - **Use:** only for the 24 of DfT's 51 current ports that DfT does not locate (Dover, Felixstowe, Belfast, Holyhead, Larne, Cairnryan, Heysham, …). Each port records which source placed it.
 - **Check:** for the 27 ports both locate, the points agree within 3 km except multi-site estuary ports (Forth 18 km, Rivers Hull & Humber 12 km, Tees & Hartlepool 9 km, River Trent 5 km). Port symbols are "rough locations", not terminals.
+
+### S37 — Northern Ireland Railways (NIR) railway network ✅ (25 Oct 2026)
+
+OpenDataNI dataset "Northern Ireland Railways NIR Railway Network" (package `0297b4a0-5cea-4c22-97cc-346c76df33ed`; contact Translink; OGL; created and last modified 21 Sep 2015; "must be viewed in Irish Grid projection"; John's link, 25 Oct 2026). Resource: shapefile ZIP `…/resource/7bc41442-ef8b-4343-acc4-7a78d37cd6a0/download/nirshp.zip`. Fetched on GitHub Actions (run 40244203513): 90,009 bytes, sha256 `789bfc3d1dd4…`.
+
+The ZIP holds `NIR_shp/Rail Line NI_polyline.shp`, in TM75 Irish Grid (EPSG:29903), LineString Z. It has 34 records:
+- 10 route lines (`ROUTE_TYPE` "Passenger", about 334 km), e.g. Dundalk to Bangor, Coleraine to Londonderry, York Road to Larne Harbour;
+- 24 sidings.
+
+Fields: `ELR_CODE`, `DESCRIPTIO` (line name), `TRACK_ID`, `ROUTE_TYPE`, `INTERMED_L`, `INTERMED_H`, `LOW_MILEAG`, `HIGH_MILEA`, `ZONE_CODE`, `LINKID`, `VERSIONDAT`, `AUTHOR`, `REVERSEMIL`, `IGNORE`. Fields used: `ELR_CODE`, `DESCRIPTIO` and `ROUTE_TYPE`.
+
+- **Use:** the route lines, simplified at 10 m and drawn in the logistics view as Northern Ireland's railway lines. They show where the railway runs, not services or freight.
+- **Caveats:**
+  - The file dates from 2015. "Passenger" is the publisher's route type, so Knockmore Junction to Antrim is listed under it.
+  - The Dublin line runs a few kilometres past the border, as published.
+  - Great Britain's railway lines are not in this build.
 
 ## 8. Platform and reference services
 
@@ -544,9 +566,9 @@ Defra pocketbook CSV of CPIH food and non-alcoholic beverages since 2020 (S05) f
 | PPFI for Northern Ireland (v2) | Unconfirmed | Gate in Stage 2; NI-native indicator set as fallback |
 | Food import entry-point dependency by commodity | Published for food groups only (UKFSR 3_2_2a/b, S03); DfT records no commodity for unitised traffic (S23) | Risk Explorer and Scenario B show UKFSR's published shares; DfT tonnage shown as all-cargo context; HMRC port data only if verified (S28) |
 | Climate/agricultural risk indicators | No authoritative per-commodity or sub-national index identified | FAO water stress by country (S30, John's choice, 25 Oct 2026), labelled national; no invented scores |
-| Rail freight routes and terminals | No open, official mapped dataset found (ORR publishes national freight statistics, not routes) | Not shown in the logistics view; stated |
+| Rail freight routes and terminals | No open, official mapped dataset found (ORR publishes national freight statistics, not routes) | Not shown in the logistics view; stated. Northern Ireland's railway lines (S37) are shown as where the railway runs, not freight |
 | Distribution centres and warehouses | No authoritative public register found | Not shown; stated (never inferred from store or trade data) |
-| Northern Ireland road corridors | OSNI service unreachable from the pipeline (S34) | Not shown; stated |
+| Northern Ireland road corridors | OSNI service and its Hub download unreachable from the pipeline; DfI's open files have no geometry (S34) | Not shown; stated; a file from John requested |
 | Public transport accessibility (UK-wide) | England-only DfT statistics | England context only, Release 2 |
 
 ---
@@ -654,4 +676,16 @@ Still not verified: Scotland's urban/rural classification and Census 2022 car av
 | S35 extract | Actions run: schema and counts written beside the extract | 3,961,077 links read; 115,947 kept; 792 roads |
 
 Still not verified: OSNI transport (S34); HMRC port-level detail (S28); UKFSR 3_2_3a units; Scotland's urban/rural classification and car availability (Release 2).
+
+### Stage 6 module (25 October 2026)
+
+Figures shown by the Risk Explorer, recomputed from the raw files with independent scripts (Python standard library and pandas, not the pipeline's or the app's code), then asserted in `src/analysis/risk.test.ts` and `src/features/risks/model.test.ts`:
+
+| Check | Method | Result (matches the app) |
+|---|---|---|
+| S01 concentration, Sep 2025 – Aug 2026, net mass | Raw `/OTS` aggregate responses, country crosswalk, suppressed and non-country rows excluded | HHI: tomatoes 2,991.676, strawberries 2,636.594, potatoes 1,949.755, bananas 1,649.640, wheat 1,433.959; partners 25, 22, 16, 43, 35 |
+| S01 estimated exposure | Same; Spain's share of tomato imports over the 12 months and by month | 11.0358 % over the period; largest month Feb 2026, 23.816 % |
+| S01 × S30 water stress | World Bank API rows (latest non-null year per country) with FAO classes | High or critical: tomatoes 0.0831 %, strawberries 23.5215 %, potatoes 23.3025 %; Spain 43.25 % (2022, low) |
+| S23 ports, 2025 | PORT0499 read with pandas: inwards, load region not UK or unspecified | Total 237,484.733 kt; London 16.145 %; Dover 12,512.825 kt, −2.238 % on 2024; agricultural products inwards 9,534.031 kt, Belfast 2,590.651 kt |
+| S13 by council (Scotland) | PPFI CSV joined to the 2011 Data Zone lookup (S32) | Glasgow City 103 of 746 (13.8 %), rank 18 of 32; North Ayrshire 119/186, East Ayrshire 98/163, West Dunbartonshire 60/121; Scotland 1,396 of 6,976; Highland 65 of 312 |
 

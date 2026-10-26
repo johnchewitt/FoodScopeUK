@@ -38,7 +38,7 @@ import jsonschema
 import numpy as np
 import shapely
 from pyogrio.raw import read
-from pyproj import Geod
+from pyproj import Geod, Transformer
 
 from foodscope_pipeline.boundaries import display_geometry
 from foodscope_pipeline.sources.ons_files import files_for, load_index
@@ -69,6 +69,10 @@ DFT_SOURCE = "Source: Department for Transport, Port freight statistics, license
 DEFRA_SOURCE = "Source: Department for Environment, Food & Rural Affairs, licensed under the Open Government Licence v3.0"
 ONS_SOURCE = "Source: Office for National Statistics licensed under the Open Government Licence v.3.0"
 OS_SOURCE = "Contains OS data © Crown copyright and database right 2026"
+TRANSLINK_SOURCE = ("Contains public sector information licensed under the Open Government Licence v3.0. "
+                    "Source: Translink (NI Railways), OpenDataNI")
+RAIL_SHAPEFILE = "NIR_shp/Rail Line NI_polyline.shp"
+RAIL_SIMPLIFY_M = 10.0
 WB_SOURCE = "FAO AQUASTAT, via World Bank World Development Indicators (ER.H2O.FWST.ZS), CC BY 4.0"
 EMODNET_SOURCE = ("EMODnet Human Activities, Main ports (originators Eurofish International Organisation and "
                   "Cogea Srl), CC BY 4.0")
@@ -107,6 +111,7 @@ class RiskInputs:
     emodnet: Path
     ons: Path  # ITL1 pages and the LSOA -> LAD 2025 lookup
     os: Path  # OS Open Roads extract
+    translink: Path  # NIR railway network (S37)
     nisra: Path  # NIMDM 2017 (stage5 snapshot)
     ppfi: Path  # provided by John
     local: Path  # public/data/snapshots/<local snapshot>/local/ (council list)
@@ -123,6 +128,7 @@ def default_inputs(raw_root: Path, config_dir: Path, data_dir: Path, snapshot: s
         emodnet=raw_root / "emodnet" / snapshot,
         ons=raw_root / "ons" / snapshot,
         os=raw_root / "os" / snapshot,
+        translink=raw_root / "translink" / snapshot,
         nisra=raw_root / "nisra" / reference_snapshot,
         ppfi=raw_root / "hasp-provided" / PPFI_EDITION,
         local=data_dir / "snapshots" / local_snapshot / "local",
@@ -434,6 +440,44 @@ def _roads(inputs: RiskInputs, qa: dict) -> tuple[list[dict], dict, dict]:
 
 
 # ---------------------------------------------------------------------------------------------
+# Railway lines in Northern Ireland (S37)
+
+
+def _rail(inputs: RiskInputs, qa: dict) -> tuple[list[dict], dict]:
+    """The NIR network's route lines (sidings left out), simplified in the Irish Grid, WGS84."""
+    index = load_index(inputs.translink)
+    e = _entry(index, "translink.nir_railway_network")
+    path = f"/vsizip/{inputs.translink / e['file']}/{RAIL_SHAPEFILE}"
+    meta, _, wkb, fields = read(path, columns=["ELR_CODE", "DESCRIPTIO", "ROUTE_TYPE"])
+    if meta["crs"] != "EPSG:29903":  # TM75 Irish Grid, as the publisher says ("Irish Grid projection")
+        raise RiskBuildError(f"NIR railway network: CRS {meta['crs']}")
+    to_wgs84 = Transformer.from_crs(29903, 4326, always_xy=True)
+    features, dropped, km = [], defaultdict(int), 0.0
+    for code, line, route, geom in zip(*fields, shapely.from_wkb(wkb), strict=True):
+        if route != "Passenger":
+            dropped[str(route)] += 1
+            continue
+        if not code or not line or geom is None or geom.geom_type != "LineString":
+            raise RiskBuildError(f"NIR railway network: unexpected record {code!r} {line!r} {geom}")
+        flat = shapely.simplify(shapely.force_2d(geom), RAIL_SIMPLIFY_M, preserve_topology=False)
+        km += geom.length / 1000
+
+        def project(xy: np.ndarray) -> np.ndarray:
+            lon, lat = to_wgs84.transform(xy[:, 0], xy[:, 1])
+            return np.round(np.column_stack([lon, lat]), 5)
+
+        wgs = shapely.transform(flat, project)
+        features.append({"type": "Feature", "properties": {"line": str(line), "elr": str(code)},
+                         "geometry": json.loads(shapely.to_geojson(wgs))})
+    features.sort(key=lambda f: (f["properties"]["elr"], f["properties"]["line"]))
+    if not features:
+        raise RiskBuildError("NIR railway network: no route lines")
+    qa["rail"] = {"features": len(features), "routeKm": _round(km, 1), "leftOut": dict(sorted(dropped.items())),
+                  "crs": meta["crs"], "simplifyMetres": RAIL_SIMPLIFY_M, "source": _src(e)}
+    return features, e
+
+
+# ---------------------------------------------------------------------------------------------
 # Farming regions (S31, S33)
 
 
@@ -714,6 +758,9 @@ def build_risk(snapshot: str, inputs: RiskInputs, out_root: Path, reports_dir: P
     road_features, roads_e, roads_meta = _roads(inputs, qa)
     roads_text = _feature_collection(road_features)
     _validate(json.loads(roads_text), schema_dir, "risk-roads")
+    rail_features, rail_e = _rail(inputs, qa)
+    rail_text = _feature_collection(rail_features)
+    _validate(json.loads(rail_text), schema_dir, "risk-rail")
     farming_doc, farming_features, farming_es, itl_es = _farming(inputs, config, qa)
     _validate(farming_doc, schema_dir, "risk-farming")
     regions_text = _feature_collection(farming_features)
@@ -785,6 +832,21 @@ def build_risk(snapshot: str, inputs: RiskInputs, out_root: Path, reports_dir: P
                                     f"{roads_meta.get('simplifyMetres')} m in EPSG:27700: 'strategic' = motorways and "
                                     "trunk roads (the national highway authorities' networks), 'primary' = other "
                                     "primary-route A roads. Lines show road corridors, not freight flows.")},
+        }),
+        ("rail.geojson", rail_text, {
+            "id": "risk.rail",
+            "title": "Railway lines in Northern Ireland: the NIR network (Translink)",
+            "role": "reference", "format": "geojson", "schemaId": "risk-rail", "sourceIds": ["S37"],
+            "referencePeriod": "NIR railway network as published on OpenDataNI, 21 September 2015",
+            "coverage": ("Northern Ireland: the NIR network's route lines (sidings left out). Great Britain: not "
+                         "included (no open, official railway line dataset in this build)"),
+            "provenance": "measured", "licence": OGL, "attribution": TRANSLINK_SOURCE, "expectedCadence": "irregular",
+            "featureCount": len(rail_features),
+            "retrieval": {"method": "Read offline from the committed shapefile (fetch-reference --set stage6)",
+                          "source": _src(rail_e), "retrievedAt": rail_e["retrievedAt"],
+                          "notes": (f"Route lines (ROUTE_TYPE 'Passenger'), heights dropped, simplified at "
+                                    f"{RAIL_SIMPLIFY_M:g} m in TM75 Irish Grid (EPSG:29903), WGS84 to 5 decimals. "
+                                    "Lines show where the railway runs, not services or freight.")},
         }),
         ("farming.json", _compact(farming_doc) + "\n", {
             "id": "risk.farming",

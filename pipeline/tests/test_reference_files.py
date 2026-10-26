@@ -168,11 +168,11 @@ def test_stage6_set_fetches_each_publisher_once(monkeypatch: pytest.MonkeyPatch,
     monkeypatch.setattr(ons_files, "fetch", fake_fetch)
     monkeypatch.setattr(cli, "RAW", tmp_path)
     assert cli.main(["fetch-reference", "--snapshot", "2026-10-25", "--set", "stage6"]) == 0
-    assert [c[0] for c in calls] == ["worldbank", "dft", "defra", "scotgov", "emodnet", "ons", "os"]
+    assert [c[0] for c in calls] == ["worldbank", "dft", "defra", "scotgov", "emodnet", "ons", "os", "translink"]
     files = [f for _, fs, _ in calls for f in fs]
     queries = [q for _, _, qs in calls for q in qs]
     assert set(files) == set(s6.WORLDBANK_FILES + s6.DFT_FILES + s6.DEFRA_FILES + s6.SCOTGOV_FILES
-                             + s6.EMODNET_FILES + s6.PROBE_FILES)
+                             + s6.EMODNET_FILES + s6.PROBE_FILES + s6.TRANSLINK_FILES)
     assert queries == list(s6.ONS_QUERIES)
     ids = [f.id for f in files] + [q.id for q in queries] + [f.id for f in defra_stats.FILES]
     assert len(ids) == len(set(ids))
@@ -200,6 +200,27 @@ def test_any_json_files(tmp_path: Path, body: bytes, ok: bool) -> None:
                         files=(item,), queries=())
     if ok:
         assert load_index(run())["files"][0]["file"] == "j.json"
+    else:
+        with pytest.raises(OnsFetchError):
+            run()
+
+
+@pytest.mark.parametrize(
+    ("body", "ok"),
+    [
+        (b'{"type":"FeatureCollection","features":[{"type":"Feature","geometry":null,"properties":{}}]}', True),
+        (b'{"type":"FeatureCollection","features":[]}', False),  # an empty export
+        (b'{"error":{"code":500,"message":"Export failed"}}', False),
+        (b"<html>Sign in</html>", False),
+    ],
+)
+def test_geojson_files(tmp_path: Path, body: bytes, ok: bool) -> None:
+    item = OnsFile(id="x.g", filename="g.geojson", url="https://example.invalid/g", source_id="S0",
+                   licence="OGL", description="synthetic")
+    run = lambda: fetch("s", tmp_path, transport_for({item.url: (200, body)}), now=lambda: FIXED,  # noqa: E731
+                        files=(item,), queries=())
+    if ok:
+        assert load_index(run())["files"][0]["file"] == "g.geojson"
     else:
         with pytest.raises(OnsFetchError):
             run()

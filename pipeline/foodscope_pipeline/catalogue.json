@@ -214,5 +214,14 @@
     "licence": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
     "status": "verified",
     "notes": "Port points keyed by UN/LOCODE (as in DfT's port list), georeferenced from Eurostat GISCO 'Ports 2013' where possible, otherwise UN/LOCODE or other sources (recorded per port). Used only for DfT statistical ports without a DfT map location (24 of 51)."
+  },
+  {
+    "id": "S37",
+    "title": "Northern Ireland Railways (NIR) railway network",
+    "publisher": "Translink (NI Railways), via OpenDataNI",
+    "url": "https://admin.opendatani.gov.uk/dataset/northern-ireland-railways-nir-railway-network",
+    "licence": "Open Government Licence v3.0",
+    "status": "verified",
+    "notes": "Shapefile in TM75 Irish Grid (EPSG:29903), published 21 September 2015: 34 lines, of which 10 route lines (about 334 km) are drawn and 24 sidings left out. Where the railway runs, not services or freight. Northern Ireland only; Great Britain's railway lines are not in this build."
   }
 ]

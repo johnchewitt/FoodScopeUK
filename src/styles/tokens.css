@@ -60,6 +60,28 @@
   --fs-map-cluster-fill: var(--fs-navy);
   --fs-map-cluster-ring: var(--fs-text);
   --fs-map-proximity: #f184c0;
+  /*
+   * Risk Explorer (Stage 6): a warm ramp for vulnerability measures (water stress, priority places,
+   * concentration), kept apart from the teal share ramp. Validated (palette.ts RISK_DARK) on the
+   * dark grey land, the offline map and the panel; --fs-risk-* are the panel's, --fs-map-risk-* the map's.
+   */
+  --fs-risk-0: #9d5b38;
+  --fs-risk-1: #bb6d3b;
+  --fs-risk-2: #d68241;
+  --fs-risk-3: #ed9a4e;
+  --fs-risk-4: #fbb76e;
+  --fs-risk-5: #ffd696;
+  --fs-map-risk-0: var(--fs-risk-0);
+  --fs-map-risk-1: var(--fs-risk-1);
+  --fs-map-risk-2: var(--fs-risk-2);
+  --fs-map-risk-3: var(--fs-risk-3);
+  --fs-map-risk-4: var(--fs-risk-4);
+  --fs-map-risk-5: var(--fs-risk-5);
+  --fs-map-road-strategic: var(--fs-text);
+  --fs-map-road-primary: var(--fs-text-muted);
+  --fs-map-port-fill: var(--fs-text);
+  --fs-map-port-outline: var(--fs-navy);
+  --fs-map-rail: #9085e9;
   /* Ground behind legend samples drawn as lines (the proximity ring): none on dark grey. */
   --fs-map-sample-ground: transparent;
   /* Basemap choice swatches (SH-08): approximate tones of each style, for recognition only. */
@@ -170,6 +192,17 @@
   --fs-map-cluster-fill: var(--fs-navy);
   --fs-map-cluster-ring: #ffffff;
   --fs-map-proximity: #9c0a73;
+  --fs-map-risk-0: #d17c28;
+  --fs-map-risk-1: #bf6319;
+  --fs-map-risk-2: #a94e17;
+  --fs-map-risk-3: #8e3d1a;
+  --fs-map-risk-4: #72301b;
+  --fs-map-risk-5: #572317;
+  --fs-map-road-strategic: var(--fs-navy);
+  --fs-map-road-primary: #5f7175;
+  --fs-map-port-fill: var(--fs-navy);
+  --fs-map-port-outline: #ffffff;
+  --fs-map-rail: #5a3fc0;
   /* The legend sits on the dark glass; the magenta ring is drawn on light grey land (#f4f4f4). */
   --fs-map-sample-ground: #f4f4f4;
   --fs-glass: color-mix(in oklab, var(--fs-emerald) 97%, transparent);

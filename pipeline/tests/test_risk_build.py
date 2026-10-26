@@ -50,7 +50,7 @@ def test_two_builds_are_identical_and_the_report_is_committed(built, tmp_path_fa
     out, reports = built
     again, reports_again = _build(tmp_path_factory)
     names = sorted(p.name for p in out.iterdir())
-    assert len(names) == 14
+    assert len(names) == 16
     for name in names:
         assert (out / name).read_bytes() == (again / name).read_bytes(), name
     report = reports / f"risk-qa-{SNAPSHOT}.json"
@@ -248,3 +248,23 @@ def test_dz_lookup_rejects_a_duplicate(tmp_path: Path) -> None:
                     "S01000001,S12000002,B,Scotland\n", encoding="cp1252")
     with pytest.raises(RiskInputError, match="listed twice"):
         read_dz11_lookup(path)
+
+
+def test_rail_is_the_nir_route_network_in_wgs84(built) -> None:
+    """Translink's NIR shapefile (S37): 34 lines in TM75 Irish Grid; the 10 route lines are kept."""
+    import pyogrio
+
+    rail = _load(built, "rail.geojson")
+    shp = f"/vsizip/{RAW / 'translink' / SNAPSHOT / 'nir-railway-network-shp.zip'}/NIR_shp/Rail Line NI_polyline.shp"
+    info = pyogrio.read_info(shp)
+    assert info["crs"] == "EPSG:29903" and info["features"] == 34
+    lines = sorted(f["properties"]["line"] for f in rail["features"])
+    assert len(lines) == 10
+    assert "Coleraine to Londonderry" in lines and "York Road to Larne Harbour" in lines
+    assert all(f["geometry"]["type"] == "LineString" for f in rail["features"])
+    # Every point lies in or just beyond Northern Ireland (the Dublin line reaches the border).
+    for f in rail["features"]:
+        for lon, lat in f["geometry"]["coordinates"]:
+            assert -8.2 < lon < -5.4 and 54.0 < lat < 55.3
+    report = json.loads((built[1] / f"risk-qa-{SNAPSHOT}.json").read_text(encoding="utf-8"))
+    assert report["rail"]["leftOut"] == {"Siding": 24}

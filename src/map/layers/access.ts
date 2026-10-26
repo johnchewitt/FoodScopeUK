@@ -60,7 +60,9 @@ import {
  * - in Local Authority Profiles (`mode: "profile"`): councils outlined, the selected council
  *   emphasised and comparison councils dashed, the stores, and in a deep profile the small areas
  *   shaded by the chosen measure (`state.profileMap`), drawn as graphics so hit tests stay fast;
- * - NI grocers from the FSA register (S29), a supplementary layer of hollow diamonds.
+ * - NI grocers from the FSA register (S29), a supplementary layer of hollow diamonds;
+ * - in the Risk Explorer's community access view (`mode: "risk"`): councils shaded by the share of
+ *   their small areas in the nation's highest-priority deciles, on the warm risk ramp; no stores.
  * Everything comes from `state.accessMap` (built by the feature from validated data); this
  * controller only draws it and turns pointer events into store actions (ADR-03). Colours follow
  * the basemap style (SH-08, ADR-0022).
@@ -201,11 +203,14 @@ function councilRenderer(
       mode: "outlines",
     };
   }
-  const fills = !local && m.choropleth !== null;
+  // UK Food Access outlines councils at local scale (stores take over); the Risk Explorer keeps its
+  // fills, because the councils are its subject and no stores are drawn.
+  const fills = (!local || m.mode === "risk") && m.choropleth !== null;
   if (fills) {
     const separator = { color: rgba(c.separator, c.separatorAlpha * 0.7), width: 0.4 };
+    const ramp = m.choropleth!.ramp === "risk" ? c.risk : c.seq;
     m.choropleth!.classes.forEach((codes, i) => {
-      const colour = rgba(c.seq[i] ?? c.seq[0]!);
+      const colour = rgba(ramp[i] ?? ramp[0]!);
       for (const code of codes)
         infos.push(
           new UniqueValueInfo({
@@ -326,6 +331,7 @@ export class AccessLayersController implements LayerController {
   private lastHover: string | null = null;
   private visible = false;
   private profile = false;
+  private risk = false;
   private areaClassOf: ProfileMapModel["classOf"] | null = null;
   private areaClassVersion = 0;
   private picking = false;
@@ -363,8 +369,13 @@ export class AccessLayersController implements LayerController {
 
   update(state: AppState): void {
     const m = state.accessMap;
-    const visible = (state.module === "access" || state.module === "profiles") && m !== null;
+    const visible =
+      m !== null &&
+      ((state.module === "access" && m.mode === "access") ||
+        (state.module === "profiles" && m.mode === "profile") ||
+        (state.module === "risks" && state.riskView === "access" && m.mode === "risk"));
     this.profile = visible && m?.mode === "profile";
+    this.risk = visible && m?.mode === "risk";
     this.reducedMotion = selectReducedMotion(state);
     // Point picking belongs to UK Food Access; a pick left open there never captures profile clicks.
     this.picking = visible && m?.mode === "access" && state.proximityPicking;
@@ -384,14 +395,15 @@ export class AccessLayersController implements LayerController {
     }
     this.local = selectLocalScale(state);
     if (m.councilsUrl !== this.councilsUrl || !this.councils) this.createCouncils(m);
-    if (m.storesUrl !== this.storesUrl || !this.stores) this.createStores(m);
+    // The Risk Explorer's council view has no stores: never download or create them for it.
+    if (m.mode !== "risk" && (m.storesUrl !== this.storesUrl || !this.stores)) this.createStores(m);
     if (!this.overlay) {
       this.overlay = new GraphicsLayer({ id: ACCESS_OVERLAY_LAYER_ID, listMode: "hide" });
       this.view.map?.add(this.overlay);
     }
 
     const choropleth = m.choropleth
-      ? `${m.choropleth.measure}:${m.choropleth.classes.map((c) => c.join(",")).join("/")}:${m.choropleth.noData.join(",")}`
+      ? `${m.choropleth.measure}:${m.choropleth.ramp ?? "seq"}:${m.choropleth.classes.map((c) => c.join(",")).join("/")}:${m.choropleth.noData.join(",")}`
       : "off";
     const councils = `${m.mode}|${style}|${this.local}|${choropleth}|${m.selectedCouncil ?? ""}|${m.compareCouncils.join(",")}`;
     if (councils !== this.signature.councils && this.councils) {
@@ -409,6 +421,8 @@ export class AccessLayersController implements LayerController {
       this.stores.featureReduction = clusterReduction(style);
       this.signature.storesStyle = style;
     }
+    // The Risk Explorer's council view draws no stores (set on every update, like the grocers).
+    if (this.stores) this.stores.visible = this.visible && m.mode !== "risk";
     if (m.storeWhere !== this.signature.where && this.stores) {
       this.stores.definitionExpression = m.storeWhere;
       this.signature.where = m.storeWhere;
@@ -650,11 +664,12 @@ export class AccessLayersController implements LayerController {
 
   private hitLayers(): unknown[] {
     const layers: unknown[] = [];
-    if (this.stores) layers.push(this.stores);
+    if (this.stores?.visible) layers.push(this.stores);
     if (this.grocers?.visible) layers.push(this.grocers);
     if (this.areas?.visible && this.areaModel) layers.push(this.areas);
-    // Profiles keep councils clickable at local scale (to move to a neighbour); UK Food Access does not.
-    if (this.councils && (!this.local || this.profile)) layers.push(this.councils);
+    // Profiles and the Risk Explorer keep councils clickable at local scale (their subject is the
+    // council); UK Food Access does not (its stores are).
+    if (this.councils && (!this.local || this.profile || this.risk)) layers.push(this.councils);
     return layers;
   }
 

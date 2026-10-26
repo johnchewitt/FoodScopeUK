@@ -4,6 +4,7 @@ import { KpiCard } from "@/components/dashboard/KpiCard";
 import { OriginsKpis } from "@/features/origins/OriginsKpis";
 import { AccessKpisLazy } from "@/features/access/lazy";
 import { ProfileKpisLazy } from "@/features/profiles/lazy";
+import { RiskKpisLazy } from "@/features/risks/lazy";
 import { SeasonalKpisLazy } from "@/features/seasonal/lazy";
 import { useAppStore } from "@/state/store";
 
@@ -72,6 +73,8 @@ export function KpiStrip() {
         <AccessKpisLazy />
       ) : module === "profiles" ? (
         <ProfileKpisLazy />
+      ) : module === "risks" ? (
+        <RiskKpisLazy />
       ) : (
         mod.plannedKpis.map((label) => <KpiCard key={label} label={label} state="empty" note={note} />)
       )}

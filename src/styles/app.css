@@ -1645,6 +1645,44 @@
 .swatch[data-class="5"] {
   background: var(--fs-map-seq-5);
 }
+/* Risk Explorer classes (Stage 6): the warm vulnerability ramp of the active basemap (palette.ts RISK_*). */
+.swatch[data-risk="0"] {
+  background: var(--fs-map-risk-0);
+}
+.swatch[data-risk="1"] {
+  background: var(--fs-map-risk-1);
+}
+.swatch[data-risk="2"] {
+  background: var(--fs-map-risk-2);
+}
+.swatch[data-risk="3"] {
+  background: var(--fs-map-risk-3);
+}
+.swatch[data-risk="4"] {
+  background: var(--fs-map-risk-4);
+}
+.swatch[data-risk="5"] {
+  background: var(--fs-map-risk-5);
+}
+/* Panel legends of the risk charts: the charts always use the dark-panel ramp (RISK_DARK), whatever the basemap. */
+.swatch[data-risk-panel="0"] {
+  background: var(--fs-risk-0);
+}
+.swatch[data-risk-panel="1"] {
+  background: var(--fs-risk-1);
+}
+.swatch[data-risk-panel="2"] {
+  background: var(--fs-risk-2);
+}
+.swatch[data-risk-panel="3"] {
+  background: var(--fs-risk-3);
+}
+.swatch[data-risk-panel="4"] {
+  background: var(--fs-risk-4);
+}
+.swatch[data-risk-panel="5"] {
+  background: var(--fs-risk-5);
+}
 .swatch--none {
   border-style: dashed;
   border-color: var(--fs-text-muted);
@@ -2927,4 +2965,142 @@ li[data-hidden-at-scale] .grocer-symbol {
 }
 .mix__seg:last-child {
   border-right: 0;
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Risk Explorer (Stage 6)
+ * ---------------------------------------------------------------------------------------------- */
+/* Long option labels stack one per row (view switch, port measures). */
+.segmented--stack {
+  grid-auto-flow: row;
+}
+.segmented--stack button {
+  justify-content: flex-start;
+  padding: 0 10px;
+}
+.field-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.unavailable-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-text-xs);
+  line-height: 1.45;
+  color: var(--fs-text-muted);
+}
+.unavailable-list li {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  gap: 6px;
+}
+.unavailable-list svg {
+  margin-top: 2px;
+  color: var(--fs-amber);
+}
+.chip--risk {
+  margin-left: 6px;
+  padding: 0 6px;
+  border-color: color-mix(in oklab, var(--fs-risk-4) 55%, transparent);
+  color: var(--fs-risk-5);
+  font-size: 10px;
+}
+.swatch--inline {
+  display: inline-block;
+  vertical-align: -1px;
+}
+/* Explain this risk: observed evidence first, interpretation labelled apart. */
+.explain > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  cursor: pointer;
+}
+.explain__body {
+  display: grid;
+  gap: 12px;
+  margin-top: 10px;
+}
+.explain__part p {
+  margin: 0;
+  font-size: var(--fs-text-sm);
+  line-height: 1.5;
+  color: var(--fs-text);
+}
+.explain__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 4px;
+  font-size: var(--fs-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--fs-text-muted);
+}
+.explain__title svg {
+  color: var(--fs-cyan);
+}
+.explain__evidence {
+  margin: 0;
+}
+.explain__interpretation {
+  padding: 8px 10px 8px 24px;
+  border-left: 2px solid var(--fs-amber);
+  border-radius: 0 var(--fs-radius-sm) var(--fs-radius-sm) 0;
+  background: var(--fs-amber-soft);
+}
+/* Legend samples for the logistics map: port circles and road widths on the map's own colours. */
+.port-sample {
+  flex: none;
+  display: inline-block;
+  border-radius: 50%;
+  background: var(--fs-map-port-fill);
+  box-shadow: 0 0 0 1px var(--fs-map-port-outline);
+}
+.port-sample--large {
+  width: 14px;
+  height: 14px;
+}
+.port-sample--entry {
+  width: 12px;
+  height: 12px;
+  box-shadow: 0 0 0 2px var(--fs-map-risk-4);
+}
+.port-sample--empty {
+  width: 9px;
+  height: 9px;
+  background: transparent;
+  box-shadow: 0 0 0 1.25px var(--fs-map-port-fill);
+}
+.road-sample {
+  flex: none;
+  display: inline-block;
+  width: 22px;
+  border-radius: 2px;
+  background: var(--fs-map-road-strategic);
+}
+.road-sample--strategic {
+  height: 2px;
+  opacity: 0.72;
+}
+.rail-sample {
+  flex: none;
+  display: inline-block;
+  width: 22px;
+  height: 0;
+  border-top: 2px dashed var(--fs-map-rail);
+}
+.road-sample--primary {
+  height: 1px;
+  opacity: 0.55;
+  background: var(--fs-map-road-primary);
+}
+.explain__topics {
+  margin-bottom: 4px;
 }

@@ -1,6 +1,50 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_URL_STATE, historyModeFor, isGssCode, parseUrlState, serializeUrlState } from "./urlState";
 
+describe("Risk Explorer state (RK-01 – RK-04)", () => {
+  it("reads and writes the view, fills, port, layers and measures", () => {
+    const qs =
+      "?m=risks&rv=logistics&rf=stress&pt=gbdvr&pms=roro&rd=0&rl=0&fm=wheat&pf=socio_demographic&rn=S";
+    const state = parseUrlState(qs);
+    expect(state).toMatchObject({
+      module: "risks",
+      riskView: "logistics",
+      riskFill: "stress",
+      port: "GBDVR",
+      portMeasure: "roro",
+      roads: false,
+      rail: false,
+      farmLayer: "wheat",
+      ppfiMeasure: "socio_demographic",
+      rankNation: "Scotland",
+    });
+    expect(parseUrlState(serializeUrlState(state))).toEqual(state);
+    expect(serializeUrlState({ ...DEFAULT_URL_STATE, module: "risks" })).toBe("?m=risks");
+  });
+
+  it.each([
+    ["?rv=global", "riskView", "supply"],
+    ["?rf=heat", "riskFill", "share"],
+    ["?pt=DOVER", "port", null],
+    ["?pt=FRCQF", "port", null],
+    ["?pms=food", "portMeasure", "international"],
+    ["?rd=no", "roads", true],
+    ["?rl=off", "rail", true],
+    ["?fm=barley", "farmLayer", "off"],
+    ["?pf=total", "ppfiMeasure", "combined"],
+    ["?rn=X", "rankNation", null],
+  ])("falls back safely for %s", (qs, key, expected) => {
+    expect(parseUrlState(qs)[key as keyof typeof DEFAULT_URL_STATE]).toBe(expected);
+  });
+
+  it("makes a view change a history entry", () => {
+    expect(historyModeFor(DEFAULT_URL_STATE, { ...DEFAULT_URL_STATE, riskView: "access" })).toBe("push");
+    expect(historyModeFor(DEFAULT_URL_STATE, { ...DEFAULT_URL_STATE, ppfiMeasure: "fuel_poverty" })).toBe(
+      "replace",
+    );
+  });
+});
+
 describe("parseUrlState", () => {
   it("returns defaults for an empty query", () => {
     expect(parseUrlState("")).toEqual(DEFAULT_URL_STATE);

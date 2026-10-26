@@ -1,5 +1,5 @@
 /**
- * Provisional Consulting Opportunities for a council profile (LP-08, first cut; Stage 7 builds the
+ * Provisional Consulting Opportunities for a council profile (LP-08, first cut; Stage 8 builds the
  * Consulting Insights module, CI-01 – CI-03). Deterministic rules map what the profile shows to
  * the ConsultingWhere workstreams named in the brief (§12). Each suggestion says why it appears
  * (the evidence), what further spatial analysis could show, and what data it would need.
