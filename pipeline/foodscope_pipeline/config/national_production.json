@@ -1,6 +1,6 @@
 {
-  "description": "Defra annual supply balances shown as national context for the five Food Origins baskets (Stage 5, LP-05; John, 25 Oct 2026). Values are read as published; the build checks that total supply = production + imports - exports and that the share = production / total supply. Never combined with HMRC monthly trade (spec SS-07).",
-  "verified": "2026-10-25",
+  "description": "Defra annual supply balances shown as national context for the Food Origins baskets (Stage 5, LP-05; John, 25 Oct 2026; the other eleven baskets 26 Oct 2026). Values are read as published; the build checks that total supply = production + imports - exports and that the share = production / total supply. Never combined with HMRC monthly trade (spec SS-07).",
+  "verified": "2026-10-26",
   "baskets": [
     {
       "basket": "tomatoes",
@@ -17,7 +17,45 @@
         "totalSupply": "Total supply",
         "productionShare": "Home production marketed as % of total supply"
       },
-      "notes": ["Defra: trade figures relate to fresh produce where distinguishable (source HMRC). Defra's product definitions differ from the Food Origins basket, so its import figure is not the one Food Origins shows."]
+      "notes": [
+        "Defra: trade figures relate to fresh produce where distinguishable (source HMRC). Defra's product definitions differ from the Food Origins basket, so its import figure is not the one Food Origins shows."
+      ]
+    },
+    {
+      "basket": "potatoes",
+      "sourceId": "S10",
+      "item": "defra.auk_2025_chapter7",
+      "kind": "auk",
+      "sheet": "Table_7_10",
+      "title": "Table 7.10c",
+      "table": "Agriculture in the United Kingdom 2025, Table 7.10c: potatoes supply and use",
+      "rows": {
+        "production": [
+          "Total production"
+        ],
+        "imports": [
+          "Imports"
+        ],
+        "exports": [
+          "Exports"
+        ],
+        "totalSupply": [
+          "Total new supply (raw equivalent)"
+        ],
+        "productionShare": [
+          "Production as % of total new supply for use in the UK"
+        ]
+      },
+      "labels": {
+        "production": "Total production (for human consumption and seed)",
+        "imports": "Imports (including processed, raw equivalent)",
+        "exports": "Exports (including processed, raw equivalent)",
+        "totalSupply": "Total new supply (raw equivalent)",
+        "productionShare": "Production as % of total new supply for use in the UK"
+      },
+      "notes": [
+        "Defra revised its potato methodology in 2017 (figures from 2011). Harvested production (Table 7.10a) is larger than the supply-and-use production because it also includes stockfeed and waste. Trade includes processed potatoes in raw equivalent."
+      ]
     },
     {
       "basket": "strawberries",
@@ -34,31 +72,38 @@
         "totalSupply": "Total supply",
         "productionShare": "Home production marketed as % of total supply"
       },
-      "notes": ["Defra: trade figures relate to fresh produce where distinguishable (source HMRC). Defra's product definitions differ from the Food Origins basket, so its import figure is not the one Food Origins shows."]
+      "notes": [
+        "Defra: trade figures relate to fresh produce where distinguishable (source HMRC). Defra's product definitions differ from the Food Origins basket, so its import figure is not the one Food Origins shows."
+      ]
     },
     {
-      "basket": "potatoes",
-      "sourceId": "S10",
-      "item": "defra.auk_2025_chapter7",
-      "kind": "auk",
-      "sheet": "Table_7_10",
-      "title": "Table 7.10c",
-      "table": "Agriculture in the United Kingdom 2025, Table 7.10c: potatoes supply and use",
-      "rows": {
-        "production": ["Total production"],
-        "imports": ["Imports"],
-        "exports": ["Exports"],
-        "totalSupply": ["Total new supply (raw equivalent)"],
-        "productionShare": ["Production as % of total new supply for use in the UK"]
-      },
+      "basket": "apples",
+      "sourceId": "S09",
+      "item": "defra.horticulture_2025",
+      "kind": "horticulture",
+      "sheet": "Table_12_Fruit_Supply_",
+      "crop": "Apples",
+      "table": "Horticulture statistics 2025, Table 12: supplies of fruit for the calendar year",
       "labels": {
-        "production": "Total production (for human consumption and seed)",
-        "imports": "Imports (including processed, raw equivalent)",
-        "exports": "Exports (including processed, raw equivalent)",
-        "totalSupply": "Total new supply (raw equivalent)",
-        "productionShare": "Production as % of total new supply for use in the UK"
+        "production": "Home production marketed",
+        "imports": "Imports",
+        "exports": "Exports",
+        "totalSupply": "Total supply",
+        "productionShare": "Home production marketed as % of total supply"
       },
-      "notes": ["Defra revised its potato methodology in 2017 (figures from 2011). Harvested production (Table 7.10a) is larger than the supply-and-use production because it also includes stockfeed and waste. Trade includes processed potatoes in raw equivalent."]
+      "notes": [
+        "Defra: trade figures relate to fresh produce where distinguishable (source HMRC). Defra's product definitions differ from the Food Origins basket, so its import figure is not the one Food Origins shows."
+      ]
+    },
+    {
+      "basket": "oranges",
+      "status": "not_published",
+      "note": "Defra publishes no UK production statistics for oranges: Defra's trade codes class every code in the basket as non-indigenous, that is, not grown in the UK on a commercially viable scale (S05)."
+    },
+    {
+      "basket": "bananas",
+      "status": "not_published",
+      "note": "Defra publishes no UK production statistics for bananas."
     },
     {
       "basket": "wheat",
@@ -69,11 +114,23 @@
       "title": "Table 7.2c",
       "table": "Agriculture in the United Kingdom 2025, Table 7.2c: wheat supply and use",
       "rows": {
-        "production": ["Production"],
-        "imports": ["Imports from the EU", "Imports from the rest of the world"],
-        "exports": ["Exports to the EU", "Exports to the rest of the world"],
-        "totalSupply": ["Total new supply"],
-        "productionShare": ["Production as % of total new supply for use in UK"]
+        "production": [
+          "Production"
+        ],
+        "imports": [
+          "Imports from the EU",
+          "Imports from the rest of the world"
+        ],
+        "exports": [
+          "Exports to the EU",
+          "Exports to the rest of the world"
+        ],
+        "totalSupply": [
+          "Total new supply"
+        ],
+        "productionShare": [
+          "Production as % of total new supply for use in UK"
+        ]
       },
       "labels": {
         "production": "Production",
@@ -82,12 +139,186 @@
         "totalSupply": "Total new supply",
         "productionShare": "Production as % of total new supply for use in the UK"
       },
-      "notes": ["Imports and exports are the sums of Defra's EU and rest-of-the-world rows. Cereal production is standardised to 14.5 % moisture (Defra note 2)."]
+      "notes": [
+        "Imports and exports are the sums of Defra's EU and rest-of-the-world rows. Cereal production is standardised to 14.5 % moisture (Defra note 2)."
+      ]
     },
     {
-      "basket": "bananas",
+      "basket": "rice",
       "status": "not_published",
-      "note": "Defra publishes no UK production statistics for bananas."
+      "note": "Defra publishes no UK production statistics for rice: Defra's trade codes class every code in the basket as non-indigenous, that is, not grown in the UK on a commercially viable scale (S05)."
+    },
+    {
+      "basket": "beef",
+      "sourceId": "S10",
+      "item": "defra.auk_2025_chapter8",
+      "kind": "auk",
+      "sheet": "Table_8_2",
+      "title": "Table 8.2d",
+      "table": "Agriculture in the United Kingdom 2025, Table 8.2d: beef and veal supply and use",
+      "rows": {
+        "production": [
+          "Home-fed production"
+        ],
+        "imports": [
+          "Imports from EU",
+          "Imports from the rest of the world"
+        ],
+        "exports": [
+          "Exports to EU",
+          "Exports to the rest of the world"
+        ],
+        "totalSupply": [
+          "Total new supply"
+        ],
+        "productionShare": [
+          "Home-fed production as % of new supply for use in the UK"
+        ]
+      },
+      "labels": {
+        "production": "Home-fed production (dressed carcase weight equivalent)",
+        "imports": "Imports (EU and rest of the world)",
+        "exports": "Exports (EU and rest of the world)",
+        "totalSupply": "Total new supply",
+        "productionShare": "Home-fed production as % of new supply for use in the UK"
+      },
+      "notes": [
+        "Thousand tonnes, dressed carcase weight equivalent: Defra converts boneless meat to bone-in weights, and its balance leaves out offal and preserved or manufactured meat (Defra note 6), so its import figure is not the one Food Origins shows. Imports and exports are the sums of Defra's EU and rest-of-the-world rows; imports include meat from live finished animals imported (note 8)."
+      ]
+    },
+    {
+      "basket": "sheep-goat",
+      "sourceId": "S10",
+      "item": "defra.auk_2025_chapter8",
+      "kind": "auk",
+      "sheet": "Table_8_4",
+      "title": "Table 8.4d",
+      "table": "Agriculture in the United Kingdom 2025, Table 8.4d: mutton and lamb supply and use",
+      "rows": {
+        "production": [
+          "Home-fed production"
+        ],
+        "imports": [
+          "Imports from the EU",
+          "Imports from the rest of the world"
+        ],
+        "exports": [
+          "Exports to the EU",
+          "Exports to the rest of the world"
+        ],
+        "totalSupply": [
+          "Total new supply"
+        ],
+        "productionShare": [
+          "Home-fed production as % of new supply for use in the UK"
+        ]
+      },
+      "labels": {
+        "production": "Home-fed production (dressed carcase weight equivalent)",
+        "imports": "Imports (EU and rest of the world)",
+        "exports": "Exports (EU and rest of the world)",
+        "totalSupply": "Total new supply",
+        "productionShare": "Home-fed production as % of new supply for use in the UK"
+      },
+      "notes": [
+        "Defra's balance is for mutton and lamb (sheep meat) only; the Food Origins basket also includes goat meat, which the trade codes do not separate. Thousand tonnes, dressed carcase weight equivalent. Imports and exports are the sums of Defra's EU and rest-of-the-world rows. A share above 100 % means the UK produced more than it used."
+      ]
+    },
+    {
+      "basket": "poultry",
+      "sourceId": "S10",
+      "item": "defra.auk_2025_chapter8",
+      "kind": "auk",
+      "sheet": "Table_8_5",
+      "title": "Table 8.5d",
+      "table": "Agriculture in the United Kingdom 2025, Table 8.5d: poultry meat supply and use",
+      "rows": {
+        "production": [
+          "Production"
+        ],
+        "imports": [
+          "Imports from the EU",
+          "Imports from the rest of the world"
+        ],
+        "exports": [
+          "Exports to  the EU",
+          "Exports to the rest of the world"
+        ],
+        "totalSupply": [
+          "Total new supply"
+        ],
+        "productionShare": [
+          "Production as % of new supply for use in the UK"
+        ]
+      },
+      "labels": {
+        "production": "Home-fed production (dressed carcase weight equivalent)",
+        "imports": "Imports (EU and rest of the world)",
+        "exports": "Exports (EU and rest of the world)",
+        "totalSupply": "Total new supply",
+        "productionShare": "Production as % of new supply for use in the UK"
+      },
+      "notes": [
+        "Thousand tonnes, dressed carcase weight equivalent. Defra's trade figures are fresh, chilled and frozen meat without offal (notes 7 and 14), and leave out the large trade in processed poultry; the Food Origins basket includes poultry offal. Poultry figures were revised on 3 September 2026 (note 30). Imports and exports are the sums of Defra's EU and rest-of-the-world rows."
+      ]
+    },
+    {
+      "basket": "milk-products",
+      "status": "not_published",
+      "note": "Agriculture in the UK (S10) publishes the supply and use of raw milk in litres, and how much milk goes into each product, but no supply balance for the milk products traded (cream, powders, yoghurt, whey, butter). None is shown."
+    },
+    {
+      "basket": "cheese",
+      "status": "not_published",
+      "note": "Agriculture in the UK (S10) publishes how much milk is used to make cheese, but no supply balance for cheese itself. None is shown."
+    },
+    {
+      "basket": "sugar",
+      "sourceId": "S10",
+      "item": "defra.auk_2025_chapter7",
+      "kind": "auk",
+      "sheet": "Table_7_6",
+      "title": "Table 7.6b",
+      "table": "Agriculture in the United Kingdom 2025, Table 7.6b: all sugar (refined basis)",
+      "rows": {
+        "production": [
+          "Production"
+        ],
+        "imports": [
+          "Imports from the EU",
+          "Imports from the rest of the world"
+        ],
+        "exports": [
+          "Exports to the EU",
+          "Exports to the rest of the world"
+        ],
+        "totalSupply": [
+          "Total new supply"
+        ],
+        "productionShare": [
+          "Production as % of total new supply for use in UK"
+        ]
+      },
+      "labels": {
+        "production": "Production (refined basis)",
+        "imports": "Imports (EU and rest of the world)",
+        "exports": "Exports (EU and rest of the world)",
+        "totalSupply": "Total new supply",
+        "productionShare": "Production as % of total new supply for use in the UK"
+      },
+      "notes": [
+        "All sugar on a refined basis; UK production comes from sugar beet, and sugar leaving the factory early in the new year counts towards the previous year (Defra note 10). Imports and exports are the sums of Defra's EU and rest-of-the-world rows."
+      ]
+    },
+    {
+      "basket": "coffee",
+      "status": "not_published",
+      "note": "Defra publishes no UK production statistics for coffee: Defra's trade codes class every code in the basket as non-indigenous, that is, not grown in the UK on a commercially viable scale (S05)."
+    },
+    {
+      "basket": "cocoa",
+      "status": "not_published",
+      "note": "Defra publishes no UK production statistics for cocoa: Defra's trade codes class every code in the basket as non-indigenous, that is, not grown in the UK on a commercially viable scale (S05)."
     }
   ]
 }

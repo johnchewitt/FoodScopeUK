@@ -81,6 +81,8 @@ def main(argv: list[str] | None = None) -> int:
     context.add_argument("--snapshot", required=True, help="raw snapshot of the context set YYYY-MM-DD (pipeline/raw/{ons,defra}/<snapshot>/)")
     context.add_argument("--reference-snapshot", required=True, help="raw snapshot of the stage5 set (ONS LAD lookup, Nomis TS045)")
     context.add_argument("--local-snapshot", required=True, help="local family snapshot holding lad-indicators.json (the council list)")
+    context.add_argument("--raw-snapshot", default=None, help="raw snapshot of the context set when it differs from --snapshot (the output)")
+    context.add_argument("--extra-defra-snapshot", action="append", default=[], help="another pipeline/raw/defra/<snapshot>/ folder for production items (repeatable)")
     context.add_argument("--out", default=None, help="output root (default: public/data)")
 
     risk = sub.add_parser("build-risk", help="OFFLINE: Stage 6 Risk Explorer data (water stress, ports, port of entry, roads, farming regions, Priority Places by council) → <out>/snapshots/<snapshot>/risk/ + reports/risk-qa-<snapshot>.json")
@@ -244,7 +246,9 @@ def main(argv: list[str] | None = None) -> int:
         out = Path(args.out) if args.out else DATA_DIR
         try:
             written = build_context(args.snapshot, context_inputs(RAW, CONFIG, DATA_DIR, args.snapshot,
-                                                                 args.reference_snapshot, args.local_snapshot),
+                                                                 args.reference_snapshot, args.local_snapshot,
+                                                                 raw_snapshot=args.raw_snapshot,
+                                                                 extra_defra_snapshots=tuple(args.extra_defra_snapshot)),
                                     out, REPORTS, SCHEMAS)
         except Exception as exc:  # noqa: BLE001 (report any input problem and fail the step)
             logging.error("build-context failed: %s", exc)

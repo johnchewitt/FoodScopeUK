@@ -6,7 +6,10 @@ Inputs (committed under pipeline/raw/, each checked against its SHA-256):
 - S20 Census 2021 households by car or van availability: Nomis TS045 for councils in England and
   Wales (2022 council codes) and NISRA's table builder for the 11 Northern Ireland councils
   (provided by John); the ONS LAD 2022 → LAD 2023 lookup turns the 2021 councils into today's;
-- S09 / S10 Defra Horticulture statistics 2025 and Agriculture in the UK 2025, chapter 7;
+- S09 / S10 Defra Horticulture statistics 2025 and Agriculture in the UK 2025, chapter 7 (context
+  set, 2026-10-25) and chapter 8, livestock (trade set, 2026-10-26: beef, sheep meat and poultry
+  for the sixteen baskets; John, 26 Oct 2026). Each production item is read from whichever Defra
+  raw folder lists it (`defra`, then `defra_extra`);
 - the council list of the published `local` family (May 2025 councils) and the council code
   changes in `config/lad_code_changes.json`.
 
@@ -80,19 +83,24 @@ class ContextInputs:
     local: Path  # public/data/snapshots/<local snapshot>/local/ (council list)
     code_changes: Path  # config/lad_code_changes.json
     production: Path  # config/national_production.json
+    defra_extra: tuple[Path, ...] = ()  # further pipeline/raw/defra/<snapshot>/ folders (production items)
 
 
 def default_inputs(raw_root: Path, config_dir: Path, data_dir: Path, snapshot: str, reference_snapshot: str,
-                   local_snapshot: str) -> ContextInputs:
+                   local_snapshot: str, raw_snapshot: str | None = None,
+                   extra_defra_snapshots: tuple[str, ...] = ()) -> ContextInputs:
+    """`snapshot` names the output; `raw_snapshot` (default: the same) the context set's raw folders."""
+    raw = raw_snapshot or snapshot
     return ContextInputs(
-        ons_context=raw_root / "ons" / snapshot,
+        ons_context=raw_root / "ons" / raw,
         ons=raw_root / "ons" / reference_snapshot,
         nomis=raw_root / "nomis" / reference_snapshot,
         nisra_cars=raw_root / "nisra-provided" / NISRA_CARS_EDITION,
-        defra=raw_root / "defra" / snapshot,
+        defra=raw_root / "defra" / raw,
         local=data_dir / "snapshots" / local_snapshot / "local",
         code_changes=config_dir / "lad_code_changes.json",
         production=config_dir / "national_production.json",
+        defra_extra=tuple(raw_root / "defra" / s for s in extra_defra_snapshots),
     )
 
 
@@ -231,10 +239,19 @@ def _measures_auk(path: Path, spec: dict) -> tuple[dict[int, dict], set[int]]:
     return out, provisional
 
 
-def _commodity(spec: dict, defra: Path, index: dict, qa: dict) -> dict:
+def _locate(item: str, folders: list[tuple[Path, dict]]) -> tuple[Path, dict]:
+    """The raw folder and index entry of a Defra item, from the first folder that lists it."""
+    for folder, index in folders:
+        if any(e["id"] == item for e in index["files"]):
+            return folder, files_for(index, item)[0]
+    raise ContextBuildError(f"{item}: in none of the Defra raw folders {[str(f) for f, _ in folders]}")
+
+
+def _commodity(spec: dict, folders: list[tuple[Path, dict]], qa: dict, used: dict[str, dict]) -> dict:
     if spec.get("status") == "not_published":
         return {"basket": spec["basket"], "status": "not_published", "note": spec["note"]}
-    entry = files_for(index, spec["item"])[0]
+    defra, entry = _locate(spec["item"], folders)
+    used[entry["id"]] = entry
     path = defra / entry["file"]
     reader = _measures_horticulture if spec["kind"] == "horticulture" else _measures_auk
     by_year, provisional = reader(path, spec)
@@ -349,15 +366,22 @@ def build_context(snapshot: str, inputs: ContextInputs, out_root: Path, reports_
     _validate(council_doc, schema_dir, "council-context")
 
     # National production context.
-    defra_index = load_index(inputs.defra)
+    folders = [(f, load_index(f)) for f in (inputs.defra, *inputs.defra_extra)]
     config = json.loads(inputs.production.read_text(encoding="utf-8"))
-    commodities = [_commodity(spec, inputs.defra, defra_index, qa) for spec in config["baskets"]]
+    used: dict[str, dict] = {}
+    commodities = [_commodity(spec, folders, qa, used) for spec in config["baskets"]]
+    # Names for the coverage text, from the basket configuration beside the production config.
+    baskets_path = inputs.production.parent / "trade_baskets.json"
+    names = ({b["id"]: b["label"].lower() for b in json.loads(baskets_path.read_text(encoding="utf-8"))["baskets"]}
+             if baskets_path.is_file() else {})
+    published = [names.get(c["basket"], c["basket"]) for c in commodities if c["status"] == "published"]
+    unpublished = [names.get(c["basket"], c["basket"]) for c in commodities if c["status"] != "published"]
     production_doc = {"schemaVersion": 1, "scope": "United Kingdom", "commodities": commodities}
     _validate(production_doc, schema_dir, "uk-production")
 
     out_dir = out_root / "snapshots" / snapshot / FAMILY
     out_dir.mkdir(parents=True, exist_ok=True)
-    defra_files = defra_index["files"]
+    defra_files = sorted(used.values(), key=lambda e: e["id"])
     datasets = [
         ("council-context.json", _compact(council_doc) + "\n", {
             "id": "context.council_context",
@@ -390,17 +414,18 @@ def build_context(snapshot: str, inputs: ContextInputs, out_root: Path, reports_
             "sourceIds": sorted({c["sourceId"] for c in commodities if c["status"] == "published"}),
             "referencePeriod": ", ".join(f"{c['basket']} {c['year']}{' (provisional)' if c['provisional'] else ''}"
                                          for c in commodities if c["status"] == "published"),
-            "coverage": "United Kingdom; tomatoes, strawberries, potatoes, wheat (bananas: no Defra production series)",
+            "coverage": (f"United Kingdom; {', '.join(published)}"
+                         + (f" (no Defra supply balance used: {', '.join(unpublished)})" if unpublished else "")),
             "provenance": "official_estimate", "licence": OGL,
             "attribution": DEFRA_SOURCE,
             "expectedCadence": "annual",
             "retrieval": {
-                "method": "Read offline from the committed Defra datasets (fetch-reference --set context)",
+                "method": "Read offline from the committed Defra datasets (fetch-reference --set context, --set trade)",
                 "source": "; ".join(f"{e['url']} (sha256 {e['sha256'][:12]}…)" for e in defra_files),
                 "retrievedAt": max(e["retrievedAt"] for e in defra_files),
-                "notes": ("Values as published (potato and wheat shares converted from fractions to per cent; wheat "
-                          "imports and exports are the sums of the EU and rest-of-the-world rows). Annual and national: "
-                          "never combined with HMRC monthly trade."),
+                "notes": ("Values as published (Agriculture in the UK shares converted from fractions to per cent; "
+                          "imports and exports are the sums of Defra's EU and rest-of-the-world rows where it splits "
+                          "them). Annual and national: never combined with HMRC monthly trade."),
             },
         }),
     ]
