@@ -57,7 +57,7 @@ def main(argv: list[str] | None = None) -> int:
     ons.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
     ref = sub.add_parser("fetch-reference", help="ONLINE: fetch a set of reference files into pipeline/raw/<publisher>/<snapshot>/ (incremental): 'stage5' = fetch-ons plus Nomis, MHCLG, NISRA and the FSA (NI food register); 'context' = ONS urban/rural classification and Defra annual production; 'stage6' = Risk Explorer inputs (FAO water stress via the World Bank, DfT ports, UKFSR theme 3, Defra June survey, Scottish Data Zone lookups, EMODnet port locations, ONS ITL1 and LSOA lookup, OS Open Roads download list, OSNI 50K transport lines, Translink NIR railway network)")
     ref.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
-    ref.add_argument("--set", default="stage5", choices=("stage5", "context", "stage6", "trade"), help="which files to fetch (default: stage5)")
+    ref.add_argument("--set", default="stage5", choices=("stage5", "context", "stage6", "trade", "stage7"), help="which files to fetch (default: stage5)")
     build = sub.add_parser("build-trade", help="OFFLINE: raw HMRC cache → public/data/snapshots/<snapshot>/trade/")
     build.add_argument("--snapshot", required=True, help="snapshot id YYYY-MM-DD (must exist in the raw cache)")
 
@@ -134,6 +134,10 @@ def main(argv: list[str] | None = None) -> int:
                 ("ons", (), ons_files.CONTEXT_QUERIES),
                 ("defra", defra_stats.FILES, ()),
             ]
+        elif args.set == "stage7":
+            from foodscope_pipeline.sources import stage7_files as s7
+
+            publishers = [("ons", (), s7.ONS_QUERIES), ("scotgov", s7.SCOTGOV_FILES, ())]
         elif args.set == "trade":
             from foodscope_pipeline.sources import trade_files
 

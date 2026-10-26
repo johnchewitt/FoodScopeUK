@@ -23,6 +23,9 @@ name: Fetch reference data (ONS, Nomis, MHCLG, NISRA, FSA, Defra, World Bank, Df
 # The `trade` set (snapshot 2026-10-26; John, 26 Oct 2026: the other eleven Food Origins baskets)
 # adds Defra's trade codes and descriptions (S05, gate G3) and Agriculture in the UK chapter 8,
 # livestock (S10: meat and dairy supply).
+# The `stage7` set (snapshot 2026-10-26; John's Stage 7 brief and decision, 26 Oct 2026) adds every
+# LSOA population-weighted centroid in England and Wales (S15) and the Scottish Government's Data Zone
+# Centroids 2022 with Census 2022 population (S17), for UK-wide small areas in the Scenario Lab.
 # SNAPSHOT and SET below name the set this branch fetches; earlier sets stay in their own folders.
 # The build sandbox cannot reach these sites; everything after this download runs offline from the
 # cache (same pattern as the HMRC ingest, ADR-0016). Data reaches `main` only through a pull request.
@@ -50,7 +53,7 @@ jobs:
     timeout-minutes: 30
     env:
       SNAPSHOT: "2026-10-26"
-      SET: "trade"
+      SET: "stage7"
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
