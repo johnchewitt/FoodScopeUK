@@ -71,6 +71,23 @@ export type PpfiMeasure = (typeof PPFI_MEASURES)[number];
 /** Nations, for within-nation rankings (P11). */
 export const NATIONS = ["England", "Wales", "Scotland", "Northern Ireland"] as const;
 export type Nation = (typeof NATIONS)[number];
+/**
+ * Scenario Lab (Stage 7, SC-01 – SC-05): A international supply disruption, B supermarket closure,
+ * C domestic production shock, D port disruption. Each run is reproducible from the URL (SC-05).
+ */
+export const SCENARIO_KINDS = ["import", "closure", "production", "port"] as const;
+export type ScenarioKind = (typeof SCENARIO_KINDS)[number];
+/** What the scenario map shows: the observed baseline or the scenario (SC-03). */
+export const SCENARIO_VIEWS = ["scenario", "baseline"] as const;
+export type ScenarioView = (typeof SCENARIO_VIEWS)[number];
+/** Slider limits (SC-02): percentages are whole numbers; durations and recovery in months. */
+export const SCENARIO_LIMITS = {
+  reduction: { min: 0, max: 100 },
+  duration: { min: 1, max: 12 },
+  recovery: { min: 0, max: 6 },
+  substitution: { min: 0, max: 100 },
+  portMonths: { min: 1, max: 12 },
+} as const;
 const NATION_PARAM: Record<Nation, string> = {
   England: "E",
   Wales: "W",
@@ -119,6 +136,24 @@ export interface UrlState {
   farmLayer: FarmLayer;
   ppfiMeasure: PpfiMeasure;
   rankNation: Nation | null;
+  /**
+   * Scenario Lab (SC-05). The commodity (c), partner (p), measure (ms), store (st) and port (pt) are
+   * shared with the other modules; these hold the scenario's own settings: the kind; for A the
+   * baseline start (year, month; null = January of the latest complete year), reduction, duration,
+   * linear recovery and substitution assumption (%); for C the production reduction; for D the
+   * capacity reduction and its duration; and whether the map shows the baseline or the scenario.
+   */
+  scenarioKind: ScenarioKind;
+  scenarioYear: number | null;
+  scenarioMonth: number | null;
+  scenarioReduction: number;
+  scenarioDuration: number;
+  scenarioRecovery: number;
+  scenarioSubstitution: number;
+  productionReduction: number;
+  portReduction: number;
+  portMonths: number;
+  scenarioView: ScenarioView;
 }
 
 export const DEFAULT_URL_STATE: UrlState = {
@@ -152,6 +187,17 @@ export const DEFAULT_URL_STATE: UrlState = {
   farmLayer: "off",
   ppfiMeasure: "combined",
   rankNation: null,
+  scenarioKind: "import",
+  scenarioYear: null,
+  scenarioMonth: null,
+  scenarioReduction: 30,
+  scenarioDuration: 1,
+  scenarioRecovery: 0,
+  scenarioSubstitution: 0,
+  productionReduction: 20,
+  portReduction: 50,
+  portMonths: 1,
+  scenarioView: "scenario",
 };
 
 const LAYER_PARAM: Record<StoreLayer, string> = { supermarket: "s", convenience: "c", other: "o" };
@@ -205,6 +251,13 @@ export function isSmallAreaCode(value: string): boolean {
   return SMALL_AREA_CODE.test(value);
 }
 
+/** A whole number within [min, max] from a query value, or the fallback. */
+function intParam(v: string | null, limits: { min: number; max: number }, fallback: number): number {
+  if (v === null || !/^\d{1,3}$/.test(v)) return fallback;
+  const n = Number(v);
+  return n >= limits.min && n <= limits.max ? n : fallback;
+}
+
 /** Comparison councils: valid, distinct, not the selected council, at most MAX_COMPARE. */
 export function cleanCompare(codes: readonly string[], lad: string | null): string[] {
   const out: string[] = [];
@@ -249,6 +302,14 @@ export function parseUrlState(search: string): UrlState {
   const fm = params.get("fm");
   const pf = params.get("pf");
   const rn = params.get("rn");
+  const sk = params.get("sk");
+  const sy = params.get("sy");
+  const smo = params.get("smo");
+  const sv = params.get("sv");
+  const scenarioYearNum = sy !== null && /^\d{4}$/.test(sy) ? Number(sy) : NaN;
+  const scenarioMonthNum = smo !== null && /^\d{1,2}$/.test(smo) ? Number(smo) : NaN;
+  const L = SCENARIO_LIMITS;
+  const D = DEFAULT_URL_STATE;
 
   const monthNum = mo !== null && /^\d{1,2}$/.test(mo) ? Number(mo) : NaN;
   const yearNum = y !== null && /^\d{4}$/.test(y) ? Number(y) : NaN;
@@ -298,6 +359,23 @@ export function parseUrlState(search: string): UrlState {
     farmLayer: (FARM_LAYERS as readonly string[]).includes(fm ?? "") ? (fm as FarmLayer) : "off",
     ppfiMeasure: (PPFI_MEASURES as readonly string[]).includes(pf ?? "") ? (pf as PpfiMeasure) : "combined",
     rankNation: (Object.keys(NATION_PARAM) as Nation[]).find((n) => NATION_PARAM[n] === rn) ?? null,
+    scenarioKind: (SCENARIO_KINDS as readonly string[]).includes(sk ?? "") ? (sk as ScenarioKind) : "import",
+    scenarioYear:
+      Number.isInteger(scenarioYearNum) && scenarioYearNum >= 1990 && scenarioYearNum <= 2100
+        ? scenarioYearNum
+        : null,
+    scenarioMonth:
+      Number.isInteger(scenarioMonthNum) && scenarioMonthNum >= 1 && scenarioMonthNum <= 12
+        ? scenarioMonthNum
+        : null,
+    scenarioReduction: intParam(params.get("sr"), L.reduction, D.scenarioReduction),
+    scenarioDuration: intParam(params.get("sd"), L.duration, D.scenarioDuration),
+    scenarioRecovery: intParam(params.get("srk"), L.recovery, D.scenarioRecovery),
+    scenarioSubstitution: intParam(params.get("ss"), L.substitution, D.scenarioSubstitution),
+    productionReduction: intParam(params.get("spr"), L.reduction, D.productionReduction),
+    portReduction: intParam(params.get("sdr"), L.reduction, D.portReduction),
+    portMonths: intParam(params.get("sdm"), L.portMonths, D.portMonths),
+    scenarioView: sv === "baseline" ? "baseline" : "scenario",
   };
 }
 
@@ -332,6 +410,21 @@ export function serializeUrlState(state: UrlState): string {
   if (state.farmLayer !== DEFAULT_URL_STATE.farmLayer) params.set("fm", state.farmLayer);
   if (state.ppfiMeasure !== DEFAULT_URL_STATE.ppfiMeasure) params.set("pf", state.ppfiMeasure);
   if (state.rankNation !== null) params.set("rn", NATION_PARAM[state.rankNation]);
+  if (state.scenarioKind !== DEFAULT_URL_STATE.scenarioKind) params.set("sk", state.scenarioKind);
+  if (state.scenarioYear !== null) params.set("sy", String(state.scenarioYear));
+  if (state.scenarioMonth !== null) params.set("smo", String(state.scenarioMonth));
+  const scenarioNumbers: [keyof UrlState, string][] = [
+    ["scenarioReduction", "sr"],
+    ["scenarioDuration", "sd"],
+    ["scenarioRecovery", "srk"],
+    ["scenarioSubstitution", "ss"],
+    ["productionReduction", "spr"],
+    ["portReduction", "sdr"],
+    ["portMonths", "sdm"],
+  ];
+  for (const [key, param] of scenarioNumbers)
+    if (state[key] !== DEFAULT_URL_STATE[key]) params.set(param, String(state[key]));
+  if (state.scenarioView !== DEFAULT_URL_STATE.scenarioView) params.set("sv", state.scenarioView);
   if (state.lad !== null) params.set("lad", state.lad);
   if (state.area !== null) params.set("sa", state.area);
   if (state.compare.length) params.set("cmp", state.compare.join(","));
@@ -346,7 +439,8 @@ export function historyModeFor(prev: UrlState, next: UrlState): "push" | "replac
     prev.overlay !== next.overlay ||
     prev.lad !== next.lad ||
     prev.commodity !== next.commodity ||
-    prev.riskView !== next.riskView
+    prev.riskView !== next.riskView ||
+    prev.scenarioKind !== next.scenarioKind
     ? "push"
     : "replace";
 }

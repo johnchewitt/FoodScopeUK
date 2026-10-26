@@ -79,7 +79,7 @@ The brief asks for a complete, tested first release over an extensive unfinished
 | Authority comparison | ✅ 2–4 LADs, basic indicators | full benchmarking by authority type | |
 | Food Access & Vulnerability (national small-area layers) | demo LADs only | ✅ national | |
 | UK Food Resilience — Risk Explorer (three views, explanations; Stage 6) | ✅ | + user weights and sensitivity (RK-05) | |
-| Scenario Lab | ✅ Import disruption (A/E), Store closure (D) | ✅ Short Straits (B), Wheat harvest (C) | |
+| Scenario Lab (Stage 7) | ✅ Import disruption (A/E), Store closure (D, every small area of the UK), production shock on Defra balances (C), port disruption on DfT tonnage (B, general freight; food only where recorded at the port) | + Short Straits by food group (B), multi-store closures | |
 | Consulting Insights + opportunity statements | ✅ | | |
 | PDF export of profiles | ✅ | + scenario & insight exports | |
 | Ask FOODSCOPE | | ✅ deterministic command engine | LLM via secure backend |
@@ -260,6 +260,9 @@ Common requirements:
 - **SC-03** Baseline vs scenario shown side by side on map, KPIs and charts; reset to baseline always available.
 - **SC-04** Output wording: "estimated exposure" / "volume of recorded imports affected"; never "shortage", "empty shelves" or retailer impact.
 - **SC-05** Every scenario run is reproducible from the URL.
+- **SC-06** (Stage 7 brief) Named scenarios are saved in the browser, compared (up to four with the current one, each kind on its own measures, never ranked or combined) and exported (CSV, JSON) with provenance, sources, confidence and the reproducing link. Each scenario shows a data-confidence rating with its reasons and a methodology panel: source data, formula, geographic boundary, user assumptions, known limitations, what the outputs mean and do not mean.
+
+Stage 7 (John's brief, 26 Oct 2026) labels the scenarios A–D in the UI: A = SC-A/E, B = SC-D, C = SC-C, D = SC-B (ADR-0026).
 
 Scenarios:
 
@@ -267,8 +270,8 @@ Scenarios:
 |---|---|---|---|
 | **SC-A/E** | 1 | Country × commodity import disruption (Spanish tomatoes is the preset; any partner/commodity selectable — this generalises brief scenarios A and E) | Apply reduction to the partner's recorded monthly net mass over the disruption window with recovery profile; report affected tonnes, share of recorded imports affected by month, post-disruption partner shares and HHI. |
 | **SC-D** | 1 | Supermarket closure | Remove the selected store; recompute straight-line nearest-store distance for affected small areas; report change in population beyond each threshold and in mean/median distance, by deprivation decile. |
-| **SC-B** | 2 | Short Straits / Port of Dover disruption | Uses published UKFSR 2024 shares of import volume via the Short Straits by commodity group as the *observed* input; HMRC port-level data only if verified suitable. User sets disruption intensity and duration. |
-| **SC-C** | 2 | UK wheat harvest reduction | Applies a user shock to the latest Defra annual wheat production; reports the change alongside recorded imports and Defra's published supply context. No inventory or substitution modelling. |
+| **SC-B** | 1 (port), 2 (Short Straits) | Port disruption | Stage 7: a capacity reduction at any DfT major port, on DfT inward tonnage from abroad (even spread over the months, stated); commodity exposure only where recorded at the port (DfT agricultural products; UKFSR food, feed and drink share where its port of entry is the port). Release 2: the Short Straits by food group (UKFSR covers Dover with the Channel Tunnel). |
+| **SC-C** | 1 | Domestic production shock | Stage 7: a user shock to Defra's latest published UK production for any basket with a supply balance (wheat, potatoes, tomatoes, strawberries, apples, sugar, beef, sheep meat, poultry); imports and exports held; consumption and stocks not in the balance and not estimated; no inventory or substitution modelling. Baskets without a balance are a documented future extension. |
 
 ### 5.8 ConsultingWhere Insights (CI) — Release 1
 
@@ -407,6 +410,12 @@ Baseline months come from the user-selected reference year (default: latest comp
 
 **Store closure (SC-D)**: for each small area *i* with representative point *x_i* and population *P_i*, `d_i = min_s dist(x_i, s)` over qualifying stores *s* (straight-line, metres, computed in a projected CRS — British National Grid EPSG:27700 for GB, Irish Transverse Mercator EPSG:2157 for Northern Ireland). Outputs before/after: `Σ P_i · [d_i > T]` for each threshold *T*, population-weighted mean and median distance, broken down by within-nation deprivation decile. *Scenario-modelled.*
 
+Stage 7 implementation: qualifying stores are GEOLYTIX supermarkets (class D5, 280 m² and over) in a UK council; the small areas are every LSOA 2021 (England and Wales), Data Zone 2022 (Scotland) and Data Zone 2021 (Northern Ireland) at their population-weighted centroids, with Census populations (Scotland: Census 2022). The pipeline publishes each area's three nearest supermarkets over all of its part of the UK, so a single closure replaces `d_i` by the second distance exactly. Thresholds T = 1, 2 and 5 km, over the closed store's council; supermarkets within 1, 2 and 5 km of the closed store; retailer concentration of the council's supermarkets by count (HHI); deciles: England only (IoD 2025).
+
+**Production shock (SC-C)** on one Defra balance (production *P*, imports *I*, exports *E*, total supply *S* = *P* + *I* − *E*, one table and year), reduction *r*: `P' = P(1 − r)`, `S' = S − rP` (imports and exports held), production share `P'/S'` against `P/S`; the production removed as a share of supply `rP/S`. *Scenario-modelled.*
+
+**Port disruption (SC-B, Stage 7)** at port *p*, reduction *r* for *m* months: affected inward tonnage from abroad `T_p · r · m/12` (annual DfT tonnage, even spread stated); share of UK major-port inwards affected `T_p · r / Σ_q T_q`; agricultural products (cargo category 23) likewise where DfT records them; food, feed and drink share affected `F_p · r` where UKFSR's port-of-entry share `F_p` is for the port itself (groups including the Channel Tunnel are not attributed). *Scenario-modelled.*
+
 
 ### 6.6 Risk Explorer indicators (Stage 6, ADR-0024)
 
@@ -516,7 +525,7 @@ Mapped from brief §19, with how each is verified.
 | 7 | LAD selection zooms to correct boundary | E2E: view extent contains Belfast/Manchester boundary extent |
 | 8 | Two real authority profiles work | E2E: Belfast and Manchester profiles render all sections with provenance |
 | 9 | Indicators match sources and formulas | Unit tests on `src/analysis` with hand-checked fixtures; documented reconciliations |
-| 10 | Two scenarios work transparently | Unit + E2E for SC-A/E and SC-D; assumptions panel present |
+| 10 | Two scenarios work transparently | Unit + E2E for SC-A/E and SC-D; assumptions panel present (Stage 7 adds SC-B and SC-C as above, and SC-06) |
 | 11 | Insights give meaningful evidence-based output | Rule tests: given indicator pattern → expected workstreams and cited evidence |
 | 12 | Loading, empty and error states handled | Component tests with mocked failures; E2E with blocked data request |
 | 13 | Production build succeeds | CI `npm run build` |

@@ -790,3 +790,15 @@ Figures shown by the Risk Explorer, recomputed from the raw files with independe
 | S05 vs baskets (G3) | `check-baskets` (`pipeline/reports/basket-codes-2026-10-26.json`) | One SITC division per basket; eight definitional differences, all stated |
 | S10 chapter 8, S10 Table 7.6b, S09 Table 12 | Build: supply identity and share for 2025 | Exact for beef, mutton and lamb, poultry, sugar and apples |
 
+
+### Stage 7 data step and module (26 October 2026)
+
+| Check | Method | Result |
+|---|---|---|
+| S15 every LSOA centroid, S17 Data Zone Centroids 2022 | `fetch-reference --set stage7` (run 40312453094); structure read in the build | 35,672 LSOAs (equal to the count query and the lookup); 7,392 Data Zones in EPSG:27700, equal to the 2022 lookup (S32) |
+| Small-area populations | `build-scenario` against each office's published national totals | England +8, Wales +51, Northern Ireland −7 (perturbation); Scotland 5,439,565 (Census 2022) against NRS's rounded 5,436,600 |
+| Three nearest supermarkets | Recomputed from the published grid coordinates (every 97th area), against geodesic distances (3,000 areas) and by brute force (synthetic) | Same stores, within the metre of rounding; geodesic within 10.5 m (0.12 % beyond 1 km, BNG scale factor) |
+| Scenario A figures shown | Independent script over the trade snapshot (no app code): tomatoes, Spain, Jan–Mar 2025, 30 % | Allocated 100,929.183 t, Spain 22,617.722 t, affected 6,785.317 t (6.72 %), residual 94,143.866 t, HHI 2,571.7 → 2,661.4: equal to the app (asserted in `src/features/scenarios/model.test.ts`) |
+| Scenario B figures shown | Independent brute-force script over `closure-gb.json` (no app code): Morrisons Whalley Range Manchester closed | 17 areas, 26,731 residents, mean +822 m, max +1,491 m, 2 supermarkets left within 2 km, Manchester residents > 2 km 0 → 4,563: equal to the app |
+| Scenario C | Defra identity and shock arithmetic (wheat 2025, 15 %) | 1,793.7 kt removed; production share 82.9 % → 80.5 % |
+| Scenario D figures shown | Independent script over `ports.json`: Dover 2025 inwards from abroad, 50 % for one month | 12,512.825 kt a year; 521.368 kt affected; 2.63 % of UK major-port inwards; UKFSR's Dover/Eurotunnel group not attributed |

@@ -3,6 +3,7 @@ import { TRADE_INDEX_ID } from "@/features/origins/useOrigins";
 import { loadAccess } from "@/features/access/load";
 import { preloadProfiles } from "@/features/profiles/load";
 import { preloadRisks } from "@/features/risks/load";
+import { preloadScenarios } from "@/features/scenarios/load";
 import { preloadSeasonal } from "@/features/seasonal/load";
 import {
   LOCAL_INDICATORS_DATASET_ID,
@@ -39,6 +40,8 @@ export async function prefetchStartupData(
   }
   // The Risk Explorer's chunk carries its own validators; its data loads with the view.
   if (url.module === "risks") preloadRisks();
+  // The Scenario Lab's chunk (models, validators, charts); its data loads with the scenario.
+  if (url.module === "scenarios") preloadScenarios();
   if (!TRADE_MODULES.includes(url.module)) {
     await client.prefetchQuery(manifestQuery);
     return;

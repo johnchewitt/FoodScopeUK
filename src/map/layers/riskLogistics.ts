@@ -12,6 +12,7 @@ import { hexToRgb } from "@/analysis/colour";
 import { selectMapColourStyle, type AppState, type HoverRisk, type RiskMapModel } from "@/state/store";
 import { MAP_COLOURS, type MapStyle } from "@/styles/palette";
 import { ensureHoverHighlight, HOVER_HIGHLIGHT } from "../highlight";
+import { portGraphicsData } from "./portSymbols";
 import {
   RISK_PORTS_LAYER_ID,
   RISK_RAIL_LAYER_ID,
@@ -40,8 +41,6 @@ import type { HitResult, LayerController, LayerStatusReporter, ViewLike, ViewPoi
 
 type Rgba = [number, number, number, number];
 const rgba = (hex: string, alpha = 1): Rgba => [...hexToRgb(hex), alpha];
-/** Marker sizes are in points; the model's radii are in px. */
-const PX_TO_PT = 0.75;
 
 export interface RiskLogisticsActions {
   selectPort(locode: string | null): void;
@@ -50,29 +49,6 @@ export interface RiskLogisticsActions {
 
 interface HighlightableLayerView {
   highlight?(target: unknown, options?: { name?: string }): { remove(): void };
-}
-
-/** Port symbols, largest first (so small ports are drawn on top and stay clickable). */
-export function portGraphicsData(m: RiskMapModel, style: MapStyle) {
-  const c = MAP_COLOURS[style];
-  const ordered = [...m.ports].sort((a, b) => b.radius - a.radius || a.locode.localeCompare(b.locode));
-  return ordered.map((p) => {
-    const selected = p.locode === m.selectedPort;
-    const empty = p.radius <= 0;
-    const size = (empty ? 7 : 2 * p.radius) * PX_TO_PT;
-    const ring = selected
-      ? { color: rgba(c.selection), width: 2.75 }
-      : p.foodEntry
-        ? { color: rgba(c.risk[4]!), width: 2 }
-        : { color: rgba(c.portOutline, 0.95), width: 1 };
-    return {
-      locode: p.locode,
-      point: p.point,
-      size,
-      fill: empty ? ([0, 0, 0, 0] as Rgba) : rgba(c.portFill, 0.92),
-      outline: empty && !selected && !p.foodEntry ? { color: rgba(c.portFill, 0.9), width: 1.25 } : ring,
-    };
-  });
 }
 
 function regionRenderer(m: RiskMapModel, style: MapStyle): UniqueValueRenderer {
@@ -174,7 +150,11 @@ export class RiskLogisticsController implements LayerController {
 
   update(state: AppState): void {
     const m = state.riskMap;
-    const visible = state.module === "risks" && state.riskView === "logistics" && m !== null;
+    // Also the Scenario Lab's port disruption (Scenario D), which publishes its own model.
+    const visible =
+      m !== null &&
+      ((state.module === "risks" && state.riskView === "logistics") ||
+        (state.module === "scenarios" && state.scenarioKind === "port"));
     if (visible !== this.visible) {
       this.visible = visible;
       for (const l of this.layers()) l.visible = visible;
@@ -395,7 +375,7 @@ export class RiskLogisticsController implements LayerController {
             this.report?.("error", err instanceof Error ? err.message : "Ports failed to draw");
         });
     }
-    const sig = `${style}|${m.portKey}|${m.selectedPort ?? ""}|${m.ports.map((p) => `${p.locode}:${p.radius.toFixed(2)}:${p.foodEntry ? 1 : 0}`).join(",")}`;
+    const sig = `${style}|${m.portKey}|${m.selectedPort ?? ""}|${m.ports.map((p) => `${p.locode}:${p.radius.toFixed(2)}:${p.foodEntry ? 1 : 0}:${p.scenarioRadius?.toFixed(2) ?? ""}`).join(",")}`;
     if (sig === this.signature.ports) return;
     this.signature.ports = sig;
     this.setHoverHighlight(null);
@@ -480,3 +460,5 @@ export class RiskLogisticsController implements LayerController {
     this.hoverHighlight = this.layerView?.highlight?.(graphic, { name: HOVER_HIGHLIGHT }) ?? null;
   }
 }
+
+export { portGraphicsData };

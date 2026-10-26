@@ -8,6 +8,7 @@ import UniqueValueRenderer from "@arcgis/core/renderers/UniqueValueRenderer";
 import UniqueValueInfo from "@arcgis/core/renderers/support/UniqueValueInfo";
 import CIMSymbol from "@arcgis/core/symbols/CIMSymbol";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
+import SimpleLineSymbol from "@arcgis/core/symbols/SimpleLineSymbol";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
 import { symbolicArc } from "@/analysis/arcs";
 import { hexToRgb } from "@/analysis/colour";
@@ -225,7 +226,10 @@ export class OriginsLayersController implements LayerController {
     const animate = !selectReducedMotion(state);
     const m = this.model;
     const partnerSig = m.partners
-      .map((p) => `${p.key}:${p.shareClass}:${p.stressClass ?? "-"}:${p.flow ? p.flowWidth.toFixed(2) : ""}`)
+      .map(
+        (p) =>
+          `${p.key}:${p.shareClass}:${p.stressClass ?? "-"}:${p.flow ? p.flowWidth.toFixed(2) : ""}:${p.ghostWidth?.toFixed(2) ?? ""}`,
+      )
       .join("|");
     // Hover is drawn with the view's highlight, so it is not part of the renderer's signature.
     const polygons = `${style}|${m.fill ?? "share"}|${m.commodityId}|${m.periodLabel}|${m.measure}|${partnerSig}|${state.partner ?? ""}`;
@@ -426,8 +430,28 @@ export class OriginsLayersController implements LayerController {
       g.attributes = { key, targetWidth: target.get(key) ?? 0 };
       g.symbol = symbolFor(key, from.get(key) ?? 0);
     }
+    // Scenario A: the disrupted partner's baseline width, dashed, under its narrower scenario line.
+    const ghosts = m.partners
+      .filter((p) => p.ghostWidth !== undefined && p.point)
+      .map(
+        (p) =>
+          new Graphic({
+            geometry: new Polyline({
+              paths: [symbolicArc(p.point!, m.ukAnchor, 64)],
+              spatialReference: wgs84,
+            }),
+            attributes: { key: p.key, ghost: true },
+            symbol: new SimpleLineSymbol({
+              color: rgba(MAP_COLOURS[this.style].selection, 0.55),
+              width: Math.max(1.5, p.ghostWidth! * 0.75),
+              style: "short-dash",
+              cap: "butt",
+            }),
+          }),
+      );
     this.flows.removeAll();
     this.flows.addMany([
+      ...ghosts,
       ...ordered.map((k) => this.flowGraphics.get(k)!),
       new Graphic({
         geometry: new Point({ longitude: m.ukAnchor[0], latitude: m.ukAnchor[1] }),

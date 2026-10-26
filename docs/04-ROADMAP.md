@@ -19,7 +19,7 @@
 | **4** | **Supermarket network** ✅ merged (PR #9) and deployed | R1 | 3, G7 ✅, and the LAD/GEOLYTIX data built in the pre-Stage 4 data step (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth; basemap choice: dark grey, light grey, imagery (SH-08) |
 | **5** | **Local Authority Profiles** ✅ merged (PR #14) and deployed | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
 | **6** | **UK Food Resilience — Risk Explorer** (supply exposure, logistics, community access) ✅ merged (PRs #15 and #17) and deployed; live checks to do | R1 | 2, 3, 5, G6, G14–G18 | Tomatoes: concentration, partners' water stress and an estimated exposure to one supplier; ports and road corridors; councils' priority places within each nation — each with "Explain this risk" |
-| 7 | Scenario Lab (import disruption, store closure; port and production shocks as far as the data allows) — data step on `data/stage-7-inputs` | R1 | 3, 5, 6, G19 | Spanish tomato preset; close a supermarket anywhere in the UK and see the nearest-store change for every small area |
+| 7 | Scenario Lab (import disruption, store closure; port and production shocks as far as the data allows) — data step PR #21, module on `stage/7-scenario-lab` | R1 | 3, 5, 6, G19 | Spanish tomato preset; close a supermarket anywhere in the UK and see the nearest-store change for every small area |
 | 8 | Consulting Insights + PDF export | R1 | 5, 6, 7, D3, D7 | One-click profile PDF that matches the screen |
 | 9 | Hardening and Release 1 | R1 | 1–8 | Release 1 tagged and deployed; acceptance criteria evidenced |
 | 10 | Release 2 | R2 | 9 | National access layers, Scenarios B/C, Ask FOODSCOPE, 3D globe |
@@ -289,6 +289,22 @@ Deliverables (the brief, with the spec's SC requirements): scenario framework (S
 
 Exit: exposure calculations, zero and full disruption, missing observations, closure and nearest-store recalculation, population, comparison, URL persistence and reset unit-tested; E2E runs the scenarios; Stages 1–6 unchanged; wording audit shows no "shortage" or "forecast" language.
 
+Status on 26 October 2026 (evidence in `docs/stage-reports/stage-7.md`, ADR-0026):
+- The data step is PR #21 (CI green).
+- The module is built on `stage/7-scenario-lab`, stacked on the data branch:
+  - all four scenarios;
+  - presets;
+  - results, charts and methodology;
+  - saved scenarios with comparison and export;
+  - URL state.
+- In the sandbox every exit criterion is met:
+  - the figures shown were recomputed independently from the published files;
+  - the listed behaviours are unit- and component-tested;
+  - three E2E tests run the scenarios on the map;
+  - the Stage 1–6 tests pass unchanged;
+  - the wording audit is a test.
+- Not yet done: the live checks with a real GPU and the Esri basemap (B48).
+
 ## 10. Stage 8 — Consulting Insights + PDF export
 
 Deliverables: workstream content (CI-01, approved copy D7); rule engine with "why am I seeing this?" (CI-02/03); opportunity statements for authority, commodity and scenario contexts; PDF export (EX-01..05) with checksum; CSV export.
@@ -391,3 +407,4 @@ Rules of engagement:
 | 2026-10-26 | All sixteen baskets of spec §6.1 (John's request): HMRC snapshot 2026-10-26; gate G3 against Defra's trade codes; groups by SITC division; the Risk Explorer's commodity–country matrix compares a basket with its group; Defra production context where Defra publishes a supply balance (apples, sugar, beef, mutton and lamb, poultry), "not grown commercially in the UK" from Defra's indigeneity for oranges, rice, coffee, cocoa and bananas | ADR-0025; S01, S05, S09, S10 |
 | 2026-10-26 | HMRC filters: at most ten OR-ed comparisons per query (a 24-clause filter answered HTTP 400) | S01 |
 | 2026-10-26 | John's Stage 7 brief (Scenario Lab): the closure scenario covers every small area of the UK, data fetched and verified first in its own pull request; straight-line distances only for now (routed travel time stays Release 3) | John (decisions); G19; S15, S16, S17 |
+| 2026-10-26 | Stage 7 built: one typed scenario model for controls, URL, saving and export; A on the trade map with the disrupted partner's baseline dashed; B on precomputed three-nearest supermarkets (no browser spatial search), an Access scenario mode and a closure layer; C on Defra's published balances only; D on DfT tonnage, food exposure only where recorded at the port (never Dover's tunnel-inclusive figure, never by partner country); saved scenarios in the browser, compared kind by kind, never combined | ADR-0026; SC-01 – SC-06 |
