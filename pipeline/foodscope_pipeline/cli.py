@@ -85,6 +85,14 @@ def main(argv: list[str] | None = None) -> int:
     context.add_argument("--extra-defra-snapshot", action="append", default=[], help="another pipeline/raw/defra/<snapshot>/ folder for production items (repeatable)")
     context.add_argument("--out", default=None, help="output root (default: public/data)")
 
+    scen = sub.add_parser("build-scenario", help="OFFLINE: Scenario Lab closure inputs (small areas, supermarkets, three nearest by straight line) → <out>/snapshots/<snapshot>/scenario/ + reports/scenario-qa-<snapshot>.json")
+    scen.add_argument("--snapshot", required=True, help="output snapshot YYYY-MM-DD")
+    scen.add_argument("--raw-snapshot", required=True, help="raw snapshot of the stage7 set (pipeline/raw/{ons,scotgov}/<date>/: LSOA centroids, Scotland's Data Zone centroids)")
+    scen.add_argument("--stage6-snapshot", required=True, help="raw snapshot of the stage6 set (every LSOA's council, Scotland's 2022 Data Zone lookup)")
+    scen.add_argument("--reference-snapshot", required=True, help="raw snapshot of the stage5 set (Nomis TS001, IoD 2025, NISRA Data Zones)")
+    scen.add_argument("--local-snapshot", required=True, help="local family snapshot holding stores.geojson and lad-indicators.json")
+    scen.add_argument("--out", default=None, help="output root (default: public/data)")
+
     g3 = sub.add_parser("check-baskets", help="OFFLINE: gate G3 — the baskets against Defra's trade codes (S05) and HMRC's codes → reports/basket-codes-<snapshot>.json")
     g3.add_argument("--snapshot", required=True, help="trade snapshot YYYY-MM-DD (public/data/snapshots/<snapshot>/trade/)")
     g3.add_argument("--defra-snapshot", required=True, help="raw snapshot holding the Defra trade codes (pipeline/raw/defra/<snapshot>/)")
@@ -262,6 +270,21 @@ def main(argv: list[str] | None = None) -> int:
             logging.error("build-context failed: %s", exc)
             return 1
         print(f"wrote {len(written)} files for context snapshot {args.snapshot}")
+        return 0
+
+    if args.command == "build-scenario":
+        from foodscope_pipeline.scenario import build_scenario, default_inputs as scenario_inputs
+
+        out = Path(args.out) if args.out else DATA_DIR
+        try:
+            written = build_scenario(args.snapshot, scenario_inputs(RAW, DATA_DIR, args.raw_snapshot,
+                                                                   args.stage6_snapshot, args.reference_snapshot,
+                                                                   args.local_snapshot),
+                                     out, REPORTS, SCHEMAS)
+        except Exception as exc:  # noqa: BLE001 (report any input problem and fail the step)
+            logging.error("build-scenario failed: %s", exc)
+            return 1
+        print(f"wrote {len(written)} files for scenario snapshot {args.snapshot}")
         return 0
 
     if args.command == "check-baskets":
