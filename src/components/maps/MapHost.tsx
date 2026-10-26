@@ -13,6 +13,7 @@ import { BasemapStatusController } from "@/map/layers/basemapStatus";
 import { OriginsLayersController } from "@/map/layers/origins";
 import { ReferenceOutlinesController } from "@/map/layers/referenceOutlines";
 import { RiskLogisticsController } from "@/map/layers/riskLogistics";
+import { ScenarioClosureController } from "@/map/layers/scenarioClosure";
 import { ViewStateController } from "@/map/layers/viewState";
 import { GO_TO_TARGETS, type ViewLike } from "@/map/types";
 import { createBasemap } from "@/services/arcgis/basemap";
@@ -95,6 +96,13 @@ export default function MapHost() {
       }),
     [],
   );
+  const closureLayer = useMemo(
+    () =>
+      new ScenarioClosureController({
+        setHoverScenario: (hover) => useAppStore.getState().setHoverScenario(hover),
+      }),
+    [],
+  );
   const controller = useMemo(
     () =>
       new MapController(useAppStore, [
@@ -102,10 +110,11 @@ export default function MapHost() {
         originsLayers,
         accessLayers,
         riskLayers,
+        closureLayer,
         basemapWatcher,
         viewState,
       ]),
-    [referenceLayer, originsLayers, accessLayers, riskLayers, basemapWatcher, viewState],
+    [referenceLayer, originsLayers, accessLayers, riskLayers, closureLayer, basemapWatcher, viewState],
   );
 
   // The basemap choice exists only with an API key (SH-08); without one the outline map is used.

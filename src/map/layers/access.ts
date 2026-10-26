@@ -174,9 +174,10 @@ function councilRenderer(
   const outlineOnly = (outline: { color: Rgba; width: number }) =>
     new SimpleFillSymbol({ color: [0, 0, 0, 0], outline });
   const infos: UniqueValueInfo[] = [];
-  if (m.mode === "profile") {
+  if (m.mode === "profile" || m.mode === "scenario") {
     // Profiles: every council outlined; the selected one emphasised (outline and a light tint) and
-    // comparison councils dashed in the same colour.
+    // comparison councils dashed in the same colour. The Scenario Lab's closure map emphasises the
+    // closed supermarket's council the same way.
     for (const code of m.compareCouncils)
       infos.push(
         new UniqueValueInfo({
@@ -332,6 +333,8 @@ export class AccessLayersController implements LayerController {
   private visible = false;
   private profile = false;
   private risk = false;
+  /** Scenario Lab closure: supermarkets clickable (the store to close), councils only drawn. */
+  private scenario = false;
   private areaClassOf: ProfileMapModel["classOf"] | null = null;
   private areaClassVersion = 0;
   private picking = false;
@@ -373,9 +376,11 @@ export class AccessLayersController implements LayerController {
       m !== null &&
       ((state.module === "access" && m.mode === "access") ||
         (state.module === "profiles" && m.mode === "profile") ||
-        (state.module === "risks" && state.riskView === "access" && m.mode === "risk"));
+        (state.module === "risks" && state.riskView === "access" && m.mode === "risk") ||
+        (state.module === "scenarios" && state.scenarioKind === "closure" && m.mode === "scenario"));
     this.profile = visible && m?.mode === "profile";
     this.risk = visible && m?.mode === "risk";
+    this.scenario = visible && m?.mode === "scenario";
     this.reducedMotion = selectReducedMotion(state);
     // Point picking belongs to UK Food Access; a pick left open there never captures profile clicks.
     this.picking = visible && m?.mode === "access" && state.proximityPicking;
@@ -669,7 +674,8 @@ export class AccessLayersController implements LayerController {
     if (this.areas?.visible && this.areaModel) layers.push(this.areas);
     // Profiles and the Risk Explorer keep councils clickable at local scale (their subject is the
     // council); UK Food Access does not (its stores are).
-    if (this.councils && (!this.local || this.profile || this.risk)) layers.push(this.councils);
+    if (this.councils && !this.scenario && (!this.local || this.profile || this.risk))
+      layers.push(this.councils);
     return layers;
   }
 
@@ -706,7 +712,8 @@ export class AccessLayersController implements LayerController {
     }
     const { results } = await this.view.hitTest(e, { include: this.hitLayers() });
     const hit = this.hitFrom(results);
-    if (!hit) return this.actions.selectStore(null);
+    // A click beside the stores keeps the Scenario Lab's closed supermarket (only another store replaces it).
+    if (!hit) return this.scenario ? undefined : this.actions.selectStore(null);
     if (hit.kind === "store") return this.actions.selectStore(hit.id);
     if (hit.kind === "grocer") return;
     if (hit.kind === "area") return this.actions.selectArea(hit.code);

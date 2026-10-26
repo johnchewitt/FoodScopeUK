@@ -19,7 +19,16 @@ import { FLIGHT_DURATION_MS, GO_TO_TARGETS, type LayerController, type ViewLike 
 
 type Store = UseBoundStore<StoreApi<AppState>>;
 
-type FrameFamily = "trade" | "access" | "profile" | "riskLogistics" | "riskAccess" | null;
+type FrameFamily =
+  | "trade"
+  | "access"
+  | "profile"
+  | "riskLogistics"
+  | "riskAccess"
+  | "scenarioClosure"
+  | "scenarioPort"
+  | "scenarioUk"
+  | null;
 
 /**
  * Which frame a view uses: the trade views (Food Origins, Seasonal Supply, Risk Explorer supply)
@@ -27,13 +36,22 @@ type FrameFamily = "trade" | "access" | "profile" | "riskLogistics" | "riskAcces
  * Access, Local Authority Profiles and the other two Risk Explorer views have their own; other
  * modules none.
  */
-function frameFamily(state: Pick<AppState, "module" | "riskView">): FrameFamily {
+function frameFamily(state: Pick<AppState, "module" | "riskView" | "scenarioKind">): FrameFamily {
   if (selectTradeMapModule(state)) return "trade";
   if (state.module === "access") return "access";
   if (state.module === "profiles") return "profile";
   if (state.module === "risks") return state.riskView === "logistics" ? "riskLogistics" : "riskAccess";
+  if (state.module === "scenarios")
+    return state.scenarioKind === "closure"
+      ? "scenarioClosure"
+      : state.scenarioKind === "port"
+        ? "scenarioPort"
+        : "scenarioUk";
   return null;
 }
+
+/** The whole UK (with Shetland), for the national scenarios (Scenario C). */
+const UK_FRAME: { key: string; bbox: BBox } = { key: "uk", bbox: [-8.3, 49.8, 1.9, 60.9] };
 
 /** The frame the current view asks for, if any. */
 function moduleFrame(state: AppState): { key: string; bbox: BBox } | null {
@@ -43,6 +61,9 @@ function moduleFrame(state: AppState): { key: string; bbox: BBox } | null {
   if (family === "profile") return state.accessMap?.mode === "profile" ? state.accessMap.frame : null;
   if (family === "riskLogistics") return state.riskMap?.frame ?? null;
   if (family === "riskAccess") return state.accessMap?.mode === "risk" ? state.accessMap.frame : null;
+  if (family === "scenarioClosure") return state.scenarioMap?.frame ?? null;
+  if (family === "scenarioPort") return state.riskMap?.frame ?? null;
+  if (family === "scenarioUk") return UK_FRAME;
   return null;
 }
 
@@ -58,6 +79,10 @@ const FIT_OPTIONS: Partial<Record<NonNullable<FrameFamily>, FitOptions>> = {
   profile: { minSpanLon: 0, minSpanLat: 0, maxZoom: PROFILE_MAX_ZOOM },
   riskLogistics: { minSpanLon: 0, minSpanLat: 0 },
   riskAccess: { minSpanLon: 0, minSpanLat: 0 },
+  // A closure frames the areas around one supermarket: at least about 6 km across, never street level.
+  scenarioClosure: { minSpanLon: 0.09, minSpanLat: 0.055, maxZoom: PROFILE_MAX_ZOOM },
+  scenarioPort: { minSpanLon: 0, minSpanLat: 0 },
+  scenarioUk: { minSpanLon: 0, minSpanLat: 0 },
 };
 
 /**
