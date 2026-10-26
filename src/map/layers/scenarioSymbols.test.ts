@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { RiskMapModel, ScenarioClosureMapModel } from "@/state/store";
 import { MAP_COLOURS } from "@/styles/palette";
 import { closureGraphicsData } from "./closureSymbols";
+import { ghostBodySymbolData, ghostEdgesSymbolData, ghostExtent, GHOST_DASH } from "./ghostSymbols";
 import { portGraphicsData } from "./portSymbols";
 
 /** Obviously synthetic closure map: areas "a" and "b", stores 1 (closed), 2 and 3. */
@@ -82,5 +83,30 @@ describe("port symbols with a scenario (Scenario D)", () => {
     expect(a[0]!.fill[3]).toBe(0);
     expect(a[1]!.size).toBeLessThan(a[0]!.size);
     expect(g.filter((x) => x.locode === "GBBBB")).toHaveLength(1);
+  });
+});
+
+describe("baseline ghost of the disrupted partner (Scenario A, review)", () => {
+  type Layer = { width: number; color: number[]; effects?: { type: string; offset?: number }[] };
+  const layers = (d: { symbol: { symbolLayers: unknown[] } }) => d.symbol.symbolLayers as Layer[];
+
+  it("is as wide as the baseline line with its casing, in the flow line's units", () => {
+    // A flow line of width w draws a core w and a casing w + 2 (flowLineSymbolData).
+    expect(ghostExtent(12)).toBe(14);
+    expect(ghostExtent(-1)).toBe(2);
+    expect(layers(ghostBodySymbolData(12, "dark"))[0]!.width).toBe(14);
+  });
+
+  it("draws dashed edges at ± half the baseline extent, in the selection colour", () => {
+    const edges = layers(ghostEdgesSymbolData(12, "light"));
+    expect(edges.map((l) => l.effects![0]!.offset)).toEqual([7, -7]);
+    expect(edges.every((l) => l.effects![1]!.type === "CIMGeometricEffectDashes")).toBe(true);
+    expect(GHOST_DASH).toEqual([4, 3]);
+    const sel = MAP_COLOURS.light.selection;
+    const rgb = [1, 3, 5].map((i) => parseInt(sel.slice(i, i + 2), 16));
+    expect(edges[0]!.color.slice(0, 3)).toEqual(rgb);
+    // The body is faint (it sits under the scenario line); the edges are near-opaque.
+    expect(layers(ghostBodySymbolData(12, "light"))[0]!.color[3]).toBeLessThan(64);
+    expect(edges[0]!.color[3]).toBeGreaterThan(200);
   });
 });
