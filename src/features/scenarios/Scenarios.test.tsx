@@ -190,7 +190,7 @@ describe("Scenario Lab", { timeout: 90_000 }, () => {
     expect(kpi("Food, feed and drink entry share")).toHaveTextContent("Not applicable");
     // Review: Dover's zero is agricultural dry bulk only, beside its Ro-Ro and container share.
     expect(kpi("Agricultural dry bulk affected")).toHaveTextContent(
-      /None recorded as dry bulk · 97\.6 % of inwards here is Ro-Ro or containers/,
+      /97\.6 % Ro-Ro or containers · contents not recorded/,
     );
     expect(within(insights()).getAllByText(/includes the Channel Tunnel/).length).toBeGreaterThan(0);
     const dover = useAppStore.getState().riskMap?.ports.find((p) => p.locode === "GBDVR");

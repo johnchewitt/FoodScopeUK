@@ -1708,7 +1708,9 @@ export function buildPortModel(
       // A zero here is "none recorded as dry bulk", never "no food": say what DfT cannot see.
       detail:
         agri.baseline === null || agri.baseline === 0
-          ? `None recorded as dry bulk${unitisedShare !== null && unitisedShare > 0 ? ` · ${formatShare(unitisedShare)} of inwards here is Ro-Ro or containers, contents not recorded` : ""}`
+          ? unitisedShare !== null && unitisedShare > 0
+            ? `${formatShare(unitisedShare)} Ro-Ro or containers · contents not recorded`
+            : "None recorded as dry bulk"
           : `grain, soya, tapioca… · ${formatShare(agri.shareOfUk)} of UK major-port agricultural dry bulk`,
     },
     {

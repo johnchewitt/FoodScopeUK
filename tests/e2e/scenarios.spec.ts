@@ -181,7 +181,7 @@ test.describe("Scenario Lab", () => {
     await expect.poll(() => viewData(page, "riskSelectedPort"), { timeout: 20_000 }).toBe("GBDVR");
     // Review: DfT's zero is agricultural dry bulk only; the chart covers the one disrupted month.
     await expect(kpis(page).getByRole("article", { name: "Agricultural dry bulk affected" })).toContainText(
-      "Ro-Ro or containers, contents not recorded",
+      "Ro-Ro or containers · contents not recorded",
     );
     await expect(
       insights(page).getByText("Dover: inward tonnage by cargo group over 1 month (2025)"),

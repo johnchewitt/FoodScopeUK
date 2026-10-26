@@ -45,12 +45,13 @@ So main and the live site have the Stage 7 data but **not the Scenario Lab**. A 
 
 ### 1. Scenario D: the disrupted months and DfT's categories (analytical integrity)
 - **The chart covers the disrupted months.** It charts annual tonnage × months ÷ 12, the same even spread as the cards and the table: Dover's Ro-Ro for one month is 983.4 kt → 491.7 kt. Its title names the window, for example "over 1 month (2025)".
-- **"Agricultural dry bulk".** The card and row are renamed. A zero reads "None recorded as dry bulk · 97.6 % of inwards here is Ro-Ro or containers, contents not recorded".
+- **"Agricultural dry bulk".** The card and row are renamed. At Dover the card shows 0 t with "97.6 % Ro-Ro or containers · contents not recorded": the share leads, so it stays visible when the detail line is cut. A port with no unitised freight says "None recorded as dry bulk".
 - **Unitised freight row.** A results row adds Ro-Ro and container freight over the disruption, labelled "contents not recorded" and "any origin". DfT does not split cargo groups by origin.
 - **Tests:** unit tests for `overMonths` and `portUnitised`; model tests for Dover and Liverpool; a component test; E2E.
 
 ![Before: one month drawn as a year](2026-10-26/before-d-cargo-chart.jpg)
 ![After: the disrupted month](2026-10-26/after-d-cargo-chart.jpg)
+![After: Dover's dry-bulk card](2026-10-26/after-d-dry-bulk-card.jpg)
 
 ### 2. Scenario A: the baseline outline is visible (cartography)
 The ghost is now CIM, in the flow line's own units (`ghostSymbols.ts`, SDK-free and unit-tested). It has two parts:
@@ -119,9 +120,9 @@ Opening Scenario B still runs one long task: parsing and validating the closure 
 | `npm run typecheck`, `npm run lint`, `npm run format`, `npm run check:banned` | Pass |
 | `npm test` | **616 passed** (44 files; 604 before) |
 | `VITE_ARCGIS_ASSETS=local npm run build`, `npm run build:e2e-basemap` | Pass |
-| `npm run e2e` (all specs, software WebGL) | E2E_RESULT |
-| `cd pipeline && uv run pytest` | PYTEST_RESULT (pipeline unchanged) |
-| axe, every scenario at 390, 1024 and 1920 px, panels open | No serious or critical violations (moderate only: the shell's skip link and the KPI heading order, both shared) |
+| `npm run e2e` (all specs, software WebGL) | **78 passed** (16.6 min), including the new checks: Scenario A's ghost, the closure and port credits, Scenario D's dry-bulk card and one-month chart. After a last wording change to the dry-bulk card, `scenarios.spec.ts` and `responsive.spec.ts` were run again: 12 passed |
+| `cd pipeline && uv run pytest` | 318 passed, 1 skipped (pipeline unchanged) |
+| axe, every scenario at 390, 1024 and 1920 px, panels open (final build) | No serious or critical violations; moderate only, both shared with the shell: the skip link outside a landmark and the KPI cards' heading order |
 
 ## 7. Not verified
 - **Real GPU and the Esri basemaps** (B48, B64): the ghost's CIM offset and dash effects over light grey and imagery, the closure symbols, and the attribution bar's look. The sandbox has software WebGL and the offline outline map. The ghost and the credits were checked there, in screenshots and through `view.attributionItems`.

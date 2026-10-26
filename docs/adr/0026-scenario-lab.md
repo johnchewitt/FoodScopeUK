@@ -99,7 +99,7 @@ The specification already had SC-01 – SC-05 and formulas for import disruption
 
    The first version (a `SimpleLineSymbol` at 0.75 × the baseline width, under the wider scenario line with its casing and glow) was invisible at −30 %. The flows layer reports the disrupted partners in `data-flow-ghosts`.
 2. **Scenario D's window.** Cards, the results table and the cargo-group chart all cover the disrupted months (annual DfT tonnage × *m* ÷ 12, an even spread). The chart had applied the reduction to the whole year.
-3. **Scenario D's categories.** DfT's cargo category 23 is called "agricultural dry bulk". A port with none (Dover) says "none recorded as dry bulk", with the share of its inwards in Ro-Ro units or containers, whose contents DfT does not record. A results row adds that unitised freight over the disruption, any origin.
+3. **Scenario D's categories.** DfT's cargo category 23 is called "agricultural dry bulk". At a port with none (Dover), the card's detail leads with the share of its inwards in Ro-Ro units or containers, whose contents DfT does not record ("97.6 % Ro-Ro or containers · contents not recorded"). A results row adds that unitised freight over the disruption, any origin.
 4. **Map credits for graphics.**
    - GraphicsLayers carry no `copyright`, so the ports' credit (DfT, OGL; EMODnet, CC BY 4.0) is a credit layer: an empty GeoJSONLayer with the dataset's attribution, shown and hidden with the ports (`src/map/layers/creditLayer.ts`; Risk Explorer logistics and Scenario D).
    - Scenario B's supermarkets are drawn from the closure inputs, so the scenario's store layer credits both closure datasets (`mergeAttributions`), not GEOLYTIX alone.

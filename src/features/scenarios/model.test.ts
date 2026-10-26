@@ -276,9 +276,8 @@ describe("Scenario D model (ports)", () => {
     expect(agri.label).toBe("Agricultural dry bulk affected");
     expect(agri.indicator.value).toBe(0);
     // Independent check (python over ports.json): 12,304.196 kt of 12,606.921 kt any origin.
-    expect(agri.detail).toBe(
-      "None recorded as dry bulk · 97.6 % of inwards here is Ro-Ro or containers, contents not recorded",
-    );
+    // The share leads, so it stays visible when the card's detail line is cut.
+    expect(agri.detail).toBe("97.6 % Ro-Ro or containers · contents not recorded");
     expect(m.selected!.unitisedShare).toBeCloseTo(0.97599, 4);
     const unitised = m.rows.find((r) => r.id === "unitised")!;
     expect(unitised.label).toMatch(/contents not recorded/);

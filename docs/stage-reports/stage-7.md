@@ -125,4 +125,7 @@ John asked for a review of the completed stage. It is reported in full in `docs/
 
 **Mobile and tablet.** The Scenario Lab was checked at 1920, 1366, 1024, 820 (portrait) and 390 px for each scenario: no horizontal scroll, panels reachable, axe with no serious or critical violation. This replaces the earlier note that the mobile layout was covered only by the shared rules.
 
-**Tests after the review.** 616 unit and component tests (604 before). E2E results are in the review report.
+**Tests after the review.**
+- 616 unit and component tests pass (604 before).
+- The full E2E run passed 78 of 78.
+- The pipeline passed 318, with 1 skipped.
