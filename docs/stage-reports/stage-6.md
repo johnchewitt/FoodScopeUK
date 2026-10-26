@@ -188,8 +188,8 @@ One possible issue was not fixed: the supply view leaves its water-stress trade 
 | `npm run typecheck`; `npm run lint`; `npm run format`; `npm run check:banned` | 0 errors; 0 warnings; all formatted; OK |
 | `npm test` | **498 passed** |
 | `cd pipeline && uv run pytest` | **197 passed** |
-| `VITE_ARCGIS_ASSETS=local npm run build`; `npm run build:e2e-basemap` | Production build succeeds; basemap build in the E2E run |
-| `npm run e2e` | Running at the time of this commit; result in the pull request |
+| `VITE_ARCGIS_ASSETS=local npm run build`; `npm run build:e2e-basemap` | Both succeed |
+| `npm run e2e` | **74 passed** (15.0 min; chromium and basemap projects), including the basemap request-count test of B49 |
 | Screenshot, logistics view at Belfast | NI roads and railway lines drawn; `data-risk-roads-ni="on"` |
 
 Not verified: the extract's exact OpenStreetMap date (John: downloaded in 2026); the live site (B48).
