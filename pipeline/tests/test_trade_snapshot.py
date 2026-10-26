@@ -1,7 +1,10 @@
-"""Checks on the committed HMRC trade snapshot, rebuilt from the committed raw responses.
+"""Checks on the committed HMRC trade snapshots, rebuilt from the committed raw responses.
 
-The raw cache in pipeline/raw/hmrc/<snapshot>/ holds the real API responses retrieved on
-23 Oct 2026 (see its index.json for URLs and timestamps), so these tests need no network.
+Each raw cache in pipeline/raw/hmrc/<snapshot>/ holds the real API responses (see its index.json
+for URLs and timestamps), so these tests need no network. 2026-10-23 holds the five Stage 2
+baskets; 2026-10-26 all sixteen of spec §6.1 (John, 26 Oct 2026). Every committed snapshot is
+rebuilt for the baskets in its own cache; the index is compared only where the cache holds every
+basket in the configuration.
 """
 
 from __future__ import annotations
@@ -13,70 +16,123 @@ import pytest
 
 from foodscope_pipeline.cli import CONFIG, POINTS, RAW_HMRC
 from foodscope_pipeline.publish import DATA_DIR
-from foodscope_pipeline.sources.hmrc_ots import RawCache, load_baskets
+from foodscope_pipeline.sources.hmrc_ots import HmrcError, RawCache, load_baskets, load_groups
 from foodscope_pipeline.trade import build_trade
 
-SNAPSHOT = "2026-10-23"
-BASKETS = load_baskets(CONFIG / "trade_baskets.json")
+SNAPSHOT = "2026-10-23"  # Stage 2's snapshot: the figures fixed by STAGE2_FINGERPRINTS below
+ALL_BASKETS = load_baskets(CONFIG / "trade_baskets.json")
+GROUPS = load_groups(CONFIG / "trade_baskets.json")
+SNAPSHOTS = sorted(
+    d.name for d in RAW_HMRC.iterdir()
+    if (d / "index.json").is_file() and (DATA_DIR / "snapshots" / d.name / "trade" / "index.json").is_file()
+)
+
+
+def cached_baskets(snapshot: str) -> list:
+    cache = RawCache(RAW_HMRC / snapshot)
+    out = []
+    for b in ALL_BASKETS:
+        try:
+            cache.parts(f"ots-aggregate-{b.id}")
+        except HmrcError:
+            continue
+        out.append(b)
+    return out
+
+
+BASKETS = cached_baskets(SNAPSHOT)
+PAIRS = [(s, b.id) for s in SNAPSHOTS for b in cached_baskets(s)]
+
+
+def is_complete(snapshot: str) -> bool:
+    return len(cached_baskets(snapshot)) == len(ALL_BASKETS)
 
 
 @pytest.fixture(scope="module")
-def rebuilt(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
-    out = tmp_path_factory.mktemp("rebuild")
-    build_trade(SNAPSHOT, RAW_HMRC, out / "data", out / "reports", BASKETS, POINTS, CONFIG / "hmrc_country_crosswalk.json")
-    return out / "data", out / "reports"
+def rebuilt_all(tmp_path_factory: pytest.TempPathFactory) -> dict[str, tuple[Path, Path]]:
+    out: dict[str, tuple[Path, Path]] = {}
+    for snapshot in SNAPSHOTS:
+        root = tmp_path_factory.mktemp(f"rebuild-{snapshot}")
+        build_trade(snapshot, RAW_HMRC, root / "data", root / "reports", cached_baskets(snapshot), POINTS,
+                    CONFIG / "hmrc_country_crosswalk.json", groups=GROUPS if is_complete(snapshot) else None)
+        out[snapshot] = (root / "data", root / "reports")
+    return out
 
 
-def test_raw_cache_checksums_hold() -> None:
-    cache = RawCache(RAW_HMRC / SNAPSHOT)
-    assert cache.meta["latestMonthId"] == 202608
+@pytest.fixture(scope="module")
+def rebuilt(rebuilt_all: dict[str, tuple[Path, Path]]) -> tuple[Path, Path]:
+    return rebuilt_all[SNAPSHOT]
+
+
+def test_there_is_a_complete_snapshot_or_only_the_stage2_one() -> None:
+    assert SNAPSHOT in SNAPSHOTS
+    assert all(is_complete(s) for s in SNAPSHOTS if s != SNAPSHOT)
+
+
+@pytest.mark.parametrize("snapshot", SNAPSHOTS)
+def test_raw_cache_checksums_hold(snapshot: str) -> None:
+    cache = RawCache(RAW_HMRC / snapshot)
+    assert cache.meta["latestMonthId"] >= 202608
     for name in cache.entries:
         cache.body(name)  # raises if a cached response no longer matches its recorded SHA-256
 
 
-@pytest.mark.parametrize("basket", [b.id for b in BASKETS])
-def test_committed_snapshot_rebuilds_byte_identically(rebuilt: tuple[Path, Path], basket: str) -> None:
-    data_dir, _ = rebuilt
-    rel = Path("snapshots") / SNAPSHOT / "trade"
-    for name in (f"{basket}.json", f"{basket}.provenance.json", "index.json"):
+@pytest.mark.parametrize(("snapshot", "basket"), PAIRS)
+def test_committed_snapshot_rebuilds_byte_identically(rebuilt_all, snapshot: str, basket: str) -> None:
+    data_dir, _ = rebuilt_all[snapshot]
+    rel = Path("snapshots") / snapshot / "trade"
+    for name in (f"{basket}.json", f"{basket}.provenance.json"):
         assert (data_dir / rel / name).read_bytes() == (DATA_DIR / rel / name).read_bytes(), name
 
 
-def test_reconciliation_against_raw_rows_matches_exactly(rebuilt: tuple[Path, Path]) -> None:
-    _, reports = rebuilt
-    report = json.loads((reports / f"hmrc-reconciliation-{SNAPSHOT}.json").read_text())
+@pytest.mark.parametrize("snapshot", SNAPSHOTS)
+def test_committed_index_rebuilds_byte_identically(rebuilt_all, snapshot: str) -> None:
+    if not is_complete(snapshot):
+        pytest.skip(f"{snapshot} caches {len(cached_baskets(snapshot))} of {len(ALL_BASKETS)} baskets; its index predates the others")
+    data_dir, _ = rebuilt_all[snapshot]
+    rel = Path("snapshots") / snapshot / "trade"
+    for name in ("index.json", "index.provenance.json"):
+        assert (data_dir / rel / name).read_bytes() == (DATA_DIR / rel / name).read_bytes(), name
+
+
+@pytest.mark.parametrize("snapshot", SNAPSHOTS)
+def test_reconciliation_against_raw_rows_matches_exactly(rebuilt_all, snapshot: str) -> None:
+    _, reports = rebuilt_all[snapshot]
+    report = json.loads((reports / f"hmrc-reconciliation-{snapshot}.json").read_text())
     assert report["allMatch"] is True
-    assert {c["basket"] for c in report["checks"]} == {b.id for b in BASKETS}
-    tomatoes = next(c for c in report["checks"] if c["basket"] == "tomatoes")
-    # January 2025, all partners, EU + non-EU flows (HMRC API, retrieved 23 Oct 2026).
-    assert tomatoes["month"] == "2025-01"
-    assert tomatoes["netMassKg"] == {"aggregate": 33_060_038, "raw": 33_060_038}
-    assert tomatoes["valueGbp"] == {"aggregate": 57_382_707, "raw": 57_382_707}
+    assert {c["basket"] for c in report["checks"]} == {b.id for b in cached_baskets(snapshot)}
+    assert all(c["rawRows"] > 0 for c in report["checks"])
+    if snapshot == SNAPSHOT:
+        tomatoes = next(c for c in report["checks"] if c["basket"] == "tomatoes")
+        # January 2025, all partners, EU + non-EU flows (HMRC API, retrieved 23 Oct 2026).
+        assert tomatoes["month"] == "2025-01"
+        assert tomatoes["netMassKg"] == {"aggregate": 33_060_038, "raw": 33_060_038}
+        assert tomatoes["valueGbp"] == {"aggregate": 57_382_707, "raw": 57_382_707}
 
 
-def test_snapshot_totals_equal_the_raw_aggregation() -> None:
+@pytest.mark.parametrize(("snapshot", "basket"), PAIRS)
+def test_snapshot_totals_equal_the_raw_aggregation(snapshot: str, basket: str) -> None:
     """Row accounting end to end: every kg in the API aggregate appears in the snapshot."""
-    cache = RawCache(RAW_HMRC / SNAPSHOT)
-    for basket in BASKETS:
-        raw = cache.items(f"ots-aggregate-{basket.id}")
-        snap = json.loads((DATA_DIR / "snapshots" / SNAPSHOT / "trade" / f"{basket.id}.json").read_text())
-        raw_kg = sum(int(r["SumNetMass"]) for r in raw if int(r["SuppressionIndex"]) == 0)
-        raw_gbp = sum(int(r["SumValue"]) for r in raw if int(r["SuppressionIndex"]) == 0)
-        assert sum(r[2] for r in snap["rows"]) == raw_kg, basket.id
-        assert sum(r[3] for r in snap["rows"]) == raw_gbp, basket.id
-        suppressed_rows = [r for r in raw if int(r["SuppressionIndex"]) > 0]
-        assert len(snap["suppressed"]) <= len(suppressed_rows)
+    cache = RawCache(RAW_HMRC / snapshot)
+    raw = cache.part_items(f"ots-aggregate-{basket}")
+    snap = json.loads((DATA_DIR / "snapshots" / snapshot / "trade" / f"{basket}.json").read_text())
+    raw_kg = sum(int(r["SumNetMass"]) for r in raw if int(r["SuppressionIndex"]) == 0)
+    raw_gbp = sum(int(r["SumValue"]) for r in raw if int(r["SuppressionIndex"]) == 0)
+    assert sum(r[2] for r in snap["rows"]) == raw_kg
+    assert sum(r[3] for r in snap["rows"]) == raw_gbp
+    suppressed_rows = [r for r in raw if int(r["SuppressionIndex"]) > 0]
+    assert len(snap["suppressed"]) <= len(suppressed_rows)
 
 
-def test_every_partner_is_crosswalked_or_explicitly_unmapped() -> None:
-    for basket in BASKETS:
-        snap = json.loads((DATA_DIR / "snapshots" / SNAPSHOT / "trade" / f"{basket.id}.json").read_text())
-        for p in snap["partners"]:
-            if p["kind"] == "country":
-                assert p["iso2"] == p["key"]
-                assert (p["point"] is None) == (p["geometry"] == "none")
-            else:
-                assert p["key"].startswith("hmrc-") and p["geometry"] == "none"
+@pytest.mark.parametrize(("snapshot", "basket"), PAIRS)
+def test_every_partner_is_crosswalked_or_explicitly_unmapped(snapshot: str, basket: str) -> None:
+    snap = json.loads((DATA_DIR / "snapshots" / snapshot / "trade" / f"{basket}.json").read_text())
+    for p in snap["partners"]:
+        if p["kind"] == "country":
+            assert p["iso2"] == p["key"]
+            assert (p["point"] is None) == (p["geometry"] == "none")
+        else:
+            assert p["key"].startswith("hmrc-") and p["geometry"] == "none"
 
 
 # ---------------------------------------------------------------------------------------------
@@ -130,11 +186,12 @@ def test_code_changes_found_in_the_real_data() -> None:
         assert _snap(basket)["codeChanges"] == [], basket
 
 
-def test_code_history_matches_the_rows() -> None:
-    cache = RawCache(RAW_HMRC / SNAPSHOT)
-    for basket in BASKETS:
-        snap = _snap(basket.id)
-        raw = [r for r in cache.items(f"ots-aggregate-{basket.id}") if int(r["FlowTypeId"]) in (1, 3)]
+@pytest.mark.parametrize(("snapshot", "basket_id"), PAIRS)
+def test_code_history_matches_the_rows(snapshot: str, basket_id: str) -> None:
+    cache = RawCache(RAW_HMRC / snapshot)
+    for basket in [b for b in ALL_BASKETS if b.id == basket_id]:
+        snap = json.loads((DATA_DIR / "snapshots" / snapshot / "trade" / f"{basket.id}.json").read_text())
+        raw = [r for r in cache.part_items(f"ots-aggregate-{basket.id}") if int(r["FlowTypeId"]) in (1, 3)]
         total_kg = sum(int(r["SumNetMass"]) for r in raw if int(r["SuppressionIndex"]) == 0)
         assert sum(sum(c["netMassKgByCalendarMonth"]) for c in snap["commodity"]["cn8"]) == total_kg
         for c in snap["commodity"]["cn8"]:

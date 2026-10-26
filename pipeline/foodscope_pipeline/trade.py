@@ -31,6 +31,7 @@ from foodscope_pipeline.sources.hmrc_ots import (
     IMPORT_FLOWS,
     RECONCILE_MONTHS,
     Basket,
+    BasketGroup,
     RawCache,
     basket_commodity_ids,
 )
@@ -421,7 +422,7 @@ def _month_text(label: str) -> str:
 
 
 def build_trade(snapshot_id: str, raw_root: Path, data_dir: Path, reports_dir: Path, baskets: list[Basket],
-                points_path: Path, crosswalk_path: Path) -> list[Path]:
+                points_path: Path, crosswalk_path: Path, groups: list[BasketGroup] | None = None) -> list[Path]:
     cache = RawCache(raw_root / snapshot_id)
     meta = cache.meta
     latest = int(meta["latestMonthId"])
@@ -449,8 +450,12 @@ def build_trade(snapshot_id: str, raw_root: Path, data_dir: Path, reports_dir: P
     recon: list[dict[str, Any]] = []
     for basket in baskets:
         prefix = f"ots-aggregate-{basket.id}"
-        rows = cache.items(prefix)
-        first_page = cache.entries[f"{prefix}-p001"]
+        parts = cache.parts(prefix)
+        rows = cache.part_items(prefix)
+        first_page = cache.entries[f"{parts[0]}-p001"]
+        retrieval_source = first_page.url if len(parts) == 1 else (
+            f"{len(parts)} queries over consecutive runs of the basket's CN8 codes (URL length), first: {first_page.url}"
+        )
         snapshot = build_basket(basket, rows, commodities, partners_by_id, latest, first_page.retrieved_at,
                                 accounting)
         _validate(snapshot, "trade-snapshot")
@@ -467,7 +472,7 @@ def build_trade(snapshot_id: str, raw_root: Path, data_dir: Path, reports_dir: P
             body,
             "trade-snapshot",
             period,
-            first_page.url,
+            retrieval_source,
             first_page.retrieved_at,
             (
                 f"CN8 codes: {cn8_codes}. Import flows 1 (EU) and 3 (non-EU) summed. Partner = country of "
@@ -481,6 +486,7 @@ def build_trade(snapshot_id: str, raw_root: Path, data_dir: Path, reports_dir: P
         index_entries.append({
             "id": basket.id,
             "datasetId": snapshot["id"],
+            **({"group": basket.group} if groups and basket.group else {}),
             "label": basket.label,
             "definition": basket.definition,
             "hsScope": basket.hs_scope,
@@ -489,9 +495,13 @@ def build_trade(snapshot_id: str, raw_root: Path, data_dir: Path, reports_dir: P
         })
         month = RECONCILE_MONTHS.get(basket.id)
         if month:
-            recon.append(reconcile(basket, month, rows, cache.items(f"ots-raw-{basket.id}-{month}")))
+            recon.append(reconcile(basket, month, rows, cache.part_items(f"ots-raw-{basket.id}-{month}")))
 
-    index_doc = {"schemaVersion": 1, "snapshotId": snapshot_id, "commodities": index_entries}
+    index_doc: dict[str, Any] = {"schemaVersion": 1, "snapshotId": snapshot_id}
+    if groups:
+        used = {b.group for b in baskets}
+        index_doc["groups"] = [{"id": g.id, "label": g.label} for g in groups if g.id in used]
+    index_doc["commodities"] = index_entries
     _validate(index_doc, "trade-index")
     index_body = _dump(index_doc)
     index_rel = f"snapshots/{snapshot_id}/trade/index.json"
