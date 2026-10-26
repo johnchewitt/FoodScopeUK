@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | 04 — Staged delivery plan |
-| **Version** | 0.6 — 25 October 2026 (Stage 6 Risk Explorer built on `stage/6-risk-explorer`, awaiting review; earlier the same day, 0.5: Stages renumbered for John's Stage 6 brief: 6 Risk Explorer, 7 Scenario Lab, 8 Consulting Insights, 9 Hardening and Release 1; Stage 6 data step built, gates G6 and G14–G18 recorded) |
+| **Version** | 0.7 — 26 October 2026 (Stage 6 merged to main through PR #17 and deployed; Northern Ireland road corridors from OpenStreetMap, S38, gate G16 cleared. Earlier, 0.6 — 25 October 2026: Stage 6 Risk Explorer built on `stage/6-risk-explorer`, awaiting review; earlier the same day, 0.5: Stages renumbered for John's Stage 6 brief: 6 Risk Explorer, 7 Scenario Lab, 8 Consulting Insights, 9 Hardening and Release 1; Stage 6 data step built, gates G6 and G14–G18 recorded) |
 | **Approach** | Small, demonstrable stages. Each stage ends with working software, passing checks and a short stage report. No stage starts while its verification gates are open. |
 
 ---
@@ -18,7 +18,7 @@
 | **3** | **Seasonal Supply Explorer** ✅ merged (PR #5) and deployed | R1 | 2 | Play tomatoes January → December 2025; compare January with July; partner-by-month heatmap; year-on-year change — the same real HMRC data as Food Origins |
 | **4** | **Supermarket network** ✅ merged (PR #9) and deployed | R1 | 3, G7 ✅, and the LAD/GEOLYTIX data built in the pre-Stage 4 data step (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth; basemap choice: dark grey, light grey, imagery (SH-08) |
 | **5** | **Local Authority Profiles** ✅ merged (PR #14) and deployed | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
-| **6** | **UK Food Resilience — Risk Explorer** (supply exposure, logistics, community access) 🟡 built (PR #16, on the data PR #15), awaiting review | R1 | 2, 3, 5, G6, G14–G18 | Tomatoes: concentration, partners' water stress and an estimated exposure to one supplier; ports and road corridors; councils' priority places within each nation — each with "Explain this risk" |
+| **6** | **UK Food Resilience — Risk Explorer** (supply exposure, logistics, community access) ✅ merged (PRs #15 and #17) and deployed; live checks to do | R1 | 2, 3, 5, G6, G14–G18 | Tomatoes: concentration, partners' water stress and an estimated exposure to one supplier; ports and road corridors; councils' priority places within each nation — each with "Explain this risk" |
 | 7 | Scenario Lab (import disruption, store closure) | R1 | 3, 5, 6 | Spanish tomato preset; close a store and see the access change |
 | 8 | Consulting Insights + PDF export | R1 | 5, 6, 7, D3, D7 | One-click profile PDF that matches the screen |
 | 9 | Hardening and Release 1 | R1 | 1–8 | Release 1 tagged and deployed; acceptance criteria evidenced |
@@ -56,7 +56,7 @@ Each gate must be cleared (evidence recorded in `docs/stage-reports/`) before th
 | G13 🟡 | DfT PORT tables with port-level Ro-Ro; HMRC port allocation for EU Ro-Ro | Inspect ZIP; HMRC notes | 10 (Scenario B) — **DfT part cleared 25 Oct 2026**: PORT0499 gives port-level Ro-Ro tonnage by year and region, no commodity; HMRC port allocation still open (S28) |
 | G14 ✅ | Authoritative country climate/water indicator: source, licence, coverage, classes | World Bank API, FAO SDG 6.4.2 | 6 — **cleared 25 Oct 2026**: ER.H2O.FWST.ZS (FAO AQUASTAT, CC BY 4.0), 178 countries, FAO classes (S30); FAO water stress only (John) |
 | G15 ✅ | DfT port tables, port codes and map locations | Fetch PORT0499/0304 and the port list; locate ports | 6 — **cleared 25 Oct 2026**: 51 current ports, 2015–2025, reconciled with PORT0304; 27 located by DfT, 24 by EMODnet on the same UN/LOCODE (S23, S36) |
-| G16 🟡 | Strategic road corridors for the UK | OS Open Roads (GB); OSNI 50K transport (NI) | 6 — **GB cleared 25 Oct 2026** (S35 extract); **NI not available**: OSNI's service refused the pipeline in three runs (S34), shown as a stated gap |
+| G16 ✅ | Strategic road corridors for the UK | OS Open Roads (GB); OSNI 50K transport (NI) | 6 — **GB cleared 25 Oct 2026** (S35 extract). NI: OSNI's service refused the pipeline in three runs (S34); **cleared 26 Oct 2026 with OpenStreetMap** (S38, John's file and decision), labelled community-mapped and not official |
 | G17 ✅ | Priority Places for every council: geography and lookups per nation | PPFI codes vs ONS, Scottish Government and NISRA lookups | 6 — **cleared 25 Oct 2026**: Scotland is on 2011 Data Zones (S32 lookup); all 43,538 areas assigned to the 361 councils |
 | G18 ✅ | Agricultural production regions: Defra regional and country tables, boundaries | Defra June survey files; ONS ITL1 | 6 — **cleared 25 Oct 2026**: 2025 wheat, cattle, sheep, pigs, poultry; regional sums checked (S31, S33) |
 
@@ -259,7 +259,7 @@ John's Stage 6 brief (25 Oct 2026) and decisions the same day: Stage 6 is the Ri
 
 Deliverables: a "UK Food Resilience — Risk Explorer" module with three views (RK-01), each with its own map, indicators, filters and explanation:
 - **International supply exposure** (RK-02): per commodity, recorded import partners, top-supplier and top-three shares, number of partners, HHI, year-on-year change, monthly concentration, an estimated exposure to one supplier's disruption, and partners' water stress (national, labelled); Defra's annual production share as national context.
-- **Food logistics and infrastructure** (RK-03): major ports with DfT tonnage, UKFSR port-of-entry and Short Straits shares, strategic road corridors, agricultural production regions; rail freight, distribution centres and Northern Ireland roads stated as not available.
+- **Food logistics and infrastructure** (RK-03): major ports with DfT tonnage, UKFSR port-of-entry and Short Straits shares, strategic road corridors (Great Britain: OS Open Roads; Northern Ireland: OpenStreetMap, from 26 Oct 2026), Northern Ireland's railway lines, agricultural production regions; rail freight, distribution centres and Great Britain's railway lines stated as not available.
 - **Community food access** (RK-04): councils by the share of their small areas in their nation's highest-priority deciles, per domain, ranked within nation only, with urban/rural context and links to profiles.
 - KPIs, linked charts and selection, an "Explain this risk" panel separating observed evidence from interpretation; no composite across views (RK-06).
 
@@ -271,7 +271,9 @@ Status on 25 October 2026 (evidence in `docs/stage-reports/stage-6.md`): built o
 - four E2E tests cover the three views, map clicks and view switching;
 - the Stage 1–5 tests pass unchanged.
 
-RK-05 (user weights and sensitivity) is deferred to Release 2 (spec §5.6). Not yet done: the live checks with a real GPU and the Esri basemap, after merge (with Stage 5's).
+RK-05 (user weights and sensitivity) is deferred to Release 2 (spec §5.6).
+
+Status on 26 October 2026: the data step merged as PR #15. The module (PR #16) was merged into the data branch rather than main, so it reached main through PR #17 (merged and deployed on 26 Oct 2026). Northern Ireland's road corridors were then added from OpenStreetMap (S38, a data pull request). Not yet done: the live checks with a real GPU and the Esri basemap (with Stage 5's, B48).
 
 ## 9. Stage 7 — Scenario Lab
 
@@ -376,3 +378,5 @@ Rules of engagement:
 | 2026-10-25 | Not shown, with the reason stated: Northern Ireland roads (OSNI service unreachable), rail freight routes and distribution centres (no open official dataset found) | S34; 03-DATA-SOURCES §9 |
 | 2026-10-25 | Northern Ireland transport (John's links): the Translink NIR railway network is fetched and shown as Northern Ireland's railway lines (S37); DfI's Highway Network has no open geometry and OSNI's Hub download failed, so Northern Ireland's roads wait for a file from John | S34, S37 |
 | 2026-10-25 | Stage 6 built: three views on one map, never combined; the supply view reuses the trade map with a water-stress fill; ports as graphics (the only hit-tested logistics layer); councils in a risk mode of the Access layers, ranked within nation; a warm risk ramp for vulnerability measures, teal for volumes; "Explain this risk" built from indicators with a separate interpretation; RK-05 weights deferred to Release 2 | ADR-0024; spec §5.6, §6.6 |
+| 2026-10-26 | Stage 6 reached main through PR #17 (PR #16 had been merged into the data branch, not main) and was deployed | PRs #15–#17 |
+| 2026-10-26 | Northern Ireland road corridors: the file John sent is an OpenStreetMap extract, not OSNI's layer. John chose to use it, labelled as OpenStreetMap and as not official data, motorways and primary roads only (matching GB's two categories; secondary roads left out). The committed ZIP leaves out the file's ArcGIS metadata, which records local file paths | S38; John (decision) |

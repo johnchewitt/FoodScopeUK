@@ -304,7 +304,10 @@ function LogisticsControls() {
         <div className="setting-row">
           <span>
             Strategic road corridors
-            <span className="setting-row__hint">Motorways, trunk and primary A roads (Great Britain)</span>
+            <span className="setting-row__hint">
+              Motorways, trunk and primary A roads (Great Britain, OS); motorways and primary roads (Northern
+              Ireland, OpenStreetMap)
+            </span>
           </span>
           <calcite-switch
             label="Strategic road corridors"
@@ -344,10 +347,6 @@ function LogisticsControls() {
           Not available
         </h3>
         <ul className="unavailable-list">
-          <li>
-            <CircleOff size={14} aria-hidden="true" /> Northern Ireland road corridors: DfI&rsquo;s open files
-            have no line work, and OSNI&rsquo;s open service could not be reached by the data pipeline.
-          </li>
           <li>
             <CircleOff size={14} aria-hidden="true" /> Great Britain&rsquo;s railway lines: no open, official
             line dataset in this build.

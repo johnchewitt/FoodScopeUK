@@ -550,7 +550,7 @@ function LogisticsInsights() {
         />
         <p className="control-hint">
           Seconds per vehicle per mile, all traffic (UKFSR 2024). The map&rsquo;s road corridors come from OS
-          Open Roads (Great Britain; Northern Ireland&rsquo;s are not available) and its railway lines from
+          Open Roads (Great Britain) and OpenStreetMap (Northern Ireland), and its railway lines from
           Translink&rsquo;s NIR network (Northern Ireland only, 2015).
         </p>
       </Section>

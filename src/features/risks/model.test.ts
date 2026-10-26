@@ -74,6 +74,7 @@ const supply = (
 
 const SOURCES: LogisticsSources = {
   roads: { url: "roads.geojson", copyright: "OS" },
+  roadsNi: { url: "roads-ni.geojson", copyright: "© OpenStreetMap contributors (ODbL)" },
   rail: { url: "rail.geojson", copyright: "Translink" },
   regions: { url: "regions.geojson", copyright: "ONS" },
   portsCopyright: "DfT",
@@ -258,6 +259,9 @@ describe("logistics and infrastructure (RK-03)", () => {
 
   it("shows roads only when switched on, and farming classes only for a chosen measure", () => {
     expect(logistics({ roads: false }).map.roads).toBeNull();
+    // Northern Ireland's corridors (OpenStreetMap, S38) follow the same switch, with their own credit.
+    expect(logistics({ roads: false }).map.roadsNi).toBeNull();
+    expect(logistics().map.roadsNi?.copyright).toBe("© OpenStreetMap contributors (ODbL)");
     expect(logistics({ rail: false }).map.rail).toBeNull();
     expect(logistics().map.rail?.url).toBe("rail.geojson");
     expect(logistics().map.roads?.url).toBe("roads.geojson");
@@ -279,7 +283,7 @@ describe("logistics and infrastructure (RK-03)", () => {
       entry,
       null,
       { measure: "international", port: null, roads: true, rail: true, farm: "wheat" },
-      { ...SOURCES, roads: null, rail: null },
+      { ...SOURCES, roads: null, roadsNi: null, rail: null },
     );
     expect(l.regions).toEqual([]);
     expect(l.farmingYear).toBeNull();

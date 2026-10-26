@@ -125,10 +125,10 @@ function LogisticsKpis() {
           referencePeriod: String(model.latestYear),
           coverage: `${model.ports.length} DfT major ports`,
           method:
-            "Ports with a map location: DfT's rough location, or EMODnet's for the same UN/LOCODE. Roads cover Great Britain only and railway lines Northern Ireland only; rail freight and distribution centres are not available.",
+            "Ports with a map location: DfT's rough location, or EMODnet's for the same UN/LOCODE. Roads cover Great Britain (OS Open Roads) and Northern Ireland (OpenStreetMap); railway lines cover Northern Ireland only; rail freight and distribution centres are not available.",
           scope: "national_context",
         }}
-        detail={`of ${model.ports.length} · NI roads, GB rail and depots not available`}
+        detail={`of ${model.ports.length} · GB rail and depots not available`}
       />
     </>
   );
