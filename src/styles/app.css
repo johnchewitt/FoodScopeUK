@@ -3021,8 +3021,13 @@ li[data-hidden-at-scale] .grocer-symbol {
 }
 .field-pair {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, …): a select's 130 px minimum must not push the pair past the panel (1366 px). */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 8px;
+}
+.field-pair .select {
+  min-width: 0;
+  width: 100%;
 }
 .unavailable-list {
   display: grid;
@@ -3144,4 +3149,323 @@ li[data-hidden-at-scale] .grocer-symbol {
 }
 .explain__topics {
   margin-bottom: 4px;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * Scenario Lab (Stage 7): scenario cards, sliders, results, methodology, saved scenarios, legend.
+ * Warm (amber/risk) marks the scenario; teal the published baseline.
+ * ------------------------------------------------------------------------------------------- */
+.scenario-cards {
+  display: grid;
+  gap: 6px;
+}
+.scenario-card {
+  display: grid;
+  grid-template-columns: 22px 18px 1fr;
+  align-items: start;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius-sm);
+  background: var(--fs-glass-deep);
+  color: var(--fs-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+.scenario-card:hover {
+  background: var(--fs-surface-hover);
+}
+.scenario-card:focus-visible {
+  outline: none;
+  box-shadow: var(--fs-glow-focus);
+}
+.scenario-card[aria-checked="true"] {
+  border-color: var(--fs-amber);
+  background: var(--fs-amber-soft);
+  box-shadow: inset 3px 0 0 var(--fs-amber);
+}
+.scenario-card__letter,
+.scenario-letter {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--fs-amber-soft);
+  color: var(--fs-amber);
+  font-size: 11px;
+  font-weight: 700;
+}
+.scenario-card__icon {
+  margin-top: 2px;
+  color: var(--fs-cyan);
+}
+.scenario-card__text {
+  display: grid;
+  gap: 2px;
+}
+.scenario-card__title {
+  font-size: var(--fs-text-sm);
+  font-weight: 600;
+}
+.scenario-card__hint {
+  font-size: var(--fs-text-xs);
+  line-height: 1.35;
+  color: var(--fs-text-muted);
+}
+.scenario-slider {
+  margin-top: 6px;
+  /* .field-row's space-between sized the grid column to the label, so tracks differed in length. */
+  grid-template-columns: minmax(0, 1fr);
+}
+.scenario-slider .range {
+  width: 100%;
+}
+/* Touch: a 24 px hit area for the slider (WCAG 2.5.8), the track unchanged. */
+@media (pointer: coarse) {
+  .scenario-slider .range {
+    min-height: 28px;
+  }
+}
+/* Compact 2 × 2 scenario picker (review of Stage 7): letter, icon and short title per tile. */
+.scenario-cards--compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.scenario-cards--compact .scenario-card {
+  /* Letter and icon on top, the title under them: two-word titles fit 126 px tiles (1366 px). */
+  grid-template-columns: 20px minmax(0, 1fr);
+  grid-template-areas:
+    "letter icon"
+    "title title";
+  align-items: center;
+  align-content: start;
+  min-height: 44px;
+  padding: 7px 8px 8px;
+  column-gap: 6px;
+  row-gap: 5px;
+}
+.scenario-cards--compact .scenario-card__letter {
+  grid-area: letter;
+}
+.scenario-cards--compact .scenario-card__icon {
+  grid-area: icon;
+  margin-top: 0;
+}
+.scenario-cards--compact .scenario-card__title {
+  grid-area: title;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+.scenario-cards__hint {
+  margin: 8px 0 0;
+  font-size: var(--fs-text-xs);
+  line-height: 1.4;
+  color: var(--fs-text-muted);
+}
+.scenario-cards__hint strong {
+  color: var(--fs-text);
+  font-weight: 600;
+}
+.scenario-store {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--fs-amber);
+  border-radius: var(--fs-radius-sm);
+  background: var(--fs-amber-soft);
+  color: var(--fs-text);
+}
+.scenario-store__meta {
+  display: block;
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.scenario-input {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--fs-line-strong);
+  border-radius: var(--fs-radius-sm);
+  background: var(--fs-glass-deep);
+  color: var(--fs-text);
+  font: inherit;
+  font-size: var(--fs-text-sm);
+}
+.scenario-input:focus-visible {
+  outline: none;
+  box-shadow: var(--fs-glow-focus);
+}
+.scenario-save {
+  display: grid;
+  gap: 6px;
+}
+.scenario-banner {
+  border-left: 3px solid var(--fs-amber);
+  background: linear-gradient(90deg, var(--fs-amber-soft), transparent 70%);
+}
+.scenario-banner__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  color: var(--fs-amber);
+}
+.scenario-banner__summary {
+  margin: 0 0 8px;
+  font-size: var(--fs-text-sm);
+  line-height: 1.5;
+  color: var(--fs-text);
+}
+.chip[data-confidence="high"] {
+  border-color: var(--fs-cyan);
+  color: var(--fs-cyan);
+}
+.chip[data-confidence="moderate"] {
+  border-color: var(--fs-amber);
+  color: var(--fs-amber);
+}
+.chip[data-confidence="low"] {
+  border-color: var(--fs-risk-1);
+  color: var(--fs-risk-4);
+}
+.scenario-results th[scope="row"] {
+  font-weight: 500;
+  text-align: left;
+}
+.scenario-results__badge {
+  margin-left: 4px;
+  vertical-align: -1px;
+}
+.scenario-chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0;
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.scenario-chart-legend .swatch + .swatch {
+  margin-left: 10px;
+}
+.scenario-method__h {
+  margin: 10px 0 4px;
+  font-size: var(--fs-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fs-text-muted);
+}
+.scenario-formula {
+  margin: 0;
+  padding: 8px 10px;
+  overflow-x: auto;
+  border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius-sm);
+  background: var(--fs-glass-deep);
+  font-family: var(--fs-font-mono);
+  font-size: 11px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  color: var(--fs-text);
+}
+.scenario-compare td {
+  vertical-align: top;
+  min-width: 110px;
+}
+.scenario-compare__label {
+  display: block;
+  font-size: 11px;
+  color: var(--fs-text-muted);
+}
+.saved-list {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 6px;
+  padding: 0;
+  list-style: none;
+}
+.saved-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--fs-line);
+}
+.saved-list__compare {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: var(--fs-text-sm);
+}
+.saved-list__actions {
+  display: flex;
+  gap: 2px;
+}
+.flow-sample--ghost {
+  height: 8px;
+  background: transparent;
+  border: 1.5px dashed var(--fs-map-selection);
+  opacity: 0.8;
+}
+.map-legend__classes .flow-sample {
+  flex: none;
+  width: 26px;
+}
+.port-sample--ghost {
+  width: 14px;
+  height: 14px;
+  background: transparent;
+  box-shadow: none;
+  border: 2px dashed var(--fs-map-selection);
+}
+.port-sample--scenario {
+  width: 9px;
+  height: 9px;
+  background: var(--fs-map-risk-4);
+}
+.closed-sample {
+  flex: none;
+  width: 12px;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  color: var(--fs-map-risk-5);
+}
+.takeover-sample {
+  flex: none;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 1.5px dashed var(--fs-map-selection);
+  border-radius: 50%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scenario-card {
+    transition: none;
+  }
+}
+.app[data-motion="reduced"] .scenario-card {
+  transition: none;
+}
+.scenario-banner {
+  padding-left: 12px;
+}
+.scenario-results__rel {
+  display: block;
+  font-size: 11px;
+  color: var(--fs-text-muted);
+}
+.scenario-results th[scope="row"] {
+  min-width: 110px;
 }

@@ -127,6 +127,19 @@ test.describe("UK Food Resilience — Risk Explorer", () => {
       expect.arrayContaining(["risk-ports", "risk-roads", "risk-roads-ni", "risk-rail", "risk-regions"]),
     );
     expect(layers).not.toContain("origins-partners");
+    // The ports are graphics, which carry no credit: a credit layer puts DfT and EMODnet (CC BY 4.0)
+    // in the map's attribution (review of Stage 7).
+    await expect
+      .poll(
+        () =>
+          page.locator("arcgis-map").evaluate((el: HTMLArcgisMapElement) => {
+            const items = el.view.attributionItems as unknown as
+              { text: string }[] | { toArray(): { text: string }[] };
+            return (Array.isArray(items) ? items : items.toArray()).map((i) => i.text).join(" | ");
+          }),
+        { timeout: 20_000 },
+      )
+      .toMatch(/Department for Transport, Port freight statistics.*CC BY 4\.0/);
 
     await settled(page);
     const dover = await toScreen(page, 1.31748, 51.12309);

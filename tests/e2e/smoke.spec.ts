@@ -150,9 +150,10 @@ test.describe("Stage 1 shell", () => {
   });
 
   test("modules without data show no numbers on KPI cards", async ({ page }) => {
-    await page.goto("./?m=scenarios");
+    // Consulting Insights (stage 8) is the last module without data since the Scenario Lab (stage 7).
+    await page.goto("./?m=insights");
     const cards = page.locator(".kpi-card");
-    await expect(cards).toHaveCount(3);
+    await expect(cards).toHaveCount(2);
     for (const text of await cards.allInnerTexts()) {
       expect(text).toContain("No data loaded");
       expect(text.replace(/stage \d+/i, "")).not.toMatch(/\d/);

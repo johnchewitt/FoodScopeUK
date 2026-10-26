@@ -5,6 +5,7 @@ import { OriginsControls } from "@/features/origins/OriginsControls";
 import { AccessControlsLazy } from "@/features/access/lazy";
 import { ProfileControlsLazy } from "@/features/profiles/lazy";
 import { RiskControlsLazy } from "@/features/risks/lazy";
+import { ScenarioControlsLazy } from "@/features/scenarios/lazy";
 import { SeasonalControlsLazy } from "@/features/seasonal/lazy";
 import { selectReducedMotion, useAppStore } from "@/state/store";
 
@@ -50,6 +51,8 @@ export function FilterPanel() {
           <ProfileControlsLazy />
         ) : module === "risks" ? (
           <RiskControlsLazy />
+        ) : module === "scenarios" ? (
+          <ScenarioControlsLazy />
         ) : (
           <section className="panel-section" aria-labelledby="controls-heading">
             <h3 id="controls-heading" className="panel-section__title">

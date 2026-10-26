@@ -35,3 +35,8 @@ The post-Stage 3 review found three problems.
   - map with its connections drawn: 2.4 s → 2.4–2.7 s, and 5.3 s → 5.2 s with the CPU slowed.
   The panels now render while the SDK loads, so the map view itself can become ready up to about 0.3 s later on a fast CPU.
 - Hover cost is now independent of the number of countries.
+
+## Amendment (26 Oct 2026, review of Stage 7)
+- **Scenario Lab:** a link that opens the Scenario Lab on Scenario A (the default, `sk` absent or `import`) prefetches the same trade index, country points and basket snapshot as Food Origins. Its other scenarios keep loading with the scenario: their validators live in lazy chunks and must not move into the shell.
+- **Start-up loads always complete:** the prefetched queries no longer pass the AbortSignal to `fetch` (`startup()` in `src/app/prefetch.ts`; same keys, options and validators). TanStack Query cancels a fetch whose signal was consumed when its last observer unmounts; panels mounting and unmounting while the lazy chunks arrived did that to the Scenario Lab's index and points, which were then requested twice.
+- Measured in the sandbox (HTTP/1.1 preview, 50 ms added round trip, software WebGL; review report): Scenario A's snapshot is requested at about 0.34 s instead of after the chunk; first key figures 4.5 s → 3.9 s (median of 10 cold loads), 11.8 s → 4.9 s with the CPU slowed 4× (5 loads each, wide spread).

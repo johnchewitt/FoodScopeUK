@@ -370,6 +370,45 @@ describe("MapController", () => {
       });
     });
 
+    describe("Scenario Lab", () => {
+      const closure = (key: string, bbox: [number, number, number, number]) => ({
+        key,
+        view: "scenario" as const,
+        closed: null,
+        areas: [],
+        takeover: [],
+        frame: { key, bbox },
+      });
+      const AREA_A: [number, number, number, number] = [-2.28, 53.43, -2.22, 53.47];
+
+      it("frames a closure once per closed supermarket, not when the map view switches", () => {
+        const view = fakeView();
+        new MapController(useAppStore, []).attach(view);
+        useAppStore.getState().setModule("scenarios");
+        useAppStore.getState().setScenarioKind("closure");
+        useAppStore.getState().setScenarioMap(closure("closure:A", AREA_A));
+        expect(view.goTo).toHaveBeenCalledTimes(1);
+        const target = view.goTo.mock.calls[0]![0] as { zoom: number };
+        expect(target.zoom).toBeLessThanOrEqual(PROFILE_MAX_ZOOM);
+        useAppStore.getState().setScenarioMap({ ...closure("closure:A", AREA_A), view: "baseline" });
+        expect(view.goTo).toHaveBeenCalledTimes(1);
+        useAppStore.getState().setScenarioMap(closure("closure:B", [-6.0, 54.5, -5.9, 54.6]));
+        expect(view.goTo).toHaveBeenCalledTimes(2);
+      });
+
+      it("frames the trade map for a supply disruption and the UK for a production shock", () => {
+        const view = fakeView();
+        new MapController(useAppStore, []).attach(view);
+        useAppStore.getState().setModule("scenarios");
+        useAppStore.getState().setOriginsMap(model("A", BOX_A));
+        expect(view.goTo).toHaveBeenCalledTimes(1);
+        useAppStore.getState().setScenarioKind("production");
+        expect(view.goTo).toHaveBeenCalledTimes(2);
+        useAppStore.getState().setScenarioKind("production");
+        expect(view.goTo).toHaveBeenCalledTimes(2);
+      });
+    });
+
     it("waits for a view with a size", () => {
       const view = fakeView();
       view.width = 0;

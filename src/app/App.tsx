@@ -22,6 +22,7 @@ import { OriginsLegend, OriginsMapSync, OriginsTooltip } from "@/features/origin
 import { AccessMapExtrasLazy } from "@/features/access/lazy";
 import { CompareDialogLazy, ProfileMapExtrasLazy } from "@/features/profiles/lazy";
 import { RiskMapExtrasLazy } from "@/features/risks/lazy";
+import { ScenarioMapExtrasLazy } from "@/features/scenarios/lazy";
 import { SeasonalMapExtrasLazy } from "@/features/seasonal/lazy";
 import { ErrorBoundary } from "./ErrorBoundary";
 
@@ -98,6 +99,11 @@ export function App() {
         {module === "risks" && (
           <ErrorBoundary region="Map legend">
             <RiskMapExtrasLazy />
+          </ErrorBoundary>
+        )}
+        {module === "scenarios" && (
+          <ErrorBoundary region="Map legend">
+            <ScenarioMapExtrasLazy />
           </ErrorBoundary>
         )}
         <ErrorBoundary region="Timeline">

@@ -26,6 +26,7 @@ import { ensureHoverHighlight, HOVER_HIGHLIGHT } from "../highlight";
 import { ORIGINS_FLOWS_LAYER_ID, ORIGINS_PARTNERS_LAYER_ID } from "../layerIds";
 import { FlowParticles, type ParticleFlow, type ParticleView } from "./flowParticles";
 import { FLOW_TWEEN_MS, TWEEN_FRAME_MS } from "./flowTiming";
+import { ghostBodySymbolData, ghostEdgesSymbolData } from "./ghostSymbols";
 import type { HitResult, LayerController, LayerStatusReporter, ViewLike, ViewPointerEvent } from "../types";
 
 /**
@@ -225,7 +226,10 @@ export class OriginsLayersController implements LayerController {
     const animate = !selectReducedMotion(state);
     const m = this.model;
     const partnerSig = m.partners
-      .map((p) => `${p.key}:${p.shareClass}:${p.stressClass ?? "-"}:${p.flow ? p.flowWidth.toFixed(2) : ""}`)
+      .map(
+        (p) =>
+          `${p.key}:${p.shareClass}:${p.stressClass ?? "-"}:${p.flow ? p.flowWidth.toFixed(2) : ""}:${p.ghostWidth?.toFixed(2) ?? ""}`,
+      )
       .join("|");
     // Hover is drawn with the view's highlight, so it is not part of the renderer's signature.
     const polygons = `${style}|${m.fill ?? "share"}|${m.commodityId}|${m.periodLabel}|${m.measure}|${partnerSig}|${state.partner ?? ""}`;
@@ -426,9 +430,24 @@ export class OriginsLayersController implements LayerController {
       g.attributes = { key, targetWidth: target.get(key) ?? 0 };
       g.symbol = symbolFor(key, from.get(key) ?? 0);
     }
+    // Scenario A: the disrupted partner's baseline, in the flow line's own units: a faint body under
+    // its narrower scenario line and dashed edges above it, so the baseline extent always shows.
+    const ghostPartners = m.partners.filter((p) => p.ghostWidth !== undefined && p.point);
+    const ghost = (p: (typeof ghostPartners)[number], part: "body" | "edges") =>
+      new Graphic({
+        geometry: new Polyline({ paths: [symbolicArc(p.point!, m.ukAnchor, 64)], spatialReference: wgs84 }),
+        attributes: { key: p.key, ghost: part },
+        symbol: new CIMSymbol({
+          data: (part === "body"
+            ? ghostBodySymbolData(p.ghostWidth!, this.style)
+            : ghostEdgesSymbolData(p.ghostWidth!, this.style)) as never,
+        }),
+      });
     this.flows.removeAll();
     this.flows.addMany([
+      ...ghostPartners.map((p) => ghost(p, "body")),
       ...ordered.map((k) => this.flowGraphics.get(k)!),
+      ...ghostPartners.map((p) => ghost(p, "edges")),
       new Graphic({
         geometry: new Point({ longitude: m.ukAnchor[0], latitude: m.ukAnchor[1] }),
         attributes: { key: "__uk" },
@@ -440,6 +459,9 @@ export class OriginsLayersController implements LayerController {
         }),
       }),
     ]);
+
+    const container = (this.view as { container?: HTMLElement | null } | null)?.container;
+    if (container) container.dataset.flowGhosts = ghostPartners.map((p) => p.key).join(",");
 
     const particles: ParticleFlow[] = flows.map((p) => ({
       key: p.key,

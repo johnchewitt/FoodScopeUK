@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | 04 — Staged delivery plan |
-| **Version** | 0.8 — 26 October 2026 (the sixteen Food Origins baskets: data step on `data/trade-16-baskets`, gate G3 cleared, §5.3 item done. Earlier the same day, 0.7: Stage 6 merged to main through PR #17 and deployed; Northern Ireland road corridors from OpenStreetMap, S38, gate G16 cleared. Earlier, 0.6 — 25 October 2026: Stage 6 Risk Explorer built on `stage/6-risk-explorer`, awaiting review; earlier the same day, 0.5: Stages renumbered for John's Stage 6 brief: 6 Risk Explorer, 7 Scenario Lab, 8 Consulting Insights, 9 Hardening and Release 1; Stage 6 data step built, gates G6 and G14–G18 recorded) |
+| **Version** | 0.9 — 26 October 2026 (review of Stage 7: five improvements on `review/stage-7`, docs/reviews/2026-10-26-review-stage-7.md; Stage 7's module PR #22 merged into `data/stage-7-inputs`, not main, so it reaches main with the review through PR #23. Earlier the same day, 0.8: the sixteen Food Origins baskets: data step on `data/trade-16-baskets`, gate G3 cleared, §5.3 item done. Earlier the same day, 0.7: Stage 6 merged to main through PR #17 and deployed; Northern Ireland road corridors from OpenStreetMap, S38, gate G16 cleared. Earlier, 0.6 — 25 October 2026: Stage 6 Risk Explorer built on `stage/6-risk-explorer`, awaiting review; earlier the same day, 0.5: Stages renumbered for John's Stage 6 brief: 6 Risk Explorer, 7 Scenario Lab, 8 Consulting Insights, 9 Hardening and Release 1; Stage 6 data step built, gates G6 and G14–G18 recorded) |
 | **Approach** | Small, demonstrable stages. Each stage ends with working software, passing checks and a short stage report. No stage starts while its verification gates are open. |
 
 ---
@@ -19,7 +19,7 @@
 | **4** | **Supermarket network** ✅ merged (PR #9) and deployed | R1 | 3, G7 ✅, and the LAD/GEOLYTIX data built in the pre-Stage 4 data step (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth; basemap choice: dark grey, light grey, imagery (SH-08) |
 | **5** | **Local Authority Profiles** ✅ merged (PR #14) and deployed | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
 | **6** | **UK Food Resilience — Risk Explorer** (supply exposure, logistics, community access) ✅ merged (PRs #15 and #17) and deployed; live checks to do | R1 | 2, 3, 5, G6, G14–G18 | Tomatoes: concentration, partners' water stress and an estimated exposure to one supplier; ports and road corridors; councils' priority places within each nation — each with "Explain this risk" |
-| 7 | Scenario Lab (import disruption, store closure; port and production shocks as far as the data allows) — data step on `data/stage-7-inputs` | R1 | 3, 5, 6, G19 | Spanish tomato preset; close a supermarket anywhere in the UK and see the nearest-store change for every small area |
+| 7 | Scenario Lab (import disruption, store closure; port and production shocks as far as the data allows) — data step PR #21 merged to main; module PR #22 merged into the data branch, not main; module and review to main as PR #23 | R1 | 3, 5, 6, G19 | Spanish tomato preset; close a supermarket anywhere in the UK and see the nearest-store change for every small area |
 | 8 | Consulting Insights + PDF export | R1 | 5, 6, 7, D3, D7 | One-click profile PDF that matches the screen |
 | 9 | Hardening and Release 1 | R1 | 1–8 | Release 1 tagged and deployed; acceptance criteria evidenced |
 | 10 | Release 2 | R2 | 9 | National access layers, Scenarios B/C, Ask FOODSCOPE, 3D globe |
@@ -289,6 +289,42 @@ Deliverables (the brief, with the spec's SC requirements): scenario framework (S
 
 Exit: exposure calculations, zero and full disruption, missing observations, closure and nearest-store recalculation, population, comparison, URL persistence and reset unit-tested; E2E runs the scenarios; Stages 1–6 unchanged; wording audit shows no "shortage" or "forecast" language.
 
+Status on 26 October 2026 (evidence in `docs/stage-reports/stage-7.md`, ADR-0026):
+- The data step is PR #21 (CI green).
+- The module is built on `stage/7-scenario-lab`, stacked on the data branch:
+  - all four scenarios;
+  - presets;
+  - results, charts and methodology;
+  - saved scenarios with comparison and export;
+  - URL state.
+- In the sandbox every exit criterion is met:
+  - the figures shown were recomputed independently from the published files;
+  - the listed behaviours are unit- and component-tested;
+  - three E2E tests run the scenarios on the map;
+  - the Stage 1–6 tests pass unchanged;
+  - the wording audit is a test.
+- Not yet done: the live checks with a real GPU and the Esri basemap (B48).
+
+Status later on 26 October 2026:
+- **Merges.**
+  - PR #21 (data) merged to main.
+  - PR #22 (module) merged into `data/stage-7-inputs` after #21 had merged. GitHub did not retarget it because the data branch was kept, so main and the live site do not have the Scenario Lab yet.
+  - A pull request from `review/stage-7` to main was needed. With John's agreement it was pushed as **PR #23** (base main), which carries Stage 7 and the review.
+- **Review.** John asked for a review as principal ArcGIS engineer, senior React developer, UX designer and food-security analyst. The data verification and five improvements are in `docs/reviews/2026-10-26-review-stage-7.md`:
+  - Scenario D charts the disrupted months and names agricultural dry bulk;
+  - Scenario A's baseline outline is visible;
+  - Scenario A's data loads with the page, and number formatters are cached;
+  - the Scenario Lab fits laptops and tablets;
+  - results are announced to screen readers.
+
+  The validation also put the ports' and the closure inputs' credits in the map attribution.
+- **Checks.** On the review branch:
+  - typecheck, lint, format and the banned-import check pass;
+  - 616 unit and component tests pass;
+  - the build passes;
+  - the full E2E run passes (see the review report).
+- **Still to do:** the live checks (B48, B64).
+
 ## 10. Stage 8 — Consulting Insights + PDF export
 
 Deliverables: workstream content (CI-01, approved copy D7); rule engine with "why am I seeing this?" (CI-02/03); opportunity statements for authority, commodity and scenario contexts; PDF export (EX-01..05) with checksum; CSV export.
@@ -391,3 +427,5 @@ Rules of engagement:
 | 2026-10-26 | All sixteen baskets of spec §6.1 (John's request): HMRC snapshot 2026-10-26; gate G3 against Defra's trade codes; groups by SITC division; the Risk Explorer's commodity–country matrix compares a basket with its group; Defra production context where Defra publishes a supply balance (apples, sugar, beef, mutton and lamb, poultry), "not grown commercially in the UK" from Defra's indigeneity for oranges, rice, coffee, cocoa and bananas | ADR-0025; S01, S05, S09, S10 |
 | 2026-10-26 | HMRC filters: at most ten OR-ed comparisons per query (a 24-clause filter answered HTTP 400) | S01 |
 | 2026-10-26 | John's Stage 7 brief (Scenario Lab): the closure scenario covers every small area of the UK, data fetched and verified first in its own pull request; straight-line distances only for now (routed travel time stays Release 3) | John (decisions); G19; S15, S16, S17 |
+| 2026-10-26 | Stage 7 built: one typed scenario model for controls, URL, saving and export; A on the trade map with the disrupted partner's baseline dashed; B on precomputed three-nearest supermarkets (no browser spatial search), an Access scenario mode and a closure layer; C on Defra's published balances only; D on DfT tonnage, food exposure only where recorded at the port (never Dover's tunnel-inclusive figure, never by partner country); saved scenarios in the browser, compared kind by kind, never combined | ADR-0026; SC-01 – SC-06 |
+| 2026-10-26 | Review of Stage 7 (John's request): every closure input verified by brute force; Scenario D's chart covers the disrupted months, category 23 is "agricultural dry bulk" beside Ro-Ro and container freight whose contents are not recorded; Scenario A's baseline drawn as dashed edges in the flow line's units; credits for data drawn as graphics (ports; closure inputs) in the map attribution; Scenario A prefetched at start-up, start-up loads not cancellable; cached number formatters; compact scenario picker and short KPI labels; results announced as a status message; Stage 8 not begun | ADR-0019 and ADR-0026 amendments; review report |
