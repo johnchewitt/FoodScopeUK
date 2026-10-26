@@ -802,3 +802,15 @@ Figures shown by the Risk Explorer, recomputed from the raw files with independe
 | Scenario B figures shown | Independent brute-force script over `closure-gb.json` (no app code): Morrisons Whalley Range Manchester closed | 17 areas, 26,731 residents, mean +822 m, max +1,491 m, 2 supermarkets left within 2 km, Manchester residents > 2 km 0 → 4,563: equal to the app |
 | Scenario C | Defra identity and shock arithmetic (wheat 2025, 15 %) | 1,793.7 kt removed; production share 82.9 % → 80.5 % |
 | Scenario D figures shown | Independent script over `ports.json`: Dover 2025 inwards from abroad, 50 % for one month | 12,512.825 kt a year; 521.368 kt affected; 2.63 % of UK major-port inwards; UKFSR's Dover/Eurotunnel group not attributed |
+
+### Review of Stage 7 (26 October 2026)
+
+| Check | Method | Result |
+|---|---|---|
+| Three nearest supermarkets, every area | Brute force over all supermarkets of each part (numpy, national-grid coordinates as published; no app or pipeline code), all 43,064 GB and 3,780 NI areas | Every area's three nearest match the published `nearest`/`distance` within 1.7 m (coordinate and distance rounding); no index mismatch beyond ties |
+| Any single closure | For every area, brute-force nearest over all supermarkets except its published nearest | Equals the published second nearest for 46,844 of 46,844 areas, so three nearest are enough for any one closure |
+| Grid and WGS84 points | pyproj, EPSG:4326 → 27700 (GB) / 2157 (NI) | Stores within 0.5 m, areas within 1.1 m (published rounding); size bands only 280 m² and over |
+| Supermarket count | Against the local stores snapshot (S11) | 7,173 = 7,195 supermarkets less the 22 Crown Dependency stores (pre-Stage 7 report) |
+| Small-area populations by nation | Sum of the closure inputs | England 56,490,056; Wales 3,107,545; Scotland 5,439,565 (Census 2022); Northern Ireland 1,903,168 |
+| Scenario D unitised freight | Independent script over `ports.json` (2025, any origin) | Dover: Ro-Ro and containers 12,304.196 kt of 12,606.921 kt (97.6 %), 1,025.4 kt in one month, 512.7 kt at 50 %; agricultural dry bulk 0. Liverpool: agricultural dry bulk 1,640.548 kt, 17.2 % of the UK major ports' 9,534.029 kt |
+| Map attribution | `view.attributionItems` in the browser (E2E) | Scenario D and the Risk Explorer's logistics view credit DfT and EMODnet (CC BY 4.0); Scenario B credits ONS, the Scottish Government, MHCLG, NISRA, OSNI and GEOLYTIX |

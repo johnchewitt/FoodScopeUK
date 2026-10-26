@@ -96,3 +96,33 @@ Each was recomputed by a script that uses no app code (03-DATA-SOURCES §11, Sta
 
 - Would John like several closures at once (a retailer leaving a town)? This needs more neighbours per area or a browser-side search (B56).
 - SC-B's Short Straits by food group (Release 2, B57): UKFSR publishes Dover with the Channel Tunnel, so it cannot be a port scenario.
+
+## Review (26 October 2026)
+
+John asked for a review of the completed stage. It is reported in full in `docs/reviews/2026-10-26-review-stage-7.md` and committed on `review/stage-7`, on top of PR #22.
+
+**Merge state.** PR #22 merged into `data/stage-7-inputs` after PR #21 had merged, not into main. The Scenario Lab is therefore not deployed. A pull request from the review branch to main carries both.
+
+**Verified.**
+- Every small area's three nearest supermarkets were brute-forced over all supermarkets: 46,844 areas, within 1.7 m.
+- Every single closure falls to the published second nearest.
+- Grid and WGS84 points are consistent.
+- The supermarket count and the populations by nation match.
+- The port figures were recomputed independently.
+
+**Fixed.**
+- **Scenario D's chart** applied the reduction to the whole year: one month at −50 % was drawn as 11.8 Mt → 5.9 Mt for Dover's Ro-Ro.
+- **"Agricultural products affected: 0 t"** at Dover read as "no food". It now reads as agricultural dry bulk, beside the 97.6 % of Dover's inwards that is Ro-Ro or containers, contents not recorded.
+- **Scenario A's dashed baseline** was invisible.
+- **The map credits** missed DfT and EMODnet (CC BY 4.0) for the ports, and the Census, Scottish Government and NISRA for the closure areas.
+
+**Improved.**
+- Scenario A's data is prefetched at start-up, with no duplicate requests.
+- Number formatters are cached: about 3× less model work per slider step.
+- A compact scenario picker, full-width sliders and short KPI labels.
+- "< 0.1 km" for small distance changes.
+- Results are announced as a status message.
+
+**Mobile and tablet.** The Scenario Lab was checked at 1920, 1366, 1024, 820 (portrait) and 390 px for each scenario: no horizontal scroll, panels reachable, axe with no serious or critical violation. This replaces the earlier note that the mobile layout was covered only by the shared rules.
+
+**Tests after the review.** 616 unit and component tests (604 before). E2E results are in the review report.

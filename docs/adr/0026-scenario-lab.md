@@ -91,3 +91,19 @@ The specification already had SC-01 – SC-05 and formulas for import disruption
 - The closure inputs (5.8 MB, 1.6 MB compressed) load only when Scenario B is opened. Their three nearest per area support any single closure exactly. Closing several stores at once would need more neighbours or a browser-side search (backlog).
 - Routed travel time stays Release 3. Every distance is labelled straight-line, and the methodology lists water crossings and border effects.
 - SC-02's recovery profile applies to Scenario A only. D has a duration but no recovery, because DfT figures are annual.
+
+## Amendment (26 Oct 2026, review of Stage 7)
+1. **The ghost of Scenario A** is CIM in the flow line's own units (`src/map/layers/ghostSymbols.ts`, SDK-free and unit-tested). It is drawn at the baseline line's full extent, core plus its 2 pt casing:
+   - a faint body under the scenario line;
+   - two dashed edges, offset ± half that extent, above it.
+
+   The first version (a `SimpleLineSymbol` at 0.75 × the baseline width, under the wider scenario line with its casing and glow) was invisible at −30 %. The flows layer reports the disrupted partners in `data-flow-ghosts`.
+2. **Scenario D's window.** Cards, the results table and the cargo-group chart all cover the disrupted months (annual DfT tonnage × *m* ÷ 12, an even spread). The chart had applied the reduction to the whole year.
+3. **Scenario D's categories.** DfT's cargo category 23 is called "agricultural dry bulk". A port with none (Dover) says "none recorded as dry bulk", with the share of its inwards in Ro-Ro units or containers, whose contents DfT does not record. A results row adds that unitised freight over the disruption, any origin.
+4. **Map credits for graphics.**
+   - GraphicsLayers carry no `copyright`, so the ports' credit (DfT, OGL; EMODnet, CC BY 4.0) is a credit layer: an empty GeoJSONLayer with the dataset's attribution, shown and hidden with the ports (`src/map/layers/creditLayer.ts`; Risk Explorer logistics and Scenario D).
+   - Scenario B's supermarkets are drawn from the closure inputs, so the scenario's store layer credits both closure datasets (`mergeAttributions`), not GEOLYTIX alone.
+5. **Smaller screens.**
+   - The scenario cards are a compact 2 × 2 picker.
+   - KPI cards show short labels (`KpiCard.shortLabel`, `kpiLabels.ts`); the full label stays the accessible name.
+   - Updated results are announced as a status message once the settings rest (800 ms).
