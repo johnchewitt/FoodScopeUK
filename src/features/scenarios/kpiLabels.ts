@@ -23,7 +23,7 @@ export const KPI_LABELS: Record<ScenarioKind, string[]> = {
   port: [
     "Inward freight affected",
     "Share of UK major-port inwards",
-    "Agricultural products affected",
+    "Agricultural dry bulk affected",
     "Food, feed and drink entry share",
   ],
 };

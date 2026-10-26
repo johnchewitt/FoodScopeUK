@@ -1,6 +1,13 @@
 import { Download, FlaskConical, Link2, Trash2, Upload } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
-import { formatByUnit, formatChange, formatKm, formatPopulation, formatTonnes } from "@/analysis/format";
+import {
+  formatByUnit,
+  formatChange,
+  formatKm,
+  formatPopulation,
+  formatShare,
+  formatTonnes,
+} from "@/analysis/format";
 import { formatMonth } from "@/analysis/trade";
 import { ChartFrame } from "@/components/charts/ChartFrame";
 import { ProvenanceBadge } from "@/components/dashboard/ProvenanceBadge";
@@ -20,6 +27,7 @@ import {
   importMonthsChart,
   importSharesChart,
   portGroupChart,
+  portWindowLabel,
   productionChart,
   SCENARIO_COLOUR,
   type ChartSpec,
@@ -495,7 +503,7 @@ function PortInsights() {
         <h4 className="scenario-method__h">Commodity evidence at this port</h4>
         <ul className="notes-list">
           <li>
-            DfT agricultural products (grain, soya, tapioca…):{" "}
+            DfT agricultural dry bulk (grain, soya, tapioca…):{" "}
             {m.result?.agricultural.baseline
               ? formatTonnes(m.result.agricultural.baseline * 1000)
               : "none recorded"}{" "}
@@ -511,13 +519,16 @@ function PortInsights() {
           <li>
             Containers and roll-on/roll-off units carry no commodity in DfT&rsquo;s statistics: general
             freight capacity only.
+            {m.selected.unitisedShare !== null && m.selected.unitisedShare > 0
+              ? ` They are ${formatShare(m.selected.unitisedShare)} of ${m.selected.name}'s inward tonnage (${m.year}, any origin), so food arriving in them is not identified.`
+              : ""}
           </li>
         </ul>
       </Section>
       <Section id="scenario-charts" title="Before and after">
         <Chart
-          title={`${m.selected.name}: inward tonnage by cargo group (${m.year})`}
-          spec={portGroupChart(m, reduction)}
+          title={`${m.selected.name}: inward tonnage by cargo group over ${portWindowLabel(months)} (${m.year})`}
+          spec={portGroupChart(m, reduction, months)}
         />
       </Section>
       <MethodologyPanel m={portMethodology(m)} />

@@ -7,7 +7,7 @@
 import type { EChartsCoreOption } from "echarts/core";
 import { formatGbp, formatKm, formatPopulation, formatShare, formatTonnes } from "@/analysis/format";
 import { formatMonth, type PartnerShare } from "@/analysis/trade";
-import type { ImportDisruptionResult } from "@/analysis/scenario";
+import { overMonths, UNITISED_GROUPS, type ImportDisruptionResult } from "@/analysis/scenario";
 import { BRAND, RISK_DARK, SHARE_CLASS_HEX } from "@/styles/palette";
 import type { Measure } from "@/state/urlState";
 import type { AffectedRow, ClosureModel, PortModel, ProductionModel } from "./model";
@@ -225,25 +225,35 @@ export function productionChart(m: ProductionModel): ChartSpec | null {
 // ---------------------------------------------------------------------------------------------
 // D
 
-export function portGroupChart(m: PortModel, reduction: number): ChartSpec | null {
+/** "1 month", "3 months", "the year": the disruption window of Scenario D. */
+export function portWindowLabel(months: number): string {
+  return months >= 12 ? "the year" : `${months} month${months === 1 ? "" : "s"}`;
+}
+
+/**
+ * Tonnage by cargo group over the disruption window (DfT annual tonnage × months ÷ 12, an even
+ * spread), baseline and scenario: the same window as the cards and results table, so a one-month
+ * disruption is never drawn as a whole year's reduction.
+ */
+export function portGroupChart(m: PortModel, reduction: number, months: number): ChartSpec | null {
   const s = m.selected;
   if (!s) return null;
   const groups = s.byGroup.filter((g) => g.value !== null && g.value > 0);
   if (groups.length === 0) return null;
   const labels = groups.map((g) => g.group);
+  const r = reduction / 100;
+  const base = groups.map((g) => overMonths(g.value, months)!);
+  const after = groups.map((g) => overMonths(g.value, months, r)!);
   const kt = (v: number) => formatTonnes(v * 1000);
+  const span = portWindowLabel(months);
   return {
     height: rowsHeight(groups.length),
-    description: `${s.name}'s inward tonnage by cargo group (${m.year}, any origin), baseline and with every group reduced by ${reduction} %: ${groups
-      .map((g) => `${g.group} ${kt(g.value!)} to ${kt(g.value! * (1 - reduction / 100))}`)
+    description: `${s.name}'s inward tonnage by cargo group over ${span} (${m.year} annual tonnage${months < 12 ? ` × ${months} ÷ 12, an even spread` : ""}, any origin), baseline and with every group reduced by ${reduction} %: ${groups
+      .map((g, i) => `${g.group} ${kt(base[i]!)} to ${kt(after[i]!)}`)
       .join("; ")}.`,
-    option: pairedBars(
-      labels,
-      groups.map((g) => g.value),
-      groups.map((g) => g.value! * (1 - reduction / 100)),
-      kt,
-      (i) =>
-        `${labels[i]} (${m.year}, annual)<br/>Baseline ${kt(groups[i]!.value!)}<br/>Scenario ${kt(groups[i]!.value! * (1 - reduction / 100))}`,
-    ),
+    option: pairedBars(labels, base, after, kt, (i) => {
+      const unitised = (UNITISED_GROUPS as readonly string[]).includes(labels[i]!);
+      return `${labels[i]} over ${span} (${m.year}${months < 12 ? ", even spread" : ""})<br/>Baseline ${kt(base[i]!)}<br/>Scenario ${kt(after[i]!)}${unitised ? "<br/>Contents not recorded by DfT" : ""}`;
+    }),
   };
 }

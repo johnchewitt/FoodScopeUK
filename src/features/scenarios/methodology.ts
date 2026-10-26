@@ -180,7 +180,7 @@ export function portMethodology(m: PortModel): Methodology {
     sources: [
       {
         id: "S23",
-        text: `DfT port freight statistics (PORT0499): inward tonnage loaded abroad by port, cargo group and region, ${m.year}; cargo category 23 agricultural products.`,
+        text: `DfT port freight statistics (PORT0499): inward tonnage loaded abroad by port and region, and by cargo group (any origin), ${m.year}; cargo category 23 agricultural products, a dry-bulk category.`,
       },
       {
         id: "S03",
@@ -190,7 +190,8 @@ export function portMethodology(m: PortModel): Methodology {
     formula: [
       "affected tonnage = port's inward tonnage from abroad × reduction × months ÷ 12",
       "share of UK major-port inwards affected = port's inward tonnage × reduction ÷ all major ports' inward tonnage",
-      "agricultural products affected = port's category 23 tonnage × reduction × months ÷ 12 (only where DfT records it)",
+      "agricultural dry bulk affected = port's category 23 tonnage × reduction × months ÷ 12 (only where DfT records it)",
+      "cargo groups and Ro-Ro and container freight over the disruption = annual tonnage × months ÷ 12, × (1 − reduction) in the scenario",
       "food, feed and drink share affected = UKFSR share entering at the port × reduction (only where UKFSR's port of entry is the port)",
     ],
     boundary:
@@ -198,7 +199,7 @@ export function portMethodology(m: PortModel): Methodology {
     assumptions: m.assumptions,
     limitations: [
       "DfT publishes annual tonnage: monthly effects assume an even spread over the year.",
-      "Containers and roll-on/roll-off units carry no commodity in DfT's statistics: food in them is not identified.",
+      "Containers and roll-on/roll-off units carry no commodity in DfT's statistics: food in them is not identified, so a Ro-Ro port such as Dover records no agricultural dry bulk although food passes through it.",
       "UKFSR's Dover figure includes the Channel Tunnel and is not attributed to the port.",
       "No diversion to other ports, no queueing and no recovery are modelled.",
       "Imports from a partner country are never assumed to pass through any particular port.",

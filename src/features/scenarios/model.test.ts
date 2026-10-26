@@ -22,6 +22,7 @@ import {
   type CouncilInfo,
   type ResultRow,
 } from "./model";
+import { portGroupChart, portWindowLabel } from "./charts";
 import { closureNarrative, importNarrative, portNarrative, productionNarrative } from "./narrative";
 import { closureStructure, validateClosure } from "./validate";
 
@@ -266,6 +267,51 @@ describe("Scenario D model (ports)", () => {
     expect(london.note).toMatch(/Sum of UKFSR's 2 groups/);
     expect(foodEntryEvidence(entry, "GBIMM").note).toMatch(/part of DfT's statistical port/);
     expect(foodEntryEvidence(entry, "GBABD").percent).toBeNull();
+  });
+
+  it("says Dover's zero is agricultural dry bulk only, with its Ro-Ro and container freight beside it (review)", () => {
+    const m = buildPortModel(ports, entry, params, "scenario", "DfT");
+    const agri = m.headlines.find((h) => h.id === "agricultural")!;
+    expect(agri.label).toBe("Agricultural dry bulk affected");
+    expect(agri.indicator.value).toBe(0);
+    // Independent check (python over ports.json): 12,304.196 kt of 12,606.921 kt any origin.
+    expect(agri.detail).toBe(
+      "None recorded as dry bulk · 97.6 % of inwards here is Ro-Ro or containers, contents not recorded",
+    );
+    expect(m.selected!.unitisedShare).toBeCloseTo(0.97599, 4);
+    const unitised = m.rows.find((r) => r.id === "unitised")!;
+    expect(unitised.label).toMatch(/contents not recorded/);
+    expect(unitised.baseline.value).toBeCloseTo(1_025_350, -1);
+    expect(unitised.scenario.value).toBeCloseTo(512_675, -1);
+    everyIndicatorHasProvenance(m.rows);
+  });
+
+  it("gives a bulk port's agricultural dry bulk and its UK share", () => {
+    const m = buildPortModel(ports, entry, { ...params, port: "GBLIV" }, "scenario", "DfT");
+    const agri = m.headlines.find((h) => h.id === "agricultural")!;
+    // 1,640.548 kt a year × 50 % × 1 ÷ 12; 17.2 % of 9,534.029 kt.
+    expect(agri.indicator.value).toBeCloseTo((1640.548 * 1000 * 0.5) / 12, -1);
+    expect(agri.detail).toMatch(/17\.2 % of UK major-port agricultural dry bulk/);
+  });
+
+  it("charts the cargo groups over the disruption, not the whole year (review)", () => {
+    const m = buildPortModel(ports, entry, params, "scenario", "DfT");
+    const one = portGroupChart(m, 50, 1)!;
+    const series = (one.option as { series: { data: { value: number }[] }[] }).series;
+    const roro = (m.selected!.byGroup.find((g) => g.group === "Ro-Ro Self Propelled")!.value ?? 0) / 12;
+    const idx = m
+      .selected!.byGroup.filter((g) => (g.value ?? 0) > 0)
+      .findIndex((g) => g.group === "Ro-Ro Self Propelled");
+    expect(series[0]!.data[idx]!.value).toBeCloseTo(roro, 6); // 11,801.077 ÷ 12 = 983.4 kt
+    expect(series[1]!.data[idx]!.value).toBeCloseTo(roro * 0.5, 6);
+    expect(one.description).toMatch(
+      /over 1 month \(2025 annual tonnage × 1 ÷ 12, an even spread, any origin\)/,
+    );
+    expect(one.description).toMatch(/Ro-Ro Self Propelled 983\.4 kt to 491\.7 kt/);
+    const year = portGroupChart(m, 50, 12)!;
+    expect(year.description).toMatch(/Ro-Ro Self Propelled 11\.8 Mt to 5\.9 Mt/);
+    expect(portWindowLabel(12)).toBe("the year");
+    expect(portWindowLabel(3)).toBe("3 months");
   });
 
   it("lists every port without a selection", () => {

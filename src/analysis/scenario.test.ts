@@ -7,12 +7,15 @@ import {
   effectiveReduction,
   importDisruption,
   increaseClass,
+  overMonths,
   portDisruption,
+  portUnitised,
   productionShock,
   retailerMix,
   scenarioWindow,
   weightedMean,
   weightedMedian,
+  UNITISED_GROUPS,
   type ClosureInput,
 } from "./scenario";
 import { aggregatePeriod, hhi, partnerShares } from "./trade";
@@ -425,5 +428,33 @@ describe("portDisruption (Scenario D)", () => {
     expect(r.agricultural.affected).toBeNull();
     expect(r.foodEntryAffected).toBeNull();
     expect(portDisruption({ ...input, reduction: 0 }).international.affected).toBe(0);
+  });
+});
+
+describe("Scenario D: disruption window and unitised freight (review)", () => {
+  it("spreads annual tonnage evenly over the disrupted months", () => {
+    expect(overMonths(1200, 1)).toBe(100);
+    expect(overMonths(1200, 1, 0.5)).toBe(50);
+    expect(overMonths(1200, 12, 0.25)).toBe(900);
+    expect(overMonths(1200, 0)).toBe(100); // at least one month
+    expect(overMonths(1200, 30)).toBe(1200); // at most the year
+    expect(overMonths(1200, 3, 2)).toBe(0); // reduction clamped to 100 %
+    expect(overMonths(0, 6, 0.5)).toBe(0);
+    expect(overMonths(null, 6)).toBeNull();
+  });
+
+  it("sums Ro-Ro units and containers, skipping years a group did not report", () => {
+    // Synthetic groups (obviously not a real port).
+    const byGroup = {
+      "Ro-Ro Self Propelled": [10, null],
+      "Ro-Ro Non-Self Propelled": [5, null],
+      Containers: [1, null],
+      "Dry Bulk": [100, 7],
+    };
+    expect(portUnitised(byGroup, 0)).toBe(16);
+    expect(portUnitised(byGroup, 1)).toBeNull();
+    expect(portUnitised({}, 0)).toBeNull();
+    expect(portUnitised({ Containers: [0] }, 0)).toBe(0);
+    expect(UNITISED_GROUPS).toEqual(["Ro-Ro Self Propelled", "Ro-Ro Non-Self Propelled", "Containers"]);
   });
 });

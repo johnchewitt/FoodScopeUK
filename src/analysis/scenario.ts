@@ -585,6 +585,36 @@ export interface PortDisruptionInput {
   foodEntryPercent: number | null;
 }
 
+/**
+ * DfT cargo groups whose contents DfT does not record (S23): roll-on/roll-off units and containers.
+ * Most food entering through a Ro-Ro port travels in them, so a port can record no agricultural
+ * dry bulk while still carrying food.
+ */
+export const UNITISED_GROUPS = ["Ro-Ro Self Propelled", "Ro-Ro Non-Self Propelled", "Containers"] as const;
+
+/** A port's unitised inward tonnage in year index `i` (any origin); null when no group reported. */
+export function portUnitised(byGroup: Record<string, (number | null)[]>, i: number): number | null {
+  let total = 0;
+  let any = false;
+  for (const g of UNITISED_GROUPS) {
+    const v = byGroup[g]?.[i];
+    if (v === null || v === undefined) continue;
+    any = true;
+    total += v;
+  }
+  return any ? total : null;
+}
+
+/**
+ * Tonnage over a disruption of `months` months at reduction `r` (0–1), from an annual figure:
+ * DfT publishes annual tonnage, so an even spread over the year is assumed (stated).
+ */
+export function overMonths(annual: number | null, months: number, r = 0): number | null {
+  if (annual === null) return null;
+  const f = Math.min(12, Math.max(1, Math.round(months))) / 12;
+  return annual * f * (1 - Math.min(1, Math.max(0, r)));
+}
+
 export interface PortMeasureImpact {
   baseline: number | null;
   /** Thousand tonnes affected over the months: baseline × r × months ÷ 12 (even spread, stated). */

@@ -11,9 +11,12 @@ import {
   closureImpact,
   importDisruption,
   increaseClass,
+  overMonths,
   portDisruption,
+  portUnitised,
   productionShock,
   scenarioWindow,
+  UNITISED_GROUPS,
   type ClosureResult,
   type ImportDisruptionResult,
   type PortDisruptionResult,
@@ -1393,7 +1396,10 @@ export interface PortModel {
     locode: string;
     name: string;
     nation: string;
+    /** Annual inward tonnage by DfT cargo group, any origin (thousand tonnes). */
     byGroup: { group: string; value: number | null }[];
+    /** Share of the port's inward tonnage (any origin) in Ro-Ro units or containers: contents not recorded. */
+    unitisedShare: number | null;
   } | null;
   result: PortDisruptionResult | null;
   food: FoodEntryEvidence | null;
@@ -1550,6 +1556,16 @@ export function buildPortModel(
   const intl = result.international;
   const agri = result.agricultural;
   const intlScenario = intl.baseline === null ? null : intl.baseline - (intl.affected ?? 0);
+  // Unitised freight (Ro-Ro units and containers, any origin): DfT records no contents for it, which
+  // is why a port can show no agricultural dry bulk while handling much of the UK's food (S23).
+  const unitised = portUnitised(port.inwardsByGroup, last);
+  const anyOrigin = Object.values(port.inwardsByGroup).reduce<number | null>((sum, series) => {
+    const v = series[last];
+    return v === null || v === undefined ? sum : (sum ?? 0) + v;
+  }, null);
+  const unitisedShare = unitised !== null && anyOrigin ? unitised / anyOrigin : null;
+  const overWindow = (annual: number | null) => overMonths(annual, params.months);
+  const r = params.reduction / 100;
   const rows: ResultRow[] = [
     row(
       "international",
@@ -1571,20 +1587,38 @@ export function buildPortModel(
     ),
     row(
       "agricultural",
-      `Agricultural products inwards over ${share}`,
+      `Agricultural dry bulk inwards over ${share}`,
       tonnes(
         "scenario.port.agricultural_baseline",
-        "Agricultural products inwards",
-        agri.baseline === null ? null : (agri.baseline * params.months) / 12,
+        "Agricultural dry bulk inwards",
+        overWindow(agri.baseline),
         "measured",
-        `DfT PORT0499 cargo category 23 "Agricultural products (eg grain, soya, tapioca)", inwards loaded abroad, ${year}.${even}`,
+        `DfT PORT0499 cargo category 23 "Agricultural products (eg grain, soya, tapioca)", a dry-bulk category, inwards loaded abroad, ${year}.${even} Food carried in Ro-Ro units or containers is not in it.`,
       ),
       tonnes(
         "scenario.port.agricultural_scenario",
-        "Agricultural products inwards in the scenario",
-        agri.baseline === null ? null : (agri.baseline * params.months) / 12 - (agri.affected ?? 0),
+        "Agricultural dry bulk inwards in the scenario",
+        agri.baseline === null ? null : overWindow(agri.baseline)! - (agri.affected ?? 0),
         "scenario",
         `Baseline × (1 − ${params.reduction} %).${even}`,
+      ),
+    ),
+    row(
+      "unitised",
+      `Ro-Ro and container freight inwards over ${share} (contents not recorded)`,
+      tonnes(
+        "scenario.port.unitised_baseline",
+        "Ro-Ro and container freight inwards (any origin)",
+        overWindow(unitised),
+        "measured",
+        `DfT PORT0499 cargo groups ${UNITISED_GROUPS.join(", ")}, inwards from any origin (DfT does not split cargo groups by origin and region together), ${year}.${even} DfT records no commodity for these units, so the food in them is not identified.`,
+      ),
+      tonnes(
+        "scenario.port.unitised_scenario",
+        "Ro-Ro and container freight inwards in the scenario (any origin)",
+        unitised === null ? null : overWindow(unitised)! * (1 - r),
+        "scenario",
+        `Baseline × (1 − ${params.reduction} %).${even} Contents not recorded.`,
       ),
     ),
   ];
@@ -1633,18 +1667,19 @@ export function buildPortModel(
     },
     {
       id: "agricultural",
-      label: "Agricultural products affected",
+      label: "Agricultural dry bulk affected",
       indicator: tonnes(
         "scenario.port.agricultural_affected",
-        "Agricultural products affected",
+        "Agricultural dry bulk affected",
         agri.affected,
         "scenario",
         rows[1]!.scenario.method,
       ),
+      // A zero here is "none recorded as dry bulk", never "no food": say what DfT cannot see.
       detail:
         agri.baseline === null || agri.baseline === 0
-          ? "DfT records no agricultural products inwards here"
-          : `grain, soya, tapioca… · ${formatShare(agri.shareOfUk)} of UK major-port agricultural inwards`,
+          ? `None recorded as dry bulk${unitisedShare !== null && unitisedShare > 0 ? ` · ${formatShare(unitisedShare)} of inwards here is Ro-Ro or containers, contents not recorded` : ""}`
+          : `grain, soya, tapioca… · ${formatShare(agri.shareOfUk)} of UK major-port agricultural dry bulk`,
     },
     {
       id: "food",
@@ -1685,6 +1720,7 @@ export function buildPortModel(
         group,
         value: values[last] ?? null,
       })),
+      unitisedShare,
     },
     result,
     food,
@@ -1694,7 +1730,7 @@ export function buildPortModel(
     assumptions: [
       `${port.name} handles ${params.reduction} % less inward freight for ${share}; every cargo group is reduced alike.`,
       "No traffic diverts to other ports and nothing is assumed about where the cargo came from (partner countries are never linked to ports).",
-      "Food exposure only where the data records food flows at the port (UKFSR port of entry; DfT agricultural products).",
+      "Food exposure only where the data records food flows at the port (UKFSR port of entry; DfT agricultural dry bulk).",
     ],
   };
 }
