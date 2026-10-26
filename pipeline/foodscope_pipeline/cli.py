@@ -57,7 +57,7 @@ def main(argv: list[str] | None = None) -> int:
     ons.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
     ref = sub.add_parser("fetch-reference", help="ONLINE: fetch a set of reference files into pipeline/raw/<publisher>/<snapshot>/ (incremental): 'stage5' = fetch-ons plus Nomis, MHCLG, NISRA and the FSA (NI food register); 'context' = ONS urban/rural classification and Defra annual production; 'stage6' = Risk Explorer inputs (FAO water stress via the World Bank, DfT ports, UKFSR theme 3, Defra June survey, Scottish Data Zone lookups, EMODnet port locations, ONS ITL1 and LSOA lookup, OS Open Roads download list, OSNI 50K transport lines, Translink NIR railway network)")
     ref.add_argument("--snapshot", default=None, help="snapshot id YYYY-MM-DD (default: today, UTC)")
-    ref.add_argument("--set", default="stage5", choices=("stage5", "context", "stage6", "trade"), help="which files to fetch (default: stage5)")
+    ref.add_argument("--set", default="stage5", choices=("stage5", "context", "stage6", "trade", "stage7"), help="which files to fetch (default: stage5)")
     build = sub.add_parser("build-trade", help="OFFLINE: raw HMRC cache → public/data/snapshots/<snapshot>/trade/")
     build.add_argument("--snapshot", required=True, help="snapshot id YYYY-MM-DD (must exist in the raw cache)")
 
@@ -84,6 +84,14 @@ def main(argv: list[str] | None = None) -> int:
     context.add_argument("--raw-snapshot", default=None, help="raw snapshot of the context set when it differs from --snapshot (the output)")
     context.add_argument("--extra-defra-snapshot", action="append", default=[], help="another pipeline/raw/defra/<snapshot>/ folder for production items (repeatable)")
     context.add_argument("--out", default=None, help="output root (default: public/data)")
+
+    scen = sub.add_parser("build-scenario", help="OFFLINE: Scenario Lab closure inputs (small areas, supermarkets, three nearest by straight line) → <out>/snapshots/<snapshot>/scenario/ + reports/scenario-qa-<snapshot>.json")
+    scen.add_argument("--snapshot", required=True, help="output snapshot YYYY-MM-DD")
+    scen.add_argument("--raw-snapshot", required=True, help="raw snapshot of the stage7 set (pipeline/raw/{ons,scotgov}/<date>/: LSOA centroids, Scotland's Data Zone centroids)")
+    scen.add_argument("--stage6-snapshot", required=True, help="raw snapshot of the stage6 set (every LSOA's council, Scotland's 2022 Data Zone lookup)")
+    scen.add_argument("--reference-snapshot", required=True, help="raw snapshot of the stage5 set (Nomis TS001, IoD 2025, NISRA Data Zones)")
+    scen.add_argument("--local-snapshot", required=True, help="local family snapshot holding stores.geojson and lad-indicators.json")
+    scen.add_argument("--out", default=None, help="output root (default: public/data)")
 
     g3 = sub.add_parser("check-baskets", help="OFFLINE: gate G3 — the baskets against Defra's trade codes (S05) and HMRC's codes → reports/basket-codes-<snapshot>.json")
     g3.add_argument("--snapshot", required=True, help="trade snapshot YYYY-MM-DD (public/data/snapshots/<snapshot>/trade/)")
@@ -134,6 +142,10 @@ def main(argv: list[str] | None = None) -> int:
                 ("ons", (), ons_files.CONTEXT_QUERIES),
                 ("defra", defra_stats.FILES, ()),
             ]
+        elif args.set == "stage7":
+            from foodscope_pipeline.sources import stage7_files as s7
+
+            publishers = [("ons", (), s7.ONS_QUERIES), ("scotgov", s7.SCOTGOV_FILES, ())]
         elif args.set == "trade":
             from foodscope_pipeline.sources import trade_files
 
@@ -258,6 +270,21 @@ def main(argv: list[str] | None = None) -> int:
             logging.error("build-context failed: %s", exc)
             return 1
         print(f"wrote {len(written)} files for context snapshot {args.snapshot}")
+        return 0
+
+    if args.command == "build-scenario":
+        from foodscope_pipeline.scenario import build_scenario, default_inputs as scenario_inputs
+
+        out = Path(args.out) if args.out else DATA_DIR
+        try:
+            written = build_scenario(args.snapshot, scenario_inputs(RAW, DATA_DIR, args.raw_snapshot,
+                                                                   args.stage6_snapshot, args.reference_snapshot,
+                                                                   args.local_snapshot),
+                                     out, REPORTS, SCHEMAS)
+        except Exception as exc:  # noqa: BLE001 (report any input problem and fail the step)
+            logging.error("build-scenario failed: %s", exc)
+            return 1
+        print(f"wrote {len(written)} files for scenario snapshot {args.snapshot}")
         return 0
 
     if args.command == "check-baskets":

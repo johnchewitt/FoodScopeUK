@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/scenario-closure.schema.json",
+  "title": "ScenarioClosure",
+  "description": "Inputs of the Scenario Lab's supermarket-closure scenario (Stage 7) for one part of the UK: Great Britain (gb) or Northern Ireland (ni). Columnar: every array under stores has one entry per supermarket, every array under areas one entry per small area, in the same order (the app checks the lengths). Supermarkets are GEOLYTIX stores of class supermarket (280 m² and over, D5) in a UK council. Small areas are LSOAs 2021 (England and Wales), Data Zones 2022 (Scotland) and Data Zones 2021 (Northern Ireland), each represented by its population-weighted centroid. nearest holds each area's k nearest supermarkets (indices into stores, nearest first, ties by index) and distance their straight-line distances in metres in the national grid (grid); not travel times. Written by `foodscope-pipeline build-scenario`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "part", "grid", "k", "census", "councils", "stores", "areas"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "part": { "enum": ["gb", "ni"] },
+    "grid": {
+      "enum": ["EPSG:27700", "EPSG:2157"],
+      "description": "Coordinate system of x, y and the distances: British National Grid (gb) or Irish Transverse Mercator (ni)."
+    },
+    "k": { "type": "integer", "minimum": 1, "maximum": 10 },
+    "census": {
+      "type": "object",
+      "description": "Census year of the population figures, by nation letter of the area code (E, W, S, N).",
+      "additionalProperties": false,
+      "patternProperties": { "^[EWSN]$": { "enum": [2021, 2022] } },
+      "minProperties": 1
+    },
+    "councils": {
+      "type": "array",
+      "description": "Council codes (May 2025) used by stores.council and areas.council.",
+      "items": { "type": "string", "pattern": "^[ENSW][0-9]{8}$" },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "stores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "retailer", "format", "sizeBand", "council", "lon", "lat", "x", "y"],
+      "properties": {
+        "id": { "type": "array", "items": { "type": "integer" }, "uniqueItems": true },
+        "name": { "type": "array", "items": { "type": "string" } },
+        "retailer": { "type": "array", "items": { "type": "string" } },
+        "format": { "type": "array", "items": { "type": "string" } },
+        "sizeBand": { "type": "array", "items": { "type": "string" } },
+        "council": { "type": "array", "items": { "type": "integer", "minimum": 0 } },
+        "lon": { "type": "array", "items": { "type": "number", "minimum": -9, "maximum": 2 } },
+        "lat": { "type": "array", "items": { "type": "number", "minimum": 49.8, "maximum": 61 } },
+        "x": { "type": "array", "items": { "type": "integer" } },
+        "y": { "type": "array", "items": { "type": "integer" } }
+      }
+    },
+    "areas": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "name",
+        "council",
+        "lon",
+        "lat",
+        "x",
+        "y",
+        "population",
+        "decile",
+        "nearest",
+        "distance"
+      ],
+      "properties": {
+        "code": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[ENSW][0-9]{8}$" },
+          "uniqueItems": true
+        },
+        "name": { "type": "array", "items": { "type": "string" } },
+        "council": { "type": "array", "items": { "type": "integer", "minimum": 0 } },
+        "lon": { "type": "array", "items": { "type": "number", "minimum": -9, "maximum": 2 } },
+        "lat": { "type": "array", "items": { "type": "number", "minimum": 49.8, "maximum": 61 } },
+        "x": { "type": "array", "items": { "type": "integer" } },
+        "y": { "type": "array", "items": { "type": "integer" } },
+        "population": {
+          "type": "array",
+          "description": "Census usual residents (Census 2021, or 2022 in Scotland: total population) as published.",
+          "items": { "type": "integer", "minimum": 0 }
+        },
+        "decile": {
+          "type": "array",
+          "description": "IoD 2025 Index of Multiple Deprivation decile within England (1 = most deprived 10 %); null outside England.",
+          "items": { "type": ["integer", "null"], "minimum": 1, "maximum": 10 }
+        },
+        "nearest": {
+          "type": "array",
+          "items": { "type": "array", "items": { "type": "integer", "minimum": -1 } }
+        },
+        "distance": {
+          "type": "array",
+          "items": { "type": "array", "items": { "type": "integer", "minimum": 0 } }
+        }
+      }
+    }
+  }
+}

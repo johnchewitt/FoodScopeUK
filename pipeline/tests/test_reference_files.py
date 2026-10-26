@@ -249,3 +249,23 @@ def test_trade_set_fetches_defra_trade_codes_and_livestock_tables(monkeypatch: p
     for f in trade_files.DEFRA_FILES:
         assert f.url.startswith("https://assets.publishing.service.gov.uk/media/") and f.url.endswith(".ods")
         assert f.id not in cached
+
+
+def test_stage7_set_fetches_every_lsoa_centroid_and_scotlands_data_zones(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from foodscope_pipeline.sources import stage7_files as s7
+
+    calls: list[tuple[str, tuple, tuple]] = []
+
+    def fake_fetch(snapshot, raw_root, files=None, queries=None):  # noqa: ANN001
+        calls.append((raw_root.name, files, queries))
+        return raw_root / snapshot
+
+    monkeypatch.setattr(ons_files, "fetch", fake_fetch)
+    monkeypatch.setattr(cli, "RAW", tmp_path)
+    assert cli.main(["fetch-reference", "--snapshot", "2026-10-26", "--set", "stage7"]) == 0
+    assert calls == [("ons", (), s7.ONS_QUERIES), ("scotgov", s7.SCOTGOV_FILES, ())]
+    (q,) = s7.ONS_QUERIES
+    assert "where=1%3D1" in q.page_url(0) and "orderByFields=LSOA21CD" in q.page_url(0) and "outSR=27700" in q.page_url(0)
+    assert q.count_url().endswith("query?where=1%3D1&returnCountOnly=true&f=json")
+    assert all(f.url.startswith("https://") and f.url.endswith(".zip") for f in s7.SCOTGOV_FILES)
+

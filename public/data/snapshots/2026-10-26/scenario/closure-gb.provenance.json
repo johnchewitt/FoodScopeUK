@@ -1,0 +1,30 @@
+{
+  "id": "scenario.closure_gb",
+  "title": "Supermarket closure inputs, Great Britain: small areas, supermarkets and nearest distances",
+  "role": "statistical",
+  "path": "snapshots/2026-10-26/scenario/closure-gb.json",
+  "format": "json",
+  "schemaId": "scenario-closure",
+  "sha256": "ffafa174ec54de5f91766e9c29907e30f9bd8ec641bb86acf5e7333eac6c982b",
+  "bytes": 5383783,
+  "sourceIds": [
+    "S11",
+    "S15",
+    "S17",
+    "S18",
+    "S19",
+    "S32"
+  ],
+  "referencePeriod": "Census 2021 (England and Wales), Census 2022 (Scotland); IoD 2025 (England); June 2026 (GEOLYTIX v46)",
+  "coverage": "Great Britain: 43,064 small areas (England and Wales: LSOAs 2021; Scotland: Data Zones 2022) and 6,987 supermarkets (280 m² and over)",
+  "provenance": "derived",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025. Copyright Scottish Government, contains Ordnance Survey data © Crown copyright and database right 2024 (Open Government Licence v3.0). Source: Ministry of Housing, Communities and Local Government, English Indices of Deprivation 2025 (OGL v3.0). Contains GEOLYTIX Grocery Retail Points data (v46, June 2026). Councils: Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025",
+  "expectedCadence": "irregular",
+  "retrieval": {
+    "method": "Derived offline (build-scenario) from the committed raw files and the published local family",
+    "source": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LSOA_PopCentroids_EW_2021_V4/FeatureServer/0 (36 pages); https://maps.gov.scot/ATOM/shapefiles/SG_DataZoneCent_2022.zip; census2021-ts001.zip (Nomis); LSOA21_WD25_LAD25_EW_LU_v2 (ONS); dz2022-lookup.csv; IoD 2025 File 7; stores.geojson (local family)",
+    "retrievedAt": "2026-10-26T11:05:59Z",
+    "notes": "Each small area is represented by its population-weighted centroid. Distances are straight-line, in metres, in the national grid (EPSG:27700); they are not travel times. Each area's three nearest supermarkets are found among all supermarkets of its part of the UK, so stores beyond a council boundary count; Crown Dependency stores are left out, and stores in the Republic of Ireland are not in the data. Deprivation decile: England only (IoD 2025, ranked within England)."
+  }
+}

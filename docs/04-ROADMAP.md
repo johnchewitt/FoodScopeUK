@@ -19,7 +19,7 @@
 | **4** | **Supermarket network** ✅ merged (PR #9) and deployed | R1 | 3, G7 ✅, and the LAD/GEOLYTIX data built in the pre-Stage 4 data step (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth; basemap choice: dark grey, light grey, imagery (SH-08) |
 | **5** | **Local Authority Profiles** ✅ merged (PR #14) and deployed | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
 | **6** | **UK Food Resilience — Risk Explorer** (supply exposure, logistics, community access) ✅ merged (PRs #15 and #17) and deployed; live checks to do | R1 | 2, 3, 5, G6, G14–G18 | Tomatoes: concentration, partners' water stress and an estimated exposure to one supplier; ports and road corridors; councils' priority places within each nation — each with "Explain this risk" |
-| 7 | Scenario Lab (import disruption, store closure) | R1 | 3, 5, 6 | Spanish tomato preset; close a store and see the access change |
+| 7 | Scenario Lab (import disruption, store closure; port and production shocks as far as the data allows) — data step on `data/stage-7-inputs` | R1 | 3, 5, 6, G19 | Spanish tomato preset; close a supermarket anywhere in the UK and see the nearest-store change for every small area |
 | 8 | Consulting Insights + PDF export | R1 | 5, 6, 7, D3, D7 | One-click profile PDF that matches the screen |
 | 9 | Hardening and Release 1 | R1 | 1–8 | Release 1 tagged and deployed; acceptance criteria evidenced |
 | 10 | Release 2 | R2 | 9 | National access layers, Scenarios B/C, Ask FOODSCOPE, 3D globe |
@@ -59,6 +59,7 @@ Each gate must be cleared (evidence recorded in `docs/stage-reports/`) before th
 | G16 ✅ | Strategic road corridors for the UK | OS Open Roads (GB); OSNI 50K transport (NI) | 6 — **GB cleared 25 Oct 2026** (S35 extract). NI: OSNI's service refused the pipeline in three runs (S34); **cleared 26 Oct 2026 with OpenStreetMap** (S38, John's file and decision), labelled community-mapped and not official |
 | G17 ✅ | Priority Places for every council: geography and lookups per nation | PPFI codes vs ONS, Scottish Government and NISRA lookups | 6 — **cleared 25 Oct 2026**: Scotland is on 2011 Data Zones (S32 lookup); all 43,538 areas assigned to the 361 councils |
 | G18 ✅ | Agricultural production regions: Defra regional and country tables, boundaries | Defra June survey files; ONS ITL1 | 6 — **cleared 25 Oct 2026**: 2025 wheat, cattle, sheep, pigs, poultry; regional sums checked (S31, S33) |
+| G19 ✅ | Small areas for the whole UK: a population-weighted point, council and Census population for every LSOA and Data Zone | ONS centroids for every LSOA; Scottish Government Data Zone Centroids 2022; NISRA Data Zones | 7 — **cleared 26 Oct 2026**: 46,844 small areas (35,672 LSOAs, 7,392 Scottish and 3,780 NI Data Zones) in the 361 councils; populations within 0.01 % of the published national totals (Scotland: Census 2022) (S15, S17, S16, S18) |
 
 ---
 
@@ -277,9 +278,16 @@ Status on 26 October 2026: the data step merged as PR #15. The module (PR #16) w
 
 ## 9. Stage 7 — Scenario Lab
 
-Deliverables: scenario framework (SC-01..05); SC-A/E import disruption with Spanish tomato preset; SC-D store closure. Formula tests from spec §6.5; assumptions panel; baseline vs scenario views; URL-reproducible runs.
+John's Stage 7 brief (26 Oct 2026, "Food Security Scenario Lab") and his decisions the same day: the supermarket-closure scenario covers **every small area of the UK**, with the data fetched and verified first in its own pull request; distances are **straight-line only** (no routed travel time in this stage).
 
-Exit: unit tests cover recovery profile edges; E2E runs both scenarios; wording audit shows no "shortage" language.
+**Data step (`data/stage-7-inputs`).** `fetch-reference --set stage7` on GitHub Actions: every LSOA population-weighted centroid (S15) and Scotland's Data Zone Centroids 2022 with Census 2022 population (S17). `build-scenario` writes the `scenario` family: for Great Britain and for Northern Ireland, every small area (point, council, Census population, England's IoD decile), every supermarket (GEOLYTIX class `supermarket`) and each area's three nearest supermarkets by straight line in the national grid. Report: `docs/stage-reports/pre-stage-7-data.md`.
+
+Deliverables (the brief, with the spec's SC requirements): scenario framework (SC-01..05) with a typed scenario model; scenario cards, sliders, baseline vs scenario KPIs and charts, a results panel and a methodology panel for each scenario; named scenarios saved locally and in the URL, compared, reset and exported.
+- **A — international supply disruption** (SC-A/E): commodity, recorded partner, baseline month and year, reduction 0–100 %, optional duration; affected volume, residual recorded imports, affected share, HHI before and after, map connections updated; a static exposure calculation with no substitution, stockpiles or demand response assumed.
+- **B — supermarket closure** (SC-D): any supermarket; remaining supermarkets nearby, nearest-store distance change, small areas whose nearest supermarket changes, population affected, retailer concentration in the council; stores beyond the council boundary count; straight-line, never travel time.
+- **C — domestic production shock** and **D — port disruption**: built only as far as verified, comparable data allows (Defra supply balances; DfT port tonnage without commodity routing), otherwise documented as future extensions.
+
+Exit: exposure calculations, zero and full disruption, missing observations, closure and nearest-store recalculation, population, comparison, URL persistence and reset unit-tested; E2E runs the scenarios; Stages 1–6 unchanged; wording audit shows no "shortage" or "forecast" language.
 
 ## 10. Stage 8 — Consulting Insights + PDF export
 
@@ -382,3 +390,4 @@ Rules of engagement:
 | 2026-10-26 | Northern Ireland road corridors: the file John sent is an OpenStreetMap extract, not OSNI's layer. John chose to use it, labelled as OpenStreetMap and as not official data, motorways and primary roads only (matching GB's two categories; secondary roads left out). The committed ZIP leaves out the file's ArcGIS metadata, which records local file paths | S38; John (decision) |
 | 2026-10-26 | All sixteen baskets of spec §6.1 (John's request): HMRC snapshot 2026-10-26; gate G3 against Defra's trade codes; groups by SITC division; the Risk Explorer's commodity–country matrix compares a basket with its group; Defra production context where Defra publishes a supply balance (apples, sugar, beef, mutton and lamb, poultry), "not grown commercially in the UK" from Defra's indigeneity for oranges, rice, coffee, cocoa and bananas | ADR-0025; S01, S05, S09, S10 |
 | 2026-10-26 | HMRC filters: at most ten OR-ed comparisons per query (a 24-clause filter answered HTTP 400) | S01 |
+| 2026-10-26 | John's Stage 7 brief (Scenario Lab): the closure scenario covers every small area of the UK, data fetched and verified first in its own pull request; straight-line distances only for now (routed travel time stays Release 3) | John (decisions); G19; S15, S16, S17 |

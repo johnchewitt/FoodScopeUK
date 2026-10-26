@@ -58,7 +58,7 @@ The snapshot holds Natural Earth v5.1.2 reference geometry and the HMRC trade ba
 
 To rebuild an existing snapshot offline: `uv run foodscope-pipeline build-trade --snapshot 2026-10-23`.
 
-Local data (stores, councils, population, small areas, context) and the Risk Explorer data (`risk`) are built offline from raw files committed in `pipeline/raw/` (ADR-0020, ADR-0021, ADR-0023). The online fetches run on GitHub Actions when a `data/**` branch is pushed (`refresh-reference-data.yml`). Then:
+Local data (stores, councils, population, small areas, context), the Risk Explorer data (`risk`) and the Scenario Lab's closure inputs (`scenario`) are built offline from raw files committed in `pipeline/raw/` (ADR-0020, ADR-0021, ADR-0023). The online fetches run on GitHub Actions when a `data/**` branch is pushed (`refresh-reference-data.yml`). Then:
 
 ```bash
 uv run foodscope-pipeline build-local --snapshot 2026-10-24          # councils, stores, population
@@ -66,6 +66,7 @@ uv run foodscope-pipeline build-ni-grocers --snapshot 2026-10-24 --local-snapsho
 uv run foodscope-pipeline build-context --snapshot 2026-10-25 --reference-snapshot 2026-10-24 --local-snapshot 2026-10-24
 uv run foodscope-pipeline build-areas --snapshot 2026-10-24 --context-snapshot 2026-10-25   # deep profiles
 uv run foodscope-pipeline build-risk --snapshot 2026-10-25 --reference-snapshot 2026-10-24 --local-snapshot 2026-10-24   # Risk Explorer
+uv run foodscope-pipeline build-scenario --snapshot 2026-10-26 --raw-snapshot 2026-10-26 --stage6-snapshot 2026-10-25 --reference-snapshot 2026-10-24 --local-snapshot 2026-10-24   # Scenario Lab (closure)
 uv run foodscope-pipeline publish
 ```
 
