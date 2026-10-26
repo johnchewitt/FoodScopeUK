@@ -72,6 +72,7 @@ const S = {
   S35: { id: "S35", label: "OS Open Roads" },
   S36: { id: "S36", label: "EMODnet port locations" },
   S37: { id: "S37", label: "Translink NIR railway network" },
+  S38: { id: "S38", label: "OpenStreetMap roads, Northern Ireland" },
 } as const;
 
 const NOT_A_FORECAST =
@@ -252,14 +253,14 @@ export function explainRoads(l: LogisticsModel): Explanation {
     subject: "Road and rail corridors",
     kind: "roads",
     measured:
-      "Where Great Britain's motorways and trunk roads (the national highway authorities' networks) and other primary A roads run, from OS Open Roads, and where Northern Ireland's railway lines run (Translink's NIR network).",
+      "Where Great Britain's motorways and trunk roads (the national highway authorities' networks) and other primary A roads run, from OS Open Roads; Northern Ireland's motorways and primary roads, from OpenStreetMap; and where Northern Ireland's railway lines run (Translink's NIR network).",
     why: "Most food moves by road between ports, distribution centres and stores; disruption on a corridor with few alternatives affects deliveries over a wide area.",
     calculation:
-      "OS Open Roads links classed as motorway or trunk road ('strategic') or primary route ('primary'), merged by road number and simplified for display. NIR route lines as published (sidings left out), simplified for display.",
+      "OS Open Roads links classed as motorway or trunk road ('strategic') or primary route ('primary'), merged by road number and simplified for display. In Northern Ireland, OpenStreetMap motorways ('strategic') and primary roads ('primary'), merged by road number in the same way. NIR route lines as published (sidings left out), simplified for display.",
     observed: [srnDelayIndicator(l)],
-    sources: [S.S35, S.S37, S.S03],
+    sources: [S.S35, S.S38, S.S37, S.S03],
     limitations: [
-      "Northern Ireland's roads are not shown: DfI's open files have no line work, and OSNI's open transport service could not be reached by the data pipeline.",
+      "Northern Ireland's roads come from OpenStreetMap, community-mapped rather than official: DfI's open files have no line work and OSNI's open transport layer could not be fetched. Its classes follow OpenStreetMap, not GB's trunk and primary-route designations, so GB and NI categories compare only approximately.",
       "Railway lines are shown for Northern Ireland only (Translink, 2015); Great Britain's are not in this build. They show where track runs, not services or freight.",
       "Lines show where roads are, not freight volumes, congestion or resilience on each road.",
       "The delay figure covers England's Strategic Road Network as a whole, all traffic, and ends in December 2023.",

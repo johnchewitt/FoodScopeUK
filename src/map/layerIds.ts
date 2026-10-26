@@ -30,12 +30,14 @@ export const CONTEXT_PRODUCTION_DATASET_ID = "context.uk_production";
 export const RISK_PORTS_LAYER_ID = "risk-ports";
 export const RISK_ROADS_LAYER_ID = "risk-roads";
 export const RISK_RAIL_LAYER_ID = "risk-rail";
+export const RISK_ROADS_NI_LAYER_ID = "risk-roads-ni";
 export const RISK_REGIONS_LAYER_ID = "risk-regions";
 export const RISK_DATASET_IDS = {
   waterStress: "risk.water_stress",
   ports: "risk.ports",
   portEntry: "risk.port_entry",
   roads: "risk.roads",
+  roadsNi: "risk.roads_ni",
   rail: "risk.rail",
   farming: "risk.farming",
   farmingRegions: "risk.farming_regions",

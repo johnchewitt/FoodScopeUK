@@ -131,6 +131,7 @@ export function useRiskLogistics() {
   const entry = useValidatedDataset(RISK_DATASET_IDS.portEntry, validatePortEntry);
   const farming = useValidatedDataset(RISK_DATASET_IDS.farming, validateFarming);
   const roadsDs = findDataset(manifest.data, RISK_DATASET_IDS.roads);
+  const roadsNiDs = findDataset(manifest.data, RISK_DATASET_IDS.roadsNi);
   const railDs = findDataset(manifest.data, RISK_DATASET_IDS.rail);
   const regionsDs = findDataset(manifest.data, RISK_DATASET_IDS.farmingRegions);
   const portsDs = findDataset(manifest.data, RISK_DATASET_IDS.ports);
@@ -145,6 +146,7 @@ export function useRiskLogistics() {
       { measure, port, roads, rail, farm },
       {
         roads: roadsDs ? { url: datasetUrl(roadsDs), copyright: roadsDs.attribution } : null,
+        roadsNi: roadsNiDs ? { url: datasetUrl(roadsNiDs), copyright: roadsNiDs.attribution } : null,
         rail: railDs ? { url: datasetUrl(railDs), copyright: railDs.attribution } : null,
         regions: regionsDs ? { url: datasetUrl(regionsDs), copyright: regionsDs.attribution } : null,
         portsCopyright: portsDs.attribution,
@@ -160,6 +162,7 @@ export function useRiskLogistics() {
     rail,
     farm,
     roadsDs,
+    roadsNiDs,
     railDs,
     regionsDs,
     portsDs,
@@ -175,6 +178,7 @@ export function useRiskLogistics() {
       ports: portsDs,
       entry: findDataset(manifest.data, RISK_DATASET_IDS.portEntry),
       roads: roadsDs,
+      roadsNi: roadsNiDs,
       rail: railDs,
       farming: findDataset(manifest.data, RISK_DATASET_IDS.farming),
       regions: regionsDs,

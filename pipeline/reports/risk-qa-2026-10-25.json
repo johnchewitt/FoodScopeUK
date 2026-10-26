@@ -173,6 +173,20 @@
       "simplifyMetres": 60.0
     }
   },
+  "roadsNorthernIreland": {
+    "features": 57,
+    "linesByClass": {
+      "motorway": 251,
+      "primary": 4016,
+      "secondary": 6231
+    },
+    "kept": {
+      "strategic": 8,
+      "primary": 49
+    },
+    "simplifyMetres": 60.0,
+    "source": "NI_Roads_50kOSMselection_ExportFeatures.zip (provided, sha256 395ca8b0759e…)"
+  },
   "rail": {
     "features": 10,
     "routeKm": 333.6,

@@ -509,7 +509,7 @@
         "S35"
       ],
       "referencePeriod": "OS Open Roads as downloaded 2026-10-25",
-      "coverage": "Great Britain. Northern Ireland: not included (OSNI's open transport service could not be reached from the data pipeline)",
+      "coverage": "Great Britain. Northern Ireland's corridors are a separate dataset from OpenStreetMap (risk.roads_ni)",
       "provenance": "measured",
       "licence": "Open Government Licence v3.0",
       "attribution": "Contains OS data © Crown copyright and database right 2026",
@@ -519,6 +519,32 @@
         "source": "https://api.os.uk/downloads/v1/products/OpenRoads/downloads?area=GB&format=GeoPackage&redirect (oproad_gpkg_gb.zip, md5 2ee5d30899c4a44df321e5e1a66989ac)",
         "retrievedAt": "2026-10-25T20:42:47Z",
         "notes": "Links merged by road number and category, simplified at 60.0 m in EPSG:27700: 'strategic' = motorways and trunk roads (the national highway authorities' networks), 'primary' = other primary-route A roads. Lines show road corridors, not freight flows."
+      }
+    },
+    {
+      "id": "risk.roads_ni",
+      "title": "Road corridors in Northern Ireland: motorways and primary roads (OpenStreetMap)",
+      "role": "reference",
+      "path": "snapshots/2026-10-25/risk/roads-ni.geojson",
+      "format": "geojson",
+      "schemaId": "risk-roads",
+      "sha256": "52e0f2a30bbec24ca54e21daf3b0b6959c0dbd195752c0f6203b75cab6bb0b5d",
+      "bytes": 76630,
+      "featureCount": 57,
+      "sourceIds": [
+        "S38"
+      ],
+      "referencePeriod": "OpenStreetMap extract, 2026 (provided 26 October 2026)",
+      "coverage": "Northern Ireland: OpenStreetMap motorways ('strategic') and primary roads ('primary'); secondary roads left out. Community-mapped, not official data; classes follow OpenStreetMap, not GB's trunk and primary-route designations",
+      "provenance": "measured",
+      "licence": "Open Database License (ODbL) 1.0",
+      "attribution": "© OpenStreetMap contributors (ODbL)",
+      "expectedCadence": "irregular",
+      "retrieval": {
+        "method": "Read offline from the shapefile John provided (OpenStreetMap roads, exported from ArcGIS Pro)",
+        "source": "NI_Roads_50kOSMselection_ExportFeatures.zip (provided, sha256 395ca8b0759e…)",
+        "retrievedAt": "2026-10-26T08:12:53Z",
+        "notes": "Lines merged by road number and class, simplified at 60 m in Irish Transverse Mercator (EPSG:2157), WGS84 to 5 decimals. Lines show road corridors, not freight flows. Published under the ODbL, as a database derived from OpenStreetMap."
       }
     },
     {
@@ -1222,6 +1248,15 @@
       "licence": "Open Government Licence v3.0",
       "status": "verified",
       "notes": "Shapefile in TM75 Irish Grid (EPSG:29903), published 21 September 2015: 34 lines, of which 10 route lines (about 334 km) are drawn and 24 sidings left out. Where the railway runs, not services or freight. Northern Ireland only; Great Britain's railway lines are not in this build."
+    },
+    {
+      "id": "S38",
+      "title": "OpenStreetMap roads in Northern Ireland (extract provided by John)",
+      "publisher": "OpenStreetMap contributors (extract exported from ArcGIS Pro by John Hewitt)",
+      "url": "https://www.openstreetmap.org/copyright",
+      "licence": "Open Database License (ODbL) 1.0",
+      "status": "verified",
+      "notes": "Community-mapped, not official data, used for Northern Ireland's road corridors because DfI's Highway Network has no open geometry and OSNI's open transport layer could not be fetched (John's decision, 26 Oct 2026). Geofabrik roads layer (fclass, ref), WGS84: 251 motorway, 4,016 primary and 6,231 secondary lines; motorways and primary roads kept, merged by road number. © OpenStreetMap contributors."
     }
   ]
 }

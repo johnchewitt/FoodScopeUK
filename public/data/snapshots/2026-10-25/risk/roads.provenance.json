@@ -12,7 +12,7 @@
     "S35"
   ],
   "referencePeriod": "OS Open Roads as downloaded 2026-10-25",
-  "coverage": "Great Britain. Northern Ireland: not included (OSNI's open transport service could not be reached from the data pipeline)",
+  "coverage": "Great Britain. Northern Ireland's corridors are a separate dataset from OpenStreetMap (risk.roads_ni)",
   "provenance": "measured",
   "licence": "Open Government Licence v3.0",
   "attribution": "Contains OS data © Crown copyright and database right 2026",

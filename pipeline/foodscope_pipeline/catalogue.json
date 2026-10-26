@@ -232,5 +232,14 @@
     "licence": "Open Government Licence v3.0",
     "status": "verified",
     "notes": "Shapefile in TM75 Irish Grid (EPSG:29903), published 21 September 2015: 34 lines, of which 10 route lines (about 334 km) are drawn and 24 sidings left out. Where the railway runs, not services or freight. Northern Ireland only; Great Britain's railway lines are not in this build."
+  },
+  {
+    "id": "S38",
+    "title": "OpenStreetMap roads in Northern Ireland (extract provided by John)",
+    "publisher": "OpenStreetMap contributors (extract exported from ArcGIS Pro by John Hewitt)",
+    "url": "https://www.openstreetmap.org/copyright",
+    "licence": "Open Database License (ODbL) 1.0",
+    "status": "verified",
+    "notes": "Community-mapped, not official data, used for Northern Ireland's road corridors because DfI's Highway Network has no open geometry and OSNI's open transport layer could not be fetched (John's decision, 26 Oct 2026). Geofabrik roads layer (fclass, ref), WGS84: 251 motorway, 4,016 primary and 6,231 secondary lines; motorways and primary roads kept, merged by road number. © OpenStreetMap contributors."
   }
 ]
