@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 /**
- * Food Origins explorer (Stage 2) against the real committed HMRC snapshot 2026-10-23.
+ * Food Origins explorer (Stage 2) against the real committed HMRC snapshot 2026-10-26 (the five Stage 2 baskets are identical to 2026-10-23).
  * Expected values are the same reconciled figures used in src/analysis/trade.test.ts.
  */
 
@@ -100,10 +100,32 @@ test.describe("Food Origins explorer", () => {
     await expect(kpi(page, "Top recorded partner")).toContainText("30.1 %");
     await expect(page.locator(".partner-table tbody tr").first()).toContainText("Colombia");
     await expect.poll(() => mapInfo(page).then((i) => i.flowKeys[0])).toBe("CO");
-    // Keyboard navigation in the commodity list (FO-01).
+    // Keyboard navigation in the commodity list (FO-01): bananas end the fruit and vegetables group,
+    // so the next option is wheat, the first cereal.
     await page.getByRole("radio", { name: /Bananas/ }).press("ArrowDown");
-    await expect(page).toHaveURL(/c=potatoes/);
-    await expect(page.getByRole("radio", { name: /Potatoes/ })).toBeFocused();
+    await expect(page).toHaveURL(/c=wheat/);
+    await expect(page.getByRole("radio", { name: /Wheat/ })).toBeFocused();
+  });
+
+  test("sixteen commodities: grouped, searchable by name or code (FO-01, B11)", async ({ page }) => {
+    await page.goto("./");
+    await waitForOrigins(page);
+    const list = page.getByRole("radiogroup", { name: "Commodity" });
+    await expect(list.getByRole("radio")).toHaveCount(16);
+    for (const group of ["Fruit and vegetables", "Cereals", "Meat", "Dairy", "Sugar, coffee and cocoa"]) {
+      await expect(list.getByText(group, { exact: true })).toBeVisible();
+    }
+    const search = page.getByRole("searchbox", { name: /Find a commodity/ });
+    await search.fill("0406");
+    await expect(list.getByRole("radio")).toHaveCount(1);
+    await search.press("Enter");
+    await expect(page).toHaveURL(/c=cheese/);
+    await expect(kpi(page, "Top recorded partner")).toContainText("Ireland");
+    await search.fill("meat");
+    await expect(list.getByRole("radio")).toHaveCount(3);
+    await search.press("Escape");
+    await expect(list.getByRole("radio")).toHaveCount(16);
+    await expect(page.getByRole("radio", { name: /Cheese/ })).toHaveAttribute("aria-checked", "true");
   });
 
   test("selecting a partner in the table highlights it on the map and in the charts", async ({ page }) => {

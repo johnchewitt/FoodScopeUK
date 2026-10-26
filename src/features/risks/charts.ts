@@ -83,6 +83,7 @@ function hBars(
       axisTick: { show: false },
       axisLabel: {
         ...catLabel,
+        interval: 0, // every bar is named; callers size the chart to the number of bars
         width: 120,
         overflow: "truncate",
         formatter: (v: string, i: number) => (i === opts.bold ? `{b|${v}}` : v),
@@ -148,7 +149,7 @@ const pctAxis = (v: number) => `${Math.round(v * 100)} %`;
 // ---------------------------------------------------------------------------------------------
 // Supply
 
-/** Concentration by commodity (the five baskets, same period), most concentrated first; click to select. */
+/** Concentration by commodity (every basket, same period), most concentrated first; click to select. */
 export function rankingOption(rows: readonly CommodityConcentration[], selected: string): ChartSpec | null {
   if (rows.length === 0) return null;
   const option = hBars(
@@ -234,6 +235,18 @@ export function trendOption(
 /** Partner × commodity matrix of shares (teal share classes, as the map); 0 = none recorded. */
 export function matrixOption(m: ExposureMatrix): ChartSpec | null {
   if (m.partners.length === 0) return null;
+  // Column names: wrapped under wide columns (a group of up to three), angled when there are more.
+  const n = m.commodities.length;
+  const columnLabel =
+    n <= 3
+      ? {
+          ...catLabel,
+          interval: 0,
+          width: Math.floor(180 / Math.max(1, n)),
+          overflow: "break",
+          lineHeight: 11,
+        }
+      : { ...catLabel, interval: 0, rotate: 40, width: 78, overflow: "truncate" };
   const data: [number, number, number | null][] = [];
   m.cells.forEach((row, y) => row.forEach((v, x) => data.push([x, y, v])));
   const shareClass = (v: number) => {
@@ -262,7 +275,7 @@ export function matrixOption(m: ExposureMatrix): ChartSpec | null {
       data: m.commodities.map((c) => c.label),
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { ...catLabel, interval: 0 },
+      axisLabel: columnLabel,
     },
     yAxis: {
       type: "category",

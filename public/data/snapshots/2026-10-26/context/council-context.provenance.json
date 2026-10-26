@@ -1,0 +1,27 @@
+{
+  "id": "context.council_context",
+  "title": "Council context: map frame, urban/rural class (England and Wales) and Census 2021 car or van availability",
+  "role": "statistical",
+  "path": "snapshots/2026-10-26/context/council-context.json",
+  "format": "json",
+  "schemaId": "council-context",
+  "sha256": "e3f49e1a6c9f5ad131a0620602ff231e4aec8028840650a3f6d468f14f697039",
+  "bytes": 101302,
+  "sourceIds": [
+    "S14",
+    "S20",
+    "S21"
+  ],
+  "referencePeriod": "Census 2021 (21 March 2021); 2021 Rural Urban Classification of councils (2024 boundaries); May 2025 council boundaries",
+  "coverage": "361 councils (May 2025): urban/rural for England and Wales; car availability for England, Wales and Northern Ireland; none for Scotland",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Source: NISRA, licensed under the Open Government Licence v3.0",
+  "expectedCadence": "irregular",
+  "retrieval": {
+    "method": "Derived offline from the committed raw files (fetch-reference --set context, fetch-reference)",
+    "source": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LAD24_RUC21_EW_LU/FeatureServer/0 (1 page, combined sha256 c4b734ba1d66…); census2021-ts045.zip (sha256 95593dcd5324…); lad22-lad23-lookup.json (sha256 259c57d43b01…); ni-census21-household-lgd14hh_car_van_tc5.xlsx (provided, sha256 22a43354073f…)",
+    "retrievedAt": "2026-10-25T11:49:02Z",
+    "notes": "Counts as published. Councils formed in April 2023 carry the sum of the Census 2021 councils they replaced; Barnsley and Sheffield carry their pre-2025 boundary figures (a small boundary change). Northern Ireland: NISRA table builder, downloaded by John."
+  }
+}

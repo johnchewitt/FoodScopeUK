@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
 /**
- * UK Food Resilience — Risk Explorer (Stage 6) against the committed snapshots: trade 2026-10-23,
+ * UK Food Resilience — Risk Explorer (Stage 6) against the committed snapshots: trade 2026-10-26,
  * risk and context 2026-10-25. Expected values were checked independently against the raw sources
  * (docs/stage-reports/stage-6.md, hand checks).
  */

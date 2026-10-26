@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { formatShare } from "@/analysis/format";
 import { breakClass, FARM_BREAKS, STRESS_CLASSES } from "@/analysis/risk";
+import { validateTradeIndex, validateTradeSnapshot } from "@/services/data/validate";
 import { readRepoJson } from "@/test/files";
 import type { CouncilContext } from "@/types/generated/council-context";
 import type { CouncilPpfi } from "@/types/generated/council-ppfi";
@@ -8,6 +9,7 @@ import type { RiskFarming } from "@/types/generated/risk-farming";
 import type { RiskPortEntry } from "@/types/generated/risk-port-entry";
 import type { RiskPorts } from "@/types/generated/risk-ports";
 import type { RiskWaterStress } from "@/types/generated/risk-water-stress";
+import type { TradeIndex } from "@/types/generated/trade-index";
 import type { TradeSnapshot } from "@/types/generated/trade-snapshot";
 import type { Indicator } from "@/types/indicator";
 import {
@@ -20,6 +22,7 @@ import {
   type Explanation,
 } from "./explain";
 import {
+  basketList,
   buildAccessRiskModel,
   buildLogisticsModel,
   buildSupplyModel,
@@ -441,5 +444,87 @@ describe("explanations", () => {
     expect(belfast.observed[0]?.missingReason).toBe("not_covered");
     expect(belfast.interpretation[0]).toMatch(/no data for fuel poverty in Northern Ireland/);
     expect(belfast.limitations.join(" ")).toMatch(/three domains have no data/);
+  });
+});
+
+describe("sixteen baskets (trade snapshot 2026-10-26)", () => {
+  /*
+   * Expected values computed independently from the raw HMRC responses in
+   * pipeline/raw/hmrc/2026-10-26 (every page of single or split queries, CountryCodeAlpha with
+   * XS → RS, non-geographic ids and suppressed rows excluded), without the pipeline's or the app's
+   * code. Sep 2025 – Aug 2026, net mass.
+   */
+  const TRADE16 = "public/data/snapshots/2026-10-26/trade";
+  const index16 = readRepoJson<TradeIndex>(`${TRADE16}/index.json`);
+  const baskets16: SupplyBasket[] = basketList(index16).map((b) => ({
+    id: b.id,
+    label: b.label,
+    group: b.group,
+    snapshot: readRepoJson<TradeSnapshot>(`${TRADE16}/${b.id}.json`),
+  }));
+  const supply16 = (id: string) =>
+    buildSupplyModel(
+      baskets16.find((b) => b.id === id)!.snapshot!,
+      baskets16,
+      water,
+      { ...LAST_12, partner: null, flowCount: 12 },
+      "share",
+      UK,
+    );
+  const EXPECTED: Record<string, { hhi: number; partners: number; top: string; topShare: number }> = {
+    tomatoes: { hhi: 2991.676, partners: 25, top: "NL", topShare: 0.43828 },
+    potatoes: { hhi: 1949.755, partners: 16, top: "IE", topShare: 0.3512 },
+    strawberries: { hhi: 2636.594, partners: 22, top: "ES", topShare: 0.41452 },
+    apples: { hhi: 1869.452, partners: 35, top: "FR", topShare: 0.31314 },
+    oranges: { hhi: 2625.722, partners: 33, top: "EG", topShare: 0.34857 },
+    bananas: { hhi: 1649.64, partners: 43, top: "CO", topShare: 0.3013 },
+    wheat: { hhi: 1433.959, partners: 35, top: "CA", topShare: 0.22226 },
+    rice: { hhi: 1782.84, partners: 67, top: "IN", topShare: 0.37914 },
+    beef: { hhi: 4271.292, partners: 31, top: "IE", topShare: 0.63406 },
+    "sheep-goat": { hhi: 3883.491, partners: 18, top: "NZ", topShare: 0.49081 },
+    poultry: { hhi: 1785.886, partners: 29, top: "PL", topShare: 0.29838 },
+    "milk-products": { hhi: 2131.511, partners: 46, top: "IE", topShare: 0.39813 },
+    cheese: { hhi: 1153.849, partners: 41, top: "IE", topShare: 0.20235 },
+    sugar: { hhi: 2472.633, partners: 69, top: "BR", topShare: 0.46604 },
+    coffee: { hhi: 1168.606, partners: 100, top: "BR", topShare: 0.26741 },
+    cocoa: { hhi: 2535.367, partners: 61, top: "CI", topShare: 0.42009 },
+  };
+
+  it("validates every basket file and groups them as the index says", () => {
+    expect(validateTradeIndex(index16).ok).toBe(true);
+    for (const b of baskets16) expect(validateTradeSnapshot(b.snapshot).ok, b.id).toBe(true);
+    expect(index16.groups?.map((g) => g.label)).toEqual([
+      "Fruit and vegetables",
+      "Cereals",
+      "Meat",
+      "Dairy",
+      "Sugar, coffee and cocoa",
+    ]);
+  });
+
+  it("ranks all sixteen baskets with the HHI, partners and top supplier of the raw responses", () => {
+    const m = supply16("beef");
+    expect(m.ranking).toHaveLength(16);
+    expect(m.ranking[0]?.id).toBe("beef"); // most concentrated: Ireland 63.4 %
+    expect(m.ranking.at(-1)?.id).toBe("cheese"); // least: Ireland 20.2 %
+    for (const r of m.ranking) {
+      const e = EXPECTED[r.id]!;
+      expect(r.hhi, r.id).toBeCloseTo(e.hhi, 2);
+      expect(r.partners, r.id).toBe(e.partners);
+      expect(r.top?.key, r.id).toBe(e.top);
+      expect(r.cr1, r.id).toBeCloseTo(e.topShare, 4);
+    }
+  });
+
+  it("compares a basket with its own group in the matrix", () => {
+    const beef = supply16("beef");
+    expect(beef.matrixGroup).toEqual({ id: "meat", label: "Meat" });
+    expect(beef.matrix.commodities.map((c) => c.id)).toEqual(["beef", "sheep-goat", "poultry"]);
+    const ie = beef.matrix.partners.findIndex((p) => p.key === "IE");
+    expect(beef.matrix.cells[ie]![0]).toBeCloseTo(0.63406, 4);
+    const cocoa = supply16("cocoa");
+    expect(cocoa.matrix.commodities.map((c) => c.id)).toEqual(["sugar", "coffee", "cocoa"]);
+    // Five Stage 2 baskets (no groups in the 2026-10-23 index): every basket, as before.
+    expect(supply("tomatoes").matrixGroup).toBeNull();
   });
 });

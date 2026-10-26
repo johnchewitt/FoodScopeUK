@@ -1,0 +1,25 @@
+{
+  "id": "trade.index",
+  "title": "Food Origins commodity baskets",
+  "role": "statistical",
+  "path": "snapshots/2026-10-26/trade/index.json",
+  "format": "json",
+  "schemaId": "trade-index",
+  "sha256": "8335931dd87ccc81ddbea03058b33e072c1b38c4a73dc06390938905c872f466",
+  "bytes": 6117,
+  "sourceIds": [
+    "S01"
+  ],
+  "referencePeriod": "Jan 2019 \u2013 Aug 2026",
+  "coverage": "UK recorded imports from all partners (EU and non-EU import flows); GB and Northern Ireland",
+  "provenance": "measured",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: HMRC Overseas Trade Statistics (uktradeinfo). Contains public sector information licensed under the Open Government Licence v3.0.",
+  "expectedCadence": "monthly",
+  "retrieval": {
+    "method": "HMRC OTS API, server-side $apply aggregation; raw responses cached in pipeline/raw/hmrc/",
+    "source": "https://api.uktradeinfo.com/Commodity?$filter=Hs4Code%20eq%20'0201'%20or%20Hs4Code%20eq%20'0202'%20or%20Hs4Code%20eq%20'0204'%20or%20Hs4Code%20eq%20'0207'%20or%20Hs4Code%20eq%20'0401'%20or%20Hs4Code%20eq%20'0402'%20or%20Hs4Code%20eq%20'0403'%20or%20Hs4Code%20eq%20'0404'%20or%20Hs4Code%20eq%20'0405'%20or%20Hs4Code%20eq%20'0406'",
+    "retrievedAt": "2026-10-26T09:10:59Z",
+    "notes": "Basket definitions (pipeline/foodscope_pipeline/config/trade_baskets.json) with the CN8 codes HMRC lists under each heading."
+  }
+}

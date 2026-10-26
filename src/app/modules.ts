@@ -40,7 +40,7 @@ export const MODULES: readonly ModuleDef[] = [
     icon: Globe2,
     question: "Where does our food come from?",
     summary:
-      "Recorded import partners for tomatoes, strawberries, bananas, potatoes and wheat (HMRC, monthly from January 2019), with symbolic connections to the UK, partner shares and concentration indicators. The remaining 11 commodities follow in a later stage.",
+      "Recorded import partners for sixteen commodities in five groups: fruit and vegetables, cereals, meat, dairy, and sugar, coffee and cocoa (HMRC, monthly from January 2019), with symbolic connections to the UK, partner shares and concentration indicators.",
     release: 1,
     buildStage: 2,
     requirementIds: "FO-01 – FO-07, FO-10, FO-11",
@@ -65,7 +65,7 @@ export const MODULES: readonly ModuleDef[] = [
     icon: CalendarRange,
     question: "How does this change throughout the year?",
     summary:
-      "Month-by-month recorded imports for the same five commodities: a January–December timeline you can play, a partner-by-month heatmap with fixed classes, monthly trend, year-on-year change and concentration. UK seasonal production is not shown: Defra publishes it annually, not monthly.",
+      "Month-by-month recorded imports for the same sixteen commodities: a January–December timeline you can play, a partner-by-month heatmap with fixed classes, monthly trend, year-on-year change and concentration. UK seasonal production is not shown: Defra publishes most of it annually, and its monthly meat and milk series are not verified yet.",
     release: 1,
     buildStage: 3,
     requirementIds: "SS-01 – SS-08 (SS-07: imports only)",

@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
 /**
- * Seasonal Supply explorer (Stage 3) against the real committed HMRC snapshot 2026-10-23.
+ * Seasonal Supply explorer (Stage 3) against the real committed HMRC snapshot 2026-10-26 (the five Stage 2 baskets are identical to 2026-10-23).
  * Expected values were computed independently from the snapshot in Python (stage 3 report).
  */
 

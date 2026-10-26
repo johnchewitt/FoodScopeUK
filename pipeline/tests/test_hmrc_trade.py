@@ -6,6 +6,7 @@ Real-response checks live in test_trade_snapshot.py (they read the committed raw
 from __future__ import annotations
 
 import json
+import re
 import urllib.parse
 from pathlib import Path
 
@@ -89,6 +90,10 @@ class FakeApi:
     def __call__(self, url: str) -> tuple[int, bytes]:
         self.calls.append(url)
         q = urllib.parse.unquote(url)
+        # Like the API, answer only for the commodities named in the query.
+        named = {int(c) for c in re.findall(r"CommodityId eq (\d+)", q)}
+        aggregate = [r for r in self.aggregate if not named or r["CommodityId"] in named]
+        raw = [r for r in self.raw if not named or r["CommodityId"] in named]
         def body(value, next_link=None):
             doc = {"@odata.context": "synthetic", "value": value}
             if next_link:
@@ -100,14 +105,14 @@ class FakeApi:
             return body(COUNTRIES)
         if "$apply=" in q:
             if "$skip=4" in q:
-                return body(self.aggregate[4:])
-            return body(self.aggregate[:4], next_link=url + "&$skip=4")
+                return body(aggregate[4:])
+            return body(aggregate[:4], next_link=url + "&$skip=4" if len(aggregate) > 4 else None)
         if "$top=1" in q:
             month = int(q.split("MonthId eq ")[1].split(" ")[0])
             present = month in {r["MonthId"] for r in self.aggregate}
             return body([{"MonthId": month}] if present else [])
         if "MonthId eq 201901" in q:
-            return body(self.raw)
+            return body(raw)
         return 404, b"not found"
 
 
@@ -287,3 +292,112 @@ def test_code_change_detection_rules() -> None:
     # A code first recorded in the snapshot's first month, or last recorded in its last month, is
     # not a change (the snapshot boundary is not evidence of one).
     assert code_changes([a, b], "2021-01", "2021-12") == []
+
+
+# --- long code lists, groups and overlaps (26 Oct 2026: sixteen baskets) -------------------------
+
+
+def test_chunk_ids_keeps_every_url_short_and_covers_each_id_once() -> None:
+    ids = list(range(40_000_000, 40_000_000 + 300 * 10, 10))  # synthetic: 300 codes
+    runs = h.chunk_ids(ids, h.aggregate_query)
+    assert len(runs) > 1
+    assert [i for run in runs for i in run] == sorted(ids)
+    assert all(len(h.aggregate_query(run)) <= h.MAX_URL_CHARS for run in runs)
+    assert all(len(run) <= h.MAX_OR_CLAUSES for run in runs)
+    assert len(runs) == 30
+    # Few codes: one query, as before.
+    assert h.chunk_ids([7020000, 7020010], h.aggregate_query) == [[7020000, 7020010]]
+    with pytest.raises(ValueError):
+        h.chunk_ids([], h.aggregate_query)
+    with pytest.raises(ValueError, match="single commodity id"):
+        h.chunk_ids([1], h.aggregate_query, limit=10)
+
+
+def test_a_split_basket_builds_the_same_snapshot_as_one_query(env, monkeypatch: pytest.MonkeyPatch):
+    run(env)
+    single = json.loads((env["data"] / "snapshots/2026-10-23/trade/testfruit.json").read_text())
+    # Force one code per aggregate query. The raw-rows query is shorter, so both codes still fit in one.
+    monkeypatch.setattr(h, "MAX_URL_CHARS", len(h.aggregate_query([99010090])) + 5)
+    env2 = {**env, "raw": env["raw"].parent / "raw2", "data": env["data"].parent / "data2"}
+    api = FakeApi()
+    cache = h.ingest("2026-10-23", env2["raw"], BASKETS, client=make_client(api), now=env["now"])
+    assert cache.parts("ots-aggregate-testfruit") == ["ots-aggregate-testfruit-c01", "ots-aggregate-testfruit-c02"]
+    assert cache.parts("ots-raw-testfruit-201901") == ["ots-raw-testfruit-201901"]
+    assert len(cache.part_items("ots-aggregate-testfruit")) == len(AGGREGATE)
+    build_trade("2026-10-23", env2["raw"], env2["data"], env["reports"], BASKETS, env["points"], env["crosswalk"])
+    split = json.loads((env2["data"] / "snapshots/2026-10-23/trade/testfruit.json").read_text())
+    assert split == single
+    prov = json.loads((env2["data"] / "snapshots/2026-10-23/trade/testfruit.provenance.json").read_text())
+    assert prov["retrieval"]["source"].startswith("2 queries over consecutive runs")
+    recon = json.loads((env["reports"] / "hmrc-reconciliation-2026-10-23.json").read_text())
+    assert recon["allMatch"] is True
+
+
+def test_groups_are_written_to_the_index_in_order(env):
+    api = FakeApi()
+    baskets = [h.Basket("testfruit", "Test fruit", "Synthetic basket", "HS 9901", ("9901",), (), group="g2")]
+    groups = [h.BasketGroup("g1", "Unused group"), h.BasketGroup("g2", "Group two")]
+    h.ingest("2026-10-23", env["raw"], baskets, client=make_client(api), now=env["now"])
+    build_trade("2026-10-23", env["raw"], env["data"], env["reports"], baskets, env["points"], env["crosswalk"], groups=groups)
+    index = json.loads((env["data"] / "snapshots/2026-10-23/trade/index.json").read_text())
+    assert index["groups"] == [{"id": "g2", "label": "Group two"}]
+    assert index["commodities"][0]["group"] == "g2"
+    assert list(index) == ["schemaVersion", "snapshotId", "groups", "commodities"]
+
+
+def test_load_baskets_rejects_overlapping_headings_and_unknown_groups(tmp_path: Path) -> None:
+    def write(baskets, groups=()):
+        path = tmp_path / "b.json"
+        path.write_text(json.dumps({"groups": list(groups), "baskets": baskets}))
+        return path
+
+    def basket(id_, hs4=(), hs6=(), group=None):
+        return {"id": id_, "label": id_, "definition": "x", "hsScope": "x", "hs4": list(hs4), "hs6": list(hs6),
+                **({"group": group} if group else {})}
+
+    with pytest.raises(ValueError, match="overlaps"):
+        h.load_baskets(write([basket("a", hs4=["9901"]), basket("b", hs6=["990110"])]))
+    with pytest.raises(ValueError, match="unknown group"):
+        h.load_baskets(write([basket("a", hs4=["9901"], group="nope")]))
+    ok = h.load_baskets(write([basket("a", hs4=["9901"], group="g")], [{"id": "g", "label": "G"}]))
+    assert ok[0].group == "g"
+
+
+def test_the_sixteen_baskets_follow_the_specification() -> None:
+    from foodscope_pipeline.cli import CONFIG
+
+    baskets = h.load_baskets(CONFIG / "trade_baskets.json")
+    groups = h.load_groups(CONFIG / "trade_baskets.json")
+    scope = {b.id: (b.hs4, b.hs6) for b in baskets}
+    # Spec §6.1 (HS scope column).
+    assert scope == {
+        "tomatoes": (("0702",), ()), "potatoes": (("0701",), ()), "strawberries": ((), ("081010",)),
+        "apples": ((), ("080810",)), "oranges": ((), ("080510",)), "bananas": (("0803",), ()),
+        "wheat": (("1001",), ()), "rice": (("1006",), ()), "beef": (("0201", "0202"), ()),
+        "sheep-goat": (("0204",), ()), "poultry": (("0207",), ()),
+        "milk-products": (("0401", "0402", "0403", "0404", "0405"), ()), "cheese": (("0406",), ()),
+        "sugar": (("1701",), ()), "coffee": (("0901",), ()), "cocoa": (("1801", "1803", "1804", "1805"), ()),
+    }
+    assert [g.id for g in groups] == ["fruit_veg", "cereals", "meat", "dairy", "sugar_beverages"]
+    # Ids go into the app's URL (`c`), whose pattern is ^[a-z][a-z0-9-]{0,39}$ (src/state/urlState.ts).
+    assert all(re.fullmatch(r"[a-z][a-z0-9-]{0,39}", b.id) for b in baskets)
+    assert all(b.group in {g.id for g in groups} for b in baskets)
+    assert set(h.RECONCILE_MONTHS) == set(scope)
+    assert len(set(h.RECONCILE_MONTHS.values())) == len(scope)  # a different month for each basket
+    # 24 headings: the API refused them in one filter (HTTP 400, 26 Oct 2026), so three queries.
+    queries = h.commodity_queries(baskets)
+    assert [q.count(" eq ") + q.count("%20eq%20") for q in queries] == [10, 10, 4]
+    assert h.commodity_queries(baskets[:5]) == [h.commodity_query(baskets[:5])]  # Stage 2's single query
+
+
+def test_split_commodity_list_is_read_back_whole(env, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(h, "MAX_OR_CLAUSES", 1)
+    baskets = [
+        h.Basket("testfruit", "Test fruit", "Synthetic basket", "HS 9901", ("9901",), ()),
+    ]
+    two = [h.Basket("testfruit", "Test fruit", "Synthetic basket", "HS 9901 and 9902", ("9901", "9902"), ())]
+    assert len(h.commodity_queries(two)) == 2
+    cache = h.ingest("2026-10-23", env["raw"], baskets, client=make_client(FakeApi()), now=env["now"])
+    assert cache.parts("commodity") == ["commodity"]
+    # One code per OTS query.
+    assert cache.parts("ots-aggregate-testfruit") == ["ots-aggregate-testfruit-c01", "ots-aggregate-testfruit-c02"]

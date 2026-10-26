@@ -1,44 +1,210 @@
 {
-  "notes": "Commodity baskets for the Food Origins explorer (spec §6.1). Each basket is the set of CN8 codes that HMRC's /Commodity endpoint lists under the given HS headings, including codes no longer in use, so the series is continuous across nomenclature changes. Verified against /Commodity on 23 Oct 2026 (docs/03-DATA-SOURCES.md, S01).",
+  "notes": "Commodity baskets for the Food Origins explorer (spec §6.1). Each basket is the set of CN8 codes that HMRC's /Commodity endpoint lists under the given HS headings, including codes no longer in use, so the series is continuous across nomenclature changes. Five baskets verified against /Commodity on 23 Oct 2026; the other eleven added 26 Oct 2026 (John), checked against /Commodity and Defra's trade codes (gate G3) in the data step (docs/03-DATA-SOURCES.md, S01, S05). Groups follow the SITC divisions Defra uses (05 vegetables and fruit, 04 cereals, 01 meat, 02 dairy, 06 sugars and 07 coffee and cocoa).",
+  "groups": [
+    {
+      "id": "fruit_veg",
+      "label": "Fruit and vegetables"
+    },
+    {
+      "id": "cereals",
+      "label": "Cereals"
+    },
+    {
+      "id": "meat",
+      "label": "Meat"
+    },
+    {
+      "id": "dairy",
+      "label": "Dairy"
+    },
+    {
+      "id": "sugar_beverages",
+      "label": "Sugar, coffee and cocoa"
+    }
+  ],
   "baskets": [
     {
       "id": "tomatoes",
       "label": "Tomatoes",
+      "group": "fruit_veg",
       "definition": "Tomatoes, fresh or chilled (HS 0702). Excludes processed tomatoes.",
       "hsScope": "HS 0702",
-      "hs4": ["0702"],
-      "hs6": []
-    },
-    {
-      "id": "strawberries",
-      "label": "Strawberries",
-      "definition": "Fresh strawberries (HS 0810 10). Excludes frozen strawberries.",
-      "hsScope": "HS 0810 10",
-      "hs4": [],
-      "hs6": ["081010"]
-    },
-    {
-      "id": "bananas",
-      "label": "Bananas",
-      "definition": "Bananas including plantains, fresh or dried (HS 0803).",
-      "hsScope": "HS 0803",
-      "hs4": ["0803"],
+      "hs4": [
+        "0702"
+      ],
       "hs6": []
     },
     {
       "id": "potatoes",
       "label": "Potatoes",
+      "group": "fruit_veg",
       "definition": "Potatoes, fresh or chilled, including seed potatoes (HS 0701). Excludes frozen and processed potatoes.",
       "hsScope": "HS 0701",
-      "hs4": ["0701"],
+      "hs4": [
+        "0701"
+      ],
+      "hs6": []
+    },
+    {
+      "id": "strawberries",
+      "label": "Strawberries",
+      "group": "fruit_veg",
+      "definition": "Fresh strawberries (HS 0810 10). Excludes frozen strawberries.",
+      "hsScope": "HS 0810 10",
+      "hs4": [],
+      "hs6": [
+        "081010"
+      ]
+    },
+    {
+      "id": "apples",
+      "label": "Apples",
+      "group": "fruit_veg",
+      "definition": "Apples, fresh (HS 0808 10), including cider apples in bulk. Excludes dried, frozen and processed apples.",
+      "hsScope": "HS 0808 10",
+      "hs4": [],
+      "hs6": [
+        "080810"
+      ]
+    },
+    {
+      "id": "oranges",
+      "label": "Oranges",
+      "group": "fruit_veg",
+      "definition": "Oranges, fresh or dried (HS 0805 10). Excludes mandarins and other citrus, and orange juice.",
+      "hsScope": "HS 0805 10",
+      "hs4": [],
+      "hs6": [
+        "080510"
+      ]
+    },
+    {
+      "id": "bananas",
+      "label": "Bananas",
+      "group": "fruit_veg",
+      "definition": "Bananas including plantains, fresh or dried (HS 0803).",
+      "hsScope": "HS 0803",
+      "hs4": [
+        "0803"
+      ],
       "hs6": []
     },
     {
       "id": "wheat",
       "label": "Wheat",
+      "group": "cereals",
       "definition": "Wheat and meslin, including durum wheat and seed for sowing (HS 1001). Excludes flour.",
       "hsScope": "HS 1001",
-      "hs4": ["1001"],
+      "hs4": [
+        "1001"
+      ],
+      "hs6": []
+    },
+    {
+      "id": "rice",
+      "label": "Rice",
+      "group": "cereals",
+      "definition": "Rice at every stage (HS 1006): in the husk, husked (brown), semi-milled or wholly milled, and broken. Excludes rice flour.",
+      "hsScope": "HS 1006",
+      "hs4": [
+        "1006"
+      ],
+      "hs6": []
+    },
+    {
+      "id": "beef",
+      "label": "Beef and veal",
+      "group": "meat",
+      "definition": "Meat of bovine animals, fresh, chilled or frozen (HS 0201, 0202). Excludes offal, and processed or preserved beef.",
+      "hsScope": "HS 0201, 0202",
+      "hs4": [
+        "0201",
+        "0202"
+      ],
+      "hs6": []
+    },
+    {
+      "id": "sheep-goat",
+      "label": "Sheep and goat meat",
+      "group": "meat",
+      "definition": "Meat of sheep or goats, fresh, chilled or frozen (HS 0204). The trade codes do not separate lamb from mutton or goat meat. Excludes offal and processed meat.",
+      "hsScope": "HS 0204",
+      "hs4": [
+        "0204"
+      ],
+      "hs6": []
+    },
+    {
+      "id": "poultry",
+      "label": "Poultry meat",
+      "group": "meat",
+      "definition": "Meat and edible offal of poultry (fowls, turkeys, ducks, geese, guinea fowls), fresh, chilled or frozen (HS 0207). Excludes processed and preserved poultry.",
+      "hsScope": "HS 0207",
+      "hs4": [
+        "0207"
+      ],
+      "hs6": []
+    },
+    {
+      "id": "milk-products",
+      "label": "Milk products (not cheese)",
+      "group": "dairy",
+      "definition": "Milk and cream, concentrated and powdered milk, yoghurt, buttermilk, whey and butter (HS 0401–0405). Excludes cheese, which is a separate basket. Net mass adds products as recorded (liquid milk, powders, butter), not converted to a milk equivalent.",
+      "hsScope": "HS 0401–0405",
+      "hs4": [
+        "0401",
+        "0402",
+        "0403",
+        "0404",
+        "0405"
+      ],
+      "hs6": []
+    },
+    {
+      "id": "cheese",
+      "label": "Cheese",
+      "group": "dairy",
+      "definition": "Cheese and curd (HS 0406).",
+      "hsScope": "HS 0406",
+      "hs4": [
+        "0406"
+      ],
+      "hs6": []
+    },
+    {
+      "id": "sugar",
+      "label": "Sugar",
+      "group": "sugar_beverages",
+      "definition": "Cane or beet sugar and chemically pure sucrose, in solid form, raw or refined (HS 1701). Excludes molasses and sugar confectionery.",
+      "hsScope": "HS 1701",
+      "hs4": [
+        "1701"
+      ],
+      "hs6": []
+    },
+    {
+      "id": "coffee",
+      "label": "Coffee",
+      "group": "sugar_beverages",
+      "definition": "Coffee, roasted or not, decaffeinated or not; coffee husks and skins; substitutes containing coffee (HS 0901). Excludes instant coffee, extracts and essences (HS 2101).",
+      "hsScope": "HS 0901",
+      "hs4": [
+        "0901"
+      ],
+      "hs6": []
+    },
+    {
+      "id": "cocoa",
+      "label": "Cocoa",
+      "group": "sugar_beverages",
+      "definition": "Cocoa beans, cocoa paste, cocoa butter and cocoa powder (HS 1801, 1803–1805). Excludes cocoa shells (1802) and chocolate (1806). Net mass adds beans and products as recorded, not converted to a bean equivalent.",
+      "hsScope": "HS 1801, 1803–1805",
+      "hs4": [
+        "1801",
+        "1803",
+        "1804",
+        "1805"
+      ],
       "hs6": []
     }
   ]

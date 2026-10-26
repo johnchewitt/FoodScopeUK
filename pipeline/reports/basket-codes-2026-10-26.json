@@ -1,0 +1,1049 @@
+{
+  "gate": "G3",
+  "snapshotId": "2026-10-26",
+  "description": "Each Food Origins basket against Defra's trade codes and descriptions (S05, 15 Nov 2022) and the CN8 codes HMRC lists under its headings (S01). Differences are definitional and stated in the basket definitions or the data catalogue; they are not errors.",
+  "defraFile": "Defra-trade-codes-and-descriptions-15nov22.ods",
+  "defraCodes": 8031,
+  "baskets": [
+    {
+      "basket": "tomatoes",
+      "label": "Tomatoes",
+      "hsScope": "HS 0702",
+      "hmrc": {
+        "listed": 4,
+        "withImports": 4
+      },
+      "defra": {
+        "listed": 11,
+        "sitcDivisions": [
+          {
+            "code": "05",
+            "description": "Vegetables And Fruit",
+            "codes": 11
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "HORTICULTURE",
+              "FRESH VEGETABLES",
+              "Tomatoes"
+            ],
+            "codes": 11,
+            "outsideBasket": []
+          }
+        ],
+        "indigeneity": {
+          "Indigenous": 5,
+          "Non-indigenous": 6
+        },
+        "degreeOfProcessing": {
+          "Unprocessed": 11
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [
+        {
+          "code": "07020091",
+          "description": "Tomatoes in trusses, with greatest diameter =>47mm, fresh or chilled",
+          "firstMonth": "2025-01"
+        },
+        {
+          "code": "07020099",
+          "description": "Tomatoes, fresh or chilled (excl. in trusses, and whole tomatoes with greatest diameter <47mm)",
+          "firstMonth": "2025-01"
+        }
+      ],
+      "differences": []
+    },
+    {
+      "basket": "potatoes",
+      "label": "Potatoes",
+      "hsScope": "HS 0701",
+      "hmrc": {
+        "listed": 4,
+        "withImports": 4
+      },
+      "defra": {
+        "listed": 6,
+        "sitcDivisions": [
+          {
+            "code": "05",
+            "description": "Vegetables And Fruit",
+            "codes": 6
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "CROPS",
+              "POTATOES",
+              "New"
+            ],
+            "codes": 3,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "POTATOES",
+              "Maincrop"
+            ],
+            "codes": 1,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "POTATOES",
+              "Seed"
+            ],
+            "codes": 1,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "POTATOES",
+              "Starch"
+            ],
+            "codes": 1,
+            "outsideBasket": [
+              {
+                "hs4": "1108",
+                "description": "Starches and inulin",
+                "codes": 1
+              },
+              {
+                "hs4": "1903",
+                "description": "Tapioca and substitutes prepared from starch in flakes, grains, etc",
+                "codes": 1
+              }
+            ]
+          }
+        ],
+        "indigeneity": {
+          "Indigenous": 6
+        },
+        "degreeOfProcessing": {
+          "Lightly processed": 6
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [],
+      "differences": [
+        "Defra's group 'Starch' (potatoes) also includes HS 1108 (Starches and inulin), which the basket leaves out.",
+        "Defra's group 'Starch' (potatoes) also includes HS 1903 (Tapioca and substitutes prepared from starch in flakes, grains, etc), which the basket leaves out."
+      ]
+    },
+    {
+      "basket": "strawberries",
+      "label": "Strawberries",
+      "hsScope": "HS 0810 10",
+      "hmrc": {
+        "listed": 1,
+        "withImports": 1
+      },
+      "defra": {
+        "listed": 5,
+        "sitcDivisions": [
+          {
+            "code": "05",
+            "description": "Vegetables And Fruit",
+            "codes": 5
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "HORTICULTURE",
+              "FRESH FRUIT",
+              "Strawberries"
+            ],
+            "codes": 5,
+            "outsideBasket": []
+          }
+        ],
+        "indigeneity": {
+          "Indigenous": 5
+        },
+        "degreeOfProcessing": {
+          "Unprocessed": 5
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [],
+      "differences": []
+    },
+    {
+      "basket": "apples",
+      "label": "Apples",
+      "hsScope": "HS 0808 10",
+      "hmrc": {
+        "listed": 5,
+        "withImports": 2
+      },
+      "defra": {
+        "listed": 26,
+        "sitcDivisions": [
+          {
+            "code": "05",
+            "description": "Vegetables And Fruit",
+            "codes": 26
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "HORTICULTURE",
+              "FRESH FRUIT",
+              "Apples Other"
+            ],
+            "codes": 11,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "HORTICULTURE",
+              "FRESH FRUIT",
+              "Apples Golden Delicious"
+            ],
+            "codes": 7,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "HORTICULTURE",
+              "FRESH FRUIT",
+              "Apples Granny Smith"
+            ],
+            "codes": 7,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "HORTICULTURE",
+              "FRESH FRUIT",
+              "Apples Cider"
+            ],
+            "codes": 1,
+            "outsideBasket": []
+          }
+        ],
+        "indigeneity": {
+          "Indigenous": 14,
+          "Non-indigenous": 12
+        },
+        "degreeOfProcessing": {
+          "Unprocessed": 26
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [],
+      "differences": []
+    },
+    {
+      "basket": "oranges",
+      "label": "Oranges",
+      "hsScope": "HS 0805 10",
+      "hmrc": {
+        "listed": 8,
+        "withImports": 4
+      },
+      "defra": {
+        "listed": 43,
+        "sitcDivisions": [
+          {
+            "code": "05",
+            "description": "Vegetables And Fruit",
+            "codes": 43
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "HORTICULTURE",
+              "FRESH FRUIT",
+              "Oranges"
+            ],
+            "codes": 43,
+            "outsideBasket": []
+          }
+        ],
+        "indigeneity": {
+          "Non-indigenous": 43
+        },
+        "degreeOfProcessing": {
+          "Unprocessed": 43
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [],
+      "differences": []
+    },
+    {
+      "basket": "bananas",
+      "label": "Bananas",
+      "hsScope": "HS 0803",
+      "hmrc": {
+        "listed": 9,
+        "withImports": 6
+      },
+      "defra": {
+        "listed": 8,
+        "sitcDivisions": [
+          {
+            "code": "05",
+            "description": "Vegetables And Fruit",
+            "codes": 8
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "HORTICULTURE",
+              "FRESH FRUIT",
+              "Bananas"
+            ],
+            "codes": 5,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "PRESERVED FRUIT",
+              "Bananas"
+            ],
+            "codes": 3,
+            "outsideBasket": []
+          }
+        ],
+        "indigeneity": {
+          "Non-indigenous": 8
+        },
+        "degreeOfProcessing": {
+          "Unprocessed": 8
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [
+        {
+          "code": "08039011",
+          "description": "Pl tano de Canarias, fresh",
+          "firstMonth": "2024-01"
+        },
+        {
+          "code": "08039019",
+          "description": "Bananas, fresh (excl. plantains and Pl tano de Canarias)",
+          "firstMonth": "2024-01"
+        }
+      ],
+      "differences": []
+    },
+    {
+      "basket": "wheat",
+      "label": "Wheat",
+      "hsScope": "HS 1001",
+      "hmrc": {
+        "listed": 10,
+        "withImports": 6
+      },
+      "defra": {
+        "listed": 14,
+        "sitcDivisions": [
+          {
+            "code": "04",
+            "description": "Cereals And Cereal Preparations",
+            "codes": 14
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "CROPS",
+              "WHEAT",
+              "Common Wheat o/t Seed"
+            ],
+            "codes": 4,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "WHEAT",
+              "WHEAT SEED"
+            ],
+            "codes": 3,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "WHEAT",
+              "Common Wheat Seed"
+            ],
+            "codes": 2,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "WHEAT",
+              "Durum Wheat Seed"
+            ],
+            "codes": 2,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "WHEAT",
+              "Durum Wheat o/t Seed"
+            ],
+            "codes": 2,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "WHEAT",
+              "Durum Wheat"
+            ],
+            "codes": 1,
+            "outsideBasket": []
+          }
+        ],
+        "indigeneity": {
+          "Indigenous": 6,
+          "Non-indigenous": 8
+        },
+        "degreeOfProcessing": {
+          "Unprocessed": 14
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [],
+      "differences": []
+    },
+    {
+      "basket": "rice",
+      "label": "Rice",
+      "hsScope": "HS 1006",
+      "hmrc": {
+        "listed": 45,
+        "withImports": 37
+      },
+      "defra": {
+        "listed": 46,
+        "sitcDivisions": [
+          {
+            "code": "04",
+            "description": "Cereals And Cereal Preparations",
+            "codes": 46
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "RICE",
+              "Rice In Husk"
+            ],
+            "codes": 8,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "RICE",
+              "Rice In Husk"
+            ],
+            "codes": 6,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "RICE",
+              "Rice Semi-Milled"
+            ],
+            "codes": 6,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "RICE",
+              "Rice Wholly Milled"
+            ],
+            "codes": 6,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "RICE",
+              "Rice Husked"
+            ],
+            "codes": 5,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "RICE",
+              "Rice Husked"
+            ],
+            "codes": 5,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "RICE",
+              "Rice Semi-Milled"
+            ],
+            "codes": 4,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "RICE",
+              "Rice Wholly Milled"
+            ],
+            "codes": 4,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "RICE",
+              "Rice Seed"
+            ],
+            "codes": 1,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "RICE",
+              "Broken Rice"
+            ],
+            "codes": 1,
+            "outsideBasket": []
+          }
+        ],
+        "indigeneity": {
+          "Non-indigenous": 46
+        },
+        "degreeOfProcessing": {
+          "Lightly processed": 46
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [
+        {
+          "code": "10061090",
+          "description": "Rice in husk (excl. round, medium and long grain)",
+          "firstMonth": "2023-01"
+        },
+        {
+          "code": "10062019",
+          "description": "Husked [brown] rice, parboiled (excl. round, medium and long grain)",
+          "firstMonth": "2023-09"
+        },
+        {
+          "code": "10062099",
+          "description": "Husked [brown] rice (excl. round, medium and long grain, and parboiled)",
+          "firstMonth": "2023-01"
+        },
+        {
+          "code": "10063029",
+          "description": "Semi-milled rice, parboiled (excl. round, medium and long grain)",
+          "firstMonth": "2023-01"
+        },
+        {
+          "code": "10063049",
+          "description": "Semi-milled rice (excl. round, medium and long grain, and parboiled)",
+          "firstMonth": "2023-04"
+        },
+        {
+          "code": "10063069",
+          "description": "Wholly milled rice, parboiled, whether or not polished or glazed (excl. round, medium and long grain)",
+          "firstMonth": "2023-01"
+        }
+      ],
+      "differences": []
+    },
+    {
+      "basket": "beef",
+      "label": "Beef and veal",
+      "hsScope": "HS 0201, 0202",
+      "hmrc": {
+        "listed": 14,
+        "withImports": 14
+      },
+      "defra": {
+        "listed": 31,
+        "sitcDivisions": [
+          {
+            "code": "01",
+            "description": "Meat And Meat Preparations",
+            "codes": 31
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "LIVESTOCK & LIVESTOCK PRODUCTS",
+              "MEAT AND EDIBLE OFFAL",
+              "Beef and veal"
+            ],
+            "codes": 31,
+            "outsideBasket": []
+          }
+        ],
+        "indigeneity": {
+          "Indigenous": 31
+        },
+        "degreeOfProcessing": {
+          "Lightly processed": 31
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [],
+      "differences": []
+    },
+    {
+      "basket": "sheep-goat",
+      "label": "Sheep and goat meat",
+      "hsScope": "HS 0204",
+      "hmrc": {
+        "listed": 27,
+        "withImports": 26
+      },
+      "defra": {
+        "listed": 30,
+        "sitcDivisions": [
+          {
+            "code": "01",
+            "description": "Meat And Meat Preparations",
+            "codes": 30
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "LIVESTOCK & LIVESTOCK PRODUCTS",
+              "MEAT AND EDIBLE OFFAL",
+              "Lamb and mutton"
+            ],
+            "codes": 18,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "MEAT AND EDIBLE OFFAL",
+              "Edible offal and other meat"
+            ],
+            "codes": 12,
+            "outsideBasket": [
+              {
+                "hs4": "0205",
+                "description": "Meat of horses, asses, mules or hinnies, fresh, chilled or frozen",
+                "codes": 6
+              },
+              {
+                "hs4": "0206",
+                "description": "Edible offal of bovine, swine, sheep, goat, horse etc. fresh, chilled or frozen",
+                "codes": 9
+              },
+              {
+                "hs4": "0208",
+                "description": "Other meat and edible meat offal, fresh, chilled or frozen",
+                "codes": 24
+              }
+            ]
+          }
+        ],
+        "indigeneity": {
+          "Indigenous": 30
+        },
+        "degreeOfProcessing": {
+          "Lightly processed": 30
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [],
+      "differences": [
+        "Defra's group 'Edible offal and other meat' (meat and edible offal) also includes HS 0205 (Meat of horses, asses, mules or hinnies, fresh, chilled or frozen), which the basket leaves out.",
+        "Defra's group 'Edible offal and other meat' (meat and edible offal) also includes HS 0206 (Edible offal of bovine, swine, sheep, goat, horse etc. fresh, chilled or frozen), which the basket leaves out.",
+        "Defra's group 'Edible offal and other meat' (meat and edible offal) also includes HS 0208 (Other meat and edible meat offal, fresh, chilled or frozen), which the basket leaves out."
+      ]
+    },
+    {
+      "basket": "poultry",
+      "label": "Poultry meat",
+      "hsScope": "HS 0207",
+      "hmrc": {
+        "listed": 155,
+        "withImports": 107
+      },
+      "defra": {
+        "listed": 243,
+        "sitcDivisions": [
+          {
+            "code": "01",
+            "description": "Meat And Meat Preparations",
+            "codes": 243
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "LIVESTOCK & LIVESTOCK PRODUCTS",
+              "MEAT AND EDIBLE OFFAL",
+              "Poultrymeat (inc poultry offal)"
+            ],
+            "codes": 242,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "MEAT AND EDIBLE OFFAL",
+              "Poultrymeat (inc poultry offal)"
+            ],
+            "codes": 1,
+            "outsideBasket": []
+          }
+        ],
+        "indigeneity": {
+          "Indigenous": 243
+        },
+        "degreeOfProcessing": {
+          "Lightly processed": 243
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [],
+      "differences": []
+    },
+    {
+      "basket": "milk-products",
+      "label": "Milk products (not cheese)",
+      "hsScope": "HS 0401–0405",
+      "hmrc": {
+        "listed": 136,
+        "withImports": 119
+      },
+      "defra": {
+        "listed": 176,
+        "sitcDivisions": [
+          {
+            "code": "02",
+            "description": "Dairy Products And Birds' Eggs",
+            "codes": 176
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "DAIRY",
+              "Other milk products"
+            ],
+            "codes": 46,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "LIVESTOCK & LIVESTOCK PRODUCTS",
+              "DAIRY",
+              "Yogurt"
+            ],
+            "codes": 38,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "LIVESTOCK & LIVESTOCK PRODUCTS",
+              "DAIRY",
+              "Milk powder"
+            ],
+            "codes": 21,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "LIVESTOCK & LIVESTOCK PRODUCTS",
+              "DAIRY",
+              "Other milk products"
+            ],
+            "codes": 18,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "LIVESTOCK & LIVESTOCK PRODUCTS",
+              "DAIRY",
+              "Condensed milk"
+            ],
+            "codes": 17,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "LIVESTOCK & LIVESTOCK PRODUCTS",
+              "DAIRY",
+              "Butter"
+            ],
+            "codes": 16,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "LIVESTOCK & LIVESTOCK PRODUCTS",
+              "DAIRY",
+              "Cream"
+            ],
+            "codes": 14,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "LIVESTOCK & LIVESTOCK PRODUCTS",
+              "DAIRY",
+              "Milk"
+            ],
+            "codes": 6,
+            "outsideBasket": []
+          }
+        ],
+        "indigeneity": {
+          "Indigenous": 176
+        },
+        "degreeOfProcessing": {
+          "Highly processed": 74,
+          "Lightly processed": 102
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [],
+      "differences": []
+    },
+    {
+      "basket": "cheese",
+      "label": "Cheese",
+      "hsScope": "HS 0406",
+      "hmrc": {
+        "listed": 57,
+        "withImports": 42
+      },
+      "defra": {
+        "listed": 76,
+        "sitcDivisions": [
+          {
+            "code": "02",
+            "description": "Dairy Products And Birds' Eggs",
+            "codes": 76
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "LIVESTOCK & LIVESTOCK PRODUCTS",
+              "DAIRY",
+              "Cheese"
+            ],
+            "codes": 76,
+            "outsideBasket": []
+          }
+        ],
+        "indigeneity": {
+          "Indigenous": 76
+        },
+        "degreeOfProcessing": {
+          "Lightly processed": 76
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [],
+      "differences": []
+    },
+    {
+      "basket": "sugar",
+      "label": "Sugar",
+      "hsScope": "HS 1701",
+      "hmrc": {
+        "listed": 11,
+        "withImports": 9
+      },
+      "defra": {
+        "listed": 17,
+        "sitcDivisions": [
+          {
+            "code": "06",
+            "description": "Sugars, Sugar Preparations And Honey",
+            "codes": 17
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "CROPS",
+              "SUGAR CROPS",
+              "Sugar Cane"
+            ],
+            "codes": 5,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "SUGAR CROPS",
+              "Other Sugar NES"
+            ],
+            "codes": 3,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "SUGAR CROPS",
+              "Sugar Coloured"
+            ],
+            "codes": 3,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "SUGAR CROPS",
+              "Sugar White"
+            ],
+            "codes": 3,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "CROPS",
+              "SUGAR CROPS",
+              "Sugar Beet"
+            ],
+            "codes": 2,
+            "outsideBasket": []
+          },
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "SUGAR CROPS",
+              "Sugar Cane"
+            ],
+            "codes": 1,
+            "outsideBasket": []
+          }
+        ],
+        "indigeneity": {
+          "Indigenous": 17
+        },
+        "degreeOfProcessing": {
+          "Lightly processed": 17
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [],
+      "differences": []
+    },
+    {
+      "basket": "coffee",
+      "label": "Coffee",
+      "hsScope": "HS 0901",
+      "hmrc": {
+        "listed": 6,
+        "withImports": 6
+      },
+      "defra": {
+        "listed": 8,
+        "sitcDivisions": [
+          {
+            "code": "07",
+            "description": "Coffee, Tea ,Cocoa, Spices Etc.",
+            "codes": 8
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "COFFEE",
+              "Coffee"
+            ],
+            "codes": 8,
+            "outsideBasket": [
+              {
+                "hs4": "2101",
+                "description": "Extracts, essences and concentrates, of coffee, tea or mat‚ and preparations with a basis of these products or with a basis of coffee, tea or mat‚/ roasted chicory and other roasted coffee substitutes, and extracts, essen",
+                "codes": 11
+              }
+            ]
+          }
+        ],
+        "indigeneity": {
+          "Non-indigenous": 8
+        },
+        "degreeOfProcessing": {
+          "Highly processed": 2,
+          "Lightly processed": 5,
+          "Unprocessed": 1
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [],
+      "differences": [
+        "Defra's group 'Coffee' (coffee) also includes HS 2101 (Extracts, essences and concentrates, of coffee, tea or mat‚ and preparations with a basis of these products or with a basis of coffee, tea or mat‚/ roasted chicory and other roasted coffee substitutes, and extracts, essen), which the basket leaves out."
+      ]
+    },
+    {
+      "basket": "cocoa",
+      "label": "Cocoa",
+      "hsScope": "HS 1801, 1803–1805",
+      "hmrc": {
+        "listed": 5,
+        "withImports": 5
+      },
+      "defra": {
+        "listed": 5,
+        "sitcDivisions": [
+          {
+            "code": "07",
+            "description": "Coffee, Tea ,Cocoa, Spices Etc.",
+            "codes": 5
+          }
+        ],
+        "groups": [
+          {
+            "brigade": [
+              "FOOD INDUSTRY",
+              "COCOA",
+              "Cocoa"
+            ],
+            "codes": 5,
+            "outsideBasket": [
+              {
+                "hs4": "1802",
+                "description": "Cocoa shells, husks, skins and other cocoa waste",
+                "codes": 1
+              },
+              {
+                "hs4": "1806",
+                "description": "Chocolate and other food preparations containing cocoa",
+                "codes": 5
+              }
+            ]
+          }
+        ],
+        "indigeneity": {
+          "Non-indigenous": 5
+        },
+        "degreeOfProcessing": {
+          "Lightly processed": 4,
+          "Unprocessed": 1
+        }
+      },
+      "hmrcCodesWithImportsNotInDefra": [],
+      "differences": [
+        "Defra's group 'Cocoa' (cocoa) also includes HS 1802 (Cocoa shells, husks, skins and other cocoa waste), which the basket leaves out.",
+        "Defra's group 'Cocoa' (cocoa) also includes HS 1806 (Chocolate and other food preparations containing cocoa), which the basket leaves out."
+      ]
+    }
+  ],
+  "oneSitcDivisionEach": true
+}

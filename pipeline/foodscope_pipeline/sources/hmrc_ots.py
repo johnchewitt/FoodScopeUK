@@ -6,6 +6,10 @@ This is the only module that talks to `api.uktradeinfo.com`. It never runs in th
 Behaviour (docs/03-DATA-SOURCES.md, S01):
 - At most 50 requests per minute (HMRC's limit is 60); retries with back-off on HTTP 429/5xx.
 - Follows `@odata.nextLink` until the last page (responses are capped at 40,000 items).
+- Keeps every OR-list to at most `MAX_OR_CLAUSES` comparisons and every URL under `MAX_URL_CHARS`:
+  a basket with many CN8 codes (dairy, cheese, meat) is fetched in several queries over disjoint,
+  consecutive runs of its codes, and the commodity list in several queries over its headings,
+  cached as `<prefix>-cNN-pNNN` (`RawCache.parts` reads either form).
 - Every response is stored byte-for-byte (gzip, deterministic) in `pipeline/raw/hmrc/<snapshot>/`
   with its URL, retrieval timestamp, HTTP status, SHA-256 and item count in `index.json`, so the
   snapshot can be rebuilt offline (`build-trade`) and audited.
@@ -34,6 +38,13 @@ API_BASE = "https://api.uktradeinfo.com"
 MAX_REQUESTS_PER_MINUTE = 50
 IMPORT_FLOWS = (1, 3)  # 1 = EU imports, 3 = non-EU imports (OTS)
 FIRST_MONTH = 201901
+# The longest URL used so far was 651 characters (wheat, 10 codes, 23 Oct 2026). Common server
+# defaults limit the query string to 2,048 characters; stay well below.
+MAX_URL_CHARS = 1800
+# The API answered HTTP 400 to a /Commodity filter of 24 OR-ed comparisons (26 Oct 2026, a URL of
+# about 750 characters), so the limit is on the filter's size, not the URL. The largest OR-lists it
+# has answered are 10 commodity codes (wheat, aggregate and raw rows, 23 Oct 2026): never send more.
+MAX_OR_CLAUSES = 10
 USER_AGENT = "foodscope-pipeline (+https://github.com/johnchewitt/FoodScopeUK)"
 # Characters left unescaped in OData query values, for readable cached URLs.
 _SAFE = "(),'/:$"
@@ -49,6 +60,7 @@ class Basket:
     hs_scope: str
     hs4: tuple[str, ...]
     hs6: tuple[str, ...]
+    group: str | None = None
 
     @staticmethod
     def from_dict(d: dict[str, Any]) -> Basket:
@@ -59,7 +71,19 @@ class Basket:
             hs_scope=d["hsScope"],
             hs4=tuple(d.get("hs4", [])),
             hs6=tuple(d.get("hs6", [])),
+            group=d.get("group"),
         )
+
+
+@dataclass(frozen=True)
+class BasketGroup:
+    id: str
+    label: str
+
+
+def load_groups(path: Path) -> list[BasketGroup]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return [BasketGroup(id=g["id"], label=g["label"]) for g in data.get("groups", [])]
 
 
 def load_baskets(path: Path) -> list[Basket]:
@@ -68,9 +92,19 @@ def load_baskets(path: Path) -> list[Basket]:
     ids = [b.id for b in baskets]
     if len(set(ids)) != len(ids):
         raise ValueError(f"duplicate basket ids in {path}")
+    group_ids = {g["id"] for g in data.get("groups", [])}
+    headings: dict[str, str] = {}
     for b in baskets:
         if not b.hs4 and not b.hs6:
             raise ValueError(f"basket {b.id} has no HS codes")
+        if b.group is not None and b.group not in group_ids:
+            raise ValueError(f"basket {b.id}: unknown group {b.group}")
+        for code in (*b.hs4, *b.hs6):
+            # Baskets must not overlap, or a CN8 code would be counted twice.
+            clash = next((other for h, other in headings.items() if code.startswith(h) or h.startswith(code)), None)
+            if clash is not None:
+                raise ValueError(f"basket {b.id}: heading {code} overlaps basket {clash}")
+        headings.update({code: b.id for code in (*b.hs4, *b.hs6)})
     return baskets
 
 
@@ -96,11 +130,27 @@ def flows_clause(flows: Sequence[int] = IMPORT_FLOWS) -> str:
     return _or(f"FlowTypeId eq {f}" for f in flows)
 
 
-def commodity_query(baskets: Sequence[Basket]) -> str:
-    """All CN8 codes (current and historical) under the baskets' HS headings."""
+def commodity_clauses(baskets: Sequence[Basket]) -> list[str]:
     clauses = [f"Hs4Code eq '{c}'" for b in baskets for c in b.hs4]
     clauses += [f"Hs6Code eq '{c}'" for b in baskets for c in b.hs6]
-    return odata_url("Commodity", [("$filter", " or ".join(sorted(set(clauses))))])
+    return sorted(set(clauses))
+
+
+def commodity_query_for(clauses: Sequence[str]) -> str:
+    if not clauses:
+        raise ValueError("no commodity clauses")
+    return odata_url("Commodity", [("$filter", " or ".join(clauses))])
+
+
+def commodity_query(baskets: Sequence[Basket]) -> str:
+    """All CN8 codes (current and historical) under the baskets' HS headings, in one query."""
+    return commodity_query_for(commodity_clauses(baskets))
+
+
+def commodity_queries(baskets: Sequence[Basket]) -> list[str]:
+    """The same, as queries of at most MAX_OR_CLAUSES headings each (one query for up to ten)."""
+    clauses = commodity_clauses(baskets)
+    return [commodity_query_for(clauses[i:i + MAX_OR_CLAUSES]) for i in range(0, len(clauses), MAX_OR_CLAUSES)]
 
 
 def country_query() -> str:
@@ -135,6 +185,29 @@ def raw_rows_query(commodity_ids: Sequence[int], month: int) -> str:
             ("$select", "MonthId,FlowTypeId,CountryId,CommodityId,SuppressionIndex,PortId,NetMass,Value"),
         ],
     )
+
+
+def chunk_ids(ids: Sequence[int], build: Callable[[Sequence[int]], str],
+              limit: int | None = None) -> list[list[int]]:
+    """Splits sorted `ids` into consecutive runs of at most `MAX_OR_CLAUSES` ids whose query URL
+    (`build(run)`) fits in `limit` (default `MAX_URL_CHARS`).
+
+    One run when everything fits, so short baskets keep a single query. Deterministic.
+    """
+    limit = MAX_URL_CHARS if limit is None else limit
+    ordered = sorted(set(ids))
+    if not ordered:
+        raise ValueError("no commodity ids")
+    runs: list[list[int]] = [[]]
+    for i in ordered:
+        candidate = [*runs[-1], i]
+        if runs[-1] and (len(candidate) > MAX_OR_CLAUSES or len(build(candidate)) > limit):
+            runs.append([i])
+        else:
+            runs[-1] = candidate
+        if len(build(runs[-1])) > limit:
+            raise ValueError(f"a single commodity id makes a URL longer than {limit} characters")
+    return runs
 
 
 def month_probe_query(month: int) -> str:
@@ -212,7 +285,8 @@ class HmrcClient:
             retryable = status in (0, 429, 500, 502, 503, 504)
             logger.warning("HMRC %s (attempt %d/%d) for %s", status or "network error", attempt, self.max_attempts, url)
             if not retryable or attempt == self.max_attempts:
-                raise HmrcError(f"HTTP {status} for {url}: {body[:300]!r}")
+                # The response text first: the URL can be long enough to hide it.
+                raise HmrcError(f"HTTP {status}: {body[:500]!r} for {url}")
             # HMRC asks callers that hit the limit to wait up to a minute.
             self.sleep(60.0 if status == 429 else min(5.0 * 3 ** (attempt - 1), 120.0))
         raise AssertionError("unreachable")
@@ -281,6 +355,19 @@ class RawCache:
     def items(self, prefix: str) -> list[dict[str, Any]]:
         return [row for page in self.pages(prefix) for row in page.get("value", [])]
 
+    def parts(self, prefix: str) -> list[str]:
+        """The cached queries for `prefix`: `[prefix]` for one query, else its `<prefix>-cNN` parts."""
+        if f"{prefix}-p001" in self.entries:
+            return [prefix]
+        parts = sorted({n.rsplit("-p", 1)[0] for n in self.entries if n.startswith(prefix + "-c")})
+        if not parts:
+            raise HmrcError(f"no cached pages for {prefix}")
+        return parts
+
+    def part_items(self, prefix: str) -> list[dict[str, Any]]:
+        """Items of every query cached for `prefix` (one query or several parts), in order."""
+        return [row for part in self.parts(prefix) for row in self.items(part)]
+
     def write_index(self, meta: dict[str, Any]) -> None:
         responses = [
             {
@@ -324,6 +411,18 @@ RECONCILE_MONTHS = {
     "bananas": 202407,
     "potatoes": 202503,
     "wheat": 202311,
+    # Added 26 Oct 2026 with the other eleven baskets (spec §6.1).
+    "apples": 202410,
+    "oranges": 202312,
+    "rice": 202202,
+    "beef": 202105,
+    "sheep-goat": 202004,
+    "poultry": 201909,
+    "milk-products": 202306,
+    "cheese": 202212,
+    "sugar": 202108,
+    "coffee": 202011,
+    "cocoa": 202602,
 }
 
 
@@ -334,6 +433,18 @@ def basket_commodity_ids(basket: Basket, commodities: Sequence[dict[str, Any]]) 
         if c.get("Hs4Code") in basket.hs4 or c.get("Hs6Code") in basket.hs6
     ]
     return sorted(set(ids))
+
+
+def fetch_parts(client: HmrcClient, cache: RawCache, prefix: str, ids: Sequence[int],
+                build: Callable[[Sequence[int]], str], now: Callable[[], str]) -> list[dict[str, Any]]:
+    """Fetches `build(ids)` as one query, or as `<prefix>-cNN` parts when the URL would be too long."""
+    runs = chunk_ids(ids, build)
+    if len(runs) == 1:
+        return fetch_paged(client, cache, prefix, build(runs[0]), now)
+    items: list[dict[str, Any]] = []
+    for n, run in enumerate(runs, start=1):
+        items.extend(fetch_paged(client, cache, f"{prefix}-c{n:02d}", build(run), now))
+    return items
 
 
 def utc_now() -> str:
@@ -347,7 +458,13 @@ def ingest(snapshot_id: str, raw_root: Path, baskets: Sequence[Basket], client: 
     cache = RawCache(raw_root / snapshot_id)
     started = now()
 
-    commodities = fetch_paged(client, cache, "commodity", commodity_query(baskets), now)
+    queries = commodity_queries(baskets)
+    if len(queries) == 1:
+        commodities = fetch_paged(client, cache, "commodity", queries[0], now)
+    else:
+        commodities = []
+        for n, url in enumerate(queries, start=1):
+            commodities.extend(fetch_paged(client, cache, f"commodity-c{n:02d}", url, now))
     fetch_paged(client, cache, "country", country_query(), now)
 
     latest = 0
@@ -355,12 +472,13 @@ def ingest(snapshot_id: str, raw_root: Path, baskets: Sequence[Basket], client: 
         ids = basket_commodity_ids(basket, commodities)
         if not ids:
             raise HmrcError(f"/Commodity returned no CN8 codes for basket {basket.id}")
-        rows = fetch_paged(client, cache, f"ots-aggregate-{basket.id}", aggregate_query(ids), now)
+        rows = fetch_parts(client, cache, f"ots-aggregate-{basket.id}", ids, aggregate_query, now)
         if rows:
             latest = max(latest, max(int(r["MonthId"]) for r in rows))
         month = RECONCILE_MONTHS.get(basket.id)
         if month:
-            fetch_paged(client, cache, f"ots-raw-{basket.id}-{month}", raw_rows_query(ids, month), now)
+            fetch_parts(client, cache, f"ots-raw-{basket.id}-{month}", ids,
+                        lambda run, m=month: raw_rows_query(run, m), now)
 
     if latest == 0:
         raise HmrcError("no OTS rows returned for any basket")

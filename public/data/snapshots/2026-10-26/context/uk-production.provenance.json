@@ -1,0 +1,26 @@
+{
+  "id": "context.uk_production",
+  "title": "UK production and supply of the Food Origins baskets (Defra, annual; national context)",
+  "role": "statistical",
+  "path": "snapshots/2026-10-26/context/uk-production.json",
+  "format": "json",
+  "schemaId": "uk-production",
+  "sha256": "65a33afde4be6a7b83d3bcb1b9995c0cc14e3f247b08ece32e3c736b9e17175a",
+  "bytes": 12828,
+  "sourceIds": [
+    "S09",
+    "S10"
+  ],
+  "referencePeriod": "tomatoes 2025, potatoes 2025 (provisional), strawberries 2025, apples 2025, wheat 2025 (provisional), beef 2025, sheep-goat 2025, poultry 2025, sugar 2025 (provisional)",
+  "coverage": "United Kingdom; tomatoes, potatoes, strawberries, apples, wheat, beef and veal, sheep and goat meat, poultry meat, sugar (no Defra supply balance used: oranges, bananas, rice, milk products (not cheese), cheese, coffee, cocoa)",
+  "provenance": "official_estimate",
+  "licence": "Open Government Licence v3.0",
+  "attribution": "Source: Department for Environment, Food & Rural Affairs, licensed under the Open Government Licence v3.0",
+  "expectedCadence": "annual",
+  "retrieval": {
+    "method": "Read offline from the committed Defra datasets (fetch-reference --set context, --set trade)",
+    "source": "https://assets.publishing.service.gov.uk/media/6a3d141feaee00074150f4db/AUK-chapter7-20260709.ods (sha256 5bdb534e35d2…); https://assets.publishing.service.gov.uk/media/6a994f51f5b35599aec19158/AUK-chapter8-20260709i.ods (sha256 b742e48495c4…); https://assets.publishing.service.gov.uk/media/6a327c196422bec01b1176a1/hort-dataset-25-20260625.ods (sha256 ce2a42fd2292…)",
+    "retrievedAt": "2026-10-26T09:04:30Z",
+    "notes": "Values as published (Agriculture in the UK shares converted from fractions to per cent; imports and exports are the sums of Defra's EU and rest-of-the-world rows where it splits them). Annual and national: never combined with HMRC monthly trade."
+  }
+}

@@ -65,12 +65,12 @@ describe("summariseFreshness", () => {
     const f = summariseFreshness(manifest, "success");
     expect(f.state).toBe("current");
     // Five families (Stage 5): the pill shows the date range; the detail names each family.
-    expect(f.label).toBe("Data 2026-10-23 to 2026-10-25");
-    expect(f.short).toBe("Data 23–25 Oct");
+    expect(f.label).toBe("Data 2026-10-24 to 2026-10-26");
+    expect(f.short).toBe("Data 24–26 Oct");
     expect(f.detail).toMatch(
-      /its own latest snapshot: trade 2026-10-23, stores and population 2026-10-24, small areas 2026-10-25, council context and uk production 2026-10-25, ni food register 2026-10-24/,
+      /its own latest snapshot: trade 2026-10-26, stores and population 2026-10-24, small areas 2026-10-25, council context and uk production 2026-10-26, ni food register 2026-10-24/,
     );
-    expect(familySnapshot(manifest, "trade")).toBe("2026-10-23");
+    expect(familySnapshot(manifest, "trade")).toBe("2026-10-26");
     expect(familySnapshot(manifest, "local")).toBe("2026-10-24");
     expect(familySnapshot(manifest, "areas")).toBe("2026-10-25");
     expect(familySnapshot(manifest, "production")).toBeNull();

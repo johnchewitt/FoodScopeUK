@@ -124,7 +124,7 @@ test.describe("Stage 1 shell", () => {
   test("evidence and help dialogs open from the URL and close", async ({ page }) => {
     await page.goto("./?view=evidence");
     await expect(
-      page.getByText(/Statistical snapshots trade 2026-10-23, stores and population 2026-10-24/),
+      page.getByText(/Statistical snapshots trade 2026-10-26, stores and population 2026-10-24/),
     ).toBeVisible();
     await expect(page.getByRole("cell", { name: /World country outlines/ })).toBeVisible();
     await expect(page.getByRole("cell", { name: /Recorded UK imports: tomatoes/ })).toBeVisible();

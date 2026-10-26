@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | 04 — Staged delivery plan |
-| **Version** | 0.7 — 26 October 2026 (Stage 6 merged to main through PR #17 and deployed; Northern Ireland road corridors from OpenStreetMap, S38, gate G16 cleared. Earlier, 0.6 — 25 October 2026: Stage 6 Risk Explorer built on `stage/6-risk-explorer`, awaiting review; earlier the same day, 0.5: Stages renumbered for John's Stage 6 brief: 6 Risk Explorer, 7 Scenario Lab, 8 Consulting Insights, 9 Hardening and Release 1; Stage 6 data step built, gates G6 and G14–G18 recorded) |
+| **Version** | 0.8 — 26 October 2026 (the sixteen Food Origins baskets: data step on `data/trade-16-baskets`, gate G3 cleared, §5.3 item done. Earlier the same day, 0.7: Stage 6 merged to main through PR #17 and deployed; Northern Ireland road corridors from OpenStreetMap, S38, gate G16 cleared. Earlier, 0.6 — 25 October 2026: Stage 6 Risk Explorer built on `stage/6-risk-explorer`, awaiting review; earlier the same day, 0.5: Stages renumbered for John's Stage 6 brief: 6 Risk Explorer, 7 Scenario Lab, 8 Consulting Insights, 9 Hardening and Release 1; Stage 6 data step built, gates G6 and G14–G18 recorded) |
 | **Approach** | Small, demonstrable stages. Each stage ends with working software, passing checks and a short stage report. No stage starts while its verification gates are open. |
 
 ---
@@ -43,7 +43,7 @@ Each gate must be cleared (evidence recorded in `docs/stage-reports/`) before th
 |---|---|---|---|
 | G1 ✅ | Does HMRC `$apply=groupby/aggregate` work on `/OTS` for our filters, within limits? | Live test in pipeline; compare with paged raw aggregation for one month | 2 — **cleared 23 Oct 2026**: exact match for five basket-months |
 | G2 ✅ | What is the API `Value` basis and HMRC revision policy? | HMRC methodology pages | 2 — **cleared**: CIF statistical value (Intrastat invoice value); provisional for up to 18 months |
-| G3 🟡 | Are commodity baskets aligned with Defra trade codes? | Compare spec §6.1 with Defra trade codes ODS (S05) and `/Commodity` | 2 — **partly**: five baskets verified against `/Commodity`; Defra ODS comparison moved out of Stage 3, to schedule (§5.3) |
+| G3 ✅ | Are commodity baskets aligned with Defra trade codes? | Compare spec §6.1 with Defra trade codes ODS (S05) and `/Commodity` | 2 — **cleared 26 Oct 2026** (sixteen-basket data step): all sixteen against `/Commodity` and Defra's trade codes; one SITC division each, eight definitional differences stated (§5.3) |
 | G4 ✅ | HMRC `CountryCodeAlpha` ↔ Natural Earth crosswalk complete? | Generate crosswalk; list unmapped codes | 2 — **cleared**: all partners crosswalked; Gibraltar has no geometry at 1:110m/1:50m |
 | G5 ✅ | ONS/OS attribution wording for boundaries | ONS metadata | LAD ingest (§5.3) — **cleared 24 Oct 2026**: "Source: Office for National Statistics licensed under the Open Government Licence v.3.0. Contains OS data © Crown copyright and database right 2025" in every boundary provenance record |
 | G6 ✅ | UKFSR 2024 ODS table IDs for Short Straits figures | Download Theme 3 ODS | 6 — **cleared 25 Oct 2026**: `FSR-theme3-241211.ods`, sheets 3_2_2a (port of entry), 3_2_2b (Short Straits by food group), 3_2_1a (SRN delay) |
@@ -184,7 +184,7 @@ Evidence: `docs/stage-reports/stage-3.md`.
 
 ### 5.3 Moved out of Stage 3 (to schedule with John)
 
-- Remaining 11 baskets, after the Defra trade-code comparison (gate G3, B10), and commodity search (B11).
+- ~~Remaining 11 baskets, after the Defra trade-code comparison (gate G3, B10), and commodity search (B11).~~ **Done** in the sixteen-basket data step (26 Oct 2026, John's request; `data/trade-16-baskets`, `docs/stage-reports/data-sixteen-baskets.md`, ADR-0025): HMRC snapshot 2026-10-26, G3 cleared, grouped picker with search, Defra production context for apples, sugar, beef, sheep meat and poultry.
 - ~~LAD boundaries (national, generalised) and LAD population (G5); GEOLYTIX snapshot (G7). Stage 4 needs both.~~ **Done** in the pre-Stage 4 data step (24 Oct 2026): `foodscope-pipeline build-local` → `public/data/snapshots/2026-10-24/local/` (ADR-0020), published in the app's data index in Stage 4 (ADR-0021).
 - Defra context file (UKFSR, pocketbook CSVs; G6); `catalogue.json` generated from the inventory.
 - FO-08 supplier pattern changes; FO-09 UK production context (needs S09/S10 verified).
@@ -380,3 +380,5 @@ Rules of engagement:
 | 2026-10-25 | Stage 6 built: three views on one map, never combined; the supply view reuses the trade map with a water-stress fill; ports as graphics (the only hit-tested logistics layer); councils in a risk mode of the Access layers, ranked within nation; a warm risk ramp for vulnerability measures, teal for volumes; "Explain this risk" built from indicators with a separate interpretation; RK-05 weights deferred to Release 2 | ADR-0024; spec §5.6, §6.6 |
 | 2026-10-26 | Stage 6 reached main through PR #17 (PR #16 had been merged into the data branch, not main) and was deployed | PRs #15–#17 |
 | 2026-10-26 | Northern Ireland road corridors: the file John sent is an OpenStreetMap extract, not OSNI's layer. John chose to use it, labelled as OpenStreetMap and as not official data, motorways and primary roads only (matching GB's two categories; secondary roads left out). The committed ZIP leaves out the file's ArcGIS metadata, which records local file paths | S38; John (decision) |
+| 2026-10-26 | All sixteen baskets of spec §6.1 (John's request): HMRC snapshot 2026-10-26; gate G3 against Defra's trade codes; groups by SITC division; the Risk Explorer's commodity–country matrix compares a basket with its group; Defra production context where Defra publishes a supply balance (apples, sugar, beef, mutton and lamb, poultry), "not grown commercially in the UK" from Defra's indigeneity for oranges, rice, coffee, cocoa and bananas | ADR-0025; S01, S05, S09, S10 |
+| 2026-10-26 | HMRC filters: at most ten OR-ed comparisons per query (a 24-clause filter answered HTTP 400) | S01 |

@@ -78,6 +78,8 @@ export interface SupplyBasket {
   id: string;
   label: string;
   snapshot: TradeSnapshot | undefined;
+  /** The basket's group in the trade index (SITC division as Defra uses it); absent before 26 Oct 2026. */
+  group?: { id: string; label: string } | null;
 }
 
 export interface SupplyModel {
@@ -93,9 +95,12 @@ export interface SupplyModel {
   provisionalMonths: number;
   monthly: MonthConcentration[];
   annual: YearSummary[];
-  /** The five baskets over the same period, most concentrated first. */
+  /** Every basket over the same period, most concentrated first. */
   ranking: CommodityConcentration[];
+  /** The selected basket's group (all baskets when the index has no groups), against their top partners. */
   matrix: ExposureMatrix;
+  /** The group the matrix shows, or null when the index has no groups. */
+  matrixGroup: { id: string; label: string } | null;
   /** Estimated exposure to the selected partner's disruption, month by month over the period. */
   disruption: DisruptionExposure | null;
   /** Commodity code changes in the snapshot (classification changes, kept continuous by the basket). */
@@ -165,7 +170,15 @@ export function buildSupplyModel(
 
   const concentration = baskets
     .filter((b) => b.snapshot)
-    .map((b) => ({ id: b.id, label: b.label, ...basketConcentration(b.snapshot!, b.label, sel) }));
+    .map((b) => ({
+      id: b.id,
+      label: b.label,
+      group: b.group ?? null,
+      ...basketConcentration(b.snapshot!, b.label, sel),
+    }));
+  // Sixteen columns do not fit the panel: the matrix compares the selected basket with its group.
+  const matrixGroup = baskets.find((b) => b.id === snapshot.commodity.id)?.group ?? null;
+  const inMatrix = matrixGroup ? concentration.filter((c) => c.group?.id === matrixGroup.id) : concentration;
 
   return {
     origins,
@@ -181,9 +194,10 @@ export function buildSupplyModel(
     annual: annualSummary(snapshot, sel.measure),
     ranking: rankByConcentration(concentration.map((c) => c.row)),
     matrix: exposureMatrix(
-      concentration.map((c) => ({ id: c.id, label: c.label, shares: c.shares })),
+      inMatrix.map((c) => ({ id: c.id, label: c.label, shares: c.shares })),
       5,
     ),
+    matrixGroup,
     disruption: sel.partner
       ? disruptionExposure(snapshot, sel.measure, sel.partner, origins.period.available)
       : null,
@@ -191,9 +205,17 @@ export function buildSupplyModel(
   };
 }
 
-/** Basket labels from the trade index, in its order. */
-export function basketList(index: TradeIndex): { id: string; label: string; datasetId: string }[] {
-  return index.commodities.map((c) => ({ id: c.id, label: c.label, datasetId: c.datasetId }));
+/** Basket labels (and groups, when the index has them) from the trade index, in its order. */
+export function basketList(
+  index: TradeIndex,
+): { id: string; label: string; datasetId: string; group: { id: string; label: string } | null }[] {
+  const groups = new Map((index.groups ?? []).map((g) => [g.id, g]));
+  return index.commodities.map((c) => ({
+    id: c.id,
+    label: c.label,
+    datasetId: c.datasetId,
+    group: (c.group && groups.get(c.group)) || null,
+  }));
 }
 
 // ---------------------------------------------------------------------------------------------

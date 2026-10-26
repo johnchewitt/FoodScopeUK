@@ -224,3 +224,28 @@ def test_geojson_files(tmp_path: Path, body: bytes, ok: bool) -> None:
     else:
         with pytest.raises(OnsFetchError):
             run()
+
+
+def test_trade_set_fetches_defra_trade_codes_and_livestock_tables(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from foodscope_pipeline.sources import trade_files
+
+    calls: list[tuple[str, tuple, tuple]] = []
+
+    def fake_fetch(snapshot, raw_root, files=None, queries=None):  # noqa: ANN001
+        calls.append((raw_root.name, files, queries))
+        return raw_root / snapshot
+
+    monkeypatch.setattr(ons_files, "fetch", fake_fetch)
+    monkeypatch.setattr(cli, "RAW", tmp_path)
+    assert cli.main(["fetch-reference", "--snapshot", "2026-10-26", "--set", "trade"]) == 0
+    assert calls == [("defra", trade_files.DEFRA_FILES, ())]
+    assert {f.source_id for f in trade_files.DEFRA_FILES} == {"S05", "S10"}
+    names = [f.filename for f in trade_files.DEFRA_FILES]
+    assert len(set(names)) == len(names)
+    # Distinct from the files the context and stage6 sets already cache.
+    from foodscope_pipeline.sources import stage6_files as s6
+
+    cached = {f.id for f in defra_stats.FILES + s6.DEFRA_FILES}
+    for f in trade_files.DEFRA_FILES:
+        assert f.url.startswith("https://assets.publishing.service.gov.uk/media/") and f.url.endswith(".ods")
+        assert f.id not in cached

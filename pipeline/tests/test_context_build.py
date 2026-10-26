@@ -16,12 +16,16 @@ from foodscope_pipeline.sources.ruc21 import LAD_CODES, Ruc21Error, read_ruc21
 PIPELINE = Path(__file__).resolve().parents[1]
 REPO = PIPELINE.parent
 RAW = PIPELINE / "raw"
-SNAPSHOT, REFERENCE, LOCAL = "2026-10-25", "2026-10-24", "2026-10-24"
+# The output snapshot 2026-10-26 reads the context set's raw files (2026-10-25) and, for the meat
+# baskets, Agriculture in the UK chapter 8 from the trade set (2026-10-26).
+SNAPSHOT, REFERENCE, LOCAL = "2026-10-26", "2026-10-24", "2026-10-24"
+RAW_SNAPSHOT, EXTRA_DEFRA = "2026-10-25", ("2026-10-26",)
 CONFIG = PIPELINE / "foodscope_pipeline" / "config"
 
 
 def _inputs(**overrides):
-    inputs = default_inputs(RAW, CONFIG, REPO / "public" / "data", SNAPSHOT, REFERENCE, LOCAL)
+    inputs = default_inputs(RAW, CONFIG, REPO / "public" / "data", SNAPSHOT, REFERENCE, LOCAL,
+                            raw_snapshot=RAW_SNAPSHOT, extra_defra_snapshots=EXTRA_DEFRA)
     return inputs.__class__(**{**inputs.__dict__, **overrides})
 
 
@@ -104,7 +108,8 @@ def test_boundary_changes_are_explicit(councils, ts045_ltla) -> None:
 
 def test_production_as_published(production) -> None:
     assert production["bananas"] == {"basket": "bananas", "status": "not_published",
-                                     "note": "Defra publishes no UK production statistics for bananas."}
+                                     "note": "Not grown commercially in the UK: Defra classes the basket's trade "
+                                             "codes as non-indigenous (S05)."}
     m = {b: {x["key"]: x["value"] for x in production[b]["measures"]} for b in ("tomatoes", "strawberries", "potatoes", "wheat")}
     # Wheat 2025 (provisional), Table 7.2c: imports are the EU and rest-of-the-world rows added.
     assert production["wheat"]["year"] == 2025 and production["wheat"]["provisional"] is True
@@ -117,6 +122,31 @@ def test_production_as_published(production) -> None:
     for b, v in m.items():
         assert v["totalSupply"] == pytest.approx(v["production"] + v["imports"] - v["exports"], abs=0.01), b
     assert [p["year"] for p in production["tomatoes"]["shareSeries"]] == list(range(2016, 2026))
+
+
+def test_production_for_the_eleven_new_baskets(production) -> None:
+    """Values read from the published tables (AUK 2025 chapters 7 and 8, Horticulture 2025 table 12)."""
+    from foodscope_pipeline.sources.hmrc_ots import load_baskets
+
+    assert [c for c in production] == [b.id for b in load_baskets(CONFIG / "trade_baskets.json")]
+    m = {b: {x["key"]: x["value"] for x in production[b]["measures"]}
+         for b in ("apples", "beef", "sheep-goat", "poultry", "sugar")}
+    # Table 8.2d, 2025: home-fed production 897.8; imports 243.5 (EU) + 66.0 (rest of the world).
+    assert m["beef"]["production"] == pytest.approx(897.801, abs=0.001)
+    assert m["beef"]["imports"] == pytest.approx(243.501 + 65.959, abs=0.002)
+    assert m["beef"]["productionShare"] == pytest.approx(84.31, abs=0.005)
+    assert m["sheep-goat"]["productionShare"] == pytest.approx(102.74, abs=0.005)  # more produced than used
+    assert m["poultry"]["productionShare"] == pytest.approx(80.38, abs=0.005)
+    assert production["sugar"]["year"] == 2025 and production["sugar"]["provisional"] is True
+    assert m["sugar"]["production"] == 997 and m["sugar"]["productionShare"] == pytest.approx(60.9, abs=0.05)
+    assert m["apples"]["productionShare"] == pytest.approx(47.41, abs=0.005)
+    for b, v in m.items():
+        assert v["totalSupply"] == pytest.approx(v["production"] + v["imports"] - v["exports"], abs=0.01), b
+    assert production["beef"]["file"] == "AUK-chapter8-20260709i.ods"
+    for b in ("oranges", "rice", "coffee", "cocoa"):
+        assert production[b]["status"] == "not_published" and "non-indigenous" in production[b]["note"], b
+    for b in ("milk-products", "cheese"):
+        assert production[b]["status"] == "not_published" and "No Defra supply balance" in production[b]["note"], b
 
 
 def test_a_merger_in_the_code_changes_is_refused(tmp_path, tmp_path_factory) -> None:
@@ -148,11 +178,11 @@ def test_ruc_reader_rejects_unknown_classes_and_duplicates(tmp_path) -> None:
 def test_defra_readers_keep_unavailable_years_empty() -> None:
     from foodscope_pipeline.sources.defra_stats import read_auk_table, read_horticulture_supply
 
-    auk = RAW / "defra" / SNAPSHOT / "AUK-chapter7-20260709.ods"
+    auk = RAW / "defra" / RAW_SNAPSHOT / "AUK-chapter7-20260709.ods"
     table, provisional = read_auk_table(auk, "Table_7_2", "Table 7.2c")
     assert table[1973]["Production"] is None  # "[x]": not available, never zero
     assert provisional == {2025}
-    hort = read_horticulture_supply(RAW / "defra" / SNAPSHOT / "hort-dataset-25-20260625.ods",
+    hort = read_horticulture_supply(RAW / "defra" / RAW_SNAPSHOT / "hort-dataset-25-20260625.ods",
                                     "Table_23_Veg_Supply", "Tomatoes")
     assert min(hort) == 1988 and set(hort[2025]) == {"production", "imports", "exports", "totalSupply", "productionShare"}
 

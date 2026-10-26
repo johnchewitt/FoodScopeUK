@@ -28,3 +28,4 @@ MADR-style records. Status values: Proposed · Accepted · Superseded. Summaries
 | [0022](0022-basemap-colour-sets-and-local-scale.md) | A colour set per basemap style; one local-scale rule (zoom 12) for stores, councils and imagery | Accepted (Stage 4) |
 | [0023](0023-local-authority-profiles.md) | Local Authority Profiles: per-council small areas, a profile map mode, small areas as graphics | Accepted (Stage 5) |
 | [0024](0024-risk-explorer.md) | Risk Explorer: three separate views on one map, a warm risk ramp, explanations built from indicators, no composite | Accepted (Stage 6) |
+| [0025](0025-sixteen-baskets.md) | Sixteen baskets: groups from Defra's SITC divisions, a searchable picker, a matrix per group, small HMRC filters | Accepted (sixteen-basket data step) |

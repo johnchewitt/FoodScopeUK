@@ -1,0 +1,104 @@
+[
+  {
+    "step": "country list",
+    "rows_in": 263,
+    "rows_out": 263,
+    "rejects": {}
+  },
+  {
+    "step": "tomatoes: aggregate rows \u2192 kept",
+    "rows_in": 1667,
+    "rows_out": 1667,
+    "rejects": {}
+  },
+  {
+    "step": "potatoes: aggregate rows \u2192 kept",
+    "rows_in": 1937,
+    "rows_out": 1937,
+    "rejects": {}
+  },
+  {
+    "step": "strawberries: aggregate rows \u2192 kept",
+    "rows_in": 1139,
+    "rows_out": 1139,
+    "rejects": {}
+  },
+  {
+    "step": "apples: aggregate rows \u2192 kept",
+    "rows_in": 1905,
+    "rows_out": 1905,
+    "rejects": {}
+  },
+  {
+    "step": "oranges: aggregate rows \u2192 kept",
+    "rows_in": 3119,
+    "rows_out": 3119,
+    "rejects": {}
+  },
+  {
+    "step": "bananas: aggregate rows \u2192 kept",
+    "rows_in": 4055,
+    "rows_out": 4055,
+    "rejects": {}
+  },
+  {
+    "step": "wheat: aggregate rows \u2192 kept",
+    "rows_in": 2098,
+    "rows_out": 2098,
+    "rejects": {}
+  },
+  {
+    "step": "rice: aggregate rows \u2192 kept",
+    "rows_in": 17483,
+    "rows_out": 17483,
+    "rejects": {}
+  },
+  {
+    "step": "beef: aggregate rows \u2192 kept",
+    "rows_in": 7340,
+    "rows_out": 7340,
+    "rejects": {}
+  },
+  {
+    "step": "sheep-goat: aggregate rows \u2192 kept",
+    "rows_in": 6055,
+    "rows_out": 6055,
+    "rejects": {}
+  },
+  {
+    "step": "poultry: aggregate rows \u2192 kept",
+    "rows_in": 25564,
+    "rows_out": 25564,
+    "rejects": {}
+  },
+  {
+    "step": "milk-products: aggregate rows \u2192 kept",
+    "rows_in": 36128,
+    "rows_out": 36128,
+    "rejects": {}
+  },
+  {
+    "step": "cheese: aggregate rows \u2192 kept",
+    "rows_in": 27807,
+    "rows_out": 27807,
+    "rejects": {}
+  },
+  {
+    "step": "sugar: aggregate rows \u2192 kept",
+    "rows_in": 7505,
+    "rows_out": 7505,
+    "rejects": {}
+  },
+  {
+    "step": "coffee: aggregate rows \u2192 kept",
+    "rows_in": 10749,
+    "rows_out": 10749,
+    "rejects": {}
+  },
+  {
+    "step": "cocoa: aggregate rows \u2192 kept",
+    "rows_in": 4842,
+    "rows_out": 4842,
+    "rejects": {}
+  }
+]

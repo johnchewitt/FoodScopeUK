@@ -13,8 +13,8 @@ Ideas and follow-ups that are outside the current stage's scope. Move an item in
 | B7 | Bundle-size report in CI with a regression threshold | Architecture §10 | 9 |
 | B8 | Decide the code licence for the repository | README | ConsultingWhere |
 | B9 | Recover from a failed lazy map chunk (seen once: transient GitHub Pages 503 on first load). `React.lazy` caches the rejected import, so "Try again" cannot recover; retry the import once and offer Reload | Stage 1 post-merge check (now also the lazy Seasonal chunk) | 9 |
-| B10 | Defra trade-code comparison for the Food Origins baskets (gate G3, S05 ODS) before adding the other 11 | Stage 2 | Data pipeline (roadmap §5.3) |
-| B11 | Commodity search and grouping once there are 16 baskets (FO-01) | Stage 2 | Data pipeline (roadmap §5.3) |
+| B10 | ✅ **Done 26 Oct 2026** (gate G3, `check-baskets`). Defra trade-code comparison for the Food Origins baskets (gate G3, S05 ODS) before adding the other 11 | Stage 2 | Data pipeline (roadmap §5.3) |
+| B11 | ✅ **Done 26 Oct 2026** (ADR-0025). Commodity search and grouping once there are 16 baskets (FO-01) | Stage 2 | Data pipeline (roadmap §5.3) |
 | B12 | ~~"Fit to partners" map control~~ Done: "Fit to recorded partners" control and F key (ADR-0018) | Stage 2 screenshots | Done (review 23 Oct 2026) |
 | B13 | Retry SDK CIM symbol animations on a newer 5.x patch; if they render, replace the canvas overlay (ADR-0015) | Stage 2 spike | 9 |
 | B14 | Schedule `refresh-trade-data.yml` a few days after each HMRC release (next: 12 Nov 2026) and add a diff summary to the PR | Stage 2 | Data pipeline (roadmap §5.3) |
@@ -53,3 +53,6 @@ Ideas and follow-ups that are outside the current stage's scope. Move an item in
 | B47 | Logistics map: road widths are fixed (1.15 px strategic, 0.55 px primary) as a compromise between national and local scales; consider scale-dependent widths if the corridors look thin when zoomed in on a real GPU | Stage 6 | 9 |
 | B48 | Live checks of the Risk Explorer on a real GPU with the Esri basemap (light grey and dark grey colour sets, port rings, road corridors over the farming fills, hover speed on councils), together with the outstanding Stage 5 live checks | Stage 6 | Next deploy |
 | B49 | Basemap E2E "imagery is offered only at local scale" asserts the exact sequence of style requests; once in a full local run (Stage 6) the last imagery request did not reach the stub although the view showed imagery (likely served from the browser cache). Assert the view's style, or disable the cache in that test | Stage 6 E2E | 9 |
+| B50 | Defra's monthly meat and milk series (S06–S08) for Seasonal Supply's UK production (SS-07) now that beef, sheep meat, poultry and the dairy baskets are in the app: verify formats and units first | Sixteen baskets | Release 2 |
+| B51 | Dairy national context: a product-level source for cheese, butter, cream and milk powder production (Defra dairy statistics) to give the dairy baskets context like the others | Sixteen baskets | Data pipeline |
+| B52 | Milk products and cocoa add unlike products by net mass; consider splitting them (e.g. liquid milk and cream vs powders and butter; beans vs intermediates) or a milk- or bean-equivalent view, if John wants mass comparisons within them | Sixteen baskets | Ask John |
