@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "snapshot": "2026-10-26",
+  "files": [
+    {
+      "id": "defra.trade_codes",
+      "file": "Defra-trade-codes-and-descriptions-15nov22.ods",
+      "url": "https://assets.publishing.service.gov.uk/media/6373bde8e90e07284de6da0c/Defra-trade-codes-and-descriptions-15nov22.ods",
+      "sourceId": "S05",
+      "licence": "Open Government Licence v3.0",
+      "description": "Defra trade codes and descriptions (CN8 codes with Defra's groupings), 15 Nov 2022",
+      "httpStatus": 200,
+      "bytes": 993349,
+      "sha256": "d0e1094f4b04343b97f5066cb320bfa99e80fba69f0aad75f473bec9d3c44025",
+      "retrievedAt": "2026-10-26T09:04:29Z"
+    },
+    {
+      "id": "defra.auk_2025_chapter8",
+      "file": "AUK-chapter8-20260709i.ods",
+      "url": "https://assets.publishing.service.gov.uk/media/6a994f51f5b35599aec19158/AUK-chapter8-20260709i.ods",
+      "sourceId": "S10",
+      "licence": "Open Government Licence v3.0",
+      "description": "Agriculture in the United Kingdom 2025, chapter 8: livestock (revised 3 Sep 2026)",
+      "httpStatus": 200,
+      "bytes": 142436,
+      "sha256": "b742e48495c49e924a56d6f040d59892d6175fa6cb64b445e936ac53f0866c1c",
+      "retrievedAt": "2026-10-26T09:04:30Z"
+    }
+  ]
+}
