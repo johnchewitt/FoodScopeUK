@@ -77,7 +77,7 @@ Each was recomputed by a script that uses no app code (03-DATA-SOURCES §11, Sta
 | `npm test` | 43 files, 604 tests pass (517 before). The 87 new tests: 30 in `analysis/scenario.test.ts`; 17 model, 7 saved-scenario and 6 component tests in `features/scenarios/`; 22 URL and scenario-parameter tests; 3 symbol tests; 2 framing tests |
 | `VITE_ARCGIS_ASSETS=local npm run build` | Pass; shell `index` 479.0 kB (476.6 kB before) |
 | `npx playwright test tests/e2e/scenarios.spec.ts` | 3 passed: A (preset, map layers, baseline/scenario switch, reset, reload keeps the URL), B (preset, 17 areas drawn, hover and click a supermarket on the map to close it), C and D (port, save, production preset, compare, CSV download); axe (no serious or critical violations) and the wording audit in each |
-| `npm run build:e2e-basemap` and `npm run e2e` (all specs) | Running when this report was first committed; result added below |
+| `npm run build:e2e-basemap` and `npm run e2e` (all specs, SwiftShader) | 77 of 78 passed in 17.8 min. The one failure was the Stage 1 smoke test "modules without data show no numbers on KPI cards", which used the Scenario Lab as its example of a module without data. It now uses Consulting Insights (stage 8) and passes |
 | `cd pipeline && uv run pytest` | 318 passed, 1 skipped (data step) |
 
 **Wording audit (P9, SC-04).** The component and E2E tests check that "shortage" appears only negated ("not a forecast, and not a shortage"), and that "forecast shortage" never appears.
