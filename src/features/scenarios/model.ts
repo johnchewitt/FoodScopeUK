@@ -644,6 +644,30 @@ export interface StoreOption {
   part: ClosurePart;
 }
 
+/**
+ * One credit for data drawn from several published datasets: their attribution sentences, each
+ * once, in order. The closure map's supermarkets and areas come from both closure inputs (GB and
+ * NI), whose credits share the GEOLYTIX and council sentences.
+ */
+export function mergeAttributions(texts: readonly (string | null | undefined)[]): string {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const t of texts) {
+    if (!t) continue;
+    for (const raw of t.split(/(?<=\.)\s+/)) {
+      const trimmed = raw.trim();
+      if (!trimmed) continue;
+      // A credit's last sentence may have no full stop: add one, so joined credits stay sentences.
+      const sentence = /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
+      if (!seen.has(sentence)) {
+        seen.add(sentence);
+        out.push(sentence);
+      }
+    }
+  }
+  return out.join(" ");
+}
+
 /** Finds a supermarket by GEOLYTIX id in the closure inputs. */
 export function findStore(parts: ClosureParts, id: number | null): StoreRef | null {
   if (id === null) return null;

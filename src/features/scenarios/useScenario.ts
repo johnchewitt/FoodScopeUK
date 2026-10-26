@@ -35,6 +35,7 @@ import {
   buildProductionModel,
   CLOSURE_UK_FRAME,
   findStore,
+  mergeAttributions,
   storeOptions,
   type ClosureModel,
   type ClosureParts,
@@ -313,6 +314,12 @@ export function useScenarioMapSync(): void {
 
   const parts = closure.data.parts;
   const boundaries = closure.data.boundaries;
+  // The scenario's supermarkets and areas are drawn from the closure inputs: credit them (not only
+  // GEOLYTIX) on the map, including the Census, Scottish Government and NISRA sources.
+  const closureCredit = useMemo(
+    () => mergeAttributions(closure.data.datasets.map((d) => d?.attribution)),
+    [closure.data.datasets],
+  );
   const storesDs = closure.data.storesDataset;
   const closureModel = params.kind === "closure" ? closure.model : null;
   const access = useMemo<AccessMapModel | null>(() => {
@@ -323,7 +330,8 @@ export function useScenarioMapSync(): void {
       grocers: null,
       storesUrl: supermarketsUrl(parts),
       storeWhere: "1=1",
-      storesCopyright: storesDs?.attribution ?? "Contains GEOLYTIX Grocery Retail Points data",
+      storesCopyright:
+        closureCredit || storesDs?.attribution || "Contains GEOLYTIX Grocery Retail Points data",
       frame: null,
       councilsUrl: datasetUrl(boundaries),
       councilsCopyright: boundaries.attribution,
@@ -334,7 +342,7 @@ export function useScenarioMapSync(): void {
       selectedCouncil: closureModel?.store.council.code ?? null,
       proximity: null,
     };
-  }, [params.kind, parts, boundaries, storesDs, closureModel]);
+  }, [params.kind, parts, boundaries, storesDs, closureCredit, closureModel]);
   useEffect(() => {
     if (params.kind === "closure") {
       setAccessMap(access);

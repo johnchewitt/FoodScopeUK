@@ -63,6 +63,16 @@ async function visibleLayers(page: Page): Promise<string[]> {
   );
 }
 
+/** The map's attribution texts (the SDK's own list, as shown in the attribution bar). */
+async function attribution(page: Page): Promise<string> {
+  return page.locator("arcgis-map").evaluate((el: HTMLArcgisMapElement) => {
+    const items = el.view.attributionItems as unknown as
+      { text: string }[] | { toArray(): { text: string }[] };
+    const list = Array.isArray(items) ? items : items.toArray();
+    return list.map((i) => i.text).join(" | ");
+  });
+}
+
 const MODULE = "Scenario Lab";
 const kpis = (page: Page) => page.getByRole("region", { name: new RegExp(`${MODULE} key figures`) });
 const insights = (page: Page) => page.getByRole("complementary", { name: "Insights" });
@@ -98,6 +108,8 @@ test.describe("Scenario Lab", () => {
       "2,660",
     );
     expect(await visibleLayers(page)).toContain("origins-flows");
+    // Review: the disrupted partner's baseline is drawn (body under, dashed edges over its line).
+    await expect.poll(() => viewData(page, "flowGhosts")).toBe("ES");
     await expect(insights(page).getByRole("region", { name: "Scenario modelled" })).toContainText(
       "not a forecast, and not a shortage",
     );
@@ -138,6 +150,10 @@ test.describe("Scenario Lab", () => {
     const layers = await visibleLayers(page);
     expect(layers).toEqual(expect.arrayContaining(["scenario-closure", "access-stores", "access-councils"]));
     expect(layers).not.toContain("origins-flows");
+    // Review: the map credits the closure inputs (Census, Scottish Government, NISRA), not only GEOLYTIX.
+    await expect
+      .poll(() => attribution(page), { timeout: 20_000 })
+      .toMatch(/Copyright Scottish Government.*Source: NISRA/);
     await settled(page);
     await controls(page).getByRole("radio", { name: "Baseline" }).click();
     await expect.poll(() => viewData(page, "scenarioView")).toBe("baseline");
@@ -163,6 +179,17 @@ test.describe("Scenario Lab", () => {
     await mapReady(page);
     await expect(kpis(page).getByText("521.4 kt")).toBeVisible({ timeout: 30_000 });
     await expect.poll(() => viewData(page, "riskSelectedPort"), { timeout: 20_000 }).toBe("GBDVR");
+    // Review: DfT's zero is agricultural dry bulk only; the chart covers the one disrupted month.
+    await expect(kpis(page).getByRole("article", { name: "Agricultural dry bulk affected" })).toContainText(
+      "Ro-Ro or containers, contents not recorded",
+    );
+    await expect(
+      insights(page).getByText("Dover: inward tonnage by cargo group over 1 month (2025)"),
+    ).toBeVisible();
+    // Review: the ports' credit (DfT, and EMODnet under CC BY 4.0) is in the map attribution.
+    await expect
+      .poll(() => attribution(page), { timeout: 20_000 })
+      .toMatch(/Department for Transport, Port freight statistics.*EMODnet.*CC BY 4\.0/);
     await controls(page).getByRole("textbox", { name: "Scenario name" }).fill("Dover half capacity");
     await controls(page).getByRole("button", { name: "Save" }).click();
     await controls(page)

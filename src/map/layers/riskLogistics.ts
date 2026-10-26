@@ -12,8 +12,10 @@ import { hexToRgb } from "@/analysis/colour";
 import { selectMapColourStyle, type AppState, type HoverRisk, type RiskMapModel } from "@/state/store";
 import { MAP_COLOURS, type MapStyle } from "@/styles/palette";
 import { ensureHoverHighlight, HOVER_HIGHLIGHT } from "../highlight";
+import { createCreditLayer, type CreditLayer } from "./creditLayer";
 import { portGraphicsData } from "./portSymbols";
 import {
+  RISK_PORTS_CREDIT_LAYER_ID,
   RISK_PORTS_LAYER_ID,
   RISK_RAIL_LAYER_ID,
   RISK_REGIONS_LAYER_ID,
@@ -116,6 +118,8 @@ export class RiskLogisticsController implements LayerController {
   private roadsNi: GeoJSONLayer | null = null;
   private rail: GeoJSONLayer | null = null;
   private ports: GraphicsLayer | null = null;
+  /** The ports' data credit (DfT, EMODnet): GraphicsLayers carry no attribution of their own. */
+  private portsCredit: CreditLayer | null = null;
   private regionsUrl: string | null = null;
   private roadsUrl: string | null = null;
   private roadsNiUrl: string | null = null;
@@ -158,6 +162,7 @@ export class RiskLogisticsController implements LayerController {
     if (visible !== this.visible) {
       this.visible = visible;
       for (const l of this.layers()) l.visible = visible;
+      if (this.portsCredit) this.portsCredit.layer.visible = visible;
       if (!visible) this.clearHover();
     }
     if (!visible || !m || !this.view) return;
@@ -181,6 +186,11 @@ export class RiskLogisticsController implements LayerController {
     for (const l of this.layers()) {
       view.map?.remove(l);
       l.destroy();
+    }
+    if (this.portsCredit) {
+      view.map?.remove(this.portsCredit.layer);
+      this.portsCredit.dispose();
+      this.portsCredit = null;
     }
     this.regions = this.roads = this.roadsNi = this.rail = this.ports = null;
     this.regionsUrl = this.roadsUrl = this.roadsNiUrl = this.railUrl = null;
@@ -374,6 +384,13 @@ export class RiskLogisticsController implements LayerController {
           if (this.ports === layer)
             this.report?.("error", err instanceof Error ? err.message : "Ports failed to draw");
         });
+    }
+    if (m.portsCopyright) {
+      if (!this.portsCredit) {
+        this.portsCredit = createCreditLayer(RISK_PORTS_CREDIT_LAYER_ID, m.portsCopyright);
+        this.portsCredit.layer.visible = this.visible;
+        view.map?.add(this.portsCredit.layer);
+      } else this.portsCredit.setText(m.portsCopyright);
     }
     const sig = `${style}|${m.portKey}|${m.selectedPort ?? ""}|${m.ports.map((p) => `${p.locode}:${p.radius.toFixed(2)}:${p.foodEntry ? 1 : 0}:${p.scenarioRadius?.toFixed(2) ?? ""}`).join(",")}`;
     if (sig === this.signature.ports) return;

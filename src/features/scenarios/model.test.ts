@@ -15,6 +15,7 @@ import {
   defaultStart,
   findStore,
   foodEntryEvidence,
+  mergeAttributions,
   mostReliedOn,
   searchStores,
   storeOptions,
@@ -336,5 +337,41 @@ describe("closure input checks", () => {
     expect(problems.join(" ")).toMatch(/areas.population has 3779 entries/);
     expect(problems.join(" ")).toMatch(/store out of range/);
     expect(validateClosure({ ...ni, part: "fr" }).ok).toBe(false);
+  });
+});
+
+describe("map credit of the closure inputs (review)", () => {
+  const manifest = readRepoJson<{ datasets: { id: string; attribution: string }[] }>(
+    "public/data/manifest.json",
+  );
+  const credit = (id: string) => manifest.datasets.find((d) => d.id === id)!.attribution;
+
+  it("names every source of both parts once", () => {
+    const merged = mergeAttributions([credit("scenario.closure_gb"), credit("scenario.closure_ni"), null]);
+    for (const source of [
+      "Office for National Statistics",
+      "Copyright Scottish Government",
+      "English Indices of Deprivation 2025",
+      "Source: NISRA",
+      "Ordnance Survey of Northern Ireland",
+      "Contains GEOLYTIX Grocery Retail Points data (v46, June 2026).",
+    ])
+      expect(merged).toContain(source);
+    expect(merged.match(/Contains GEOLYTIX/g)).toHaveLength(1);
+    expect(merged.match(/Councils: Source/g)).toHaveLength(1);
+    // Every sentence ends with a full stop before the next credit (no "2025 Source: NISRA").
+    expect(merged).not.toMatch(/[a-z0-9] Source: NISRA/);
+    expect(merged.match(/Contains OS data © Crown copyright and database right 2025\./g)).toHaveLength(1);
+  });
+
+  it("keeps sentence order and ignores empty credits", () => {
+    expect(mergeAttributions(["A one. B two.", "B two. C three.", undefined, ""])).toBe(
+      "A one. B two. C three.",
+    );
+    // A credit ending without a full stop still reads as a sentence before the next one.
+    expect(mergeAttributions(["A one. B two", "B two. C three"])).toBe("A one. B two. C three.");
+    expect(mergeAttributions([])).toBe("");
+    // "v.3.0" is not a sentence end.
+    expect(mergeAttributions(["Licence v.3.0. Next."])).toBe("Licence v.3.0. Next.");
   });
 });

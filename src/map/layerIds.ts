@@ -28,6 +28,8 @@ export const CONTEXT_COUNCILS_DATASET_ID = "context.council_context";
 export const CONTEXT_PRODUCTION_DATASET_ID = "context.uk_production";
 /** Risk Explorer (Stage 6): logistics layers and the `risk` family datasets. */
 export const RISK_PORTS_LAYER_ID = "risk-ports";
+/** Draws nothing: carries the ports' data credit into the map attribution (GraphicsLayers cannot). */
+export const RISK_PORTS_CREDIT_LAYER_ID = "risk-ports-credit";
 export const RISK_ROADS_LAYER_ID = "risk-roads";
 export const RISK_RAIL_LAYER_ID = "risk-rail";
 export const RISK_ROADS_NI_LAYER_ID = "risk-roads-ni";
