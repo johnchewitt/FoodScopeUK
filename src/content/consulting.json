@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "status": {
+    "approval": "draft-for-approval",
+    "note": "Generic capability descriptions drafted for Stage 8 (CI-01, CI-04). They describe the kinds of work this demonstrator illustrates, not ConsultingWhere's clients, projects, staff or credentials. Awaiting ConsultingWhere approval (open decision D7)."
+  },
+  "about": {
+    "title": "About ConsultingWhere",
+    "paragraphs": [
+      "ConsultingWhere is a geospatial consultancy. FOODSCOPE UK is a demonstrator of how location intelligence can support decisions about food security: it brings official UK statistics and open geospatial data together on one map, keeps every figure traceable to its source, and shows where the evidence is strong and where it runs out.",
+      "The services described here are generic capability statements. They outline the challenges spatial analysis can help with, a typical approach and the kind of deliverables that could follow. Any engagement would be scoped with the organisation concerned, using its own data, priorities and governance."
+    ],
+    "principles": [
+      "Evidence first: every figure carries its source, period, coverage and method.",
+      "Transparent methods: formulas and assumptions are written down and reproducible.",
+      "Honest uncertainty: gaps, suppressed data and comparability limits are shown, not filled in.",
+      "Decision support, not prediction: scenarios estimate exposure under stated assumptions."
+    ]
+  },
+  "services": [
+    {
+      "id": "food-security-strategy",
+      "title": "Food Security Geospatial Strategy",
+      "strapline": "A shared, evidence-based picture of where food security risks sit and what to do first.",
+      "challenges": [
+        "Food security evidence is spread across departments, statistical releases and geographies that do not line up.",
+        "Strategies need to show how national supply, logistics and local access connect, without merging them into one opaque score.",
+        "Priorities are hard to defend when the underlying data, its dates and its limits are not visible."
+      ],
+      "approach": [
+        "Map the decisions the strategy must support and the questions each stakeholder asks.",
+        "Inventory the available evidence, its licences, update cycles and geographic units.",
+        "Design an indicator framework that keeps supply, logistics and access separate and comparable within each.",
+        "Agree a road map for data, analysis and monitoring, with quick wins and longer-term investments."
+      ],
+      "deliverables": [
+        "Evidence and data inventory with gaps and licensing noted",
+        "Indicator framework and methodology note",
+        "Strategy road map and governance proposal",
+        "Executive briefing pack with maps"
+      ],
+      "value": [
+        "A defensible, transparent basis for food security priorities.",
+        "Clear sight of which data investments would most improve decisions."
+      ],
+      "stakeholders": [
+        "Strategy and policy leads",
+        "Analytical and statistical teams",
+        "Emergency planning and resilience officers"
+      ],
+      "modules": ["origins", "risks", "profiles", "insights"]
+    },
+    {
+      "id": "resilience-assessment",
+      "title": "National and Regional Resilience Assessment",
+      "strapline": "Where supply, transport and community vulnerabilities coincide, assessed at the right geographic scale.",
+      "challenges": [
+        "Resilience depends on national sourcing, transport corridors and local circumstances that are usually assessed separately.",
+        "Comparisons between nations and regions are easily distorted by different statistics, years and classifications.",
+        "Assessments must say what is known, what is estimated and what is not measured at all."
+      ],
+      "approach": [
+        "Assemble national, regional and local indicators with their provenance and comparability rules.",
+        "Analyse each dimension separately: supply concentration, logistics dependencies and community access.",
+        "Identify places and commodities where several dimensions point the same way, and explain why.",
+        "Set out uncertainties and the additional evidence needed to firm up findings."
+      ],
+      "deliverables": [
+        "Resilience assessment report with maps by dimension",
+        "Comparability notes for each nation and statistical year",
+        "Priority areas for further investigation, with the evidence behind each",
+        "Recommendations for monitoring and data improvement"
+      ],
+      "value": [
+        "Focuses attention on the places and supply routes where evidence of vulnerability is strongest.",
+        "Avoids misleading comparisons across nations and data series."
+      ],
+      "stakeholders": [
+        "National and devolved government resilience teams",
+        "Local resilience forums",
+        "Regional and combined authority strategy teams"
+      ],
+      "modules": ["risks", "profiles", "origins", "insights"]
+    },
+    {
+      "id": "retail-accessibility",
+      "title": "Food Retail Accessibility Mapping",
+      "strapline": "Who can reach food retail easily, and who is likely to struggle.",
+      "challenges": [
+        "Straight-line proximity to stores is a starting point, but walking, public transport and opening hours decide real access.",
+        "Households without a car, older residents and areas of deprivation are often furthest from larger stores.",
+        "Retail networks change: closures and openings shift access in ways that are rarely monitored."
+      ],
+      "approach": [
+        "Combine store locations with small-area population, car availability and deprivation indicators.",
+        "Measure access by street network and public transport where timetables and network data are available.",
+        "Analyse retailer composition and network concentration, by store counts and, where available, floorspace.",
+        "Identify neighbourhoods for further investigation and test the effect of network changes."
+      ],
+      "deliverables": [
+        "Accessibility maps by mode and population group",
+        "Retail network and concentration analysis",
+        "Neighbourhood evidence summaries for further investigation",
+        "Method note and reusable data model"
+      ],
+      "value": [
+        "Targets interventions such as transport links, delivery services or community food provision.",
+        "Gives councils a repeatable way to monitor access as the retail network changes."
+      ],
+      "stakeholders": [
+        "Public health teams",
+        "Planning and economic development officers",
+        "Transport planners",
+        "Community and voluntary sector partners"
+      ],
+      "modules": ["access", "profiles", "scenarios", "insights"]
+    },
+    {
+      "id": "supply-chain-risk",
+      "title": "Supply Chain Geographic Risk Analysis",
+      "strapline": "How concentrated the UK's recorded sourcing is, and where that concentration matters.",
+      "challenges": [
+        "Recorded imports of some foods depend heavily on a few partner countries or on particular months.",
+        "Trade statistics record the country of dispatch, not necessarily where food was grown, and need careful interpretation.",
+        "Concentration, seasonality and climate exposure interact, but are often analysed in isolation."
+      ],
+      "approach": [
+        "Analyse recorded partners, seasonal sourcing and concentration over time from official trade statistics.",
+        "Add partners' climate and water-stress context and, where available, origin-of-production evidence.",
+        "Test hypothetical disruptions as transparent exposure calculations, never as forecasts.",
+        "Identify the data that would close the remaining gaps, such as port-level or company data."
+      ],
+      "deliverables": [
+        "Commodity risk profiles with maps and seasonal charts",
+        "Concentration and exposure indicators with method notes",
+        "Disruption scenarios with stated assumptions",
+        "Monitoring indicators for ongoing review"
+      ],
+      "value": [
+        "Shows which commodities and months carry the most concentrated sourcing.",
+        "Supports proportionate contingency planning with traceable evidence."
+      ],
+      "stakeholders": [
+        "Food policy and trade analysts",
+        "Supply chain and procurement teams",
+        "Resilience and contingency planners"
+      ],
+      "modules": ["origins", "seasonal", "risks", "scenarios", "insights"]
+    },
+    {
+      "id": "climate-agriculture",
+      "title": "Climate and Agricultural Resilience",
+      "strapline": "How climate pressures on growing regions, at home and abroad, could affect food supply.",
+      "challenges": [
+        "Domestic production and overseas sourcing are exposed to drought, heat and flooding in different ways.",
+        "National climate indicators say little about where a specific crop is grown.",
+        "Agricultural statistics are often annual and regional, limiting what can be said about timing and place."
+      ],
+      "approach": [
+        "Relate domestic production, land use and farming regions to climate and hydrological datasets.",
+        "Assess partner countries' water and climate context alongside recorded import shares.",
+        "Model production shocks on published supply balances with transparent assumptions.",
+        "Specify finer-grained data, such as crop-specific growing areas, where decisions require it."
+      ],
+      "deliverables": [
+        "Climate exposure maps for domestic and partner production",
+        "Production shock scenarios on published balances",
+        "Data and method road map for crop-level analysis"
+      ],
+      "value": [
+        "Connects climate evidence with food supply planning.",
+        "Highlights where better agricultural and climate data would change conclusions."
+      ],
+      "stakeholders": [
+        "Agriculture and rural affairs policy teams",
+        "Environmental and climate adaptation teams",
+        "Food and farming industry bodies"
+      ],
+      "modules": ["risks", "scenarios", "origins", "insights"]
+    },
+    {
+      "id": "critical-infrastructure",
+      "title": "Critical Food Infrastructure Mapping",
+      "strapline": "The ports, corridors and facilities food depends on, and the dependencies between them.",
+      "challenges": [
+        "Freight statistics describe tonnage by port, but rarely what food passes through each one.",
+        "Dependencies on ports, crossings and road corridors are known qualitatively but seldom mapped together.",
+        "Distribution centres and other facilities are often missing from open data."
+      ],
+      "approach": [
+        "Map ports, road and rail corridors and other logistics assets from official and open sources.",
+        "Combine published port-of-entry and freight evidence, keeping all-cargo and food-specific figures apart.",
+        "Test capacity disruptions transparently and identify chokepoints for further study.",
+        "Define data-sharing needs with operators and partners to fill gaps."
+      ],
+      "deliverables": [
+        "Infrastructure dependency maps",
+        "Port and corridor evidence summaries with caveats",
+        "Disruption scenarios and chokepoint register",
+        "Data-sharing requirements"
+      ],
+      "value": [
+        "A clearer, shared view of logistics dependencies for contingency planning.",
+        "Prioritises where operator data would most improve understanding."
+      ],
+      "stakeholders": [
+        "Transport and ports policy teams",
+        "Local resilience forums",
+        "Logistics operators and port authorities"
+      ],
+      "modules": ["risks", "scenarios", "insights"]
+    },
+    {
+      "id": "digital-twins-dashboards",
+      "title": "Digital Twins and Operational Dashboards",
+      "strapline": "Live, map-centred views of the indicators that matter, built to be trusted and maintained.",
+      "challenges": [
+        "Decision makers need current, consistent indicators rather than one-off analyses.",
+        "Dashboards lose trust when sources, dates and definitions are not visible.",
+        "Operational views must work for different roles, devices and accessibility needs."
+      ],
+      "approach": [
+        "Define the users, decisions and refresh cycles the dashboard must support.",
+        "Build on governed data pipelines with provenance carried through to every figure.",
+        "Design map-centred interfaces with accessible charts, clear states and reproducible links.",
+        "Plan hosting, security and handover so the service can be maintained."
+      ],
+      "deliverables": [
+        "Dashboard or digital twin prototype",
+        "Data pipeline and refresh documentation",
+        "Accessibility and security review",
+        "Handover and maintenance guide"
+      ],
+      "value": [
+        "Moves from occasional reports to continuous, trusted monitoring.",
+        "Makes evidence reusable across teams and partners."
+      ],
+      "stakeholders": [
+        "Operational and resilience teams",
+        "Digital and data teams",
+        "Senior leaders who need concise, current evidence"
+      ],
+      "modules": ["origins", "access", "risks", "insights"]
+    },
+    {
+      "id": "data-integration",
+      "title": "Geospatial Data Integration and Automation",
+      "strapline": "Reliable pipelines that bring statistics and geography together, with provenance kept intact.",
+      "challenges": [
+        "Official statistics arrive in different formats, geographies and release cycles.",
+        "Manual updates are slow and error-prone, and break the link between figures and their sources.",
+        "Boundary changes and classification breaks make time series hard to compare."
+      ],
+      "approach": [
+        "Design reproducible pipelines that record source, retrieval date, checksum and licence for every input.",
+        "Harmonise geographies and classifications, recording every change and break explicitly.",
+        "Automate validation against schemas and published totals.",
+        "Document data governance, licensing and attribution."
+      ],
+      "deliverables": [
+        "Automated data pipelines with validation reports",
+        "Data catalogue and governance notes",
+        "Harmonised geographic reference data",
+        "Refresh and maintenance runbook"
+      ],
+      "value": [
+        "Faster, safer updates with an audit trail from source to figure.",
+        "A foundation that other analyses and dashboards can reuse."
+      ],
+      "stakeholders": [
+        "Data engineering and GIS teams",
+        "Information governance leads",
+        "Statistical producers and users"
+      ],
+      "modules": ["origins", "access", "profiles", "risks", "insights"]
+    },
+    {
+      "id": "scenario-modelling",
+      "title": "Scenario Modelling and Spatial Decision Support",
+      "strapline": "Transparent what-if analysis that shows exposure under stated assumptions.",
+      "challenges": [
+        "Planners need to explore disruptions and interventions before they happen.",
+        "Models that hide their assumptions or present estimates as predictions undermine trust.",
+        "Results must be comparable, reproducible and easy to explain."
+      ],
+      "approach": [
+        "Agree the questions, scenarios and assumptions with the people who will use the results.",
+        "Build calculations on published baselines, with every formula and assumption documented.",
+        "Show results on maps and charts with baseline, scenario and uncertainty side by side.",
+        "Test sensitivity to key assumptions and record what the model does not include."
+      ],
+      "deliverables": [
+        "Scenario models with documented methods",
+        "Interactive scenario tool or report",
+        "Sensitivity analysis",
+        "Decision-support briefing"
+      ],
+      "value": [
+        "Structured exploration of risks and options before decisions are taken.",
+        "Results that can be reproduced, compared and challenged."
+      ],
+      "stakeholders": [
+        "Resilience and emergency planners",
+        "Policy and strategy teams",
+        "Analysts supporting investment decisions"
+      ],
+      "modules": ["scenarios", "risks", "access", "insights"]
+    }
+  ]
+}
