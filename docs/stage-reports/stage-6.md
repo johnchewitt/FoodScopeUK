@@ -23,7 +23,7 @@ A new module, **UK Food Resilience — Risk Explorer** ("Risks" in the rail), wi
 
 **Northern Ireland transport (John's links, 25 Oct 2026):**
 - **Railway lines.** Translink's NIR railway network (OpenDataNI, OGL, 2015) was fetched on GitHub Actions and built into `risk/rail.geojson` on the data branch: 10 route lines, about 334 km, with 24 sidings left out. It is drawn as dashed violet lines, validated against every other logistics colour, with a switch (`rl`) and a legend entry.
-- **Roads.** DfI's *Highway Network* has no geometry in its open files, and its map service needs credentials. OSNI's Hub download of the 50K transport lines answered HTTP 400. Northern Ireland's roads therefore stay "Not available", and a file has been requested from John (B44).
+- **Roads.** DfI's *Highway Network* has no geometry in its open files, and its map service needs credentials. OSNI's Hub download of the 50K transport lines answered HTTP 400. Northern Ireland's roads therefore stayed "Not available", and a file was requested from John (B44). He sent an OpenStreetMap extract on 26 Oct 2026 (see the addendum).
 
 **Also in this stage:**
 - **Semantic colour.** A warm risk ramp for vulnerability measures (concentration, water stress, exposure, priority places), with dark and light basemap sets. Teal stays for volumes and shares.
@@ -170,5 +170,26 @@ One possible issue was not fixed: the supply view leaves its water-stress trade 
 ## Open questions for John
 
 1. **RK-05 weights.** No indicators within a view yet share a unit and direction, so no weighting is built. Do you want a weighted view in Release 2 (e.g. combining concentration and water-stress exposure within the supply view, with sensitivity analysis), or should RK-05 be dropped?
-2. **Northern Ireland roads.** OSNI's service refused the pipeline three times. Could you download the OSNI 1:50,000 transport file by hand, to add it like the other provided files (B44)?
+2. ~~**Northern Ireland roads.**~~ Answered 26 Oct 2026: OpenStreetMap, labelled (addendum).
 3. **Port-level food evidence.** Only UKFSR's shares are food-specific. Should HMRC's port allocation (S28) be investigated for Release 2 (gate G13), or is the UKFSR evidence enough for the demonstrator?
+
+## Addendum, 26 October 2026: merge, and Northern Ireland's roads
+
+**Merge.** The data step merged as PR #15. PR #16 (the module) was stacked on the data branch and merged into it after #15 had already merged, so the module first reached main through **PR #17** (`data/stage-6-inputs` → main). It deployed on 26 Oct 2026 at 08:11 (Deploy workflow for `cd52d8b`). Lesson: check a stacked pull request's base, and that the one below has merged, before asking for a merge.
+
+**Northern Ireland road corridors (B44, gate G16).** The file John sent is an OpenStreetMap extract (Geofabrik roads layer: 251 motorway, 4,016 primary and 6,231 secondary lines, WGS84), not OSNI's 50K layer. John chose to use it, labelled as OpenStreetMap and as not official data, with motorways and primary roads only (S38). On branch `data/ni-roads-osm`:
+- **Pipeline:** `build-risk` writes `risk/roads-ni.geojson`: 57 roads (8 motorway groups, 49 primary), merged by road number and simplified at 60 m in ITM, under the ODbL. An independent `.dbf` read gives the same classes and road numbers. 5.2 of 1,357 km lies outside the clipped council outlines (coastal A2 and M5, 0.25 km of the N54).
+- **Provided file repacked:** the ZIP's `.shp.xml` recorded file paths on John's computer, so it and the Esri spatial indexes were left out; the five data files are byte-identical (checksums in `index.json`).
+- **App:** a separate layer `risk-roads-ni` with GB's symbols under the roads switch, credited "© OpenStreetMap contributors (ODbL)". The legend, controls, Evidence page, Insights and explanation say it is community-mapped and that its classes compare only approximately with GB's. The "Not available" entry is gone.
+- **Tests added:** pipeline `test_ni_roads_are_osm_motorways_and_primary_roads`; model and component assertions; the risks E2E checks the layer follows the roads switch.
+
+| Command (sandbox, 26 Oct 2026) | Result |
+|---|---|
+| `npm run typecheck`; `npm run lint`; `npm run format`; `npm run check:banned` | 0 errors; 0 warnings; all formatted; OK |
+| `npm test` | **498 passed** |
+| `cd pipeline && uv run pytest` | **197 passed** |
+| `VITE_ARCGIS_ASSETS=local npm run build`; `npm run build:e2e-basemap` | Production build succeeds; basemap build in the E2E run |
+| `npm run e2e` | Running at the time of this commit; result in the pull request |
+| Screenshot, logistics view at Belfast | NI roads and railway lines drawn; `data-risk-roads-ni="on"` |
+
+Not verified: the extract's exact OpenStreetMap date (John: downloaded in 2026); the live site (B48).
