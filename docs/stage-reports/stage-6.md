@@ -6,7 +6,7 @@
 | **Date** | 25 October 2026 |
 | **Scope** | John's Stage 6 brief and decisions (25 Oct 2026); roadmap §8; spec §5.6 RK-01 – RK-04 and RK-06 – RK-08. RK-05 (user weights and sensitivity) is deferred to Release 2. Stage 7 not started. |
 | **Data** | Each family from its newest snapshot (ADR-0021): trade **2026-10-23** (HMRC, five baskets); risk and context **2026-10-25**; local **2026-10-24** (council boundaries). No new downloads in this stage: the `risk` family was fetched on GitHub Actions and built offline in the data step. |
-| **Result** | All checks pass in the sandbox (below). The figures shown match independent computations from the raw files. Not yet done: CI on the pull request, review, merge, and the live checks with a real GPU and the Esri basemap. |
+| **Result** | All checks pass in the sandbox (below), and CI passes on PR #16 and on the data PR #15 (web app and data pipeline jobs). The figures shown match independent computations from the raw files. Not yet done: review, merge, and the live checks with a real GPU and the Esri basemap. |
 
 ## What was built
 
