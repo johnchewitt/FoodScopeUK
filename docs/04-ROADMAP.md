@@ -20,7 +20,7 @@
 | **5** | **Local Authority Profiles** ✅ merged (PR #14) and deployed | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
 | **6** | **UK Food Resilience — Risk Explorer** (supply exposure, logistics, community access) ✅ merged (PRs #15 and #17) and deployed; live checks to do | R1 | 2, 3, 5, G6, G14–G18 | Tomatoes: concentration, partners' water stress and an estimated exposure to one supplier; ports and road corridors; councils' priority places within each nation — each with "Explain this risk" |
 | **7** | **Scenario Lab** (import disruption, store closure; port and production shocks as far as the data allows) ✅ merged (PRs #21 and #23) and deployed; live checks to do | R1 | 3, 5, 6, G19 | Spanish tomato preset; close a supermarket anywhere in the UK and see the nearest-store change for every small area |
-| 8 | ConsultingWhere Insights + PDF export — built on `stage/8-consulting-insights` (pushed 27 Oct 2026); logo supplied (D3), copy awaits approval (D7) | R1 | 5, 6, 7, D3, D7 | One-click assessment PDF that matches the screen, for a council, a commodity or a scenario |
+| 8 | ConsultingWhere Insights + PDF export — built on `stage/8-consulting-insights`, PR #24 (27 Oct 2026); logo supplied (D3), copy awaits approval (D7) | R1 | 5, 6, 7, D3, D7 | One-click assessment PDF that matches the screen, for a council, a commodity or a scenario |
 | 9 | Hardening and Release 1 | R1 | 1–8 | Release 1 tagged and deployed; acceptance criteria evidenced |
 | 10 | Release 2 | R2 | 9 | National access layers, Scenarios B/C, Ask FOODSCOPE, 3D globe |
 | 11 | Release 3 | R3 | 10 | Network travel times, secure LLM assistant, AGOL publishing |
