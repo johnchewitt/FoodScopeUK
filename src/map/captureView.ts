@@ -6,15 +6,22 @@
  */
 import { xyToLngLat } from "@arcgis/core/geometry/support/webMercatorUtils";
 import type MapView from "@arcgis/core/views/MapView";
+import { BASEMAP_NAMES } from "@/services/arcgis/basemapStyles";
+import { MAP_STYLES, type MapStyle } from "@/styles/palette";
 import { MapCaptureError, type MapCapture, type MapCapturer } from "./capture";
 
 /** Longest side of a captured image, in pixels (about 250 dpi across an A4 page). */
 const MAX_SIDE = 2000;
 
-/** The Esri basemap style the map draws, or null without one (offline outline map). */
-function basemapStyleOf(view: MapView): string | null {
-  const basemap = view.map?.basemap as { style?: { id?: string } | null } | null | undefined;
-  return basemap?.style?.id ?? null;
+/**
+ * The name of the Esri basemap the map draws, or null without one (offline outline map). The
+ * basemap controller marks the style it loaded on the view's container (`data-basemap-style`).
+ */
+function basemapNameOf(view: MapView): string | null {
+  const style = (view.container as HTMLElement | null)?.dataset.basemapStyle;
+  if (style && (MAP_STYLES as readonly string[]).includes(style)) return BASEMAP_NAMES[style as MapStyle];
+  const basemap = view.map?.basemap as { title?: string | null } | null | undefined;
+  return basemap ? (basemap.title ?? "Esri basemap") : null;
 }
 
 /** `basemapHealthy` says whether the basemap loaded (a failed basemap draws no tiles). */
@@ -49,7 +56,7 @@ export function createViewCapturer(view: MapView, basemapHealthy: () => boolean)
       extent: [w, s, e, n],
       zoom: view.zoom,
       scale: view.scale,
-      basemap: basemapHealthy() ? basemapStyleOf(view) : null,
+      basemap: basemapHealthy() ? basemapNameOf(view) : null,
       attribution: credits ? `${credits} | Powered by Esri` : "Powered by Esri",
       capturedAt: new Date().toISOString(),
     };

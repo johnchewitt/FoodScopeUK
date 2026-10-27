@@ -3,7 +3,7 @@ import type { ModuleId } from "@/app/modules";
 import { type Breakpoint } from "@/map/layoutMetrics";
 import { BASEMAP_STATUS_ID } from "@/map/layerIds";
 import { STORE_LAYERS, type StoreLayer } from "@/analysis/retail";
-import type { MapStyle } from "@/styles/palette";
+import { DETAILED_STYLES, type MapStyle } from "@/styles/palette";
 import {
   cleanCompare,
   DEFAULT_URL_STATE,
@@ -839,36 +839,55 @@ export function selectUrlState(s: AppState): UrlState {
 }
 
 /**
- * Local scale (SH-08, SM-02): from this zoom level (about 1:144,000) stores are drawn individually,
- * councils as outlines, and imagery is offered. Below it stores are clustered and councils shaded.
+ * Local scale (SH-08, SM-02): from this zoom level (about 1:144,000) stores are drawn individually
+ * and councils as outlines. Below it stores are clustered and councils shaded.
  */
 export const LOCAL_ZOOM = 12;
-
-/** Modules that work at local scale, where the imagery basemap is offered (SH-08). */
-export const IMAGERY_MODULES: readonly ModuleId[] = ["access", "profiles", "scenarios"];
 
 /** True when the map is at local scale (stationary zoom ≥ LOCAL_ZOOM, with a small tolerance). */
 export function selectLocalScale(s: Pick<AppState, "mapView">): boolean {
   return (s.mapView?.zoom ?? 0) >= LOCAL_ZOOM - 0.01;
 }
 
-/** True when imagery can be shown: a local-scale module, zoomed in to local scale. */
-export function selectImageryAvailable(
-  s: Pick<AppState, "module" | "mapView"> & Partial<Pick<AppState, "insightsKind">>,
-): boolean {
-  return IMAGERY_MODULES.includes(selectMapModule(s)) && selectLocalScale(s);
+type ShadingState = Pick<
+  AppState,
+  "module" | "riskView" | "scenarioKind" | "mapView" | "councilLayer" | "farmLayer" | "profileMap"
+> &
+  Partial<Pick<AppState, "insightsKind">>;
+
+/**
+ * True when the map shades areas (filled polygons carrying data): the trade map's partner
+ * countries, the Risk Explorer's councils and shaded farming regions, UK Food Access councils
+ * below local scale, and a deep profile's small areas. Everywhere else it draws only lines and
+ * points (roads, rail, ports, stores, outlines, closure circles), where the detailed basemaps are
+ * offered (John, 27 Oct 2026). This mirrors what the layer controllers draw; the tests check the
+ * two together.
+ */
+export function selectMapShadesAreas(s: ShadingState): boolean {
+  if (selectTradeMapModule(s)) return true;
+  const module = selectMapModule(s);
+  if (module === "risks") return s.riskView === "access" || s.farmLayer !== "off";
+  if (module === "access") return !selectLocalScale(s) && s.councilLayer !== "off";
+  if (module === "profiles") return Boolean(s.profileMap?.areas.length);
+  return false;
+}
+
+/** True when a style can be shown in the current view: the detailed styles only where no areas are shaded. */
+export function selectStyleOffered(s: ShadingState, style: MapStyle): boolean {
+  return !DETAILED_STYLES.includes(style) || !selectMapShadesAreas(s);
 }
 
 /**
- * The basemap style to load: the visitor's choice, except that imagery falls back to dark grey
- * outside local scale (it stays the choice and returns when they zoom in). Dark grey without a key.
+ * The basemap style to load: the visitor's choice, except that a detailed style (Terrain,
+ * Topographic, National Geographic, OpenStreetMap) falls back to light grey while the map shades
+ * areas; it stays the choice and returns where the map draws only lines and points. Imagery and
+ * the other styles are offered everywhere. Dark grey without a key.
  */
 export function selectRequestedMapStyle(
-  s: Pick<AppState, "basemap" | "basemapChoice" | "module" | "mapView">,
+  s: ShadingState & Pick<AppState, "basemap" | "basemapChoice">,
 ): MapStyle {
   if (!s.basemapChoice) return "dark";
-  if (s.basemap === "imagery") return selectImageryAvailable(s) ? "imagery" : "dark";
-  return s.basemap;
+  return selectStyleOffered(s, s.basemap) ? s.basemap : "light";
 }
 
 /**
@@ -876,7 +895,7 @@ export function selectRequestedMapStyle(
  * dark grey (the offline outline map's colours) when there is no key or the basemap failed.
  */
 export function selectMapColourStyle(
-  s: Pick<AppState, "basemap" | "basemapChoice" | "module" | "mapView" | "layerStatus">,
+  s: ShadingState & Pick<AppState, "basemap" | "basemapChoice" | "layerStatus">,
 ): MapStyle {
   if (s.layerStatus[BASEMAP_STATUS_ID]?.status === "error") return "dark";
   return selectRequestedMapStyle(s);

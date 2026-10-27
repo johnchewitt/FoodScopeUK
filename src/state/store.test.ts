@@ -3,7 +3,7 @@ import {
   LOCAL_ZOOM,
   openExportFor,
   resetAppStore,
-  selectImageryAvailable,
+  selectMapShadesAreas,
   selectLocalScale,
   selectMapColourStyle,
   selectMapModule,
@@ -12,6 +12,7 @@ import {
   selectTradeMapModule,
   selectUrlState,
   useAppStore,
+  type AppState,
 } from "./store";
 
 const s = () => useAppStore.getState();
@@ -204,16 +205,63 @@ describe("basemap choice (SH-08)", () => {
     expect(selectMapColourStyle(useAppStore.getState())).toBe("dark");
   });
 
-  it("offers imagery only at local scale in the local modules, keeping the choice", () => {
-    useAppStore.setState({ basemapChoice: true, basemap: "imagery", module: "access", mapView: at(9) });
-    expect(selectImageryAvailable(useAppStore.getState())).toBe(false);
-    expect(selectRequestedMapStyle(useAppStore.getState())).toBe("dark");
+  it("offers imagery and Human Geography at every scale, in every module", () => {
+    for (const basemap of ["imagery", "human", "human-dark"] as const) {
+      useAppStore.setState({ basemapChoice: true, basemap, module: "origins", mapView: at(3) });
+      expect(selectRequestedMapStyle(useAppStore.getState())).toBe(basemap);
+      useAppStore.setState({ module: "access", mapView: at(LOCAL_ZOOM + 1) });
+      expect(selectRequestedMapStyle(useAppStore.getState())).toBe(basemap);
+    }
+  });
+
+  it("offers the detailed styles only where the map draws lines and points, keeping the choice", () => {
+    useAppStore.setState({ basemapChoice: true, basemap: "terrain", module: "access", mapView: at(9) });
+    // UK Food Access shades councils below local scale: light grey stands in.
+    expect(selectMapShadesAreas(useAppStore.getState())).toBe(true);
+    expect(selectRequestedMapStyle(useAppStore.getState())).toBe("light");
     useAppStore.getState().setMapView(at(LOCAL_ZOOM));
     expect(selectLocalScale(useAppStore.getState())).toBe(true);
-    expect(selectRequestedMapStyle(useAppStore.getState())).toBe("imagery");
+    expect(selectRequestedMapStyle(useAppStore.getState())).toBe("terrain");
     useAppStore.getState().setModule("origins");
-    expect(selectRequestedMapStyle(useAppStore.getState())).toBe("dark");
-    expect(useAppStore.getState().basemap).toBe("imagery");
+    expect(selectRequestedMapStyle(useAppStore.getState())).toBe("light");
+    expect(useAppStore.getState().basemap).toBe("terrain");
+  });
+
+  it("knows which views shade areas (the layer controllers' rules)", () => {
+    type Shading = Parameters<typeof selectMapShadesAreas>[0];
+    const base: Shading = {
+      module: "origins",
+      riskView: "supply",
+      scenarioKind: "import",
+      mapView: at(6),
+      councilLayer: "supermarkets",
+      farmLayer: "off",
+      profileMap: null,
+    };
+    const shades = (s: Partial<Shading>) => selectMapShadesAreas({ ...base, ...s });
+    // Trade maps: Food Origins, Seasonal, Risk Explorer supply, Scenario A, commodity assessments.
+    expect(shades({})).toBe(true);
+    expect(shades({ module: "seasonal" })).toBe(true);
+    expect(shades({ module: "risks", riskView: "supply" })).toBe(true);
+    expect(shades({ module: "scenarios", scenarioKind: "import" })).toBe(true);
+    expect(shades({ module: "insights", insightsKind: "commodity" })).toBe(true);
+    // Risk Explorer: councils shaded in the community view; farming regions only with a measure.
+    expect(shades({ module: "risks", riskView: "access" })).toBe(true);
+    expect(shades({ module: "risks", riskView: "logistics" })).toBe(false);
+    expect(shades({ module: "risks", riskView: "logistics", farmLayer: "wheat" })).toBe(true);
+    // UK Food Access: councils shaded below local scale unless the council layer is off.
+    expect(shades({ module: "access" })).toBe(true);
+    expect(shades({ module: "access", councilLayer: "off" })).toBe(false);
+    expect(shades({ module: "access", mapView: at(LOCAL_ZOOM) })).toBe(false);
+    // Profiles: outlines, unless a deep profile's small areas are drawn.
+    expect(shades({ module: "profiles" })).toBe(false);
+    const areas = { areas: [{ code: "A", rings: [] }] } as unknown as AppState["profileMap"];
+    expect(shades({ module: "profiles", profileMap: areas })).toBe(true);
+    expect(shades({ module: "insights", insightsKind: "authority", profileMap: areas })).toBe(true);
+    // Scenario Lab B, C and D: circles, lines, ports and outlines.
+    for (const scenarioKind of ["closure", "production", "port"] as const)
+      expect(shades({ module: "scenarios", scenarioKind })).toBe(false);
+    expect(shades({ module: "insights", insightsKind: "scenario", scenarioKind: "port" })).toBe(false);
   });
 
   it("uses the dark colour set while a basemap has failed", () => {
@@ -361,12 +409,6 @@ describe("Consulting Insights map (Stage 8, ADR-0027)", () => {
         insightsKind: "scenario",
       }),
     ).toBe(false);
-  });
-
-  it("offers imagery at local scale for council and scenario assessments", () => {
-    const local = { mapView: { zoom: LOCAL_ZOOM + 1, center: [0, 0] as [number, number] } };
-    expect(selectImageryAvailable({ ...local, module: "insights", insightsKind: "authority" })).toBe(true);
-    expect(selectImageryAvailable({ ...local, module: "insights", insightsKind: "commodity" })).toBe(false);
   });
 
   it("changes the assessment type and clears hovers", () => {

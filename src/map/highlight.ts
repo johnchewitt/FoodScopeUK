@@ -12,8 +12,9 @@ interface HighlightsCollection {
 }
 
 /**
- * Adds the hover highlight to the view once, and recolours it for the basemap style (a cyan halo
- * on dark grey and imagery, navy on light grey). Hover never rebuilds a renderer.
+ * Adds the hover highlight to the view once, and recolours it for the basemap style (`hover` in
+ * its colour set: a cyan halo on the dark maps, navy on the light ones). Hover never rebuilds a
+ * renderer.
  */
 export function ensureHoverHighlight(view: ViewLike, style: MapStyle): void {
   const highlights = (view as { highlights?: HighlightsCollection }).highlights;

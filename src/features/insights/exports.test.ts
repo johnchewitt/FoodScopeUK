@@ -135,11 +135,11 @@ describe("map image and checksum helpers", () => {
     const text = captureCaption({
       extent: [-2.32, 53.4, -2.15, 53.55],
       scale: 150_400,
-      basemap: "arcgis/dark-gray",
+      basemap: "Esri Human Geography",
       capturedAt: "2026-10-26T12:34:56.000Z",
     });
     expect(text).toBe(
-      "Map extent 53.40° N, 2.32° W to 53.55° N, 2.15° W; scale about 1:150,000 at the centre (Web Mercator); Esri basemap dark-gray; captured 2026-10-26 12:34 UTC.",
+      "Map extent 53.40° N, 2.32° W to 53.55° N, 2.15° W; scale about 1:150,000 at the centre (Web Mercator); basemap Esri Human Geography; captured 2026-10-26 12:34 UTC.",
     );
     expect(
       captureCaption({ extent: [0, 0, 1, 1], scale: 1, basemap: null, capturedAt: "2026-10-26T00:00" }),
@@ -147,7 +147,9 @@ describe("map image and checksum helpers", () => {
   });
 
   it("adds Esri's map image notice only when an Esri basemap is drawn", () => {
-    expect(esriImageNotice({ basemap: "arcgis/light-gray", capturedAt: "2026-10-26T12:00:00Z" })).toBe(
+    expect(
+      esriImageNotice({ basemap: "Esri National Geographic Style", capturedAt: "2026-10-26T12:00:00Z" }),
+    ).toBe(
       "Map image is the intellectual property of Esri and is used herein under license. Copyright © 2026 Esri and its licensors. All rights reserved.",
     );
     expect(esriImageNotice({ basemap: null, capturedAt: "2026-10-26T12:00:00Z" })).toBeNull();

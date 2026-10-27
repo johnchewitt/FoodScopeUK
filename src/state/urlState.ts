@@ -5,6 +5,7 @@ import {
   type ProvisionMeasure,
   type StoreLayer,
 } from "@/analysis/retail";
+import { MAP_STYLES, type MapStyle } from "@/styles/palette";
 
 /** Overlays that can be deep-linked (SH-06 Evidence page, Help, LP-07 council comparison). */
 export const OVERLAYS = ["none", "evidence", "help", "compare", "search"] as const;
@@ -19,9 +20,9 @@ export const HEATMAP_MODES = ["share", "amount", "change"] as const;
 export type HeatmapMode = (typeof HEATMAP_MODES)[number];
 /** Council layer in UK Food Access (SM-06): a provision measure, or off. */
 export type CouncilLayer = ProvisionMeasure | "off";
-/** Curated basemaps (SH-08). */
-export const BASEMAP_IDS = ["dark", "light", "imagery"] as const;
-export type BasemapId = (typeof BASEMAP_IDS)[number];
+/** Curated basemaps (SH-08): the map styles, whose ids are the URL values (`bm`). */
+export const BASEMAP_IDS = MAP_STYLES;
+export type BasemapId = MapStyle;
 /**
  * Small-area map measure in a deep profile (LP-04, LP-06): the Priority Places for Food Index
  * (combined, or one domain), deprivation within the nation, households without a car or van, or

@@ -103,17 +103,21 @@ describe("BasemapStatusController", () => {
     expect(created).toEqual(["light"]);
     expect(map.basemap).toBe(failing);
     await vi.waitFor(() => expect(report).toHaveBeenLastCalledWith("error", BASEMAP_FAILED_MESSAGE));
-    // Imagery is requested only at local scale in a local module; elsewhere it falls back to dark.
-    controller.update({ ...state, basemap: "imagery", module: "origins" });
-    expect(created).toEqual(["light", "dark"]);
+    // A detailed style waits for lines and points: on the trade map it falls back to light grey
+    // (already loaded, so nothing is created), and loads where councils are outlines.
+    controller.update({ ...state, basemap: "terrain", module: "origins" });
+    expect(created).toEqual(["light"]);
     controller.update({
       ...state,
-      basemap: "imagery",
+      basemap: "terrain",
       module: "access",
       mapView: { zoom: 13, center: [0, 52] },
     });
-    expect(created).toEqual(["light", "dark", "imagery"]);
+    expect(created).toEqual(["light", "terrain"]);
     await vi.waitFor(() => expect(report).toHaveBeenLastCalledWith("ready"));
+    // Imagery is offered at every scale.
+    controller.update({ ...state, basemap: "imagery", module: "origins" });
+    expect(created).toEqual(["light", "terrain", "imagery"]);
   });
 
   it("never swaps without a key", () => {

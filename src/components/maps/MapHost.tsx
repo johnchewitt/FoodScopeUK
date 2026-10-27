@@ -22,6 +22,7 @@ import { createBasemap } from "@/services/arcgis/basemap";
 import { readArcgisEnv } from "@/services/arcgis/env";
 import { detectWebGL2 } from "@/services/arcgis/webgl";
 import { datasetUrl, findDataset, useManifest } from "@/services/data/queries";
+import { MAP_STYLE_TONE } from "@/styles/palette";
 import {
   selectMapColourStyle,
   selectReducedMotion,
@@ -49,7 +50,7 @@ export default function MapHost() {
 
   const env = useMemo(() => readArcgisEnv(), []);
   const webgl = useMemo(() => detectWebGL2(), []);
-  // The first style comes from the URL (bm); imagery waits until the map is at local scale (SH-08).
+  // The first style comes from the URL (bm); a detailed style waits for a view without shaded areas (SH-08).
   const initialStyle = useMemo(
     () => selectRequestedMapStyle({ ...useAppStore.getState(), basemapChoice: env.apiKey !== null }),
     [env.apiKey],
@@ -212,7 +213,7 @@ export default function MapHost() {
           spatialReference={spatialReference}
           constraints={constraints}
           background={background}
-          attributionMode={colourStyle === "light" ? "light" : "dark"}
+          attributionMode={MAP_STYLE_TONE[colourStyle]}
           animationsDisabled={reducedMotion}
           popupDisabled
           onarcgisViewReadyChange={handleReadyChange}

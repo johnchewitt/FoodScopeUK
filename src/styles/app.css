@@ -2689,6 +2689,10 @@ li[data-hidden-at-scale] .grocer-symbol {
 .basemap-control {
   position: relative;
 }
+/* While the panel is open the controls sit above the Seasonal timeline (both are z-index 10). */
+.map-controls:has(.basemap-control__panel) {
+  z-index: 13;
+}
 .basemap-control__panel {
   position: absolute;
   z-index: 20;
@@ -2696,7 +2700,12 @@ li[data-hidden-at-scale] .grocer-symbol {
   right: calc(100% + 12px);
   display: grid;
   gap: 4px;
-  width: 232px;
+  width: 288px;
+  /* Nearly opaque: the long list can sit over the timeline or a legend. */
+  background: color-mix(in oklab, var(--fs-emerald) 97%, transparent);
+  /* Nine styles: the control sets max-height to the space below it; the panel scrolls within. */
+  max-height: min(72vh, 620px);
+  overflow-y: auto;
   margin: 0;
   padding: 10px;
   border: 0;
@@ -2715,7 +2724,7 @@ li[data-hidden-at-scale] .grocer-symbol {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px;
+  padding: 4px 6px;
   border-radius: var(--fs-radius-sm);
   font-size: var(--fs-text-sm);
   color: var(--fs-text);
@@ -2748,6 +2757,39 @@ li[data-hidden-at-scale] .grocer-symbol {
 }
 .basemap-option__swatch--imagery {
   background: var(--fs-basemap-swatch-imagery);
+}
+.basemap-option__swatch--human {
+  background: var(--fs-basemap-swatch-human);
+}
+.basemap-option__swatch--human-dark {
+  background: var(--fs-basemap-swatch-human-dark);
+}
+.basemap-option__swatch--terrain {
+  background: var(--fs-basemap-swatch-terrain);
+}
+.basemap-option__swatch--topographic {
+  background: var(--fs-basemap-swatch-topographic);
+}
+.basemap-option__swatch--natgeo {
+  background: var(--fs-basemap-swatch-natgeo);
+}
+.basemap-option__swatch--osm {
+  background: var(--fs-basemap-swatch-osm);
+}
+.basemap-control__group {
+  display: grid;
+  gap: 4px;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--fs-line);
+}
+.basemap-control__group-title {
+  margin: 0 0 2px;
+  font-size: var(--fs-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fs-text-muted);
 }
 .basemap-option__text {
   display: grid;

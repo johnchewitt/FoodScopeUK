@@ -375,3 +375,22 @@ describe("Consulting Insights URL state (CI-02, Stage 8)", () => {
     expect(historyModeFor(a, { ...a, insightsKind: "scenario" })).toBe("push");
   });
 });
+
+describe("basemap ids (SH-08, 27 Oct 2026)", () => {
+  it("reads every curated style from bm and writes it back", () => {
+    for (const bm of [
+      "dark",
+      "light",
+      "human",
+      "human-dark",
+      "imagery",
+      "terrain",
+      "topographic",
+      "natgeo",
+      "osm",
+    ])
+      expect(parseUrlState(`?bm=${bm}`).basemap).toBe(bm);
+    expect(parseUrlState("?bm=national-geographic").basemap).toBe("dark");
+    expect(serializeUrlState({ ...DEFAULT_URL_STATE, basemap: "natgeo" })).toContain("bm=natgeo");
+  });
+});

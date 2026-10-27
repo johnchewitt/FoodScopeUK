@@ -29,7 +29,7 @@ import {
   type MapCommand,
   type ProfileMapModel,
 } from "@/state/store";
-import { MAP_COLOURS, type MapColours, type MapStyle } from "@/styles/palette";
+import { haloBoost, MAP_COLOURS, type MapColours, type MapStyle } from "@/styles/palette";
 import { ensureHoverHighlight, HOVER_HIGHLIGHT } from "../highlight";
 import {
   ACCESS_COUNCILS_LAYER_ID,
@@ -121,11 +121,12 @@ function storeRenderer(style: MapStyle): UniqueValueRenderer {
       style: STORE_SHAPES[layer].style,
       size: STORE_SHAPES[layer].size,
       color: rgba(storeColour(c, layer)),
-      // On imagery the ground behind a symbol varies, so the outline is wider (validator: orange and
-      // violet fall below 3:1 against mid-grey roofs; the navy outline keeps every symbol's edge).
+      // On imagery and the detailed styles the ground behind a symbol varies, so the outline is
+      // wider (validator: orange and violet fall below 3:1 against mid-grey roofs and National
+      // Geographic's green parks; the outline keeps every symbol's edge).
       outline: {
         color: rgba(c.storeOutline, 0.95),
-        width: (layer === "supermarket" ? 1.25 : 1) + (style === "imagery" ? 0.6 : 0),
+        width: (layer === "supermarket" ? 1.25 : 1) + haloBoost(style),
       },
     });
   return new UniqueValueRenderer({
