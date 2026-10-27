@@ -20,6 +20,7 @@ import {
   LOCAL_ZOOM,
   selectLocalScale,
   selectMapColourStyle,
+  selectMapModule,
   selectReducedMotion,
   type AccessMapModel,
   type AppState,
@@ -372,12 +373,13 @@ export class AccessLayersController implements LayerController {
 
   update(state: AppState): void {
     const m = state.accessMap;
+    const module = selectMapModule(state);
     const visible =
       m !== null &&
-      ((state.module === "access" && m.mode === "access") ||
-        (state.module === "profiles" && m.mode === "profile") ||
-        (state.module === "risks" && state.riskView === "access" && m.mode === "risk") ||
-        (state.module === "scenarios" && state.scenarioKind === "closure" && m.mode === "scenario"));
+      ((module === "access" && m.mode === "access") ||
+        (module === "profiles" && m.mode === "profile") ||
+        (module === "risks" && state.riskView === "access" && m.mode === "risk") ||
+        (module === "scenarios" && state.scenarioKind === "closure" && m.mode === "scenario"));
     this.profile = visible && m?.mode === "profile";
     this.risk = visible && m?.mode === "risk";
     this.scenario = visible && m?.mode === "scenario";

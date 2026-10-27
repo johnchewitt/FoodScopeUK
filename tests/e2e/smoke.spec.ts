@@ -149,15 +149,17 @@ test.describe("Stage 1 shell", () => {
     await expect(page).toHaveURL(/mo=4/);
   });
 
-  test("modules without data show no numbers on KPI cards", async ({ page }) => {
-    // Consulting Insights (stage 8) is the last module without data since the Scenario Lab (stage 7).
+  test("KPI cards show no numbers until there is a subject", async ({ page }) => {
+    // Every module has data since Stage 8; ConsultingWhere Insights waits for a council first.
     await page.goto("./?m=insights");
     const cards = page.locator(".kpi-card");
-    await expect(cards).toHaveCount(2);
-    for (const text of await cards.allInnerTexts()) {
-      expect(text).toContain("No data loaded");
-      expect(text.replace(/stage \d+/i, "")).not.toMatch(/\d/);
-    }
+    await expect(cards).toHaveCount(4);
+    await expect(cards.first()).toContainText("Not selected", { timeout: 30_000 });
+    for (let i = 0; i < 4; i++) await expect(cards.nth(i)).toHaveAttribute("data-state", "empty");
+    // No figure is shown: no metric, and the empty text has no digits (the hidden full labels may, e.g. "mid-2025").
+    await expect(page.locator(".kpi-card .metric")).toHaveCount(0);
+    for (const text of await page.locator(".kpi-card .kpi-card__empty").allInnerTexts())
+      expect(text).not.toMatch(/\d/);
   });
 });
 

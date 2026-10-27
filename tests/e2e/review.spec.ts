@@ -315,7 +315,7 @@ test.describe("Data before the map", () => {
 });
 
 test.describe("Key figures are never hidden", () => {
-  test("at 1366 px all four cards exist and the strip scrolls to the hidden ones", async ({ page }) => {
+  test("at 1366 px the four cards fit beside both panels (B62, Stage 8)", async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 768 });
     await page.goto("./");
     await ready(page);
@@ -323,13 +323,26 @@ test.describe("Key figures are never hidden", () => {
     const hhi = page.getByRole("article", { name: "Partner concentration (HHI)" });
     await expect(page.locator(".kpi-card")).toHaveCount(4);
     await expect(hhi).toContainText("2,990");
+    await expect(strip).not.toHaveAttribute("data-overflow-end", "true");
+    const [c, panel] = await Promise.all([hhi.boundingBox(), page.locator("#insights-panel").boundingBox()]);
+    expect(c!.x + c!.width).toBeLessThanOrEqual(panel!.x); // not under the insights panel
+  });
+
+  test("at 1366 px a five-card strip scrolls to the hidden card with the keyboard", async ({ page }) => {
+    await page.setViewportSize({ width: 1366, height: 768 });
+    await page.goto("./?m=profiles&lad=E08000003");
+    await ready(page);
+    const strip = page.locator(".kpi-strip");
+    const last = page.locator(".kpi-card").nth(4);
+    await expect(page.locator(".kpi-card")).toHaveCount(5);
+    await expect(last).toContainText("%", { timeout: 60_000 });
     await expect(strip).toHaveAttribute("data-overflow-end", "true");
     await expect(strip).toHaveAttribute("tabindex", "0");
     await strip.focus();
     await page.keyboard.press("ArrowRight", { delay: 20 });
     for (let i = 0; i < 12; i++) await page.keyboard.press("ArrowRight");
     await expect(strip).toHaveAttribute("data-overflow-start", "true");
-    const [s, c] = await Promise.all([strip.boundingBox(), hhi.boundingBox()]);
+    const [s, c] = await Promise.all([strip.boundingBox(), last.boundingBox()]);
     expect(c!.x + c!.width).toBeLessThanOrEqual(s!.x + s!.width - 15); // fully inside (strip has 16 px padding)
   });
 

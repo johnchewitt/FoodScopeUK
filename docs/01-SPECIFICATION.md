@@ -275,8 +275,8 @@ Scenarios:
 
 ### 5.8 ConsultingWhere Insights (CI) — Release 1
 
-- **CI-01** Ten workstream definitions (brief §12) held as structured content (`content/workstreams.json`).
-- **CI-02** For the current selection (authority, commodity or scenario), generate an opportunity statement: challenge, available evidence (linked indicators), what spatial analysis could reveal, additional datasets needed, proposed tasks, potential deliverables, relevant stakeholders (by role, not named individuals), limitations and dependencies.
+- **CI-01** Ten workstream definitions (brief §12) held as structured content (`content/workstreams.json`). *Stage 8 (John's brief, 26 Oct 2026): nine services held in `src/content/consulting.json` (schema `consulting-content`), each with challenges, approach, deliverables, value and stakeholders; draft for approval (D7).*
+- **CI-02** For the current selection (authority, commodity or scenario; Stage 8 work packages, `docs/insights-methodology.md`), generate an opportunity statement: challenge, available evidence (linked indicators), what spatial analysis could reveal, additional datasets needed, proposed tasks, potential deliverables, relevant stakeholders (by role, not named individuals), limitations and dependencies.
 - **CI-03** Rules map evidence patterns to workstreams (e.g. high partner concentration → Supply Chain Geographic Risk Assessment). Rules are listed on the page ("Why am I seeing this?").
 - **CI-04** "About ConsultingWhere": generic capability description approved by ConsultingWhere. No staff qualifications, client names, project references or credentials unless supplied and approved (P14).
 - **CI-05** No statement that any organisation has a requirement, budget or procurement (P14).
@@ -298,7 +298,7 @@ Scenarios:
 
 **Export (EX)**
 
-- **EX-01** Profile PDF: ConsultingWhere branding (approved assets only), location map, key indicators with provenance classes, charts, food-access analysis, resilience challenges, recommendations, full sources and limitations, generation timestamp, data snapshot ID and the app URL that reproduces the view.
+- **EX-01** Profile PDF (Stage 8: one PDF template per assessment — local authority, commodity, scenario — from the report model, ADR-0027; ConsultingWhere's logo on the cover, D3): ConsultingWhere branding (approved assets only), location map, key indicators with provenance classes, charts, food-access analysis, resilience challenges, recommendations, full sources and limitations, generation timestamp, data snapshot ID and the app URL that reproduces the view.
 - **EX-02** Export is generated from the same in-memory profile model used for the screen; a checksum of that model is printed in the PDF footer and logged, so exported figures exactly match the screen (brief §9H).
 - **EX-03** A4 portrait, selectable text (not a page screenshot), embedded fonts, accessible reading order where the library allows.
 - **EX-04** Map image via the view's screenshot API; charts via ECharts image export.
@@ -548,9 +548,9 @@ Mapped from brief §19, with how each is verified.
 |---|---|---|
 | D1 | ~~GitHub repository owner/organisation and final Pages URL~~ **Resolved 23 Oct 2026**: repo `johnchewitt/FoodScopeUK`; Pages URL `https://johnchewitt.github.io/FoodScopeUK/`; Vite `base` `/FoodScopeUK/` | — |
 | D2 | ArcGIS API key: John creates API key credentials in ArcGIS Location Platform (steps in `docs/setup/arcgis-api-key.md`) and stores the key as the GitHub Actions secret `ARCGIS_API_KEY` | Stage 1 (fallback map until then) |
-| D3 | Brand assets and permission for "Powered by ConsultingWhere" and PDF branding | Stage 1 (placeholder) / Stage 8 (final) |
+| D3 | Brand assets and permission for "Powered by ConsultingWhere" and PDF branding. *27 Oct 2026: John supplied the logo. It heads the PDF cover, the full report and About, on a white plate (B71 done). The top bar keeps "Powered by ConsultingWhere" as text* | Stage 1 (placeholder) / Stage 8 (final) |
 | D4 | Retailer logos: use or not (default: no logos) | Stage 4 |
 | D5 | ~~Store class definition (which GEOLYTIX size bands/formats count as "supermarket")~~ **Resolved 24 Oct 2026** (John): class from `size_band` (convenience under 280 m²; supermarket 280 m² and over in three bands); forecourt, motorway, travel and hospital stores flagged as formats; default view supermarkets in the standard format; wholesale and mainly non-food stores left out; Crown Dependency stores shown with no council (S11, ADR-0020) | — |
 | D6 | Default straight-line thresholds (proposed 1 / 2 / 5 km) | Stage 5 |
-| D7 | "About ConsultingWhere" approved copy | Stage 8 |
+| D7 | "About ConsultingWhere" approved copy. *Stage 8: generic draft About text and nine service descriptions in `src/content/consulting.json` (review copy: `docs/consulting-services.md`), marked "draft for approval" on screen* | Stage 8 |
 | D8 | Whether to publish curated layers to a ConsultingWhere ArcGIS Online org (Release 3) | Release 3 |

@@ -1,6 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { TRADE_INDEX_ID } from "@/features/origins/useOrigins";
 import { loadAccess } from "@/features/access/load";
+import { preloadInsights } from "@/features/insights/load";
 import { preloadProfiles } from "@/features/profiles/load";
 import { preloadRisks } from "@/features/risks/load";
 import { preloadScenarios } from "@/features/scenarios/load";
@@ -40,9 +41,15 @@ function startup<O extends { queryFn: (ctx: { signal?: AbortSignal }) => Promise
  */
 export async function prefetchStartupData(
   client: QueryClient,
-  url: Pick<UrlState, "module" | "commodity"> & Partial<Pick<UrlState, "scenarioKind">>,
+  url: Pick<UrlState, "module" | "commodity"> & Partial<Pick<UrlState, "scenarioKind" | "insightsKind">>,
 ): Promise<void> {
   if (url.module === "access") return prefetchAccess(client);
+  // ConsultingWhere Insights: its chunk, and for a council assessment (the default) the stores and
+  // council indicators of the profile it draws on; the other assessments load with their view.
+  if (url.module === "insights") {
+    preloadInsights();
+    if ((url.insightsKind ?? "authority") === "authority") return prefetchAccess(client);
+  }
   // Local Authority Profiles reads the same stores and council indicators, plus its own chunk.
   if (url.module === "profiles") {
     preloadProfiles();

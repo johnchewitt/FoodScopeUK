@@ -193,7 +193,8 @@ FoodScopeUK/                       # repository root
 │   │   ├── risks/                 # Stage 6 Risk Explorer (as built: src/features/risks/)
 │   │   ├── vulnerabilities/       †
 │   │   ├── scenarios/
-│   │   ├── consulting-insights/
+│   │   ├── consulting-insights/   # Stage 8 (as built: src/features/insights/, PDF writer in insights/pdf/)
+│   │   ├── search/                # Stage 8 global search (lazy dialog)
 │   │   └── ask-foodscope/         †
 │   ├── map/                       # MapController, layer controllers, layer registry
 │   ├── services/
@@ -306,6 +307,12 @@ flowchart TB
 - Stage 3: `src/features/seasonal/` (model, charts, heatmap, timeline, controls, insights, map extras) uses the same queries as Food Origins (TanStack Query shares the cache). It is loaded as a separate chunk only when the module opens (`lazy.tsx` → `entry.ts`). The heatmap is an HTML table coloured by CSS tokens, not a chart, so every cell is readable as text.
 - Stage 5: `src/features/profiles/` (lazy chunk, `lazy.tsx` → `entry.ts`). `useProfile()` joins the Access data (stores, council indicators) with `context.council_context`. `useDeepProfile(lad)` loads only that council's `areas.<lad>.*` datasets and memoises `deepProfile()` (straight-line distances in the browser). `useNationalContext()` reads the trade snapshots and `context.uk_production`. The comparison dialog (`CompareDialog.tsx`, `view=compare`) calls `useDeepProfile` once per column (up to four).
 - Stage 6: `src/features/risks/` (lazy chunk, `lazy.tsx` → `entry.ts`). `useRiskSupply()` reuses the Food Origins queries and loads every basket for the ranking and matrix, plus `risk.water_stress` and `context.uk_production`. `useRiskLogistics()` reads `risk.ports`, `risk.port_entry` and `risk.farming` (roads and regions are drawn from their URLs). `useRiskAccess()` reads `risk.council_ppfi` and `context.council_context` and takes the council boundaries' URL from the manifest (it does not load the stores file). View models live in `model.ts`, indicators in `indicators.ts`, explanations in `explain.ts` and ECharts options in `charts.ts`, all pure and unit-tested.
+- Stage 8: `src/features/insights/` (lazy chunk, `lazy.tsx` → `entry.ts`; ADR-0027). The assessment builders (`authority.ts`, `commodity.ts`, `scenario.ts`) and their input assembler (`assemble.ts`) are pure and tested on the published files.
+  - `InsightsSync` builds the selected assessment with the earlier modules' hooks and publishes the plain JSON report and its SHA-256 to the store (`insightsAssessment`). Each kind is its own component, so only its data loads.
+  - The controls, key figures, panel, full-report dialog and exports read that report.
+  - `selectMapModule` maps `insights` to the module an assessment draws on, so the existing controllers draw its map.
+  - The PDF writer (`pdf/`: pdfmake, fonts, light charts) is a further chunk, loaded only when a PDF is made.
+  - Map images come from `src/map/capture.ts` (SDK-free registry), registered by `MapHost` with `captureView.ts` (`view.takeScreenshot` of the visible map with its extent and credits).
 - Food Origins: `useOrigins()` loads the trade index, the selected basket and the country points and memoises `buildOriginsModel()` (`src/features/origins/model.ts`), the single source for the KPI cards, charts, table, timeline and map model.
 - Adapters per ADR-08. The `ArcGISFeatureLayerAdapter` reads layer URLs and field mappings from `config.json`, so a ConsultingWhere-published copy of a dataset can replace the static snapshot without code changes, provided its fields map to the same schema.
 

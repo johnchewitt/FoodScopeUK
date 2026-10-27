@@ -602,6 +602,16 @@ Fields: `ELR_CODE`, `DESCRIPTIO` (line name), `TRACK_ID`, `ROUTE_TYPE`, `INTERME
 
 ArcGIS dark grey style (`arcgis/dark-gray`) through the Basemap styles service, authorised by a referrer-restricted API key (decision D2) registered as `esriConfig.apiKeys.basemapStyles` (ADR-0011). Verified on the live site on 23 Oct 2026: style and tiles load, post-deploy smoke test requires `data-basemap-status="ready"`. Not reachable from the build sandbox. Attribution is rendered automatically by the map component; do not hide it.
 
+**Stage 8: map images in reports (ADR-0027).**
+- **What the PDF and PNG exports capture.** `view.takeScreenshot` captures the visible map. With it they print:
+  - the view's attribution items and "Powered by Esri";
+  - when an Esri basemap is drawn, Esri's recommended notice: "Map image is the intellectual property of Esri and is used herein under license. Copyright © <year> Esri and its licensors. All rights reserved."
+- **Terms.** Esri's terms of use for static maps (ArcGIS Online documentation, `https://doc.arcgis.com/en/arcgis-online/reference/static-maps.htm`, read 26 Oct 2026):
+  - personal and internal business use, and inclusion in a presentation or report for a client, are permitted with attribution on or near the image;
+  - commercial monetisation and resale need Esri's permission.
+- **Attribution guidance.** Esri's developer guidance on attribution (`https://developers.arcgis.com/documentation/esri-and-data-attribution/static-maps/`) asks for "Powered by Esri" and the data providers' names on or near the map.
+- **Not checked yet.** Not verified on the live site with a key from the sandbox (B48).
+
 **Stage 4 (SH-08, ADR-0022): three styles.**
 
 | App choice | Style ID | What Esri's style list says (read 24 Oct 2026) |
@@ -814,3 +824,13 @@ Figures shown by the Risk Explorer, recomputed from the raw files with independe
 | Small-area populations by nation | Sum of the closure inputs | England 56,490,056; Wales 3,107,545; Scotland 5,439,565 (Census 2022); Northern Ireland 1,903,168 |
 | Scenario D unitised freight | Independent script over `ports.json` (2025, any origin) | Dover: Ro-Ro and containers 12,304.196 kt of 12,606.921 kt (97.6 %), 1,025.4 kt in one month, 512.7 kt at 50 %; agricultural dry bulk 0. Liverpool: agricultural dry bulk 1,640.548 kt, 17.2 % of the UK major ports' 9,534.029 kt |
 | Map attribution | `view.attributionItems` in the browser (E2E) | Scenario D and the Risk Explorer's logistics view credit DfT and EMODnet (CC BY 4.0); Scenario B credits ONS, the Scottish Government, MHCLG, NISRA, OSNI and GEOLYTIX |
+
+### Stage 8 assessments (27 October 2026)
+
+Independent Python script over the published files listed in the manifest (standard library; no app or pipeline code):
+
+| Check | Method | Result |
+|---|---|---|
+| Commodity assessment: tomatoes, latest 12 months, net mass | Sum of `trade.tomatoes` rows, months Sep 2025 – Aug 2026 (indices 80–91) | 391,081.340 t from 25 partners; Netherlands 43.828 %; top three 84.482 %; HHI 2,991.7. The report shows 391.1 kt, 25, 43.8 %, 84.5 % and 2,990 |
+| Seasonal sourcing, 2025 | Largest partner's share of each month | Netherlands ≥ 50 % in May to October (60.8, 66.0, 63.8, 65.5, 64.1 and 57.2 %) and in no other month: the report's "May–Oct 2025 (6 months)" |
+| Local authority assessment: Manchester (E08000003) | `scenario.closure_gb` areas and supermarkets of the council; `risk.council_ppfi` | 55 supermarkets ÷ 588,256 residents = 0.935 per 10,000; 77,708 of 551,919 Census 2021 residents in 295 small areas more than 1 km straight-line from a supermarket (14.080 %); 337,829 in IoD 2025 deciles 1–2 (61.210 %); 119 of 295 small areas in PPFI deciles 1–2 (40.34 %). The report shows 0.93, 14.1 %, 61.2 % and 40.3 % |

@@ -9,6 +9,8 @@
   --fs-amber: #e8b76b;
   --fs-text: #edf7f5;
   --fs-text-muted: #8eadae;
+  /* ConsultingWhere's logo is drawn on white only (its tagline is dark navy; D3). */
+  --fs-brand-plate: #ffffff;
 
   /* Derived tints (all built from the palette above) */
   --fs-navy-deep: color-mix(in oklab, var(--fs-navy) 82%, black);

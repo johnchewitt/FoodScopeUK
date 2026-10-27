@@ -23,7 +23,7 @@ import { useProfile, type ProfileData } from "./useProfile";
 const INITIAL_LIST = 12;
 
 /** Council search by name or GSS code (LP-01). `onPick` receives the council. */
-function CouncilSearch({
+export function CouncilSearch({
   councils,
   onPick,
   label,

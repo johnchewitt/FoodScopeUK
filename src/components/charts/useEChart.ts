@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import type * as EChartsCore from "echarts/core";
 import type { EChartsCoreOption, EChartsType } from "echarts/core";
+import { withSafeTooltips } from "./safeTooltip";
 
 /**
  * Thin ECharts hook (architecture §2). ECharts is imported lazily and only the chart types and
@@ -78,7 +79,7 @@ export function useEChart(
           animationDurationUpdate: 300,
           animationEasingUpdate: "cubicOut",
           aria: { enabled: true },
-          ...option,
+          ...withSafeTooltips(option),
         },
         opts.merge ? { replaceMerge: ["series", "xAxis", "yAxis", "grid"] } : { notMerge: true },
       );

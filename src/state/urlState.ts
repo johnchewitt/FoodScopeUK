@@ -7,7 +7,7 @@ import {
 } from "@/analysis/retail";
 
 /** Overlays that can be deep-linked (SH-06 Evidence page, Help, LP-07 council comparison). */
-export const OVERLAYS = ["none", "evidence", "help", "compare"] as const;
+export const OVERLAYS = ["none", "evidence", "help", "compare", "search"] as const;
 export type Overlay = (typeof OVERLAYS)[number];
 
 export const PERIOD_MODES = ["rolling12", "month", "year"] as const;
@@ -77,6 +77,13 @@ export type Nation = (typeof NATIONS)[number];
  */
 export const SCENARIO_KINDS = ["import", "closure", "production", "port"] as const;
 export type ScenarioKind = (typeof SCENARIO_KINDS)[number];
+/**
+ * ConsultingWhere Insights (Stage 8, CI-02): the assessment shown. Each draws on an earlier module:
+ * a local authority (Local Authority Profiles, Risk Explorer access), a commodity (Food Origins,
+ * Seasonal Supply, Risk Explorer supply) or a Scenario Lab scenario.
+ */
+export const INSIGHTS_KINDS = ["authority", "commodity", "scenario"] as const;
+export type InsightsKind = (typeof INSIGHTS_KINDS)[number];
 /** What the scenario map shows: the observed baseline or the scenario (SC-03). */
 export const SCENARIO_VIEWS = ["scenario", "baseline"] as const;
 export type ScenarioView = (typeof SCENARIO_VIEWS)[number];
@@ -154,6 +161,8 @@ export interface UrlState {
   portReduction: number;
   portMonths: number;
   scenarioView: ScenarioView;
+  /** ConsultingWhere Insights (CI-02): the assessment type (`ia`). */
+  insightsKind: InsightsKind;
 }
 
 export const DEFAULT_URL_STATE: UrlState = {
@@ -198,6 +207,7 @@ export const DEFAULT_URL_STATE: UrlState = {
   portReduction: 50,
   portMonths: 1,
   scenarioView: "scenario",
+  insightsKind: "authority",
 };
 
 const LAYER_PARAM: Record<StoreLayer, string> = { supermarket: "s", convenience: "c", other: "o" };
@@ -306,6 +316,7 @@ export function parseUrlState(search: string): UrlState {
   const sy = params.get("sy");
   const smo = params.get("smo");
   const sv = params.get("sv");
+  const ia = params.get("ia");
   const scenarioYearNum = sy !== null && /^\d{4}$/.test(sy) ? Number(sy) : NaN;
   const scenarioMonthNum = smo !== null && /^\d{1,2}$/.test(smo) ? Number(smo) : NaN;
   const L = SCENARIO_LIMITS;
@@ -376,6 +387,9 @@ export function parseUrlState(search: string): UrlState {
     portReduction: intParam(params.get("sdr"), L.reduction, D.portReduction),
     portMonths: intParam(params.get("sdm"), L.portMonths, D.portMonths),
     scenarioView: sv === "baseline" ? "baseline" : "scenario",
+    insightsKind: (INSIGHTS_KINDS as readonly string[]).includes(ia ?? "")
+      ? (ia as InsightsKind)
+      : D.insightsKind,
   };
 }
 
@@ -425,6 +439,7 @@ export function serializeUrlState(state: UrlState): string {
   for (const [key, param] of scenarioNumbers)
     if (state[key] !== DEFAULT_URL_STATE[key]) params.set(param, String(state[key]));
   if (state.scenarioView !== DEFAULT_URL_STATE.scenarioView) params.set("sv", state.scenarioView);
+  if (state.insightsKind !== DEFAULT_URL_STATE.insightsKind) params.set("ia", state.insightsKind);
   if (state.lad !== null) params.set("lad", state.lad);
   if (state.area !== null) params.set("sa", state.area);
   if (state.compare.length) params.set("cmp", state.compare.join(","));
@@ -440,7 +455,8 @@ export function historyModeFor(prev: UrlState, next: UrlState): "push" | "replac
     prev.lad !== next.lad ||
     prev.commodity !== next.commodity ||
     prev.riskView !== next.riskView ||
-    prev.scenarioKind !== next.scenarioKind
+    prev.scenarioKind !== next.scenarioKind ||
+    prev.insightsKind !== next.insightsKind
     ? "push"
     : "replace";
 }

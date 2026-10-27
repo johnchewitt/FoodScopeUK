@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   LOCAL_ZOOM,
+  openExportFor,
   resetAppStore,
   selectImageryAvailable,
   selectLocalScale,
   selectMapColourStyle,
+  selectMapModule,
   selectReducedMotion,
   selectRequestedMapStyle,
   selectTradeMapModule,
@@ -338,5 +340,62 @@ describe("Risk Explorer selection (RK-01 – RK-04)", () => {
       rankNation: "Wales",
       lad: "W06000015",
     });
+  });
+});
+
+describe("Consulting Insights map (Stage 8, ADR-0027)", () => {
+  it("shows the map of the module each assessment draws on", () => {
+    expect(selectMapModule({ module: "origins" })).toBe("origins");
+    expect(selectMapModule({ module: "insights", insightsKind: "authority" })).toBe("profiles");
+    expect(selectMapModule({ module: "insights", insightsKind: "commodity" })).toBe("origins");
+    expect(selectMapModule({ module: "insights", insightsKind: "scenario" })).toBe("scenarios");
+    const base = { riskView: "supply" as const, scenarioKind: "import" as const };
+    expect(selectTradeMapModule({ ...base, module: "insights", insightsKind: "commodity" })).toBe(true);
+    expect(selectTradeMapModule({ ...base, module: "insights", insightsKind: "scenario" })).toBe(true);
+    expect(selectTradeMapModule({ ...base, module: "insights", insightsKind: "authority" })).toBe(false);
+    expect(
+      selectTradeMapModule({
+        ...base,
+        scenarioKind: "closure",
+        module: "insights",
+        insightsKind: "scenario",
+      }),
+    ).toBe(false);
+  });
+
+  it("offers imagery at local scale for council and scenario assessments", () => {
+    const local = { mapView: { zoom: LOCAL_ZOOM + 1, center: [0, 0] as [number, number] } };
+    expect(selectImageryAvailable({ ...local, module: "insights", insightsKind: "authority" })).toBe(true);
+    expect(selectImageryAvailable({ ...local, module: "insights", insightsKind: "commodity" })).toBe(false);
+  });
+
+  it("changes the assessment type and clears hovers", () => {
+    s().setInsightsKind("commodity");
+    expect(s().insightsKind).toBe("commodity");
+    expect(selectUrlState(s()).insightsKind).toBe("commodity");
+  });
+});
+
+describe("top bar Export (Stage 8 UX review)", () => {
+  it("opens the ConsultingWhere Insights assessment that matches the view", () => {
+    const cases: [Partial<ReturnType<typeof s>>, string][] = [
+      [{ module: "profiles", lad: "E08000003" }, "authority"],
+      [{ module: "access" }, "authority"],
+      [{ module: "origins" }, "commodity"],
+      [{ module: "seasonal" }, "commodity"],
+      [{ module: "risks", riskView: "supply" }, "commodity"],
+      [{ module: "risks", riskView: "access" }, "authority"],
+      [{ module: "scenarios" }, "scenario"],
+    ];
+    for (const [state, kind] of cases) {
+      resetAppStore();
+      useAppStore.setState(state);
+      openExportFor(useAppStore.getState());
+      const s = useAppStore.getState();
+      expect(s.module).toBe("insights");
+      expect(s.insightsKind).toBe(kind);
+      expect(s.filterPanelOpen).toBe(true);
+    }
+    expect(useAppStore.getState().lad).toBeNull();
   });
 });

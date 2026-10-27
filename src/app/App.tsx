@@ -9,6 +9,7 @@ import { loadMapHost } from "@/components/maps/loadMapHost";
 import { MapControls } from "@/components/maps/MapControls";
 import { EvidenceDialog } from "@/components/overlays/EvidenceDialog";
 import { HelpDialog } from "@/components/overlays/HelpDialog";
+import { SearchDialogLazy } from "@/features/search/lazy";
 import {
   useBreakpoint,
   useKeyboardShortcuts,
@@ -20,6 +21,7 @@ import { selectMapColourStyle, selectReducedMotion, useAppStore } from "@/state/
 import { MapLoading } from "@/components/maps/MapLoading";
 import { OriginsLegend, OriginsMapSync, OriginsTooltip } from "@/features/origins/OriginsMapExtras";
 import { AccessMapExtrasLazy } from "@/features/access/lazy";
+import { InsightsMapExtrasLazy } from "@/features/insights/lazy";
 import { CompareDialogLazy, ProfileMapExtrasLazy } from "@/features/profiles/lazy";
 import { RiskMapExtrasLazy } from "@/features/risks/lazy";
 import { ScenarioMapExtrasLazy } from "@/features/scenarios/lazy";
@@ -106,6 +108,11 @@ export function App() {
             <ScenarioMapExtrasLazy />
           </ErrorBoundary>
         )}
+        {module === "insights" && (
+          <ErrorBoundary region="Map legend and report">
+            <InsightsMapExtrasLazy />
+          </ErrorBoundary>
+        )}
         <ErrorBoundary region="Timeline">
           <TimelineBar />
         </ErrorBoundary>
@@ -115,6 +122,7 @@ export function App() {
       </main>
       <EvidenceDialog />
       <HelpDialog />
+      <SearchDialogLazy />
       <ErrorBoundary region="Council comparison">
         <CompareDialogLazy />
       </ErrorBoundary>

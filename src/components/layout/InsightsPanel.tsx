@@ -1,6 +1,7 @@
 import { BookOpenCheck, CircleCheck, CircleDashed, PanelRightClose, TriangleAlert } from "lucide-react";
 import type { ReactNode } from "react";
 import { getModule } from "@/app/modules";
+import { SheetSizeToggle } from "./SheetSizeToggle";
 import { ChartFrame } from "@/components/charts/ChartFrame";
 import { EmptyState } from "@/components/states/EmptyState";
 import { PartialNotice } from "@/components/states/Notice";
@@ -8,6 +9,7 @@ import { SkeletonLines } from "@/components/states/Skeleton";
 import { principlesById } from "@/content/principles";
 import { OriginsInsights } from "@/features/origins/OriginsInsights";
 import { AccessInsightsLazy } from "@/features/access/lazy";
+import { InsightsInsightsLazy } from "@/features/insights/lazy";
 import { ProfileInsightsLazy } from "@/features/profiles/lazy";
 import { RiskInsightsLazy } from "@/features/risks/lazy";
 import { ScenarioInsightsLazy } from "@/features/scenarios/lazy";
@@ -46,6 +48,7 @@ function StatusItem({ tone, title, detail }: { tone: Tone; title: string; detail
 /** Right-hand insights panel: what this view will show, what data is loaded, and the rules it follows. */
 export function InsightsPanel() {
   const module = useAppStore((s) => s.module);
+  const peek = useAppStore((s) => s.sheetPeek && s.breakpoint === "mobile");
   const open = useAppStore((s) => s.insightsOpen);
   const toggle = useAppStore((s) => s.toggleInsights);
   const openOverlay = useAppStore((s) => s.openOverlay);
@@ -77,6 +80,7 @@ export function InsightsPanel() {
     <aside
       id="insights-panel"
       className="panel insights-panel glass"
+      data-peek={peek}
       data-open={open}
       aria-label="Insights"
       aria-hidden={!open}
@@ -87,6 +91,7 @@ export function InsightsPanel() {
           <h2 className="panel__title">Insights</h2>
           <p className="panel__subtitle">{mod.label}</p>
         </div>
+        <SheetSizeToggle />
         <button type="button" className="tool-btn" onClick={() => toggle(false)} aria-label="Hide insights">
           <PanelRightClose size={17} aria-hidden="true" />
         </button>
@@ -116,6 +121,10 @@ export function InsightsPanel() {
         ) : module === "scenarios" ? (
           <ErrorBoundary region="Scenario Lab">
             <ScenarioInsightsLazy />
+          </ErrorBoundary>
+        ) : module === "insights" ? (
+          <ErrorBoundary region="ConsultingWhere Insights">
+            <InsightsInsightsLazy />
           </ErrorBoundary>
         ) : (
           <section className="panel-section" aria-labelledby="about-heading">
@@ -256,7 +265,8 @@ export function InsightsPanel() {
           module !== "access" &&
           module !== "profiles" &&
           module !== "risks" &&
-          module !== "scenarios" && (
+          module !== "scenarios" &&
+          module !== "insights" && (
             <section className="panel-section">
               <ChartFrame
                 title="Trend"

@@ -12,6 +12,7 @@ import {
   type CouncilLayer,
   type FarmLayer,
   type HeatmapMode,
+  type InsightsKind,
   type Measure,
   type Nation,
   type Overlay,
@@ -24,6 +25,7 @@ import {
   type ScenarioView,
   type UrlState,
 } from "./urlState";
+import type { AssessmentReport } from "@/features/insights/report";
 import { baselineFor, defaultsFor, stateFromParams, type ScenarioParams } from "./scenarioParams";
 
 export type MapStatus = "idle" | "loading" | "ready" | "error";
@@ -40,6 +42,17 @@ type MapCommandInput =
   | { type: "focusCouncil"; code: string };
 
 export type MapCommand = MapCommandInput & { id: number };
+
+/** The selected ConsultingWhere Insights assessment (Stage 8): status and the plain JSON report. */
+export interface InsightsAssessmentState {
+  kind: InsightsKind;
+  status: "loading" | "error" | "empty" | "ready";
+  error: string | null;
+  emptyText: string | null;
+  report: AssessmentReport | null;
+  /** SHA-256 of the report's canonical JSON (EX-02); null while it is computed. */
+  checksum: string | null;
+}
 
 export interface AppState extends UrlState {
   // Layout
@@ -101,6 +114,16 @@ export interface AppState extends UrlState {
   scenarioMap: ScenarioClosureMapModel | null;
   /** Small area under the pointer on the closure map (not in the URL). */
   hoverScenario: HoverScenario | null;
+
+  /**
+   * ConsultingWhere Insights (Stage 8): the selected assessment, built once by the insights sync and
+   * read by the controls, key figures, panel, full report and exports (a plain JSON report).
+   */
+  insightsAssessment: InsightsAssessmentState | null;
+  /** The full-report view is open (not in the URL). */
+  reportOpen: boolean;
+  /** Phones: the open panel is lowered to a short strip so the map shows (B61; not in the URL). */
+  sheetPeek: boolean;
 
   // Actions
   setModule: (module: ModuleId) => void;
@@ -179,8 +202,13 @@ export interface AppState extends UrlState {
   /** Restores the current kind's default settings. */
   restoreScenarioDefaults: () => void;
   setScenarioView: (view: ScenarioView) => void;
+  /** ConsultingWhere Insights (CI-02): the assessment type; the map follows the module it draws on. */
+  setInsightsKind: (kind: InsightsKind) => void;
   setScenarioMap: (model: ScenarioClosureMapModel | null) => void;
   setHoverScenario: (hover: HoverScenario | null) => void;
+  setInsightsAssessment: (a: InsightsAssessmentState | null) => void;
+  setReportOpen: (open: boolean) => void;
+  setSheetPeek: (peek: boolean) => void;
 
   setBreakpoint: (bp: Breakpoint) => void;
   toggleFilterPanel: (open?: boolean) => void;
@@ -467,15 +495,32 @@ export interface HoverScenario {
 }
 
 /**
- * True when the trade map (partners and connections) is drawn: Food Origins, Seasonal, Risk
- * Explorer supply, and the Scenario Lab's international supply disruption (Scenario A).
+ * The module whose map the view shows. Consulting Insights has no map of its own: each assessment
+ * shows the map of the module it draws on (a council's profile, a commodity's recorded partners,
+ * the scenario's map), so the existing layer controllers draw it unchanged (Stage 8, ADR-0027).
  */
-export function selectTradeMapModule(s: Pick<AppState, "module" | "riskView" | "scenarioKind">): boolean {
+export function selectMapModule(
+  s: Pick<AppState, "module"> & Partial<Pick<AppState, "insightsKind">>,
+): ModuleId {
+  if (s.module !== "insights") return s.module;
+  const kind = s.insightsKind ?? "authority";
+  return kind === "authority" ? "profiles" : kind === "commodity" ? "origins" : "scenarios";
+}
+
+/**
+ * True when the trade map (partners and connections) is drawn: Food Origins, Seasonal, Risk
+ * Explorer supply, the Scenario Lab's international supply disruption (Scenario A), and the
+ * commodity and Scenario A assessments of Consulting Insights.
+ */
+export function selectTradeMapModule(
+  s: Pick<AppState, "module" | "riskView" | "scenarioKind"> & Partial<Pick<AppState, "insightsKind">>,
+): boolean {
+  const module = selectMapModule(s);
   return (
-    s.module === "origins" ||
-    s.module === "seasonal" ||
-    (s.module === "risks" && s.riskView === "supply") ||
-    (s.module === "scenarios" && s.scenarioKind === "import")
+    module === "origins" ||
+    module === "seasonal" ||
+    (module === "risks" && s.riskView === "supply") ||
+    (module === "scenarios" && s.scenarioKind === "import")
   );
 }
 
@@ -534,6 +579,9 @@ export const initialState = {
   hoverRisk: null,
   scenarioMap: null,
   hoverScenario: null,
+  insightsAssessment: null,
+  reportOpen: false,
+  sheetPeek: false,
 };
 
 export const useAppStore = create<AppState>()((set, get) => ({
@@ -663,8 +711,17 @@ export const useAppStore = create<AppState>()((set, get) => ({
   resetScenarioToBaseline: () => set((s) => baselineFor(s.scenarioKind)),
   restoreScenarioDefaults: () => set((s) => defaultsFor(s.scenarioKind)),
   setScenarioView: (scenarioView) => set({ scenarioView }),
+  setInsightsKind: (insightsKind) =>
+    set((s) =>
+      s.insightsKind === insightsKind
+        ? {}
+        : { insightsKind, hoverScenario: null, hoverPartner: null, hoverAccess: null, hoverRisk: null },
+    ),
   setScenarioMap: (scenarioMap) => set({ scenarioMap }),
   setHoverScenario: (hoverScenario) => set({ hoverScenario }),
+  setInsightsAssessment: (insightsAssessment) => set({ insightsAssessment }),
+  setReportOpen: (reportOpen) => set({ reportOpen }),
+  setSheetPeek: (sheetPeek) => set({ sheetPeek }),
   setMapView: (mapView) => {
     const prev = get().mapView;
     const same =
@@ -777,6 +834,7 @@ export function selectUrlState(s: AppState): UrlState {
     portReduction: s.portReduction,
     portMonths: s.portMonths,
     scenarioView: s.scenarioView,
+    insightsKind: s.insightsKind,
   };
 }
 
@@ -795,8 +853,10 @@ export function selectLocalScale(s: Pick<AppState, "mapView">): boolean {
 }
 
 /** True when imagery can be shown: a local-scale module, zoomed in to local scale. */
-export function selectImageryAvailable(s: Pick<AppState, "module" | "mapView">): boolean {
-  return IMAGERY_MODULES.includes(s.module) && selectLocalScale(s);
+export function selectImageryAvailable(
+  s: Pick<AppState, "module" | "mapView"> & Partial<Pick<AppState, "insightsKind">>,
+): boolean {
+  return IMAGERY_MODULES.includes(selectMapModule(s)) && selectLocalScale(s);
 }
 
 /**
@@ -820,6 +880,25 @@ export function selectMapColourStyle(
 ): MapStyle {
   if (s.layerStatus[BASEMAP_STATUS_ID]?.status === "error") return "dark";
   return selectRequestedMapStyle(s);
+}
+
+/**
+ * The top bar's Export (Stage 8): exports live in ConsultingWhere Insights, so it opens the
+ * assessment that matches the current view (a council, the commodity on screen, or the Scenario
+ * Lab run) with its PDF, CSV and map image buttons.
+ */
+export function openExportFor(s: AppState): void {
+  const kind: InsightsKind =
+    s.module === "scenarios"
+      ? "scenario"
+      : s.module === "origins" || s.module === "seasonal" || (s.module === "risks" && s.riskView === "supply")
+        ? "commodity"
+        : s.module === "insights"
+          ? s.insightsKind
+          : "authority";
+  s.setInsightsKind(kind);
+  s.setModule("insights");
+  s.toggleFilterPanel(true);
 }
 
 /** Reset helper for tests. */

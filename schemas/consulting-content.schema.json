@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://johnchewitt.github.io/FoodScopeUK/schemas/consulting-content.schema.json",
+  "title": "ConsultingContent",
+  "description": "ConsultingWhere Insights content (Stage 8, CI-01, CI-04): the service catalogue and the generic 'About ConsultingWhere' text. Generic capability descriptions only: no clients, project references, staff credentials, accreditations, budgets or procurement claims (P14).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "status", "about", "services"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approval", "note"],
+      "properties": {
+        "approval": { "enum": ["draft-for-approval", "approved"] },
+        "note": { "type": "string", "minLength": 1 }
+      }
+    },
+    "about": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "paragraphs", "principles"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "paragraphs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "principles": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "services": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "strapline",
+          "challenges",
+          "approach",
+          "deliverables",
+          "value",
+          "stakeholders",
+          "modules"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+          "title": { "type": "string", "minLength": 1 },
+          "strapline": { "type": "string", "minLength": 1 },
+          "challenges": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } },
+          "approach": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } },
+          "deliverables": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } },
+          "value": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+          "stakeholders": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+          "modules": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": ["origins", "seasonal", "access", "risks", "profiles", "scenarios", "insights"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

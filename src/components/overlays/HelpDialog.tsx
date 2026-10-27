@@ -12,6 +12,7 @@ const SHORTCUTS: [string, string][] = [
     "Arrows",
     "Pan the map (when it has focus); then “Map centre” measures straight-line distances from there",
   ],
+  ["/", "Search councils, commodities and modules"],
   ["?", "Open this help"],
   ["Esc", "Close a dialog"],
 ];
@@ -64,8 +65,26 @@ export function HelpDialog() {
               exposure, logistics and community access as separate views. The Scenario Lab runs transparent
               what-if calculations on those published baselines: a recorded import partner&rsquo;s disruption,
               a supermarket closure, a domestic production shock and a port disruption, each labelled
-              Scenario-modelled with its assumptions and method. Consulting Insights does not load statistics
-              yet, and no placeholder figures are shown.
+              Scenario-modelled with its assumptions and method. ConsultingWhere Insights turns those
+              modules&rsquo; figures into assessments of a council, a commodity or a scenario, with possible
+              work packages, the rules behind them, and PDF, CSV and map image exports. It is an exploratory
+              demonstrator, not a commissioned food security audit.
+            </p>
+          </section>
+          <section>
+            <h3>Licences</h3>
+            <p>
+              Data licences and attributions are listed under Evidence and limitations. The software the app
+              redistributes is listed with its licences in the{" "}
+              <a
+                href={`${import.meta.env.BASE_URL}licenses/THIRD-PARTY-NOTICES.txt`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                third-party notices
+              </a>
+              ; the ArcGIS Maps SDK and Calcite are used under Esri&rsquo;s terms, and IBM Plex under the SIL
+              Open Font License 1.1.
             </p>
           </section>
         </div>

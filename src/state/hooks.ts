@@ -98,6 +98,9 @@ export function useKeyboardShortcuts(): void {
         case "?":
           s.openOverlay("help");
           break;
+        case "/":
+          s.openOverlay("search");
+          break;
         case "f":
         case "F":
           if (!canFramePartners(s)) return;

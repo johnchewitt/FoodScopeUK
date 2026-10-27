@@ -1,8 +1,10 @@
 import { Globe, Map as MapIcon, PanelLeftClose } from "lucide-react";
 import { getModule } from "@/app/modules";
+import { SheetSizeToggle } from "./SheetSizeToggle";
 import { EmptyState } from "@/components/states/EmptyState";
 import { OriginsControls } from "@/features/origins/OriginsControls";
 import { AccessControlsLazy } from "@/features/access/lazy";
+import { InsightsControlsLazy } from "@/features/insights/lazy";
 import { ProfileControlsLazy } from "@/features/profiles/lazy";
 import { RiskControlsLazy } from "@/features/risks/lazy";
 import { ScenarioControlsLazy } from "@/features/scenarios/lazy";
@@ -12,6 +14,7 @@ import { selectReducedMotion, useAppStore } from "@/state/store";
 /** Collapsible left panel: module controls (from Stage 3 onward) and map display settings. */
 export function FilterPanel() {
   const module = useAppStore((s) => s.module);
+  const peek = useAppStore((s) => s.sheetPeek && s.breakpoint === "mobile");
   const open = useAppStore((s) => s.filterPanelOpen);
   const toggle = useAppStore((s) => s.toggleFilterPanel);
   const issueMapCommand = useAppStore((s) => s.issueMapCommand);
@@ -25,6 +28,7 @@ export function FilterPanel() {
     <aside
       id="filter-panel"
       className="panel filter-panel glass"
+      data-peek={peek}
       data-open={open}
       aria-label={`${mod.label} controls`}
       aria-hidden={!open}
@@ -35,6 +39,7 @@ export function FilterPanel() {
           <h2 className="panel__title">{mod.label}</h2>
           <p className="panel__subtitle">{mod.question}</p>
         </div>
+        <SheetSizeToggle />
         <button type="button" className="tool-btn" onClick={() => toggle(false)} aria-label="Hide controls">
           <PanelLeftClose size={17} aria-hidden="true" />
         </button>
@@ -53,6 +58,8 @@ export function FilterPanel() {
           <RiskControlsLazy />
         ) : module === "scenarios" ? (
           <ScenarioControlsLazy />
+        ) : module === "insights" ? (
+          <InsightsControlsLazy />
         ) : (
           <section className="panel-section" aria-labelledby="controls-heading">
             <h3 id="controls-heading" className="panel-section__title">

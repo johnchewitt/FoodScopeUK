@@ -2,6 +2,7 @@ import type { StoreApi, UseBoundStore } from "zustand";
 import { fitBBox, type BBox, type FitOptions } from "@/analysis/frame";
 import {
   LOCAL_ZOOM,
+  selectMapModule,
   selectReducedMotion,
   selectTradeMapModule,
   type AppState,
@@ -36,12 +37,16 @@ type FrameFamily =
  * Access, Local Authority Profiles and the other two Risk Explorer views have their own; other
  * modules none.
  */
-function frameFamily(state: Pick<AppState, "module" | "riskView" | "scenarioKind">): FrameFamily {
+function frameFamily(
+  state: Pick<AppState, "module" | "riskView" | "scenarioKind"> & Partial<Pick<AppState, "insightsKind">>,
+): FrameFamily {
   if (selectTradeMapModule(state)) return "trade";
-  if (state.module === "access") return "access";
-  if (state.module === "profiles") return "profile";
-  if (state.module === "risks") return state.riskView === "logistics" ? "riskLogistics" : "riskAccess";
-  if (state.module === "scenarios")
+  // Consulting Insights frames like the module its assessment draws on.
+  const module = selectMapModule(state);
+  if (module === "access") return "access";
+  if (module === "profiles") return "profile";
+  if (module === "risks") return state.riskView === "logistics" ? "riskLogistics" : "riskAccess";
+  if (module === "scenarios")
     return state.scenarioKind === "closure"
       ? "scenarioClosure"
       : state.scenarioKind === "port"
@@ -186,7 +191,7 @@ export class MapController {
     if (family !== this.lastFrameFamily) this.lastFrameKey = null;
     this.lastFrameFamily = family;
     if (frame && frame.key !== this.lastFrameKey) {
-      if (state.module === "access" && view.zoom >= LOCAL_ZOOM - 0.01) {
+      if (selectMapModule(state) === "access" && view.zoom >= LOCAL_ZOOM - 0.01) {
         // Already looking at local detail: leave the camera where the visitor put it.
         this.lastFrameKey = frame.key;
       } else if (

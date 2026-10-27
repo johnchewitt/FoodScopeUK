@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import { useAppStore } from "@/state/store";
+import { selectMapModule, useAppStore } from "@/state/store";
 import { CLASS_LABELS } from "./legend";
 import { formatMeasure } from "./model";
 import { useOrigins, useOriginsMapSync } from "./useOrigins";
@@ -60,7 +60,8 @@ export function OriginsLegend() {
 /** Tooltip for the partner under the pointer (screen position from the map hit test). */
 export function OriginsTooltip() {
   const hover = useAppStore((s) => s.hoverPartner);
-  const module = useAppStore((s) => s.module);
+  // Consulting Insights (commodity assessment) draws the same trade map.
+  const module = useAppStore(selectMapModule);
   const { model } = useOrigins();
   if (!hover || module !== "origins" || !model) return null;
   const partner = model.map.partners.find((p) => p.key === hover.key || p.iso2 === hover.key);
