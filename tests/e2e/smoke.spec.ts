@@ -155,10 +155,11 @@ test.describe("Stage 1 shell", () => {
     const cards = page.locator(".kpi-card");
     await expect(cards).toHaveCount(4);
     await expect(cards.first()).toContainText("Not selected", { timeout: 30_000 });
-    for (const text of await cards.allInnerTexts()) {
-      expect(text).toContain("Not selected");
-      expect(text.replace(/\b1 km\b|PPFI|10k/g, "")).not.toMatch(/\d/);
-    }
+    for (let i = 0; i < 4; i++) await expect(cards.nth(i)).toHaveAttribute("data-state", "empty");
+    // No figure is shown: no metric, and the empty text has no digits (the hidden full labels may, e.g. "mid-2025").
+    await expect(page.locator(".kpi-card .metric")).toHaveCount(0);
+    for (const text of await page.locator(".kpi-card .kpi-card__empty").allInnerTexts())
+      expect(text).not.toMatch(/\d/);
   });
 });
 
