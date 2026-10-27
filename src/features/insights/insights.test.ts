@@ -2,6 +2,7 @@ import Ajv from "ajv";
 import { describe, expect, it } from "vitest";
 import {
   authority,
+  authorityInputsFor,
   commodity as commodityReport,
   gb,
   index,
@@ -20,7 +21,7 @@ import { buildImportModel } from "@/features/scenarios/model";
 import { provenanceProblems } from "@/types/indicator";
 import schema from "../../../schemas/consulting-content.schema.json";
 import { nationBeyond } from "./assemble";
-import { AUTHORITY_RULES } from "./authority";
+import { AUTHORITY_RULES, buildAuthorityReport } from "./authority";
 import { COMMODITY_RULES, seasonalSourcing } from "./commodity";
 import { claimProblems, CONSULTING, SERVICES, serviceById } from "./content";
 import type { AssessmentReport } from "./report";
@@ -382,5 +383,53 @@ describe("Food Supply Disruption Scenario Assessment (CI-02, brief §4)", () => 
     const d = report({ kind: "port", port: "GBFXT", reduction: 50, months: 3 });
     checkReport(d);
     expect(d.sections.find((s) => s.id === "sensitivity")!.tables[0]!.rows).toHaveLength(4);
+  });
+});
+
+/*
+ * Acceptance criterion 11 (spec §9): given an indicator pattern, the expected work packages are
+ * indicated and cite the evidence. Real Manchester inputs, with one figure moved across a rule's
+ * threshold in a copy (the change is the test's, not data).
+ */
+describe("rules: indicator pattern → work packages (spec §9, criterion 11)", () => {
+  const indicated = (r: AssessmentReport) => r.workPackages.filter((w) => w.indicated).map((w) => w.id);
+
+  it("Manchester's own figures indicate network, strategy, policy and scenario work", () => {
+    expect(indicated(authority("E08000003")).sort()).toEqual(["network", "policy", "scenario", "strategy"]);
+  });
+
+  it("access above the nation's share indicates the accessibility assessment, citing the share", () => {
+    const x = authorityInputsFor("E08000003");
+    const far = x.smallAreas!.beyond.map((b) => (b.thresholdKm === 1 ? { ...b, share: 0.5 } : b));
+    const r = buildAuthorityReport({ ...x, smallAreas: { ...x.smallAreas!, beyond: far } });
+    const wp = r.workPackages.find((w) => w.id === "accessibility")!;
+    expect(wp.indicated).toBe(true);
+    expect(wp.evidence[0]).toContain("50.0 %");
+    expect(wp.why).toContain("50.0 % against 42.6 %");
+  });
+
+  it("a PPFI share below the nation's leaves the strategy as a supporting capability", () => {
+    const x = authorityInputsFor("E08000003");
+    const r = buildAuthorityReport({
+      ...x,
+      ppfi: { ...x.ppfi!, combined: { ...x.ppfi!.combined!, share: 0.05 } },
+    });
+    expect(r.workPackages.find((w) => w.id === "strategy")!.indicated).toBe(false);
+    expect(r.rules.find((x) => x.id === "vulnerability")!.observed).toBe("5.0 % against 20.0 %");
+  });
+
+  it("no supermarket in the council: no closure is computed and the scenario rule does not fire", () => {
+    const x = authorityInputsFor("E08000003");
+    const r = buildAuthorityReport({ ...x, closure: null });
+    expect(r.rules.find((x) => x.id === "scenario")!.fired).toBe(false);
+    expect(r.workPackages.find((w) => w.id === "scenario")!.evidence[0]).toMatch(/No supermarket is mapped/);
+  });
+
+  it("commodity: a partner at half of recorded imports indicates supply chain risk work", () => {
+    const tomatoes = commodityReport("tomatoes");
+    expect(tomatoes.rules.find((r) => r.id === "concentration")!.fired).toBe(true); // three largest 84.5 %
+    const bananas = commodityReport("bananas");
+    const c = bananas.rules.find((r) => r.id === "concentration")!;
+    expect(bananas.workPackages.find((w) => w.id === "supply-chain")!.indicated).toBe(c.fired);
   });
 });

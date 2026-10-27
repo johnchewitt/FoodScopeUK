@@ -81,6 +81,25 @@ const deep = (lad: string) =>
   );
 export const UK: [number, number] = [-2, 54];
 
+/** The authority assessment's inputs from the real files (tests may alter a copy to probe a rule). */
+export function authorityInputsFor(lad: string) {
+  return authorityInputs(
+    {
+      lad: ladDoc,
+      councils,
+      context: contextDoc,
+      stores,
+      ppfi: ppfiDoc,
+      closure: { gb, ni },
+      deep: deepCodes.has(lad) ? deep(lad) : null,
+      national,
+    },
+    lad,
+    manifest,
+    `https://example.test/?m=insights&lad=${lad}`,
+  )!;
+}
+
 export function authority(lad: string): AssessmentReport {
   const inputs = authorityInputs(
     {
