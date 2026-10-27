@@ -54,7 +54,12 @@ The light set's mid-tone lines failed on the detailed styles: green selection 1.
 
 ## Commands run and results
 
-To be filled in when the full end-to-end run on this branch finishes.
+| Command | Result |
+|---|---|
+| `npm run typecheck`, `npm run lint`, `npm run format`, `npm run check:banned` | Pass |
+| `npm test` | 52 files, 691 tests pass (682 on `main`). New or changed tests cover:<ul><li>every style's tokens against its colour set;</li><li>the shading rule in each view;</li><li>the detailed styles falling back and returning;</li><li>`bm` values;</li><li>the control (four tests);</li><li>the basemap controller swapping styles.</li></ul> |
+| `VITE_ARCGIS_ASSETS=local npm run build`, `npm run build:e2e-basemap` | Pass. The shell's `index` is 462.5 kB (140.3 kB gzipped), 1.6 kB more than `main` |
+| `npm run e2e` (all specs, SwiftShader) | 87 of 87 passed in 19.1 min. The basemap spec now covers:<ul><li>imagery and Human Geography on the trade map, at every scale;</li><li>Topographic offered on the logistics map and replaced by light grey on the supply view, with the choice kept;</li><li>National Geographic from the stubbed ArcGIS Online web map, and OpenStreetMap from the stubbed open styles;</li><li>axe with a detailed style and the control open.</li></ul> |
 
 ## Not verified, and why
 
