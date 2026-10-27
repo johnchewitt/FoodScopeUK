@@ -74,3 +74,14 @@ export function captureCaption(c: Pick<MapCapture, "extent" | "scale" | "basemap
   const scale = Math.round(c.scale / 1000) * 1000;
   return `Map extent ${formatLatLon(s, w)} to ${formatLatLon(n, e)}; scale about 1:${scale.toLocaleString("en-GB")} at the centre (Web Mercator); ${c.basemap ? `Esri basemap ${c.basemap.replace(/^arcgis\//, "")}` : "offline outline map (no basemap)"}; captured ${c.capturedAt.slice(0, 16).replace("T", " ")} UTC.`;
 }
+
+/**
+ * Esri's recommended caption for a map image used in a report (ArcGIS Online "Terms of use for
+ * static maps", checked 26 Oct 2026): shown on or near the image whenever an Esri basemap is drawn,
+ * with the year the image was made. Null without a basemap (the outline map is Natural Earth).
+ */
+export function esriImageNotice(c: Pick<MapCapture, "basemap" | "capturedAt">): string | null {
+  if (!c.basemap) return null;
+  const year = c.capturedAt.slice(0, 4);
+  return `Map image is the intellectual property of Esri and is used herein under license. Copyright © ${year} Esri and its licensors. All rights reserved.`;
+}

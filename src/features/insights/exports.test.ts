@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { captureCaption, formatLatLon } from "@/map/capture";
+import { captureCaption, esriImageNotice, formatLatLon } from "@/map/capture";
 import { authority, commodity } from "@/test/insightsFixtures";
 import { chartHeight, formatChartValue, reportChartOption } from "./charts";
 import { canonicalJson } from "./checksum";
@@ -143,6 +143,13 @@ describe("map image and checksum helpers", () => {
     expect(
       captureCaption({ extent: [0, 0, 1, 1], scale: 1, basemap: null, capturedAt: "2026-10-26T00:00" }),
     ).toContain("offline outline map (no basemap)");
+  });
+
+  it("adds Esri's map image notice only when an Esri basemap is drawn", () => {
+    expect(esriImageNotice({ basemap: "arcgis/light-gray", capturedAt: "2026-10-26T12:00:00Z" })).toBe(
+      "Map image is the intellectual property of Esri and is used herein under license. Copyright © 2026 Esri and its licensors. All rights reserved.",
+    );
+    expect(esriImageNotice({ basemap: null, capturedAt: "2026-10-26T12:00:00Z" })).toBeNull();
   });
 
   it("wraps credits to the image width", () => {

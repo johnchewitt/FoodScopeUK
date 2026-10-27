@@ -3,7 +3,7 @@
  * image shows (extent, scale, basemap) and the credits of every layer, so the image never travels
  * without its attribution (Esri terms; dataset licences). Browser only (canvas).
  */
-import { captureCaption, type MapCapture } from "@/map/capture";
+import { captureCaption, esriImageNotice, type MapCapture } from "@/map/capture";
 
 const STRIP_FONT = "IBM Plex Sans, system-ui, sans-serif";
 
@@ -42,7 +42,11 @@ export async function composeMapImage(capture: MapCapture, title: string): Promi
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("this browser cannot draw the image");
   ctx.font = `14px ${STRIP_FONT}`;
-  const caption = wrapLines((s) => ctx.measureText(s).width, captureCaption(capture), w - 2 * pad);
+  const caption = wrapLines(
+    (s) => ctx.measureText(s).width,
+    [captureCaption(capture), esriImageNotice(capture)].filter(Boolean).join(" "),
+    w - 2 * pad,
+  );
   const credits = wrapLines(
     (s) => ctx.measureText(s).width,
     `Credits: ${capture.attribution || "—"}`,

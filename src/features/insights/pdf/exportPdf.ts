@@ -7,7 +7,7 @@
 import pdfMake from "pdfmake/build/pdfmake";
 import { AREA_MEASURE_LABELS } from "@/features/profiles/model";
 import { SCENARIO_TITLES } from "@/features/scenarios/methodology";
-import { captureCaption, captureMap, MapCaptureError } from "@/map/capture";
+import { captureCaption, captureMap, esriImageNotice, MapCaptureError } from "@/map/capture";
 import { useAppStore } from "@/state/store";
 import type { AssessmentReport } from "../report";
 import { renderChartImages } from "./chartImages";
@@ -69,7 +69,7 @@ export async function exportReportPdf(report: AssessmentReport, checksum: string
       dataUrl: c.dataUrl,
       widthPx: c.width,
       heightPx: c.height,
-      caption: captureCaption(c),
+      caption: [captureCaption(c), esriImageNotice(c)].filter(Boolean).join(" "),
       credits: c.attribution,
     };
   } catch (e) {
