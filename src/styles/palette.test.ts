@@ -4,8 +4,14 @@ import { readRepoFile } from "@/test/files";
 import {
   BRAND,
   CATEGORICAL,
+  DETAILED_STYLES,
+  haloBoost,
   LIGHT_SEQ,
   MAP_COLOURS,
+  MAP_STYLE_TONE,
+  MAP_STYLES,
+  type MapColours,
+  type MapStyle,
   RISK_DARK,
   RISK_LIGHT,
   MAP_TOKENS,
@@ -60,18 +66,33 @@ describe("palette.ts mirrors tokens.css (map, legend and heatmap share one ramp)
   });
 });
 
-/** The declarations inside the first block that starts with `selector {`. */
+/** Every top-level rule of tokens.css: its selectors and declarations (comments stripped). */
+const RULES = [...tokens.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((m) => ({
+  selectors: m[1]!.split(",").map((s) => s.trim()),
+  decls: new Map([...m[2]!.matchAll(/(--[\w-]+):\s*([^;]+);/g)].map((d) => [d[1]!, d[2]!.trim()])),
+}));
+
+/** The declarations of the rules that list `selector`, later rules winning (as in the cascade). */
 function block(selector: string): Map<string, string> {
-  const start = tokens.indexOf(`${selector} {`);
-  expect(start, selector).toBeGreaterThanOrEqual(0);
-  const body = tokens.slice(start, tokens.indexOf("}", start));
-  return new Map([...body.matchAll(/(--[\w-]+):\s*([^;]+);/g)].map((m) => [m[1]!, m[2]!.trim()]));
+  const rules = RULES.filter((r) => r.selectors.includes(selector));
+  expect(rules.length, selector).toBeGreaterThan(0);
+  return new Map(rules.flatMap((r) => [...r.decls]));
+}
+
+/** The tokens in force for a map style: :root, then the rules for `[data-map-style="<style>"]`. */
+function effective(style: MapStyle): Map<string, string> {
+  const own = RULES.filter((r) => r.selectors.includes(`[data-map-style="${style}"]`));
+  return new Map([...block(":root"), ...own.flatMap((r) => [...r.decls])]);
 }
 
 /** A token value as hex: literal hex, or var(--fs-…) resolved through the :root brand tokens. */
 function resolve(value: string, root: Map<string, string>): string {
   const v = /^var\((--[\w-]+)\)$/.exec(value);
-  return v ? resolve(root.get(v[1]!) ?? "missing", root) : value.toLowerCase();
+  if (v) return resolve(root.get(v[1]!) ?? "missing", root);
+  // The panel ramp is defined as color-mix(in oklab, var(--a) p%, var(--b)) (SEQ_MIX_PERCENT).
+  const mix = /^color-mix\(in oklab, (var\(--[\w-]+\)) (\d+)%, (var\(--[\w-]+\))\)$/.exec(value);
+  if (mix) return mixOklab(resolve(mix[1]!, root), Number(mix[2]), resolve(mix[3]!, root));
+  return value.toLowerCase();
 }
 
 describe("per-basemap colour sets (SH-08, ADR-0022)", () => {
@@ -92,9 +113,51 @@ describe("per-basemap colour sets (SH-08, ADR-0022)", () => {
       expect(resolve(light.get(token) ?? "missing", root), token).toBe(MAP_COLOURS.light[key]);
   });
 
-  it("imagery uses the dark grey symbols (it is offered only at local scale)", () => {
-    for (const key of Object.values(MAP_TOKENS)) expect(MAP_COLOURS.imagery[key]).toBe(MAP_COLOURS.dark[key]);
-    expect(tokens).not.toContain('[data-map-style="imagery"]');
+  it("imagery and Human Geography dark use the dark grey symbols and tokens", () => {
+    for (const style of ["imagery", "human-dark"] as const) {
+      for (const key of Object.values(MAP_TOKENS))
+        expect(MAP_COLOURS[style][key]).toBe(MAP_COLOURS.dark[key]);
+      expect(tokens).not.toContain(`[data-map-style="${style}"]`);
+    }
+  });
+
+  it("every style's tokens are its colour set: map symbols, both ramps (legends match the map)", () => {
+    const root = block(":root");
+    for (const style of MAP_STYLES) {
+      const e = effective(style);
+      for (const [token, key] of Object.entries(MAP_TOKENS))
+        expect(resolve(e.get(token) ?? "missing", root), `${style} ${token}`).toBe(MAP_COLOURS[style][key]);
+      for (let i = 0; i < 6; i++) {
+        expect(resolve(e.get(`--fs-map-seq-${i}`) ?? "missing", root), `${style} seq ${i}`).toBe(
+          MAP_COLOURS[style].seq[i],
+        );
+        expect(resolve(e.get(`--fs-map-risk-${i}`) ?? "missing", root), `${style} risk ${i}`).toBe(
+          MAP_COLOURS[style].risk[i],
+        );
+      }
+    }
+  });
+
+  it("light maps share light grey's colours; the detailed ones darken only four lines", () => {
+    for (const style of MAP_STYLES.filter((s) => MAP_STYLE_TONE[s] === "light"))
+      expect(MAP_COLOURS[style].seq, style).toEqual(LIGHT_SEQ);
+    expect(MAP_COLOURS.human).toEqual(MAP_COLOURS.light);
+    for (const style of DETAILED_STYLES) {
+      const changed = (Object.keys(MAP_COLOURS.light) as (keyof MapColours)[]).filter(
+        (k) => MAP_COLOURS[style][k] !== MAP_COLOURS.light[k],
+      );
+      expect(changed.sort(), style).toEqual(["proximity", "rail", "roadPrimary", "selection", "ukLine"]);
+    }
+  });
+
+  it("halos widen only over busy maps", () => {
+    expect(MAP_STYLES.filter((s) => haloBoost(s) > 0)).toEqual([
+      "imagery",
+      "terrain",
+      "topographic",
+      "natgeo",
+      "osm",
+    ]);
   });
 
   it("the light ramp reads light to dark (OKLab lightness strictly decreasing)", () => {

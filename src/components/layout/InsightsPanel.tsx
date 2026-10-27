@@ -20,13 +20,7 @@ import { describeDataError } from "@/services/data/errors";
 import { familySnapshot, findDataset, useAppConfig, useManifest } from "@/services/data/queries";
 import { ErrorBoundary } from "@/app/ErrorBoundary";
 import { selectRequestedMapStyle, useAppStore } from "@/state/store";
-import type { MapStyle } from "@/styles/palette";
-
-const BASEMAP_TITLES: Record<MapStyle, string> = {
-  dark: "Esri dark grey basemap",
-  light: "Esri light grey basemap",
-  imagery: "Esri imagery with labels",
-};
+import { BASEMAP_NAMES, BASEMAP_SOURCES } from "@/services/arcgis/basemapStyles";
 
 const KEY_GUIDE_URL = "https://github.com/johnchewitt/FoodScopeUK/blob/main/docs/setup/arcgis-api-key.md";
 
@@ -236,15 +230,23 @@ export function InsightsPanel() {
                         : "pending"
                     : "pending"
                 }
-                title={mode === "esri-dark-gray" ? BASEMAP_TITLES[requestedStyle] : "Offline outline map"}
+                title={
+                  mode === "esri-dark-gray"
+                    ? `${BASEMAP_NAMES[requestedStyle]} basemap`
+                    : "Offline outline map"
+                }
                 detail={
                   mode === "esri-dark-gray" ? (
                     basemapLayer?.status === "error" ? (
                       (basemapLayer.message ?? "The Esri basemap could not be loaded.")
                     ) : basemapLayer?.status === "ready" ? (
-                      "Basemap styles service, authorised by the site's API key."
+                      BASEMAP_SOURCES[requestedStyle].kind === "style" ? (
+                        "Basemap styles service, authorised by the site's API key."
+                      ) : (
+                        "Esri's public web map in ArcGIS Online (no key used)."
+                      )
                     ) : (
-                      "Loading the basemap styles service."
+                      "Loading the basemap."
                     )
                   ) : (
                     <>

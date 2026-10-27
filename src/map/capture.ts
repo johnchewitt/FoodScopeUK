@@ -15,7 +15,7 @@ export interface MapCapture {
   zoom: number;
   /** Map scale denominator at the centre (Web Mercator: approximate away from the centre). */
   scale: number;
-  /** The basemap drawn (Esri style id), or null for the offline outline map. */
+  /** The Esri basemap drawn, by name ("Esri Human Geography"), or null for the offline outline map. */
   basemap: string | null;
   /** Credits of the visible layers, as the map shows them ("Esri, TomTom, … | GEOLYTIX …"). */
   attribution: string;
@@ -72,7 +72,7 @@ export function formatLatLon(lat: number, lon: number): string {
 export function captureCaption(c: Pick<MapCapture, "extent" | "scale" | "basemap" | "capturedAt">): string {
   const [w, s, e, n] = c.extent;
   const scale = Math.round(c.scale / 1000) * 1000;
-  return `Map extent ${formatLatLon(s, w)} to ${formatLatLon(n, e)}; scale about 1:${scale.toLocaleString("en-GB")} at the centre (Web Mercator); ${c.basemap ? `Esri basemap ${c.basemap.replace(/^arcgis\//, "")}` : "offline outline map (no basemap)"}; captured ${c.capturedAt.slice(0, 16).replace("T", " ")} UTC.`;
+  return `Map extent ${formatLatLon(s, w)} to ${formatLatLon(n, e)}; scale about 1:${scale.toLocaleString("en-GB")} at the centre (Web Mercator); ${c.basemap ? `basemap ${c.basemap}` : "offline outline map (no basemap)"}; captured ${c.capturedAt.slice(0, 16).replace("T", " ")} UTC.`;
 }
 
 /**

@@ -21,8 +21,9 @@ export const BASEMAP_FAILED_MESSAGE =
 
 /**
  * Owns the Esri basemap (SH-08, ADR-03, ADR-0022):
- * - swaps `map.basemap` when the requested style changes (the visitor's choice; imagery only at
- *   local scale), keeping the `apiKeys.basemapStyles` registration (ADR-0011) untouched;
+ * - swaps `map.basemap` when the requested style changes (the visitor's choice; the detailed
+ *   styles only where the map draws lines and points), keeping the `apiKeys.basemapStyles`
+ *   registration (ADR-0011) untouched;
  * - reports whether the current basemap actually loaded, so the UI never claims a basemap the
  *   visitor cannot see. A view becomes ready even when its basemap's layers fail, so view-ready
  *   alone is not evidence. A failed style falls back to the reference outlines (that controller

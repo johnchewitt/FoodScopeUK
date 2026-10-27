@@ -4,7 +4,7 @@ import UniqueValueInfo from "@arcgis/core/renderers/support/UniqueValueInfo";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
 import { hexToRgb } from "@/analysis/colour";
 import { selectMapColourStyle, type AppState } from "@/state/store";
-import { MAP_COLOURS, type MapStyle } from "@/styles/palette";
+import { MAP_COLOURS, MAP_STYLE_TONE, type MapStyle } from "@/styles/palette";
 import { BASEMAP_STATUS_ID, REFERENCE_LAYER_ID } from "../layerIds";
 import type { LayerController, LayerStatusReporter, ViewLike } from "../types";
 
@@ -28,7 +28,7 @@ function buildRenderer(mode: OutlineMode): UniqueValueRenderer {
   // The UK is the focal geography of every module, so it is outlined (green on dark styles).
   // This is emphasis for orientation, not a data encoding.
   const ukFill = new SimpleFillSymbol({
-    color: [...TEAL, offline ? 0.85 : mode === "light" ? 0.06 : 0.12],
+    color: [...TEAL, offline ? 0.85 : MAP_STYLE_TONE[mode] === "light" ? 0.06 : 0.12],
     outline: { color: [...uk, 0.95], width: 1.3 },
   });
   return new UniqueValueRenderer({

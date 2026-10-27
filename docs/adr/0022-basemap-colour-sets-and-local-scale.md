@@ -49,3 +49,39 @@ Stage 4 also adds the first map with local detail: about 19,000 stores and 361 c
 - **Measured land colour:** light grey's land is `#f4f4f4` below zoom 7 and `#efefef` from zoom 7 (water `#cfd3d4`). The light set passes against all three.
 - **Proximity colour:** the all-pairs check of the overlays failed the normal-vision floor: proximity against selection measured ΔE 11.8 on dark grey and 14.8 on light grey. On dark grey the proximity cyan also equalled the council outlines. Proximity is now pink `#f184c0` on dark grey and imagery, and magenta `#9c0a73` on light grey. On light grey the legend ring is drawn on the light land colour (`--fs-map-sample-ground`), because the legend sits on dark glass.
 - **Opening view:** UK Food Access frames the box around all mapped stores once per visit (`accessMap.frame`). It skips the frame when the map is already at local scale.
+
+## Amendment (27 Oct 2026, more basemaps; John's request)
+- **Nine styles.** John asked for:
+  - Human Geography, light and dark;
+  - imagery at every scale;
+  - Terrain, Topographic, National Geographic and OpenStreetMap, only where the data is lines and points.
+
+  On 27 Oct he confirmed that National Geographic and OpenStreetMap follow the same rule as Terrain and Topographic. `MAP_STYLES` (`src/styles/palette.ts`) is also the list of URL values (`bm`).
+- **Sources.** `BASEMAP_SOURCES` lives in `src/services/arcgis/basemapStyles.ts`, which is SDK-free, so the UI and captions can read it.
+  - Eight styles come from the basemap styles service (`arcgis/human-geography`, `arcgis/human-geography-dark`, `arcgis/terrain`, `arcgis/topographic`, `open/osm-style` beside the original three). They use the same key, registered as `apiKeys.basemapStyles`.
+  - National Geographic is not in that service. It is Esri's public "National Geographic Style Map" web map (`f33a34de3a294590ab48f246e99958c9`), loaded as a portal item with no key. With `useIdentity` off, a layer that needed a sign-in fails and is reported; it never prompts. Its terms for this site are open (B74).
+- **Where each is offered.** `selectMapShadesAreas` (`src/state/store.ts`) says whether the current view shades areas. It mirrors the layer controllers, and the tests check them against the store:
+  - the trade maps;
+  - the Risk Explorer's community view, and its farming regions when a measure is chosen;
+  - UK Food Access councils below local scale, unless the council layer is off;
+  - a deep profile's drawn small areas.
+
+  `DETAILED_STYLES` are offered only where it is false. Elsewhere `selectRequestedMapStyle` shows light grey and keeps the choice, as imagery used to wait for local scale. Imagery and Human Geography are offered everywhere, so `IMAGERY_MODULES` and `selectImageryAvailable` are gone.
+- **Colour sets.** Each new style has a set, checked on 27 Oct 2026 against its land and water colours, which were read from Esri's published styles (S25):
+  - **Human Geography (light)** uses the light set. Land `#f7f7f7`, sea white; lowest share and risk classes 3.0:1.
+  - **Human Geography dark** uses the dark set. Land `#222426`; lowest classes 3.0:1, symbols and lines ≥ 4.9:1.
+  - **Imagery** keeps the dark set with white outlines. Fills are opaque, so the photograph shows only between them.
+  - **The detailed styles** share one set (`DETAILED`): the light set with four darker lines. Selection is indigo `#1a237e`, proximity brown `#4a2a00`, primary roads teal `#00525e`, rail blue `#3949ab`, and the UK outline navy.
+    - Each line is ≥ 3:1 on their land, water, urban and relief colours.
+    - On National Geographic's bright green parks, primary roads (3.0:1) and dashed rail (2.6:1) are lowest.
+    - Within each view, colours drawn together differ by normal-vision ΔE ≥ 13.1 and CVD ΔE ≥ 9.8.
+  - **Halos.** Symbols keep the light set's colours with a wider white halo (`haloBoost`, as on imagery), so they separate from any background.
+- **Tokens.** The light styles share light grey's `[data-map-style]` block (a selector list), and the detailed four override the four line tokens. `palette.test.ts` now resolves every style's effective tokens against its set.
+- **Control.** The control has two groups: five styles under any map, and "Lines and points only".
+  - Where the map shades areas, the detailed four are disabled with a note. A chosen one stays checked and says light grey is shown.
+  - The panel fits the space below the button and scrolls. It is nearly opaque and sits above the Seasonal timeline.
+- **Captions.** Map images and PDFs name the basemap ("basemap Esri National Geographic Style") from the style the controller loaded. Esri's map-image notice applies to all nine. OpenStreetMap's ODbL credit comes with the style's attribution.
+- **Not verified yet.** The real styles were not seen from the sandbox, which cannot reach Esri. The tests stub the styles service and ArcGIS Online.
+  - Each style's look, attribution and request on the live site join the live checks (B48).
+  - Terrain's land colours are estimated, because its relief is a raster.
+

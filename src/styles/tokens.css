@@ -90,6 +90,18 @@
   --fs-basemap-swatch-dark: linear-gradient(135deg, #3d3d3d 55%, #262626 55%);
   --fs-basemap-swatch-light: linear-gradient(135deg, #e6e6e6 55%, #c8c8c8 55%);
   --fs-basemap-swatch-imagery: linear-gradient(135deg, #4b5d3a 0 40%, #6f7c5a 40% 62%, #3a4a5c 62%);
+  --fs-basemap-swatch-human: linear-gradient(135deg, #f7f7f7 55%, #ffffff 55%);
+  --fs-basemap-swatch-human-dark: linear-gradient(135deg, #222426 55%, #2e3033 55%);
+  --fs-basemap-swatch-terrain: linear-gradient(135deg, #e9e3cf 0 40%, #b5b09c 40% 62%, #a4c4d6 62%);
+  --fs-basemap-swatch-topographic: linear-gradient(135deg, #f1f2ea 0 40%, #cfe3b4 40% 62%, #abe1f6 62%);
+  --fs-basemap-swatch-natgeo: linear-gradient(
+    135deg,
+    #e8e7dc 0 36%,
+    #75ad70 36% 56%,
+    #fff34d 56% 68%,
+    #9ecdf2 68%
+  );
+  --fs-basemap-swatch-osm: linear-gradient(135deg, #f2efe9 0 40%, #add19e 40% 62%, #aad3df 62%);
   /* No figures for the month (not yet published / before the snapshot): hatched, never a ramp colour. */
   --fs-hatch: repeating-linear-gradient(135deg, rgb(142 173 174 / 0.32) 0 1.5px, transparent 1.5px 5px);
   /* Comparison year in charts: de-emphasised grey beside the cyan selected year. */
@@ -173,10 +185,16 @@
 }
 
 /*
- * Light grey basemap (SH-08, ADR-0022): validated against #d6d6d6 and #f0f0f0. Panels stay dark
- * glass but nearly opaque, so muted text keeps 4.5:1 over the light map (computed: 4.7:1).
+ * Light maps (SH-08, ADR-0022): light grey, validated against #d6d6d6 and #f0f0f0, and the other
+ * light styles, which share its colours (palette.ts MAP_COLOURS). Panels stay dark glass but nearly
+ * opaque, so muted text keeps 4.5:1 over the light map (computed: 4.7:1).
  */
-[data-map-style="light"] {
+[data-map-style="light"],
+[data-map-style="human"],
+[data-map-style="terrain"],
+[data-map-style="topographic"],
+[data-map-style="natgeo"],
+[data-map-style="osm"] {
   --fs-map-seq-0: #3b9ca7;
   --fs-map-seq-1: #1e8691;
   --fs-map-seq-2: #00717c;
@@ -208,4 +226,19 @@
   /* The legend sits on the dark glass; the magenta ring is drawn on light grey land (#f4f4f4). */
   --fs-map-sample-ground: #f4f4f4;
   --fs-glass: color-mix(in oklab, var(--fs-emerald) 97%, transparent);
+}
+
+/*
+ * Detailed reference maps (Terrain, Topographic, National Geographic, OpenStreetMap; lines and
+ * points only): busy light land, so the four lines drawn in mid tones on light grey are darker
+ * (palette.ts DETAILED, checked against each style's land, water, park and urban colours).
+ */
+[data-map-style="terrain"],
+[data-map-style="topographic"],
+[data-map-style="natgeo"],
+[data-map-style="osm"] {
+  --fs-map-selection: #1a237e;
+  --fs-map-proximity: #4a2a00;
+  --fs-map-road-primary: #00525e;
+  --fs-map-rail: #3949ab;
 }

@@ -30,9 +30,49 @@ export const SHARE_CLASS_HEX: readonly string[] = SEQ_MIX_PERCENT.map((p) =>
 // ---------------------------------------------------------------------------------------------
 // Per-basemap colour sets (SH-08, ADR-0022)
 
-/** Basemap styles the app offers; each has its own colour set for the data drawn on it. */
-export const MAP_STYLES = ["dark", "light", "imagery"] as const;
+/**
+ * Basemap styles the app offers (SH-08, ADR-0022 and its 27 Oct 2026 amendment); each has its own
+ * colour set for the data drawn on it. The ids are also the URL values (`bm`).
+ */
+export const MAP_STYLES = [
+  "dark",
+  "light",
+  "human",
+  "human-dark",
+  "imagery",
+  "terrain",
+  "topographic",
+  "natgeo",
+  "osm",
+] as const;
 export type MapStyle = (typeof MAP_STYLES)[number];
+
+/**
+ * Detailed reference styles: offered only where the map draws lines and points (roads, ports,
+ * stores, outlines), never under shaded areas, which they would compete with (John, 27 Oct 2026).
+ */
+export const DETAILED_STYLES: readonly MapStyle[] = ["terrain", "topographic", "natgeo", "osm"];
+
+/** Whether a style is a dark or a light map (attribution text, the UK tint, the legend ground). */
+export const MAP_STYLE_TONE: Record<MapStyle, "dark" | "light"> = {
+  dark: "dark",
+  light: "light",
+  human: "light",
+  "human-dark": "dark",
+  imagery: "dark",
+  terrain: "light",
+  topographic: "light",
+  natgeo: "light",
+  osm: "light",
+};
+
+/**
+ * Extra outline width on symbols over busy backgrounds (imagery and the detailed styles), so the
+ * white or navy halo separates each symbol from the map beneath it.
+ */
+export function haloBoost(style: MapStyle): number {
+  return style === "imagery" || DETAILED_STYLES.includes(style) ? 0.6 : 0;
+}
 
 export interface MapColours {
   /** Six fixed classes, light → dark reading order of the measure (map fills and legend swatches). */
@@ -156,48 +196,85 @@ const DARK: MapColours = {
 };
 
 /**
- * Colour set per basemap style. Light grey: dark symbols with white outlines (validated against
- * #d6d6d6 and #f0f0f0: CVD worst ΔE 25.0, all ≥ 3:1). Imagery is offered only at local scale,
- * where councils are outlines and stores are individual symbols: the dark set with white council
- * outlines.
+ * Light grey: dark symbols with white outlines (validated against #d6d6d6 and #f0f0f0: CVD worst
+ * ΔE 25.0, all ≥ 3:1).
+ */
+const LIGHT: MapColours = {
+  seq: LIGHT_SEQ,
+  separator: "#ffffff",
+  separatorAlpha: 0.85,
+  noData: "#5f7175",
+  selection: "#46821f",
+  hover: BRAND.navy,
+  connection: BRAND.navy,
+  connectionCasing: "#ffffff",
+  countryLine: BRAND.navy,
+  countryLineAlpha: 0.25,
+  ukLine: "#46821f",
+  councilLine: BRAND.navy,
+  councilLineAlpha: 0.55,
+  storeSupermarket: BRAND.navy,
+  storeConvenience: "#a3410b",
+  storeOther: "#5a3fc0",
+  storeOutline: "#ffffff",
+  registerGrocer: BRAND.navy,
+  clusterFill: BRAND.navy,
+  clusterRing: "#ffffff",
+  clusterText: "#ffffff",
+  // Magenta (was ramp teal #00717c: ΔE 14.8 from the green selection, and the same as class 2).
+  // Normal ΔE ≥ 17.5, CVD ≥ 9.2 against overlays, symbols and ramp ends; 6.75:1 on #efefef.
+  proximity: "#9c0a73",
+  proximityPoint: BRAND.navy,
+  proximityPointOutline: "#ffffff",
+  risk: RISK_LIGHT,
+  roadStrategic: BRAND.navy,
+  roadPrimary: "#5f7175",
+  portFill: BRAND.navy,
+  portOutline: "#ffffff",
+  // Normal ΔE ≥ 19.5, CVD ≥ 17.9 against roads, port and ramp colours on #d6d6d6; ≥ 3:1.
+  rail: "#5a3fc0",
+};
+
+/**
+ * The detailed styles (Terrain, Topographic, National Geographic, OpenStreetMap; lines and points
+ * only). Their land is light but busy: greens, tans, yellow towns and blue water. Symbols keep the
+ * light set's colours inside a wider white halo (`haloBoost`), which is what separates them from
+ * any background. Lines have no halo, so the four coloured lines the light set draws in mid tones
+ * are darker here. Checked on 27 Oct 2026 against the styles' published land, water, park, urban
+ * and relief colours (docs/03-DATA-SOURCES.md, S25):
+ * - navy (councils, strategic roads, ports, UK outline) ≥ 6.0:1 on all of them, and 4.1:1 on
+ *   National Geographic's darkest land tint (#72802d, z9);
+ * - selection indigo ≥ 5.2:1 (4.5:1 on National Geographic's bright green parks, #28ad1c),
+ *   proximity brown ≥ 5.1:1 (4.4:1), primary roads teal ≥ 3.5:1 (3.0:1) and rail blue ≥ 3.1:1
+ *   (2.6:1; rail is also dashed);
+ * - within each view, normal-vision ΔE ≥ 13.1 and CVD ΔE ≥ 9.8 between the colours drawn
+ *   together (access: stores, selection, proximity; logistics: roads, rail, selection, the warm
+ *   entry ring; closure: circles, selection).
+ */
+const DETAILED: MapColours = {
+  ...LIGHT,
+  selection: "#1a237e",
+  ukLine: BRAND.navy,
+  proximity: "#4a2a00",
+  roadPrimary: "#00525e",
+  rail: "#3949ab",
+};
+
+/**
+ * Colour set per basemap style.
+ * - Human Geography (light) is the light set: its land is #f7f7f7 and its sea white, a little
+ *   lighter than light grey's (lowest share class 3.0:1 and lowest risk class 3.0:1 on the land,
+ *   3.2:1 on the sea).
+ * - Human Geography (dark) is the dark set: land #222426, sea #26282a, darker than dark grey's
+ *   (lowest share and risk classes 3.0:1 on the land, 2.8:1 on the sea; symbols and lines ≥ 4.9:1).
+ * - Imagery is offered at every scale (27 Oct 2026): the dark set with white council and country
+ *   outlines. Fills are opaque, so the photograph shows only around and between them.
  */
 export const MAP_COLOURS: Record<MapStyle, MapColours> = {
   dark: DARK,
-  light: {
-    seq: LIGHT_SEQ,
-    separator: "#ffffff",
-    separatorAlpha: 0.85,
-    noData: "#5f7175",
-    selection: "#46821f",
-    hover: BRAND.navy,
-    connection: BRAND.navy,
-    connectionCasing: "#ffffff",
-    countryLine: BRAND.navy,
-    countryLineAlpha: 0.25,
-    ukLine: "#46821f",
-    councilLine: BRAND.navy,
-    councilLineAlpha: 0.55,
-    storeSupermarket: BRAND.navy,
-    storeConvenience: "#a3410b",
-    storeOther: "#5a3fc0",
-    storeOutline: "#ffffff",
-    registerGrocer: BRAND.navy,
-    clusterFill: BRAND.navy,
-    clusterRing: "#ffffff",
-    clusterText: "#ffffff",
-    // Magenta (was ramp teal #00717c: ΔE 14.8 from the green selection, and the same as class 2).
-    // Normal ΔE ≥ 17.5, CVD ≥ 9.2 against overlays, symbols and ramp ends; 6.75:1 on #efefef.
-    proximity: "#9c0a73",
-    proximityPoint: BRAND.navy,
-    proximityPointOutline: "#ffffff",
-    risk: RISK_LIGHT,
-    roadStrategic: BRAND.navy,
-    roadPrimary: "#5f7175",
-    portFill: BRAND.navy,
-    portOutline: "#ffffff",
-    // Normal ΔE ≥ 19.5, CVD ≥ 17.9 against roads, port and ramp colours on #d6d6d6; ≥ 3:1.
-    rail: "#5a3fc0",
-  },
+  light: LIGHT,
+  human: LIGHT,
+  "human-dark": DARK,
   imagery: {
     ...DARK,
     countryLine: "#ffffff",
@@ -205,6 +282,10 @@ export const MAP_COLOURS: Record<MapStyle, MapColours> = {
     councilLine: "#ffffff",
     councilLineAlpha: 0.85,
   },
+  terrain: DETAILED,
+  topographic: DETAILED,
+  natgeo: DETAILED,
+  osm: DETAILED,
 };
 
 /**

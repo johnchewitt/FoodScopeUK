@@ -6,7 +6,7 @@ import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
 import { hexToRgb } from "@/analysis/colour";
 import type { GrocerPoint, ProfileMapModel } from "@/state/store";
-import { MAP_COLOURS, type MapStyle } from "@/styles/palette";
+import { haloBoost, MAP_COLOURS, type MapStyle } from "@/styles/palette";
 
 /**
  * Symbols for the Local Authority Profiles small-area layer (LP-06) and the NI grocers layer
@@ -64,7 +64,7 @@ export function grocerSymbol(style: MapStyle): SimpleMarkerSymbol {
     style: "diamond",
     size: 9,
     color: [0, 0, 0, 0],
-    outline: { color: rgba(c.registerGrocer, 0.95), width: 1.6 + (style === "imagery" ? 0.4 : 0) },
+    outline: { color: rgba(c.registerGrocer, 0.95), width: 1.6 + haloBoost(style) * (2 / 3) },
   });
 }
 

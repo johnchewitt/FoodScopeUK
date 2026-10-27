@@ -132,33 +132,81 @@ test.describe("Basemap choice", () => {
     await expect(attribution(page)).toContainText(STUB_ATTRIBUTION("light-gray"));
   });
 
-  test("imagery is offered only at local scale in UK Food Access", async ({ page }) => {
+  test("imagery and Human Geography are offered under any map, at every scale", async ({ page }) => {
     const requested = await stubBasemapStyles(page);
     await page.goto("./");
     await ready(page);
     await control(page).click();
-    await expect(page.getByRole("radio", { name: /Imagery/ })).toBeDisabled();
-    await expect(page.getByText("Imagery is offered in UK Food Access at local scale.")).toBeVisible();
-
-    await page.goto("./?m=access");
-    await ready(page);
-    await control(page).click();
-    await expect(page.getByRole("radio", { name: /Imagery/ })).toBeDisabled();
-    await zoomTo(page, -2.2426, 53.4808, 13);
-    await expect(page.getByRole("radio", { name: /Imagery/ })).toBeEnabled();
     await page.getByRole("radio", { name: /Imagery/ }).check();
     await expect(page).toHaveURL(/bm=imagery/);
     await expect.poll(() => styleOnView(page)).toBe("imagery");
     await ready(page);
     await expect(attribution(page)).toContainText(STUB_ATTRIBUTION("imagery"));
-    // Zooming out keeps the choice but shows dark grey until local scale again.
-    await zoomTo(page, -2.5, 54, 6);
-    await expect.poll(() => styleOnView(page)).toBe("dark");
-    await expect(page).toHaveURL(/bm=imagery/);
+    // No longer limited to local scale (27 Oct 2026): zooming in and out keeps it.
     await zoomTo(page, -2.2426, 53.4808, 13);
+    await zoomTo(page, -2.5, 54, 4);
     await expect.poll(() => styleOnView(page)).toBe("imagery");
-    // Two page loads on dark grey, then imagery, dark grey when zoomed out, imagery again.
-    expect(runs(requested)).toEqual(["dark-gray", "imagery", "dark-gray", "imagery"]);
+    await page.getByRole("radio", { name: /Human Geography Light/ }).check();
+    await expect.poll(() => styleOnView(page)).toBe("human");
+    await ready(page);
+    await expect(page.locator(".app")).toHaveAttribute("data-map-style", "human");
+    await expect.poll(() => partnerFill(page, "NL")).toBe(SEQ.light[4]);
+    await page.getByRole("radio", { name: /Human Geography dark/ }).check();
+    await expect.poll(() => styleOnView(page)).toBe("human-dark");
+    await ready(page);
+    await expect.poll(() => partnerFill(page, "NL")).toBe(SEQ.dark[4]);
+    expect(runs(requested)).toEqual(["dark-gray", "imagery", "human-geography", "human-geography-dark"]);
+  });
+
+  test("detailed styles are offered only where the map draws lines and points", async ({ page }) => {
+    const errors = trackConsoleErrors(page);
+    const requested = await stubBasemapStyles(page);
+    await page.goto("./");
+    await ready(page);
+    await control(page).click();
+    await expect(page.getByRole("radio", { name: /Topographic/ })).toBeDisabled();
+    await expect(page.getByText(/offered where the map draws only lines and points/)).toBeVisible();
+
+    // The Risk Explorer's logistics map: roads, rail and ports.
+    await page.goto("./?m=risks&rv=logistics");
+    await ready(page);
+    await control(page).click();
+    await page.getByRole("radio", { name: /Topographic/ }).check();
+    await expect(page).toHaveURL(/bm=topographic/);
+    await expect.poll(() => styleOnView(page)).toBe("topographic");
+    await ready(page);
+    await expect(page.locator(".app")).toHaveAttribute("data-map-style", "topographic");
+    await expect(attribution(page)).toContainText(STUB_ATTRIBUTION("topographic"));
+    // The supply view shades partner countries: light grey stands in and the choice is kept.
+    await page.goto("./?m=risks&rv=supply&bm=topographic");
+    await ready(page);
+    await expect.poll(() => styleOnView(page)).toBe("light");
+    await expect(page).toHaveURL(/bm=topographic/);
+    await control(page).click();
+    await expect(page.getByText(/Topographic is chosen: light grey is shown/)).toBeVisible();
+    // Two page loads on dark grey (repeats collapse), Topographic, then light grey standing in.
+    expect(runs(requested)).toEqual(["dark-gray", "topographic", "light-gray"]);
+    expect(errors, `console errors:\n${errors.join("\n")}`).toEqual([]);
+  });
+
+  test("National Geographic loads Esri's public web map; OpenStreetMap comes from the open styles", async ({
+    page,
+  }) => {
+    const errors = trackConsoleErrors(page);
+    const requested = await stubBasemapStyles(page);
+    await page.goto("./?m=scenarios&sk=port&bm=natgeo");
+    await ready(page);
+    await expect.poll(() => styleOnView(page)).toBe("natgeo");
+    await expect(page.locator(".app")).toHaveAttribute("data-map-style", "natgeo");
+    await expect(attribution(page)).toContainText(STUB_ATTRIBUTION("natgeo"));
+    await expect(control(page)).toHaveAccessibleName("Basemap: National Geographic. Change basemap");
+    await control(page).click();
+    await page.getByRole("radio", { name: /OpenStreetMap/ }).check();
+    await expect.poll(() => styleOnView(page)).toBe("osm");
+    await ready(page);
+    await expect(attribution(page)).toContainText(STUB_ATTRIBUTION("osm-style"));
+    expect(runs(requested)).toEqual(["natgeo", "osm-style"]);
+    expect(errors, `console errors:\n${errors.join("\n")}`).toEqual([]);
   });
 
   test("a style that fails falls back to the outline map and the dark colour set", async ({ page }) => {
@@ -170,6 +218,18 @@ test.describe("Basemap choice", () => {
     await expect(
       page.getByRole("complementary", { name: "Insights" }).getByText(/basemap could not be loaded/),
     ).toBeVisible();
+  });
+
+  test("no serious or critical accessibility violations with a detailed style and the control open", async ({
+    page,
+  }) => {
+    await stubBasemapStyles(page);
+    await page.goto("./?m=risks&rv=logistics&bm=natgeo");
+    await ready(page);
+    await control(page).click();
+    const results = await new AxeBuilder({ page }).exclude("arcgis-map").analyze();
+    const serious = results.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
+    expect(serious.map((v) => `${v.id}: ${v.help} (${v.nodes.length})`)).toEqual([]);
   });
 
   for (const bm of ["dark", "light"] as const)
