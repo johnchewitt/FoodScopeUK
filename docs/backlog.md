@@ -76,3 +76,4 @@ Ideas and follow-ups that are outside the current stage's scope. Move an item in
 | B70 | PDF map legend drawn as a graphic (it is described in words) and a scale bar for local maps | Stage 8 | Release 2 |
 | B71 | ✅ **Done 27 Oct 2026** (logo supplied by John). ConsultingWhere logo for the PDF cover and the app (decision D3) | Stage 8 | Done (Stage 8) |
 | B72 | Insights assessments for a region or a group of councils (combined), and a council-versus-council assessment that respects the nation rules (LP-07) | Stage 8 | Release 2 |
+| B73 | CI end-to-end time: the suite runs in software WebGL with one worker (about 26 min on `main` before Stage 8; over 27 min with Stage 8's tests, so the web job's limit went from 30 to 50 min on PR #24). Shard the E2E specs across two jobs, or try two workers, and cache Playwright's browser | PR #24 CI | 9 |
