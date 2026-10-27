@@ -7,7 +7,7 @@ import {
 } from "@/analysis/retail";
 
 /** Overlays that can be deep-linked (SH-06 Evidence page, Help, LP-07 council comparison). */
-export const OVERLAYS = ["none", "evidence", "help", "compare"] as const;
+export const OVERLAYS = ["none", "evidence", "help", "compare", "search"] as const;
 export type Overlay = (typeof OVERLAYS)[number];
 
 export const PERIOD_MODES = ["rolling12", "month", "year"] as const;

@@ -3999,3 +3999,90 @@ li[data-hidden-at-scale] .grocer-symbol {
     --calcite-dialog-max-size-y: 100vh;
   }
 }
+
+/* Global search (Stage 8 UX review) */
+.search-dialog {
+  gap: 12px;
+}
+.search-groups,
+.search-groups ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.search-groups {
+  gap: 14px;
+}
+.search-group__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 4px;
+  font-size: var(--fs-text-xs);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fs-text-muted);
+}
+.search-hit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius-sm);
+}
+.search-hit__text {
+  display: grid;
+  min-width: 0;
+}
+.search-hit__name {
+  font-size: var(--fs-text-sm);
+  color: var(--fs-text);
+}
+.search-hit__meta {
+  font-size: var(--fs-text-xs);
+  color: var(--fs-text-muted);
+}
+.search-hit__actions {
+  display: flex;
+  gap: 6px;
+}
+
+/*
+ * Laptops (B62): with both side panels open the four key figures share the free map width instead
+ * of the fourth sliding under the insights panel; five-card modules shrink the same way.
+ */
+@media (min-width: 768px) {
+  .kpi-strip {
+    container-type: inline-size;
+  }
+  .kpi-card {
+    min-width: max(136px, min(176px, calc((100% - 30px) / 4)));
+  }
+  .kpi-strip:has(> .kpi-card:nth-child(5)) > .kpi-card {
+    min-width: max(136px, min(176px, calc((100% - 40px) / 5)));
+  }
+  @container (max-width: 700px) {
+    .kpi-card {
+      padding-inline: 12px;
+    }
+  }
+}
+
+/* Evidence dialog at tablet width (B60): long URLs, codes and attributions wrap inside the dialog. */
+.dialog-body .data-table td,
+.dialog-body .data-table th,
+.dialog-body code {
+  overflow-wrap: anywhere;
+}
+
+/* Phones (B61): a lowered sheet leaves the map visible; its header stays, the body scrolls. */
+@media (max-width: 767px) {
+  .panel[data-peek="true"] {
+    max-height: 30dvh;
+  }
+}

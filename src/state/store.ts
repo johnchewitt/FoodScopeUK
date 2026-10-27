@@ -122,6 +122,8 @@ export interface AppState extends UrlState {
   insightsAssessment: InsightsAssessmentState | null;
   /** The full-report view is open (not in the URL). */
   reportOpen: boolean;
+  /** Phones: the open panel is lowered to a short strip so the map shows (B61; not in the URL). */
+  sheetPeek: boolean;
 
   // Actions
   setModule: (module: ModuleId) => void;
@@ -206,6 +208,7 @@ export interface AppState extends UrlState {
   setHoverScenario: (hover: HoverScenario | null) => void;
   setInsightsAssessment: (a: InsightsAssessmentState | null) => void;
   setReportOpen: (open: boolean) => void;
+  setSheetPeek: (peek: boolean) => void;
 
   setBreakpoint: (bp: Breakpoint) => void;
   toggleFilterPanel: (open?: boolean) => void;
@@ -578,6 +581,7 @@ export const initialState = {
   hoverScenario: null,
   insightsAssessment: null,
   reportOpen: false,
+  sheetPeek: false,
 };
 
 export const useAppStore = create<AppState>()((set, get) => ({
@@ -717,6 +721,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
   setHoverScenario: (hoverScenario) => set({ hoverScenario }),
   setInsightsAssessment: (insightsAssessment) => set({ insightsAssessment }),
   setReportOpen: (reportOpen) => set({ reportOpen }),
+  setSheetPeek: (sheetPeek) => set({ sheetPeek }),
   setMapView: (mapView) => {
     const prev = get().mapView;
     const same =
@@ -875,6 +880,25 @@ export function selectMapColourStyle(
 ): MapStyle {
   if (s.layerStatus[BASEMAP_STATUS_ID]?.status === "error") return "dark";
   return selectRequestedMapStyle(s);
+}
+
+/**
+ * The top bar's Export (Stage 8): exports live in ConsultingWhere Insights, so it opens the
+ * assessment that matches the current view (a council, the commodity on screen, or the Scenario
+ * Lab run) with its PDF, CSV and map image buttons.
+ */
+export function openExportFor(s: AppState): void {
+  const kind: InsightsKind =
+    s.module === "scenarios"
+      ? "scenario"
+      : s.module === "origins" || s.module === "seasonal" || (s.module === "risks" && s.riskView === "supply")
+        ? "commodity"
+        : s.module === "insights"
+          ? s.insightsKind
+          : "authority";
+  s.setInsightsKind(kind);
+  s.setModule("insights");
+  s.toggleFilterPanel(true);
 }
 
 /** Reset helper for tests. */

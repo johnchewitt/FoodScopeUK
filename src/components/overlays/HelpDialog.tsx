@@ -12,6 +12,7 @@ const SHORTCUTS: [string, string][] = [
     "Arrows",
     "Pan the map (when it has focus); then “Map centre” measures straight-line distances from there",
   ],
+  ["/", "Search councils, commodities and modules"],
   ["?", "Open this help"],
   ["Esc", "Close a dialog"],
 ];

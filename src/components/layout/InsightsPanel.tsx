@@ -1,6 +1,7 @@
 import { BookOpenCheck, CircleCheck, CircleDashed, PanelRightClose, TriangleAlert } from "lucide-react";
 import type { ReactNode } from "react";
 import { getModule } from "@/app/modules";
+import { SheetSizeToggle } from "./SheetSizeToggle";
 import { ChartFrame } from "@/components/charts/ChartFrame";
 import { EmptyState } from "@/components/states/EmptyState";
 import { PartialNotice } from "@/components/states/Notice";
@@ -47,6 +48,7 @@ function StatusItem({ tone, title, detail }: { tone: Tone; title: string; detail
 /** Right-hand insights panel: what this view will show, what data is loaded, and the rules it follows. */
 export function InsightsPanel() {
   const module = useAppStore((s) => s.module);
+  const peek = useAppStore((s) => s.sheetPeek && s.breakpoint === "mobile");
   const open = useAppStore((s) => s.insightsOpen);
   const toggle = useAppStore((s) => s.toggleInsights);
   const openOverlay = useAppStore((s) => s.openOverlay);
@@ -78,6 +80,7 @@ export function InsightsPanel() {
     <aside
       id="insights-panel"
       className="panel insights-panel glass"
+      data-peek={peek}
       data-open={open}
       aria-label="Insights"
       aria-hidden={!open}
@@ -88,6 +91,7 @@ export function InsightsPanel() {
           <h2 className="panel__title">Insights</h2>
           <p className="panel__subtitle">{mod.label}</p>
         </div>
+        <SheetSizeToggle />
         <button type="button" className="tool-btn" onClick={() => toggle(false)} aria-label="Hide insights">
           <PanelRightClose size={17} aria-hidden="true" />
         </button>

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   LOCAL_ZOOM,
+  openExportFor,
   resetAppStore,
   selectImageryAvailable,
   selectLocalScale,
@@ -372,5 +373,29 @@ describe("Consulting Insights map (Stage 8, ADR-0027)", () => {
     s().setInsightsKind("commodity");
     expect(s().insightsKind).toBe("commodity");
     expect(selectUrlState(s()).insightsKind).toBe("commodity");
+  });
+});
+
+describe("top bar Export (Stage 8 UX review)", () => {
+  it("opens the ConsultingWhere Insights assessment that matches the view", () => {
+    const cases: [Partial<ReturnType<typeof s>>, string][] = [
+      [{ module: "profiles", lad: "E08000003" }, "authority"],
+      [{ module: "access" }, "authority"],
+      [{ module: "origins" }, "commodity"],
+      [{ module: "seasonal" }, "commodity"],
+      [{ module: "risks", riskView: "supply" }, "commodity"],
+      [{ module: "risks", riskView: "access" }, "authority"],
+      [{ module: "scenarios" }, "scenario"],
+    ];
+    for (const [state, kind] of cases) {
+      resetAppStore();
+      useAppStore.setState(state);
+      openExportFor(useAppStore.getState());
+      const s = useAppStore.getState();
+      expect(s.module).toBe("insights");
+      expect(s.insightsKind).toBe(kind);
+      expect(s.filterPanelOpen).toBe(true);
+    }
+    expect(useAppStore.getState().lad).toBeNull();
   });
 });

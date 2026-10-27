@@ -9,6 +9,7 @@ import { loadMapHost } from "@/components/maps/loadMapHost";
 import { MapControls } from "@/components/maps/MapControls";
 import { EvidenceDialog } from "@/components/overlays/EvidenceDialog";
 import { HelpDialog } from "@/components/overlays/HelpDialog";
+import { SearchDialogLazy } from "@/features/search/lazy";
 import {
   useBreakpoint,
   useKeyboardShortcuts,
@@ -121,6 +122,7 @@ export function App() {
       </main>
       <EvidenceDialog />
       <HelpDialog />
+      <SearchDialogLazy />
       <ErrorBoundary region="Council comparison">
         <CompareDialogLazy />
       </ErrorBoundary>

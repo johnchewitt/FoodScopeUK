@@ -1,26 +1,8 @@
 import { CircleHelp, Download, Menu, PanelRight, Search, SlidersHorizontal } from "lucide-react";
-import type { ReactNode } from "react";
 import { getModule } from "@/app/modules";
 import { summariseFreshness, useManifest } from "@/services/data/queries";
-import { useAppStore } from "@/state/store";
+import { openExportFor, useAppStore } from "@/state/store";
 import { BrandMark } from "./BrandMark";
-
-/** A header button for a capability that exists in the plan but not in this build. */
-function PlannedTool({ icon, label, plannedFor }: { icon: ReactNode; label: string; plannedFor: string }) {
-  return (
-    <button
-      type="button"
-      className="tool-btn hide-compact"
-      aria-disabled="true"
-      title={`${label} — ${plannedFor}`}
-      aria-label={`${label} (not available yet: ${plannedFor})`}
-      onClick={(e) => e.preventDefault()}
-    >
-      {icon}
-      <span className="tool-btn__label">{label}</span>
-    </button>
-  );
-}
 
 export function TopBar() {
   const module = useAppStore((s) => s.module);
@@ -34,6 +16,7 @@ export function TopBar() {
   const manifest = useManifest();
   const freshness = summariseFreshness(manifest.data, manifest.status);
   const mod = getModule(module);
+  const openExport = () => openExportFor(useAppStore.getState());
 
   return (
     <header className="topbar">
@@ -66,11 +49,16 @@ export function TopBar() {
       </div>
 
       <div className="topbar__tools">
-        <PlannedTool
-          icon={<Search size={17} aria-hidden="true" />}
-          label="Search"
-          plannedFor="arrives with local authority profiles (build stage 5)"
-        />
+        <button
+          type="button"
+          className="tool-btn hide-compact"
+          onClick={() => openOverlay("search")}
+          aria-label="Search councils, commodities and modules (/)"
+          title="Search (/)"
+        >
+          <Search size={17} aria-hidden="true" />
+          <span className="tool-btn__label">Search</span>
+        </button>
         <button
           type="button"
           className="tool-btn"
@@ -80,11 +68,16 @@ export function TopBar() {
           <CircleHelp size={17} aria-hidden="true" />
           <span className="tool-btn__label hide-compact">Help</span>
         </button>
-        <PlannedTool
-          icon={<Download size={17} aria-hidden="true" />}
-          label="Export"
-          plannedFor="profile PDF export arrives in build stage 8"
-        />
+        <button
+          type="button"
+          className="tool-btn hide-compact"
+          onClick={openExport}
+          aria-label="Export: open the matching ConsultingWhere Insights assessment (PDF, CSV, map image)"
+          title="Export a PDF report, CSV or map image of this view"
+        >
+          <Download size={17} aria-hidden="true" />
+          <span className="tool-btn__label">Export</span>
+        </button>
         <span className="tool-sep hide-compact" aria-hidden="true" />
         <button
           type="button"
