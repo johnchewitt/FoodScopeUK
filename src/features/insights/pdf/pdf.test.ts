@@ -6,7 +6,7 @@ import { formatByUnit } from "@/analysis/format";
 import { authority, commodity, scenario, SPAIN_TOMATOES } from "@/test/insightsFixtures";
 import { reportChecksum, shortChecksum } from "../checksum";
 import type { AssessmentReport } from "../report";
-import { buildPdfDocument, type PdfAssets } from "./document";
+import { buildPdfDocument, headingWouldEndPage, PAGE, type PdfAssets } from "./document";
 import { pdfText } from "./sanitize";
 
 /*
@@ -29,7 +29,11 @@ const FONTS = {
 const PIXEL =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4//8/AAX+Av4N70a4AAAAAElFTkSuQmCC";
 
-async function writePdf(r: AssessmentReport, checksum: string, map = false): Promise<Uint8Array> {
+async function writePdf(
+  r: AssessmentReport,
+  checksum: string,
+  map: boolean | { widthPx: number; heightPx: number } = false,
+): Promise<Uint8Array> {
   const pdfmake = require("pdfmake") as PdfMakeInstance & {
     setLocalAccessPolicy(cb: (p: string) => boolean): void;
   };
@@ -40,8 +44,7 @@ async function writePdf(r: AssessmentReport, checksum: string, map = false): Pro
     map: map
       ? {
           dataUrl: PIXEL,
-          widthPx: 1600,
-          heightPx: 1000,
+          ...(typeof map === "object" ? map : { widthPx: 1600, heightPx: 1000 }),
           caption:
             "Map extent 53.40° N, 2.32° W to 53.55° N, 2.15° W; scale about 1:150,000 at the centre (Web Mercator).",
           credits: "Esri, TomTom | Contains GEOLYTIX Grocery Retail Points data | Powered by Esri",
@@ -165,4 +168,89 @@ describe("PDF text and font", () => {
     b.kpis[0]!.indicator.value = 1;
     expect(await reportChecksum(b)).not.toBe(await reportChecksum(a));
   });
+});
+
+describe("PDF page layout", () => {
+  // Obviously synthetic node infos: content, and the running header or footer.
+  const content = { text: "A" };
+  const runningNode = { text: "Page 1 of 1", style: "running" };
+  const following = (...n: object[]) => ({ getFollowingNodesOnPage: () => n });
+
+  it("moves a heading to the next page when only the running header or footer follows it", () => {
+    expect(headingWouldEndPage({ headlineLevel: 2 }, following())).toBe(true);
+    expect(headingWouldEndPage({ headlineLevel: 2 }, following(runningNode, runningNode))).toBe(true);
+    expect(headingWouldEndPage({ headlineLevel: 2 }, following(content, runningNode))).toBe(false);
+    expect(headingWouldEndPage({ headlineLevel: 3 }, following(content))).toBe(false);
+    expect(headingWouldEndPage({}, following())).toBe(false);
+  });
+
+  /**
+   * The lowest thing in the body area of each page: a text run with its font size, or an image.
+   * PDF y runs up from the bottom edge, so the body lies between the bottom and top margins.
+   */
+  async function lastOnEachPage(bytes: Uint8Array): Promise<{ page: number; what: string; size: number }[]> {
+    const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+    const { OPS, Util } = pdfjs;
+    const doc = await pdfjs.getDocument({ data: new Uint8Array(bytes), useSystemFonts: false }).promise;
+    const inBody = (y: number) => y > PAGE.margin[3] && y < PAGE.height - PAGE.margin[1];
+    const out: { page: number; what: string; size: number }[] = [];
+    for (let i = 1; i <= doc.numPages; i++) {
+      const page = await doc.getPage(i);
+      const marks: { what: string; y: number; size: number }[] = [];
+      for (const it of (await page.getTextContent()).items)
+        if ("str" in it && it.str.trim())
+          marks.push({
+            what: it.str,
+            y: it.transform[5],
+            size: Math.hypot(it.transform[0], it.transform[1]),
+          });
+      // Images: follow the transformation matrix to each painted image's lower edge.
+      const ops = await page.getOperatorList();
+      let ctm = [1, 0, 0, 1, 0, 0];
+      const saved: number[][] = [];
+      ops.fnArray.forEach((fn, k) => {
+        if (fn === OPS.save) saved.push(ctm);
+        else if (fn === OPS.restore) ctm = saved.pop() ?? [1, 0, 0, 1, 0, 0];
+        else if (fn === OPS.transform) ctm = Util.transform(ctm, ops.argsArray[k] as number[]);
+        else if (fn === OPS.paintImageXObject)
+          marks.push({ what: "image", y: Math.min(ctm[5]!, ctm[5]! + ctm[3]!), size: 0 });
+      });
+      const body = marks.filter((m) => inBody(m.y));
+      const last = body.reduce((a, b) => (b.y < a.y ? b : a), body[0]!);
+      if (last) out.push({ page: i, what: last.what, size: last.size });
+    }
+    return out;
+  }
+
+  /** Table titles and the attribution label: each must stay with what it introduces. */
+  const titles = (r: AssessmentReport) => [
+    ...r.sections.flatMap((s) => s.tables.map((tb) => tb.caption)),
+    "Stated rules, observed values and whether each fired",
+    "Data sources",
+    "Published datasets used (FOODSCOPE UK data snapshots)",
+    "Attribution",
+  ];
+
+  it("never ends a page with a heading or a table title, whatever the map's shape", async () => {
+    const reports = [authority("E08000003"), commodity("tomatoes"), scenario(SPAIN_TOMATOES)];
+    // A tall map (a narrow visible map beside both panels) was pushed alone onto the next page,
+    // leaving its heading at the foot of the page before.
+    for (const r of reports)
+      for (const map of [
+        { widthPx: 1600, heightPx: 1000 },
+        { widthPx: 600, heightPx: 900 },
+      ]) {
+        const ends = await lastOnEachPage(await writePdf(r, "a".repeat(64), map));
+        for (const e of ends) {
+          const where = `${r.subject} p${e.page}: ${e.what}`;
+          // Headings are 13 pt (h2) and 10.5 pt (h3); body text is at most 9 pt.
+          expect(e.size, where).toBeLessThan(10);
+          // Nor a table's title without its table.
+          expect(
+            titles(r).some((c) => squash(c).endsWith(squash(e.what))),
+            where,
+          ).toBe(false);
+        }
+      }
+  }, 120_000);
 });

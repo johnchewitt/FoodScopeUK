@@ -132,7 +132,8 @@ function tableNode(tb: ReportTable, widthsOverride?: (number | string)[]): PdfNo
   const widths = widthsOverride ?? tb.columns.map((_, i) => (i === 0 ? "*" : "auto"));
   return {
     stack: [
-      { text: t(tb.caption), style: "caption" },
+      // A table's title keeps to its table (headingWouldEndPage); level 4 is not in the outline.
+      { text: t(tb.caption), style: "caption", headlineLevel: 4 },
       {
         table: {
           headerRows: 1,
@@ -447,7 +448,7 @@ export function buildPdfDocument(r: AssessmentReport, a: PdfAssets): Record<stri
       },
       ["*", 54, 160, 54],
     ),
-    { text: "Attribution", style: "label" },
+    { text: "Attribution", style: "label", headlineLevel: 4 },
     bullets([...new Set(r.datasets.map((d) => d.attribution))], "small"),
     heading("Report integrity", 3),
     {
@@ -481,6 +482,7 @@ export function buildPdfDocument(r: AssessmentReport, a: PdfAssets): Record<stri
     },
     defaultStyle: { font: "PlexSans", fontSize: 9, color: C.ink, lineHeight: 1.25 },
     styles: {
+      [RUNNING]: {},
       title: { fontSize: 22, bold: true, color: C.navy, margin: [0, 0, 0, 4] },
       subject: { fontSize: 15, color: C.teal, margin: [0, 0, 0, 2] },
       h1: { fontSize: 18, bold: true, color: C.navy },
@@ -502,50 +504,83 @@ export function buildPdfDocument(r: AssessmentReport, a: PdfAssets): Record<stri
     header: (currentPage: number) =>
       currentPage === 1
         ? null
-        : {
+        : running({
             columns: [
               { text: "FOODSCOPE UK · ConsultingWhere Insights", fontSize: 7, color: C.muted },
               { text: pdfText(`${r.title} · ${r.subject}`), fontSize: 7, color: C.muted, alignment: "right" },
             ],
             margin: [40, 24, 40, 0],
+          }),
+    footer: (currentPage: number, pageCount: number) =>
+      running({
+        stack: [
+          {
+            canvas: [
+              { type: "line", x1: 0, y1: 0, x2: CONTENT_WIDTH, y2: 0, lineWidth: 0.5, lineColor: C.line },
+            ],
           },
-    footer: (currentPage: number, pageCount: number) => ({
-      stack: [
-        {
-          canvas: [
-            { type: "line", x1: 0, y1: 0, x2: CONTENT_WIDTH, y2: 0, lineWidth: 0.5, lineColor: C.line },
-          ],
-        },
-        {
-          columns: [
-            {
-              text: "Exploratory geospatial assessment from published open data: not a commissioned food security audit.",
-              fontSize: 6.5,
-              color: C.muted,
-            },
-            {
-              text: `Page ${currentPage} of ${pageCount}`,
-              fontSize: 7,
-              color: C.ink,
-              alignment: "right",
-              width: 70,
-            },
-          ],
-          margin: [0, 4, 0, 0],
-        },
-        {
-          text: pdfText(`Report checksum ${short} · generated ${generated} · data snapshots ${snapshots}`),
-          fontSize: 6.5,
-          color: C.muted,
-          margin: [0, 1, 0, 0],
-        },
-      ],
-      margin: [40, 10, 40, 0],
-    }),
-    // A heading never ends a page: it moves to the next page with what follows it.
-    // pdfmake 0.3 passes node queries (0.2 passed arrays).
-    pageBreakBefore: (node: { headlineLevel?: number }, q: { getFollowingNodesOnPage(): unknown[] }) =>
-      Boolean(node.headlineLevel) && q.getFollowingNodesOnPage().length === 0,
+          {
+            columns: [
+              {
+                text: "Exploratory geospatial assessment from published open data: not a commissioned food security audit.",
+                fontSize: 6.5,
+                color: C.muted,
+              },
+              {
+                text: `Page ${currentPage} of ${pageCount}`,
+                fontSize: 7,
+                color: C.ink,
+                alignment: "right",
+                width: 70,
+              },
+            ],
+            margin: [0, 4, 0, 0],
+          },
+          {
+            text: pdfText(`Report checksum ${short} · generated ${generated} · data snapshots ${snapshots}`),
+            fontSize: 6.5,
+            color: C.muted,
+            margin: [0, 1, 0, 0],
+          },
+        ],
+        margin: [40, 10, 40, 0],
+      }),
+    pageBreakBefore: headingWouldEndPage,
     content: [...cover, ...contents, ...sections, ...opportunities, ...method],
   };
+}
+
+/** Style name that marks the running header and footer (it changes nothing in their look). */
+const RUNNING = "running";
+
+/** Marks a running header or footer node and everything in it. */
+function running(node: { [key: string]: unknown }): { [key: string]: unknown } {
+  const mark = (n: unknown): unknown =>
+    n && typeof n === "object" && !Array.isArray(n) ? running(n as { [key: string]: unknown }) : n;
+  return {
+    ...node,
+    style: RUNNING,
+    ...(Array.isArray(node.stack) ? { stack: node.stack.map(mark) } : {}),
+    ...(Array.isArray(node.columns) ? { columns: node.columns.map(mark) } : {}),
+  };
+}
+
+/** What pdfmake 0.3 tells `pageBreakBefore` about a laid-out node. */
+export interface PdfNodeInfo {
+  headlineLevel?: number;
+  style?: unknown;
+}
+
+/**
+ * A heading (or a table's title) never ends a page: it moves to the next page with what follows it. pdfmake lays out
+ * the running header and footer after the content, so they are listed among the page's following
+ * nodes (with positions that do not describe where they are drawn); they are marked and ignored.
+ * pdfmake 0.3 passes node queries (0.2 passed arrays).
+ */
+export function headingWouldEndPage(
+  node: PdfNodeInfo,
+  q: { getFollowingNodesOnPage(): PdfNodeInfo[] },
+): boolean {
+  if (!node.headlineLevel) return false;
+  return !q.getFollowingNodesOnPage().some((n) => n.style !== RUNNING);
 }
