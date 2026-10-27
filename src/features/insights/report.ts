@@ -130,6 +130,8 @@ export interface AssessmentReport {
   subtitle: string;
   /** Area and assessment context (one paragraph). */
   context: string;
+  /** The selections that produced the report (shown on screen, in the PDF and the CSV). */
+  selections: { label: string; value: string }[];
   executiveSummary: ReportFinding[];
   kpis: ReportKpi[];
   sections: ReportSection[];

@@ -25,6 +25,7 @@ import {
   type ScenarioView,
   type UrlState,
 } from "./urlState";
+import type { AssessmentReport } from "@/features/insights/report";
 import { baselineFor, defaultsFor, stateFromParams, type ScenarioParams } from "./scenarioParams";
 
 export type MapStatus = "idle" | "loading" | "ready" | "error";
@@ -41,6 +42,17 @@ type MapCommandInput =
   | { type: "focusCouncil"; code: string };
 
 export type MapCommand = MapCommandInput & { id: number };
+
+/** The selected ConsultingWhere Insights assessment (Stage 8): status and the plain JSON report. */
+export interface InsightsAssessmentState {
+  kind: InsightsKind;
+  status: "loading" | "error" | "empty" | "ready";
+  error: string | null;
+  emptyText: string | null;
+  report: AssessmentReport | null;
+  /** SHA-256 of the report's canonical JSON (EX-02); null while it is computed. */
+  checksum: string | null;
+}
 
 export interface AppState extends UrlState {
   // Layout
@@ -102,6 +114,14 @@ export interface AppState extends UrlState {
   scenarioMap: ScenarioClosureMapModel | null;
   /** Small area under the pointer on the closure map (not in the URL). */
   hoverScenario: HoverScenario | null;
+
+  /**
+   * ConsultingWhere Insights (Stage 8): the selected assessment, built once by the insights sync and
+   * read by the controls, key figures, panel, full report and exports (a plain JSON report).
+   */
+  insightsAssessment: InsightsAssessmentState | null;
+  /** The full-report view is open (not in the URL). */
+  reportOpen: boolean;
 
   // Actions
   setModule: (module: ModuleId) => void;
@@ -184,6 +204,8 @@ export interface AppState extends UrlState {
   setInsightsKind: (kind: InsightsKind) => void;
   setScenarioMap: (model: ScenarioClosureMapModel | null) => void;
   setHoverScenario: (hover: HoverScenario | null) => void;
+  setInsightsAssessment: (a: InsightsAssessmentState | null) => void;
+  setReportOpen: (open: boolean) => void;
 
   setBreakpoint: (bp: Breakpoint) => void;
   toggleFilterPanel: (open?: boolean) => void;
@@ -554,6 +576,8 @@ export const initialState = {
   hoverRisk: null,
   scenarioMap: null,
   hoverScenario: null,
+  insightsAssessment: null,
+  reportOpen: false,
 };
 
 export const useAppStore = create<AppState>()((set, get) => ({
@@ -691,6 +715,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
     ),
   setScenarioMap: (scenarioMap) => set({ scenarioMap }),
   setHoverScenario: (hoverScenario) => set({ hoverScenario }),
+  setInsightsAssessment: (insightsAssessment) => set({ insightsAssessment }),
+  setReportOpen: (reportOpen) => set({ reportOpen }),
   setMapView: (mapView) => {
     const prev = get().mapView;
     const same =

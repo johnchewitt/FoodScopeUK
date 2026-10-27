@@ -935,6 +935,14 @@ export function buildScenarioReport(x: ScenarioInputs): AssessmentReport {
     subjectCode: `${letter}`,
     subtitle: `Scenario ${letter} · ${title.title} · ${subject}`,
     context: `An exploratory assessment of a hypothetical disruption built with the FOODSCOPE UK Scenario Lab. ${x.methodology.boundary} Results are estimated exposure under the stated assumptions: they are not forecasts and do not describe confirmed operational impacts.`,
+    selections: [
+      { label: "Assessment", value: REPORT_TITLES.scenario },
+      { label: "Scenario", value: `${letter}: ${title.title}` },
+      ...parameterRows(m, x.params).map(([label, value, basis]) => ({
+        label: label!,
+        value: `${value} (${basis})`,
+      })),
+    ],
     executiveSummary: summary,
     kpis,
     sections,

@@ -20,6 +20,7 @@ import { selectMapColourStyle, selectReducedMotion, useAppStore } from "@/state/
 import { MapLoading } from "@/components/maps/MapLoading";
 import { OriginsLegend, OriginsMapSync, OriginsTooltip } from "@/features/origins/OriginsMapExtras";
 import { AccessMapExtrasLazy } from "@/features/access/lazy";
+import { InsightsMapExtrasLazy } from "@/features/insights/lazy";
 import { CompareDialogLazy, ProfileMapExtrasLazy } from "@/features/profiles/lazy";
 import { RiskMapExtrasLazy } from "@/features/risks/lazy";
 import { ScenarioMapExtrasLazy } from "@/features/scenarios/lazy";
@@ -104,6 +105,11 @@ export function App() {
         {module === "scenarios" && (
           <ErrorBoundary region="Map legend">
             <ScenarioMapExtrasLazy />
+          </ErrorBoundary>
+        )}
+        {module === "insights" && (
+          <ErrorBoundary region="Map legend and report">
+            <InsightsMapExtrasLazy />
           </ErrorBoundary>
         )}
         <ErrorBoundary region="Timeline">

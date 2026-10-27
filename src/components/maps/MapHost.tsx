@@ -6,6 +6,8 @@ import MapViewConstraints from "@arcgis/core/views/2d/MapViewConstraints";
 import ColorBackground from "@arcgis/core/webmap/background/ColorBackground";
 import { useEffect, useMemo } from "react";
 import { ErrorState } from "@/components/states/ErrorState";
+import { registerMapCapture } from "@/map/capture";
+import { createViewCapturer } from "@/map/captureView";
 import { MapController } from "@/map/MapController";
 import { BASEMAP_STATUS_ID, REFERENCE_DATASET_ID } from "@/map/layerIds";
 import { AccessLayersController } from "@/map/layers/access";
@@ -168,12 +170,25 @@ export default function MapHost() {
     return () => window.clearTimeout(timer);
   }, [webgl, setMapStatus]);
 
-  useEffect(() => () => controller.detach(), [controller]);
+  useEffect(
+    () => () => {
+      registerMapCapture(null);
+      controller.detach();
+    },
+    [controller],
+  );
 
   const handleReadyChange = (event: Event) => {
     const el = event.target as HTMLArcgisMapElement;
     if (!el.ready || controller.attached) return;
     controller.attach(el.view as unknown as ViewLike);
+    // Map image export for reports (EX-04): the visible map with its extent and credits.
+    registerMapCapture(
+      createViewCapturer(
+        el.view as unknown as Parameters<typeof createViewCapturer>[0],
+        () => useAppStore.getState().layerStatus[BASEMAP_STATUS_ID]?.status !== "error",
+      ),
+    );
     setMapStatus("ready");
   };
 

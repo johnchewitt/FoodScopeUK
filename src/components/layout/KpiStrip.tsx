@@ -4,6 +4,7 @@ import { KpiCard } from "@/components/dashboard/KpiCard";
 import { OriginsKpis } from "@/features/origins/OriginsKpis";
 import { AccessKpisLazy } from "@/features/access/lazy";
 import { ProfileKpisLazy } from "@/features/profiles/lazy";
+import { InsightsKpisLazy } from "@/features/insights/lazy";
 import { RiskKpisLazy } from "@/features/risks/lazy";
 import { ScenarioKpisLazy } from "@/features/scenarios/lazy";
 import { SeasonalKpisLazy } from "@/features/seasonal/lazy";
@@ -78,6 +79,8 @@ export function KpiStrip() {
         <RiskKpisLazy />
       ) : module === "scenarios" ? (
         <ScenarioKpisLazy />
+      ) : module === "insights" ? (
+        <InsightsKpisLazy />
       ) : (
         mod.plannedKpis.map((label) => <KpiCard key={label} label={label} state="empty" note={note} />)
       )}

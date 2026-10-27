@@ -1,6 +1,6 @@
 import { Layers } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
-import { selectImageryAvailable, selectRequestedMapStyle, useAppStore } from "@/state/store";
+import { selectImageryAvailable, selectMapModule, selectRequestedMapStyle, useAppStore } from "@/state/store";
 import type { BasemapId } from "@/state/urlState";
 
 const OPTIONS: { id: BasemapId; label: string; hint: string }[] = [
@@ -20,7 +20,7 @@ export function BasemapControl() {
   const setBasemap = useAppStore((s) => s.setBasemap);
   const requested = useAppStore(selectRequestedMapStyle);
   const imagery = useAppStore(selectImageryAvailable);
-  const module = useAppStore((s) => s.module);
+  const module = useAppStore(selectMapModule);
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const root = useRef<HTMLDivElement | null>(null);

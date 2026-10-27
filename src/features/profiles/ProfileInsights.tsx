@@ -1106,6 +1106,8 @@ function National() {
 function Consulting({ p, c }: { p: ProfileData; c: CouncilRow }) {
   const n = useNationalContext();
   const [why, setWhy] = useState(false);
+  const setModule = useAppStore((s) => s.setModule);
+  const setInsightsKind = useAppStore((s) => s.setInsightsKind);
   const nationNoCar = useMemo(() => {
     const rows = (p.councils ?? []).filter((x) => x.nation === c.nation && x.context?.carAvailability);
     const hh = rows.reduce((s, x) => s + x.context!.carAvailability!.households, 0);
@@ -1134,8 +1136,8 @@ function Consulting({ p, c }: { p: ProfileData; c: CouncilRow }) {
         <Lightbulb size={15} aria-hidden="true" />
         <span>
           Possible lines of further analysis suggested by the figures above, linked to ConsultingWhere
-          workstreams. Not a statement that {c.name} has a requirement, budget or procurement. Expanded in the
-          Consulting Insights module (build stage 8).
+          workstreams. Not a statement that {c.name} has a requirement, budget or procurement. The full
+          assessment, with evidence, data needs and a PDF report, is in ConsultingWhere Insights.
         </span>
       </p>
       {list.length === 0 ? (
@@ -1184,6 +1186,16 @@ function Consulting({ p, c }: { p: ProfileData; c: CouncilRow }) {
           </li>
         </ul>
       )}
+      <button
+        type="button"
+        className="text-btn"
+        onClick={() => {
+          setInsightsKind("authority");
+          setModule("insights");
+        }}
+      >
+        <Lightbulb size={14} aria-hidden="true" /> Open the full assessment in ConsultingWhere Insights
+      </button>
     </Section>
   );
 }

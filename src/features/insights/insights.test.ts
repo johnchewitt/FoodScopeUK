@@ -1,106 +1,30 @@
 import Ajv from "ajv";
 import { describe, expect, it } from "vitest";
-import { nationalImports } from "@/analysis/profile";
-import { indexStores } from "@/features/access/model";
-import { councilRows, deepProfile } from "@/features/profiles/model";
-import type { NationalRow } from "@/features/profiles/useProfile";
 import {
-  closureMethodology,
-  importMethodology,
-  productionMethodology,
-  portMethodology,
-} from "@/features/scenarios/methodology";
-import {
-  buildClosureModel,
-  buildImportModel,
-  buildPortModel,
-  buildProductionModel,
-  findStore,
-  type ClosureParts,
-  type CouncilInfo,
-} from "@/features/scenarios/model";
-import type { ScenarioParams } from "@/state/scenarioParams";
-import { readRepoJson } from "@/test/files";
-import type { CouncilContext } from "@/types/generated/council-context";
-import type { CouncilPpfi } from "@/types/generated/council-ppfi";
-import type { CouncilIndicators } from "@/types/generated/lad-indicators";
-import type { DataManifest } from "@/types/generated/manifest";
-import type { RiskPortEntry } from "@/types/generated/risk-port-entry";
-import type { RiskPorts } from "@/types/generated/risk-ports";
-import type { RiskWaterStress } from "@/types/generated/risk-water-stress";
+  authority,
+  commodity as commodityReport,
+  gb,
+  index,
+  ladDoc,
+  ni,
+  ppfiDoc,
+  productionDoc,
+  scenario as scenarioReport,
+  snapshots,
+  SPAIN_TOMATOES,
+  storesDoc,
+  UK,
+} from "@/test/insightsFixtures";
 import type { ScenarioClosure } from "@/types/generated/scenario-closure";
-import type { SmallAreaBoundaries } from "@/types/generated/small-areas";
-import type { SmallAreaIndicators } from "@/types/generated/small-area-indicators";
-import type { StoreCollection } from "@/types/generated/stores";
-import type { TradeIndex } from "@/types/generated/trade-index";
-import type { TradeSnapshot } from "@/types/generated/trade-snapshot";
-import type { UkProduction } from "@/types/generated/uk-production";
+import { buildImportModel } from "@/features/scenarios/model";
 import { provenanceProblems } from "@/types/indicator";
 import schema from "../../../schemas/consulting-content.schema.json";
-import { authorityInputs, commodityInputs, nationBeyond } from "./assemble";
-import { AUTHORITY_RULES, buildAuthorityReport } from "./authority";
-import { buildCommodityReport, COMMODITY_RULES, seasonalSourcing } from "./commodity";
+import { nationBeyond } from "./assemble";
+import { AUTHORITY_RULES } from "./authority";
+import { COMMODITY_RULES, seasonalSourcing } from "./commodity";
 import { claimProblems, CONSULTING, SERVICES, serviceById } from "./content";
 import type { AssessmentReport } from "./report";
-import { buildScenarioReport, type ScenarioModel } from "./scenario";
 import { councilSmallAreas, closurePreview, furthestAreas } from "./smallAreas";
-
-/*
- * Real published files (the manifest's current snapshots). Expected values are recomputed here
- * from the raw arrays, without the assessment code, and checked against the deep profiles'
- * figures that the Stage 5 report verified by hand (Manchester 14.08 %, Belfast 32.17 % beyond 1 km).
- */
-const D = "public/data/snapshots";
-const manifest = readRepoJson<DataManifest>("public/data/manifest.json");
-const ladDoc = readRepoJson<CouncilIndicators>(`${D}/2026-10-24/local/lad-indicators.json`);
-const storesDoc = readRepoJson<StoreCollection>(`${D}/2026-10-24/local/stores.geojson`);
-const contextDoc = readRepoJson<CouncilContext>(`${D}/2026-10-26/context/council-context.json`);
-const productionDoc = readRepoJson<UkProduction>(`${D}/2026-10-26/context/uk-production.json`);
-const ppfiDoc = readRepoJson<CouncilPpfi>(`${D}/2026-10-25/risk/council-ppfi.json`);
-const water = readRepoJson<RiskWaterStress>(`${D}/2026-10-25/risk/water-stress.json`);
-const portEntry = readRepoJson<RiskPortEntry>(`${D}/2026-10-25/risk/port-entry.json`);
-const ports = readRepoJson<RiskPorts>(`${D}/2026-10-25/risk/ports.json`);
-const gb = readRepoJson<ScenarioClosure>(`${D}/2026-10-26/scenario/closure-gb.json`);
-const ni = readRepoJson<ScenarioClosure>(`${D}/2026-10-26/scenario/closure-ni.json`);
-const index = readRepoJson<TradeIndex>(`${D}/2026-10-26/trade/index.json`);
-const snapshots = new Map(
-  index.commodities.map((c) => [c.id, readRepoJson<TradeSnapshot>(`public/data/${c.path}`)]),
-);
-const stores = indexStores(storesDoc);
-const deepCodes = new Set(["E08000003", "N09000003"]);
-const councils = councilRows(ladDoc, contextDoc, deepCodes);
-const national: NationalRow[] = index.commodities.map((c) => ({
-  basket: c.id,
-  label: c.label,
-  imports: nationalImports(snapshots.get(c.id)!, c.months.provisionalFrom),
-  production: productionDoc.commodities.find((p) => p.basket === c.id) ?? null,
-}));
-const deep = (lad: string) =>
-  deepProfile(
-    readRepoJson<SmallAreaIndicators>(`${D}/2026-10-25/areas/${lad}/small-area-indicators.json`),
-    readRepoJson<SmallAreaBoundaries>(`${D}/2026-10-25/areas/${lad}/small-areas.geojson`),
-    stores,
-  );
-const UK: [number, number] = [-2, 54];
-
-function authority(lad: string): AssessmentReport {
-  const inputs = authorityInputs(
-    {
-      lad: ladDoc,
-      councils,
-      context: contextDoc,
-      stores,
-      ppfi: ppfiDoc,
-      closure: { gb, ni },
-      deep: deepCodes.has(lad) ? deep(lad) : null,
-      national,
-    },
-    lad,
-    manifest,
-    `https://example.test/?m=insights&lad=${lad}`,
-  );
-  return buildAuthorityReport(inputs!);
-}
 
 /** Every string of a report (findings, tables, packages, notes), for wording and claim audits. */
 function allText(r: AssessmentReport): string {
@@ -190,6 +114,9 @@ describe("consulting content (CI-04, P14)", () => {
     expect(claimProblems("The council has a budget for this work.")).not.toEqual([]);
     expect(claimProblems("Our fees start at a modest day rate.")).not.toEqual([]);
     expect(claimProblems("A geospatial assessment of food access.")).toEqual([]);
+    // A denial is not a claim (the exploratory note and the opportunity notes deny them).
+    expect(claimProblems("This is not a statement that the council has a budget.")).toEqual([]);
+    expect(claimProblems("Assessment complete. The council has a budget for it.")).not.toEqual([]);
   });
 });
 
@@ -359,19 +286,7 @@ describe("Local Authority Food Security Assessment (CI-02, CI-03)", () => {
 });
 
 describe("Commodity Supply Resilience Assessment (CI-02, CI-03)", () => {
-  function commodity(id: string, measure: "mass" | "value" = "mass") {
-    const entry = index.commodities.find((c) => c.id === id)!;
-    const group = index.groups?.find((g) => g.id === entry.group) ?? null;
-    return buildCommodityReport(
-      commodityInputs(
-        { entry, group, snapshot: snapshots.get(id)!, water, production: productionDoc, portEntry },
-        { period: "rolling12", year: null, month: null, measure },
-        UK,
-        manifest,
-        `https://example.test/?m=insights&ia=commodity&c=${id}`,
-      ),
-    );
-  }
+  const commodity = commodityReport;
 
   it("passes the shared report checks for every basket", () => {
     for (const c of index.commodities) checkReport(commodity(c.id));
@@ -425,58 +340,9 @@ describe("Commodity Supply Resilience Assessment (CI-02, CI-03)", () => {
 });
 
 describe("Food Supply Disruption Scenario Assessment (CI-02, brief §4)", () => {
-  const parts: ClosureParts = { gb, ni };
-  const info = new Map<string, CouncilInfo>(
-    ladDoc.councils.map((c) => [c.code, { code: c.code, name: c.name, nation: c.nation }]),
-  );
   const tomatoes = snapshots.get("tomatoes")!;
-  const spain = {
-    kind: "import" as const,
-    commodity: "tomatoes",
-    partner: "ES",
-    year: 2025,
-    month: 1,
-    reduction: 30,
-    duration: 3,
-    recovery: 0,
-    substitution: 0,
-    measure: "mass" as const,
-  };
-  const rebuild = (p: ScenarioParams): ScenarioModel | null => {
-    switch (p.kind) {
-      case "import":
-        return buildImportModel(tomatoes, "Tomatoes", p, UK, 12, "scenario");
-      case "production":
-        return buildProductionModel(productionDoc, p.commodity, "Wheat", p);
-      case "port":
-        return buildPortModel(ports, portEntry, p, "scenario", "DfT");
-      case "closure": {
-        const ref = findStore(parts, p.store);
-        return ref ? buildClosureModel(parts, ref, info, "scenario", "June 2026") : null;
-      }
-    }
-  };
-  const report = (params: ScenarioParams) => {
-    const model = rebuild(params)!;
-    const methodology =
-      model.kind === "import"
-        ? importMethodology(model)
-        : model.kind === "closure"
-          ? closureMethodology(model)
-          : model.kind === "production"
-            ? productionMethodology(model)
-            : portMethodology(model);
-    return buildScenarioReport({
-      params,
-      model,
-      methodology,
-      rebuild,
-      savedName: null,
-      manifest,
-      datasetIds: [],
-      link: "",
-    });
-  };
+  const spain = SPAIN_TOMATOES;
+  const report = scenarioReport;
 
   it("reports Scenario A with its baseline, assumptions and sensitivity", () => {
     const r = report(spain);

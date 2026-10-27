@@ -851,6 +851,16 @@ export function buildAuthorityReport(x: AuthorityInputs): AssessmentReport {
     subjectCode: c.code,
     subtitle: `${c.name}, ${c.nation} · ${c.code}`,
     context: `An exploratory assessment of food retail access, community vulnerability and the national supply context for ${c.name} (${c.nation}), built from published open data: GEOLYTIX supermarket locations (June 2026), ONS and NISRA population, Census small areas, the Priority Places for Food Index and HMRC trade statistics. Distances are straight-line; indices are compared only within ${c.nation}.`,
+    selections: [
+      { label: "Assessment", value: REPORT_TITLES.authority },
+      { label: "Council", value: `${c.name} (${c.code}), ${c.nation}` },
+      { label: "Council boundaries", value: "May 2025 (ONS, NISRA)" },
+      {
+        label: "Deep profile (small-area files)",
+        value: c.deep ? "Published for this council" : "Not published for this council",
+      },
+      { label: "Supermarkets", value: "GEOLYTIX stores of 280 m² and over (June 2026)" },
+    ],
     executiveSummary: summary,
     kpis,
     sections,

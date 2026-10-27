@@ -8,6 +8,7 @@ import { SkeletonLines } from "@/components/states/Skeleton";
 import { principlesById } from "@/content/principles";
 import { OriginsInsights } from "@/features/origins/OriginsInsights";
 import { AccessInsightsLazy } from "@/features/access/lazy";
+import { InsightsInsightsLazy } from "@/features/insights/lazy";
 import { ProfileInsightsLazy } from "@/features/profiles/lazy";
 import { RiskInsightsLazy } from "@/features/risks/lazy";
 import { ScenarioInsightsLazy } from "@/features/scenarios/lazy";
@@ -116,6 +117,10 @@ export function InsightsPanel() {
         ) : module === "scenarios" ? (
           <ErrorBoundary region="Scenario Lab">
             <ScenarioInsightsLazy />
+          </ErrorBoundary>
+        ) : module === "insights" ? (
+          <ErrorBoundary region="ConsultingWhere Insights">
+            <InsightsInsightsLazy />
           </ErrorBoundary>
         ) : (
           <section className="panel-section" aria-labelledby="about-heading">
@@ -256,7 +261,8 @@ export function InsightsPanel() {
           module !== "access" &&
           module !== "profiles" &&
           module !== "risks" &&
-          module !== "scenarios" && (
+          module !== "scenarios" &&
+          module !== "insights" && (
             <section className="panel-section">
               <ChartFrame
                 title="Trend"

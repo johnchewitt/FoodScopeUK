@@ -39,7 +39,16 @@ export const CLAIM_PATTERNS: readonly RegExp[] = [
   /\bday rates?\b|\bour fees?\b/i,
 ];
 
-/** Returns the claim-like phrases found in a text (empty: none). */
+/** A sentence that denies a claim ("not a statement that X has a budget") is not a claim. */
+const NEGATION = /\b(?:not|no|never|nor|without)\b/i;
+
+/** Returns the claim-like phrases found in a text, sentence by sentence (empty: none). */
 export function claimProblems(text: string): string[] {
-  return CLAIM_PATTERNS.filter((p) => p.test(text)).map((p) => `${p} in "${text.slice(0, 80)}…"`);
+  const sentences = text.split(/(?<=[.!?])\s+|\n+/);
+  const out: string[] = [];
+  for (const s of sentences) {
+    if (NEGATION.test(s)) continue;
+    for (const p of CLAIM_PATTERNS) if (p.test(s)) out.push(`${p} in "${s.slice(0, 120)}"`);
+  }
+  return out;
 }

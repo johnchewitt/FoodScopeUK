@@ -915,6 +915,12 @@ export function buildCommodityReport(x: CommodityInputs): AssessmentReport {
     subjectCode: b.hsScope,
     subtitle: `${b.label} · ${b.hsScope} · ${o.periodText}`,
     context: `An exploratory assessment of UK ${lower} supply from published open data: HMRC recorded imports by partner (country of dispatch), Defra's UK supply balance, FAO water stress of partner countries and the UK Food Security Report. ${b.definition} National figures only: they do not describe any region's or retailer's supply chain.`,
+    selections: [
+      { label: "Assessment", value: REPORT_TITLES.commodity },
+      { label: "Commodity", value: `${b.label} (${b.hsScope})${b.group ? `, ${b.group.label}` : ""}` },
+      { label: "Period", value: o.periodText },
+      { label: "Measure", value: m === "mass" ? "Net mass (tonnes)" : "Value (£, current prices)" },
+    ],
     executiveSummary: summary,
     kpis,
     sections,

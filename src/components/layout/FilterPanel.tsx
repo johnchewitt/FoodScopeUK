@@ -3,6 +3,7 @@ import { getModule } from "@/app/modules";
 import { EmptyState } from "@/components/states/EmptyState";
 import { OriginsControls } from "@/features/origins/OriginsControls";
 import { AccessControlsLazy } from "@/features/access/lazy";
+import { InsightsControlsLazy } from "@/features/insights/lazy";
 import { ProfileControlsLazy } from "@/features/profiles/lazy";
 import { RiskControlsLazy } from "@/features/risks/lazy";
 import { ScenarioControlsLazy } from "@/features/scenarios/lazy";
@@ -53,6 +54,8 @@ export function FilterPanel() {
           <RiskControlsLazy />
         ) : module === "scenarios" ? (
           <ScenarioControlsLazy />
+        ) : module === "insights" ? (
+          <InsightsControlsLazy />
         ) : (
           <section className="panel-section" aria-labelledby="controls-heading">
             <h3 id="controls-heading" className="panel-section__title">
