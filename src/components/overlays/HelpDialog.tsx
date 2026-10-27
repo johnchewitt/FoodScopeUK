@@ -71,6 +71,22 @@ export function HelpDialog() {
               demonstrator, not a commissioned food security audit.
             </p>
           </section>
+          <section>
+            <h3>Licences</h3>
+            <p>
+              Data licences and attributions are listed under Evidence and limitations. The software the app
+              redistributes is listed with its licences in the{" "}
+              <a
+                href={`${import.meta.env.BASE_URL}licenses/THIRD-PARTY-NOTICES.txt`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                third-party notices
+              </a>
+              ; the ArcGIS Maps SDK and Calcite are used under Esri&rsquo;s terms, and IBM Plex under the SIL
+              Open Font License 1.1.
+            </p>
+          </section>
         </div>
       )}
     </calcite-dialog>
