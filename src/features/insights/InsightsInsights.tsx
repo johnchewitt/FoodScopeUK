@@ -4,6 +4,7 @@ import { EmptyState } from "@/components/states/EmptyState";
 import { ErrorState } from "@/components/states/ErrorState";
 import { SkeletonLines } from "@/components/states/Skeleton";
 import { useAppStore } from "@/state/store";
+import { BrandPlate } from "./BrandPlate";
 import { CONSULTING, SERVICES } from "./content";
 import { ReportBody } from "./ReportBody";
 import { useInsightsAssessment } from "./useInsights";
@@ -105,6 +106,7 @@ function About() {
   const a = CONSULTING.about;
   return (
     <section className="panel-section about-cw">
+      <BrandPlate />
       <h3 className="panel-section__title">{a.title}</h3>
       {a.paragraphs.map((p) => (
         <p key={p} className="report-intro">

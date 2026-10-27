@@ -51,6 +51,26 @@ async function pdfText(path: string): Promise<{ pages: string[]; text: string }>
   return { pages, text: pages.join(" ") };
 }
 
+/** Images painted on the cover above the band (D3: ConsultingWhere's logo), as [width, height] in points. */
+async function coverTopImages(path: string): Promise<number[][]> {
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const doc = await pdfjs.getDocument({ data: new Uint8Array(await readFile(path)) }).promise;
+  const page = await doc.getPage(1);
+  const ops = await page.getOperatorList();
+  const height = page.view[3]!;
+  let ctm = [1, 0, 0, 1, 0, 0];
+  const saved: number[][] = [];
+  const out: number[][] = [];
+  ops.fnArray.forEach((fn, k) => {
+    if (fn === pdfjs.OPS.save) saved.push(ctm);
+    else if (fn === pdfjs.OPS.restore) ctm = saved.pop() ?? [1, 0, 0, 1, 0, 0];
+    else if (fn === pdfjs.OPS.transform) ctm = pdfjs.Util.transform(ctm, ops.argsArray[k] as number[]);
+    else if (fn === pdfjs.OPS.paintImageXObject && Math.min(ctm[5]!, ctm[5]! + ctm[3]!) > height - 90)
+      out.push([Math.abs(ctm[0]!), Math.abs(ctm[3]!)]);
+  });
+  return out;
+}
+
 const kpis = (page: Page) => page.getByRole("region", { name: /ConsultingWhere Insights key figures/ });
 const controls = (page: Page) =>
   page.getByRole("complementary", { name: "ConsultingWhere Insights controls" });
@@ -112,6 +132,10 @@ test.describe("ConsultingWhere Insights", () => {
       `${Math.abs(lat).toFixed(2)}° ${lat >= 0 ? "N" : "S"}, ${Math.abs(lon).toFixed(2)}° ${lon >= 0 ? "E" : "W"}`;
     expect(text).toContain(`Map extent ${fmt(extent[1]!, extent[0]!)} to ${fmt(extent[3]!, extent[2]!)}`);
     expect(text).toMatch(/Map credits: .*Powered by Esri/);
+    // ConsultingWhere's logo, loaded from the build's assets, heads the cover at its own proportions.
+    const logos = await coverTopImages(path);
+    expect(logos).toHaveLength(1);
+    expect(logos[0]![0]! / logos[0]![1]!).toBeCloseTo(772 / 168, 1);
     expect(errors).toEqual([]);
   });
 

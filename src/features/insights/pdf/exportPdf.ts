@@ -13,6 +13,7 @@ import type { AssessmentReport } from "../report";
 import { renderChartImages } from "./chartImages";
 import { buildPdfDocument, type PdfAssets } from "./document";
 import { loadPdfFonts, PDF_FONT_FILES } from "./fonts";
+import { loadPdfLogo } from "./logo";
 
 let configured = false;
 
@@ -61,6 +62,7 @@ export interface PdfResult {
 
 export async function exportReportPdf(report: AssessmentReport, checksum: string | null): Promise<PdfResult> {
   const fonts = configure();
+  const logo = loadPdfLogo();
   let map: PdfAssets["map"] = null;
   let mapUnavailable: string | null = null;
   try {
@@ -85,6 +87,7 @@ export async function exportReportPdf(report: AssessmentReport, checksum: string
     mapUnavailable,
     mapNote: mapLegendText(report),
     charts,
+    logo: await logo,
     checksum,
     generatedAt: new Date(),
   });

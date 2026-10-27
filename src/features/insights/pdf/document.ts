@@ -28,6 +28,8 @@ export interface PdfAssets {
   /** What the map shows (its legend in words). */
   mapNote: string;
   charts: Record<string, PdfImage>;
+  /** ConsultingWhere's logo for the cover (D3); null when it could not be loaded. */
+  logo: PdfImage | null;
   checksum: string | null;
   generatedAt: Date;
 }
@@ -328,21 +330,39 @@ export function buildPdfDocument(r: AssessmentReport, a: PdfAssets): Record<stri
   const generated = dateText(a.generatedAt);
   const indicated = r.workPackages.filter((w) => w.indicated);
 
+  // Cover: ConsultingWhere's logo on white (its tagline is dark navy; D3), then the navy band with
+  // the workspace and FOODSCOPE UK's own identity. Without the logo, a text wordmark stands in.
+  const band = { top: 84, height: 46 };
+  const logoWidth = 176;
   const cover: PdfNode[] = [
+    a.logo
+      ? {
+          image: a.logo.dataUrl,
+          width: logoWidth,
+          height: (logoWidth * a.logo.heightPx) / a.logo.widthPx,
+          absolutePosition: { x: PAGE.margin[0], y: 26 },
+        }
+      : {
+          text: "ConsultingWhere",
+          fontSize: 20,
+          bold: true,
+          color: C.navy,
+          absolutePosition: { x: PAGE.margin[0], y: 32 },
+        },
     {
-      canvas: [{ type: "rect", x: -40, y: -54, w: PAGE.width, h: 128, color: C.navy }],
-      absolutePosition: { x: 40, y: 54 },
+      canvas: [{ type: "rect", x: 0, y: 0, w: PAGE.width, h: band.height, color: C.navy }],
+      absolutePosition: { x: 0, y: band.top },
     },
     {
       columns: [
         {
           stack: [
-            { text: "ConsultingWhere", fontSize: 17, bold: true, color: "#ffffff" },
+            { text: "ConsultingWhere Insights", fontSize: 11, bold: true, color: "#ffffff" },
             {
-              text: "Insights · From geographic evidence to action",
+              text: "From geographic evidence to action",
               fontSize: 8.5,
               color: "#c7d8d8",
-              margin: [0, 2, 0, 0],
+              margin: [0, 1, 0, 0],
             },
           ],
         },
@@ -359,9 +379,10 @@ export function buildPdfDocument(r: AssessmentReport, a: PdfAssets): Record<stri
           width: "auto",
         },
       ],
-      margin: [0, -24, 0, 54],
+      absolutePosition: { x: PAGE.margin[0], y: band.top + 9 },
     },
-    { text: t(r.title), style: "title" },
+    // The flow starts below the band (the page margin is 54 pt).
+    { text: t(r.title), style: "title", margin: [0, band.top + band.height + 26 - PAGE.margin[1], 0, 4] },
     { text: t(r.subject), style: "subject" },
     { text: t(r.subtitle), style: "small", margin: [0, 0, 0, 6] },
     {

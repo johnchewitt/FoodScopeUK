@@ -3,6 +3,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { ChartFrame } from "@/components/charts/ChartFrame";
 import { Metric } from "@/components/dashboard/Metric";
 import { ProvenanceBadge } from "@/components/dashboard/ProvenanceBadge";
+import { BrandPlate } from "./BrandPlate";
 import { chartHeight, reportChartOption } from "./charts";
 import { shortChecksum } from "./checksum";
 import { serviceById } from "./content";
@@ -276,6 +277,7 @@ export function ReportBody({
   return (
     <div className={`report report--${layout}`} data-report-kind={report.kind}>
       <header className="report__hero">
+        {layout === "full" && <BrandPlate />}
         <p className="report__eyebrow">
           <span>ConsultingWhere Insights</span> · <span>From geographic evidence to action</span>
         </p>

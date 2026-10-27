@@ -176,6 +176,11 @@ describe("ConsultingWhere Insights", { timeout: 120_000 }, () => {
     expect(within(p).getByText(/awaiting ConsultingWhere approval/)).toBeInTheDocument();
     await userEvent.click(within(p).getByRole("tab", { name: /About/ }));
     expect(within(p).getByRole("heading", { name: "About ConsultingWhere" })).toBeInTheDocument();
+    // D3: ConsultingWhere's own logo, with its tagline as the text alternative.
+    expect(within(p).getByRole("img", { name: /^ConsultingWhere: maximising the value/ })).toHaveAttribute(
+      "src",
+      expect.stringContaining("consultingwhere-logo"),
+    );
     audit(document.body.textContent ?? "");
   });
 });

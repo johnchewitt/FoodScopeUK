@@ -1,8 +1,10 @@
 // @vitest-environment node
+import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { formatByUnit } from "@/analysis/format";
+import { CONSULTINGWHERE_LOGO } from "@/content/brand";
 import { authority, commodity, scenario, SPAIN_TOMATOES } from "@/test/insightsFixtures";
 import { reportChecksum, shortChecksum } from "../checksum";
 import type { AssessmentReport } from "../report";
@@ -29,10 +31,19 @@ const FONTS = {
 const PIXEL =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4//8/AAX+Av4N70a4AAAAAElFTkSuQmCC";
 
+// ConsultingWhere's logo as the app ships it (D3).
+const LOGO_FILE = resolve(process.cwd(), "src/assets/brand/consultingwhere-logo.png");
+const LOGO = {
+  dataUrl: `data:image/png;base64,${readFileSync(LOGO_FILE).toString("base64")}`,
+  widthPx: CONSULTINGWHERE_LOGO.widthPx,
+  heightPx: CONSULTINGWHERE_LOGO.heightPx,
+};
+
 async function writePdf(
   r: AssessmentReport,
   checksum: string,
   map: boolean | { widthPx: number; heightPx: number } = false,
+  logo = true,
 ): Promise<Uint8Array> {
   const pdfmake = require("pdfmake") as PdfMakeInstance & {
     setLocalAccessPolicy(cb: (p: string) => boolean): void;
@@ -53,6 +64,7 @@ async function writePdf(
     mapUnavailable: map ? null : "Map not included: the map is not ready yet.",
     mapNote: "What the map shows: test.",
     charts: Object.fromEntries(r.charts.map((c) => [c.id, { dataUrl: PIXEL, widthPx: 1900, heightPx: 600 }])),
+    logo: logo ? LOGO : null,
     checksum,
     generatedAt: new Date("2026-10-26T12:00:00Z"),
   };
@@ -75,6 +87,53 @@ async function readPdf(bytes: Uint8Array) {
   }
   const meta = await doc.getMetadata();
   return { pages, text: pages.join("\n"), info: meta.info as Record<string, unknown> };
+}
+
+/**
+ * What each page draws: text runs (baseline y, font size) and images (lower-left corner and size,
+ * following the transformation matrix). PDF y runs up from the bottom edge.
+ */
+async function pageMarks(bytes: Uint8Array) {
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const { OPS, Util } = pdfjs;
+  const doc = await pdfjs.getDocument({ data: new Uint8Array(bytes), useSystemFonts: false }).promise;
+  const pages: {
+    texts: { str: string; x: number; y: number; size: number }[];
+    images: { x: number; y: number; width: number; height: number }[];
+  }[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const texts = (await page.getTextContent()).items.flatMap((it) =>
+      "str" in it && it.str.trim()
+        ? [
+            {
+              str: it.str,
+              x: it.transform[4] as number,
+              y: it.transform[5] as number,
+              size: Math.hypot(it.transform[0], it.transform[1]),
+            },
+          ]
+        : [],
+    );
+    const images: { x: number; y: number; width: number; height: number }[] = [];
+    const ops = await page.getOperatorList();
+    let ctm = [1, 0, 0, 1, 0, 0];
+    const saved: number[][] = [];
+    ops.fnArray.forEach((fn, k) => {
+      if (fn === OPS.save) saved.push(ctm);
+      else if (fn === OPS.restore) ctm = saved.pop() ?? [1, 0, 0, 1, 0, 0];
+      else if (fn === OPS.transform) ctm = Util.transform(ctm, ops.argsArray[k] as number[]);
+      else if (fn === OPS.paintImageXObject)
+        images.push({
+          x: Math.min(ctm[4]!, ctm[4]! + ctm[0]!),
+          y: Math.min(ctm[5]!, ctm[5]! + ctm[3]!),
+          width: Math.abs(ctm[0]!),
+          height: Math.abs(ctm[3]!),
+        });
+    });
+    pages.push({ texts, images });
+  }
+  return pages;
 }
 
 /** Normalises spaces so a phrase can be found however pdf.js splits the runs. */
@@ -189,35 +248,16 @@ describe("PDF page layout", () => {
    * PDF y runs up from the bottom edge, so the body lies between the bottom and top margins.
    */
   async function lastOnEachPage(bytes: Uint8Array): Promise<{ page: number; what: string; size: number }[]> {
-    const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-    const { OPS, Util } = pdfjs;
-    const doc = await pdfjs.getDocument({ data: new Uint8Array(bytes), useSystemFonts: false }).promise;
     const inBody = (y: number) => y > PAGE.margin[3] && y < PAGE.height - PAGE.margin[1];
     const out: { page: number; what: string; size: number }[] = [];
-    for (let i = 1; i <= doc.numPages; i++) {
-      const page = await doc.getPage(i);
-      const marks: { what: string; y: number; size: number }[] = [];
-      for (const it of (await page.getTextContent()).items)
-        if ("str" in it && it.str.trim())
-          marks.push({
-            what: it.str,
-            y: it.transform[5],
-            size: Math.hypot(it.transform[0], it.transform[1]),
-          });
-      // Images: follow the transformation matrix to each painted image's lower edge.
-      const ops = await page.getOperatorList();
-      let ctm = [1, 0, 0, 1, 0, 0];
-      const saved: number[][] = [];
-      ops.fnArray.forEach((fn, k) => {
-        if (fn === OPS.save) saved.push(ctm);
-        else if (fn === OPS.restore) ctm = saved.pop() ?? [1, 0, 0, 1, 0, 0];
-        else if (fn === OPS.transform) ctm = Util.transform(ctm, ops.argsArray[k] as number[]);
-        else if (fn === OPS.paintImageXObject)
-          marks.push({ what: "image", y: Math.min(ctm[5]!, ctm[5]! + ctm[3]!), size: 0 });
-      });
+    for (const [i, p] of (await pageMarks(bytes)).entries()) {
+      const marks = [
+        ...p.texts.map((m) => ({ what: m.str, y: m.y, size: m.size })),
+        ...p.images.map((m) => ({ what: "image", y: m.y, size: 0 })),
+      ];
       const body = marks.filter((m) => inBody(m.y));
       const last = body.reduce((a, b) => (b.y < a.y ? b : a), body[0]!);
-      if (last) out.push({ page: i, what: last.what, size: last.size });
+      if (last) out.push({ page: i + 1, what: last.what, size: last.size });
     }
     return out;
   }
@@ -253,4 +293,40 @@ describe("PDF page layout", () => {
         }
       }
   }, 120_000);
+});
+
+describe("ConsultingWhere's logo (D3)", () => {
+  it("is the file the app ships, at its stated size, without the image editor's metadata", () => {
+    const png = readFileSync(LOGO_FILE);
+    expect(png.subarray(1, 4).toString()).toBe("PNG");
+    expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([
+      CONSULTINGWHERE_LOGO.widthPx,
+      CONSULTINGWHERE_LOGO.heightPx,
+    ]);
+    // No text or XMP chunks: nothing from the supplier's editor travels with the app.
+    const chunks: string[] = [];
+    for (let at = 8; at < png.length; at += 12 + png.readUInt32BE(at))
+      chunks.push(png.subarray(at + 4, at + 8).toString("latin1"));
+    expect(chunks.filter((c) => ["tEXt", "zTXt", "iTXt", "eXIf"].includes(c))).toEqual([]);
+  });
+
+  it("sits at the top of the cover, unstretched, and a wordmark stands in without it", async () => {
+    const r = authority("E08000003");
+    const [withLogo] = await pageMarks(await writePdf(r, "a".repeat(64), true, true));
+    const top = withLogo!.images.filter((m) => m.y > PAGE.height - 90);
+    expect(top).toHaveLength(1);
+    const logo = top[0]!;
+    expect(logo.x).toBeCloseTo(PAGE.margin[0], 0);
+    expect(logo.width / logo.height).toBeCloseTo(
+      CONSULTINGWHERE_LOGO.widthPx / CONSULTINGWHERE_LOGO.heightPx,
+      2,
+    );
+    expect(withLogo!.texts.some((m) => m.str === "ConsultingWhere")).toBe(false);
+
+    const [without] = await pageMarks(await writePdf(r, "a".repeat(64), true, false));
+    expect(without!.images.filter((m) => m.y > PAGE.height - 90)).toEqual([]);
+    expect(without!.texts.some((m) => m.str === "ConsultingWhere" && m.y > PAGE.height - 90)).toBe(true);
+    // The band names the workspace either way.
+    expect(without!.texts.map((m) => m.str).join(" ")).toContain("ConsultingWhere Insights");
+  }, 60_000);
 });

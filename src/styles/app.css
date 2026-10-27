@@ -4086,3 +4086,19 @@ li[data-hidden-at-scale] .grocer-symbol {
     max-height: 30dvh;
   }
 }
+
+/* ConsultingWhere's logo (D3): on a white plate, never recoloured or stretched. */
+.brand-plate {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--fs-brand-plate);
+}
+.brand-plate img {
+  display: block;
+  width: 200px;
+  max-width: 100%;
+  height: auto;
+}
