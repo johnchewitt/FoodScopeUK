@@ -82,7 +82,9 @@ The PDF is written in the browser with pdfmake 0.3.12 (lazy chunk, about 290 kB 
 - methodology, limitations, sources, dataset snapshots with retrieval dates, attributions, the full SHA-256 checksum and the link;
 - on every page, a footer with the exploratory note, "Page n of N", the short checksum, generation time and data snapshots.
 
-Belfast's report is 13 pages and Manchester's 14. Each takes about 9–12 s in the sandbox's software-rendered browser.
+A heading or a table's title never ends a page.
+
+Belfast's, Manchester's and the tomatoes reports are 13 pages each, and the default scenario's (tomatoes, Morocco) is 9. Each takes 8–12 s in the sandbox's software-rendered browser.
 
 ### 5. Share and export
 
@@ -125,7 +127,51 @@ The full results are in `docs/security-and-licensing.md`. In short:
 
 ## Tests and checks run
 
-RESULTS_PLACEHOLDER
+### Figures checked independently
+
+A Python script that uses no app code read the published files in the manifest and recomputed the report figures on 27 Oct 2026. The checks are also logged in `docs/03-DATA-SOURCES.md` §11.
+
+| Assessment | In the report | Independent |
+|---|---|---|
+| Tomatoes, latest 12 months (Sep 2025 – Aug 2026), net mass | 391.1 kt from 25 recorded partners; Netherlands 43.8 %; top three 84.5 %; HHI 2,990 | 391,081.340 t; 25; 43.828 %; 84.482 %; 2,991.7 |
+| Tomatoes, seasonal sourcing (2025, the latest complete year) | The Netherlands supplied at least half of recorded imports in six months (May–October) | May 60.8 %, June 66.0 %, July 63.8 %, August 65.5 %, September 64.1 %, October 57.2 %; no other month at 50 % |
+| Manchester, supermarkets | 0.93 per 10,000 residents | 55 supermarkets ÷ 588,256 residents (mid-2025) × 10,000 = 0.935 |
+| Manchester, access | 14.1 % of residents more than 1 km (straight-line) from a supermarket | 77,708 of 551,919 Census 2021 residents in 295 small areas = 14.080 % |
+| Manchester, deprivation | 61.2 % of residents in England's 20 % most deprived small areas (IoD 2025) | 337,829 = 61.210 % |
+| Manchester, PPFI | 40.3 % of small areas in England's two highest-priority deciles | 59 + 60 = 119 of 295 = 40.34 % |
+
+### Commands run and results
+
+| Command | Result |
+|---|---|
+| `npm run typecheck`, `npm run lint`, `npm run format`, `npm run check:banned` | Pass |
+| `npm test` | 51 files, 680 tests pass (main before Stage 8: 44 files, 616 tests). The 64 new tests are: 29 model, rule and wording tests (`insights.test.ts`); 11 export tests (`exports.test.ts`); 8 PDF tests (`pdf.test.ts`); 5 component tests; 4 store, 2 URL, 2 search and 2 tooltip-sanitising tests; and the third-party notices check |
+| `VITE_ARCGIS_ASSETS=local npm run build` | Pass. The shell's `index` is 460.9 kB (139.7 kB gzipped); main before Stage 8, built the same way, was 480.3 kB (147.0 kB gzipped). The PDF writer (pdfmake and the fonts) is its own 782.8 kB chunk (293.9 kB gzipped), loaded only when a PDF is made |
+| `npm run build:e2e-basemap` and `npm run e2e` (all specs, SwiftShader) | 81 of 83 passed in 19.4 min. Both failures were older tests whose expectations Stage 8 changed on purpose: (1) the 2026-10-23 review test expected the fourth key figure to slide under the panel at 1366 px, which B62 fixes; it now checks that all four fit, and a new test checks keyboard scrolling with five cards; (2) the Stage 1 smoke test read the cards' hidden full labels ("Residents (mid-2025)"); it now checks that no card shows a figure |
+| Rerun on the final build: `tests/e2e/smoke.spec.ts`, `review.spec.ts`, `insights.spec.ts` | 26 passed (5.6 min). After the page-layout fix below, `insights.spec.ts` again: 5 passed |
+| `cd pipeline && uv run pytest` (pytest 9.0.3) | 318 passed, 1 skipped (data step) |
+| `npm audit` and `npm audit --omit=dev` (27 Oct 2026) | 0 vulnerabilities |
+| `pip-audit` over the pipeline lock | Reported pytest 8.4.2 (PYSEC-2026-1845) and certifi 2026.7.22 (PYSEC-2026-4320). pytest is now 9.0.3. certifi's fix is newer than the lock's two-week guard, so it waits until after 3 Nov (B65; `docs/security-and-licensing.md`) |
+| Secrets scan (tracked files and full history; ArcGIS, GitHub, AWS, Slack and private-key patterns) | 0 matches. The client reads only `VITE_ARCGIS_API_KEY` and `VITE_ARCGIS_ASSETS` |
+| `node scripts/third-party-notices.mjs` | 185 packages; a test fails if the file is stale |
+
+**What the PDF tests prove.**
+- The E2E test downloads Manchester's PDF from the running app and reads it back with pdf.js. It checks:
+  - every page says "Page n of N";
+  - the key figures on screen are on the cover;
+  - the checksum, the exploratory note and the data snapshots are present;
+  - the map extent printed is the visible map's extent;
+  - the credits include "Powered by Esri".
+- Unit tests write the Manchester, commodity and scenario PDFs and check their figures and page numbers. One test checks every character of eight reports against the embedded font after sanitising: Manchester, Belfast and Glasgow; coffee and tomatoes; three scenarios.
+- A layout test writes three reports, each with a wide and a tall map, and checks the lowest text or image on every page. No page may end with a heading or a table title.
+  - The final review of the sample PDFs found this fault. In the scenario report, the "Map" heading sat at the foot of a page with its map on the next, and two table titles did the same.
+  - pdfmake had counted the running header and footer as content after the heading. They are now marked and ignored, and table titles keep to their tables.
+  - The test fails on the old rule and passes on the fix.
+- The claim audit (P14) runs on the services content and on every generated report.
+
+**Accessibility.** axe finds no serious or critical violations in the workspace or the full report dialog (E2E). The phone test checks that nothing scrolls sideways at 390 px and that the report and controls are reachable.
+
+**Wording audit (P9).** A unit test reads every generated report. "Shortage" and "confirmed" appear only in negated sentences, and "forecast shortage" never appears.
 
 ## What was not verified, and why
 

@@ -39,13 +39,15 @@ Review date: 26–27 October 2026, on branch `stage/8-consulting-insights` (John
 
 - `.env.local`, `dist/`, `dist-basemap/` and test outputs are ignored.
 - Provided files: their embedded metadata was checked when each was committed (S38 is the example; CLAUDE.md rule).
-- No personal paths or e-mail addresses are in tracked files. Checked with `git grep -nIE "/Users/|C:\\Users|@geolytical|@gmail\.com"`.
+- No personal paths or e-mail addresses are in tracked files. Checked with `git grep -nIE "/Users/|C:\\Users|@geolytical|@gmail\.com"` (27 Oct 2026). The only matches are:
+  - this line;
+  - six copyright lines of four package authors in `public/licenses/THIRD-PARTY-NOTICES.txt`, which their licences require to be reproduced.
 
 ## 3. Dependencies and supply chain
 
 - npm:
   - exact versions and a lockfile;
-  - `npm audit` reports 0 (26 Oct 2026);
+  - `npm audit` reports 0 (26 and 27 Oct 2026);
   - production licences are MIT, BSD, Apache-2.0, ISC, 0BSD, BlueOak, Unlicense, OFL-1.1 (fonts) and Esri's terms (`@arcgis/*`, Calcite, amCharts inside the SDK);
   - no copyleft licence is present.
 - Python:
