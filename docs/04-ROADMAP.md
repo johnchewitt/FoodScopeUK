@@ -19,8 +19,8 @@
 | **4** | **Supermarket network** ✅ merged (PR #9) and deployed | R1 | 3, G7 ✅, and the LAD/GEOLYTIX data built in the pre-Stage 4 data step (§5.3) | Clustered stores, retailer/class filters, store search, per-10k choropleth; basemap choice: dark grey, light grey, imagery (SH-08) |
 | **5** | **Local Authority Profiles** ✅ merged (PR #14) and deployed | R1 | 3, 4, G8–G11 | Search "Belfast" → fly → full profile; compare with Manchester |
 | **6** | **UK Food Resilience — Risk Explorer** (supply exposure, logistics, community access) ✅ merged (PRs #15 and #17) and deployed; live checks to do | R1 | 2, 3, 5, G6, G14–G18 | Tomatoes: concentration, partners' water stress and an estimated exposure to one supplier; ports and road corridors; councils' priority places within each nation — each with "Explain this risk" |
-| 7 | Scenario Lab (import disruption, store closure; port and production shocks as far as the data allows) — data step PR #21 merged to main; module PR #22 merged into the data branch, not main; module and review to main as PR #23 | R1 | 3, 5, 6, G19 | Spanish tomato preset; close a supermarket anywhere in the UK and see the nearest-store change for every small area |
-| 8 | Consulting Insights + PDF export | R1 | 5, 6, 7, D3, D7 | One-click profile PDF that matches the screen |
+| **7** | **Scenario Lab** (import disruption, store closure; port and production shocks as far as the data allows) ✅ merged (PRs #21 and #23) and deployed; live checks to do | R1 | 3, 5, 6, G19 | Spanish tomato preset; close a supermarket anywhere in the UK and see the nearest-store change for every small area |
+| 8 | ConsultingWhere Insights + PDF export — built on `stage/8-consulting-insights`; copy and branding await approval (D3, D7) | R1 | 5, 6, 7, D3, D7 | One-click assessment PDF that matches the screen, for a council, a commodity or a scenario |
 | 9 | Hardening and Release 1 | R1 | 1–8 | Release 1 tagged and deployed; acceptance criteria evidenced |
 | 10 | Release 2 | R2 | 9 | National access layers, Scenarios B/C, Ask FOODSCOPE, 3D globe |
 | 11 | Release 3 | R3 | 10 | Network travel times, secure LLM assistant, AGOL publishing |
@@ -331,6 +331,24 @@ Deliverables: workstream content (CI-01, approved copy D7); rule engine with "wh
 
 Exit: PDF values equal on-screen values (automated comparison of model vs extracted PDF text for key figures); rule tests pass; P14 copy review signed off.
 
+John's Stage 8 brief (26 Oct 2026, "ConsultingWhere Insights — From Geographic Evidence to Action") adds to these:
+- three assessments (local authority, commodity, Disruption Scenario) built from the existing modules;
+- nine generic services in place of the ten workstreams;
+- executive PDF templates for the three assessments, with the map's exact extent, selections and dataset versions;
+- map image export, shareable links and saved report configurations;
+- an app-wide UX review (five refinements);
+- a data integrity, security and licensing audit;
+- final testing and the deliverables listed in the brief.
+
+Status on 27 October 2026 (evidence in `docs/stage-reports/stage-8.md`; ADR-0027; `docs/insights-methodology.md`; `docs/security-and-licensing.md`):
+- **Built on `stage/8-consulting-insights`.** The workspace, three assessments, services catalogue, PDF, CSV, map image, link and saved configurations. Global Search and Export in the top bar, and B60–B62.
+- **Exit criteria met in the sandbox:**
+  - PDF values equal on-screen values: an E2E test downloads the PDF, reads it with pdf.js and compares the key figures, checksum and map extent with the page; a unit test checks every finding and work package;
+  - rule tests pass;
+  - the claim audit (P14) is a test on the content and every report.
+- **Not met yet: the P14 copy sign-off.** The services, About text and thresholds are drafts for John and ConsultingWhere (D7). The PDF uses a text wordmark (D3).
+- **Still to do:** live checks with the Esri basemap and a real GPU, including a PDF (B48, B64); the open items in `docs/security-and-licensing.md` §6.
+
 ## 11. Stage 9 — Hardening and Release 1
 
 Accessibility audit (axe + manual keyboard/screen reader pass); responsive review; performance budgets enforced; error-path E2E (blocked data, malformed snapshot, map layer failure); README complete (setup, data prep, refresh, licensing, assumptions, limitations — brief §19.15); acceptance criteria evidence table (spec §9) in `docs/stage-reports/release-1.md`; tag `v1.0.0`.
@@ -429,3 +447,4 @@ Rules of engagement:
 | 2026-10-26 | John's Stage 7 brief (Scenario Lab): the closure scenario covers every small area of the UK, data fetched and verified first in its own pull request; straight-line distances only for now (routed travel time stays Release 3) | John (decisions); G19; S15, S16, S17 |
 | 2026-10-26 | Stage 7 built: one typed scenario model for controls, URL, saving and export; A on the trade map with the disrupted partner's baseline dashed; B on precomputed three-nearest supermarkets (no browser spatial search), an Access scenario mode and a closure layer; C on Defra's published balances only; D on DfT tonnage, food exposure only where recorded at the port (never Dover's tunnel-inclusive figure, never by partner country); saved scenarios in the browser, compared kind by kind, never combined | ADR-0026; SC-01 – SC-06 |
 | 2026-10-26 | Review of Stage 7 (John's request): every closure input verified by brute force; Scenario D's chart covers the disrupted months, category 23 is "agricultural dry bulk" beside Ro-Ro and container freight whose contents are not recorded; Scenario A's baseline drawn as dashed edges in the flow line's units; credits for data drawn as graphics (ports; closure inputs) in the map attribution; Scenario A prefetched at start-up, start-up loads not cancellable; cached number formatters; compact scenario picker and short KPI labels; results announced as a status message; Stage 8 not begun | ADR-0019 and ADR-0026 amendments; review report |
+| 2026-10-26 | Stage 8 (John's brief): ConsultingWhere Insights with three assessments from one report model per assessment; work packages indicated by stated rules; nine generic services as draft content for approval; executive PDF written in the browser with pdfmake from the report model (map captured from the visible view with its extent and credits, checksum on every page); CSV, map image, link and saved configurations; Search and Export in the top bar; B60–B62; security and licensing review with fixes and open items | ADR-0027 (supersedes ADR-0010); `docs/insights-methodology.md`; `docs/security-and-licensing.md` |

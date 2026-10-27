@@ -1,6 +1,6 @@
 # ADR-0010 — PDF built from the profile model
 
-- Status: Proposed (Stage 8; renumbered from 7 on 25 Oct 2026)
+- Status: Superseded by ADR-0027 (Stage 8, 26 Oct 2026: pdfmake, from the assessment report model)
 - Date: 2026-10-23
 
 ## Decision (proposed)

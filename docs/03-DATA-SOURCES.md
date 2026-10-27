@@ -602,6 +602,16 @@ Fields: `ELR_CODE`, `DESCRIPTIO` (line name), `TRACK_ID`, `ROUTE_TYPE`, `INTERME
 
 ArcGIS dark grey style (`arcgis/dark-gray`) through the Basemap styles service, authorised by a referrer-restricted API key (decision D2) registered as `esriConfig.apiKeys.basemapStyles` (ADR-0011). Verified on the live site on 23 Oct 2026: style and tiles load, post-deploy smoke test requires `data-basemap-status="ready"`. Not reachable from the build sandbox. Attribution is rendered automatically by the map component; do not hide it.
 
+**Stage 8: map images in reports (ADR-0027).**
+- **What the PDF and PNG exports capture.** `view.takeScreenshot` captures the visible map. With it they print:
+  - the view's attribution items and "Powered by Esri";
+  - when an Esri basemap is drawn, Esri's recommended notice: "Map image is the intellectual property of Esri and is used herein under license. Copyright © <year> Esri and its licensors. All rights reserved."
+- **Terms.** Esri's terms of use for static maps (ArcGIS Online documentation, `https://doc.arcgis.com/en/arcgis-online/reference/static-maps.htm`, read 26 Oct 2026):
+  - personal and internal business use, and inclusion in a presentation or report for a client, are permitted with attribution on or near the image;
+  - commercial monetisation and resale need Esri's permission.
+- **Attribution guidance.** Esri's developer guidance on attribution (`https://developers.arcgis.com/documentation/esri-and-data-attribution/static-maps/`) asks for "Powered by Esri" and the data providers' names on or near the map.
+- **Not checked yet.** Not verified on the live site with a key from the sandbox (B48).
+
 **Stage 4 (SH-08, ADR-0022): three styles.**
 
 | App choice | Style ID | What Esri's style list says (read 24 Oct 2026) |
