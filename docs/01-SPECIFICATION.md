@@ -114,10 +114,17 @@ The brief asks for a complete, tested first release over an extensive unfinished
 - **SH-05** Every panel implements five data states: loading (skeleton), empty, error (with retry and plain-English cause), partial (some sources failed — say which) and stale (data older than expected cadence).
 - **SH-06** Evidence & Limitations page reachable from every module and from every provenance badge.
 - **SH-07** Map remains interactive while side panels load; panel errors never blank the map.
-- **SH-08** Curated basemap choice (added 23 Oct 2026, scheduled for Stage 4), not a full gallery:
-  - **Dark grey:** the default.
-  - **Light grey:** for presentations, bright rooms and print.
-  - **Imagery with labels:** offered only at local scales (supermarkets, food access, authority profiles). Local scale is zoom 12 and closer (about 1:144,000; ADR-0022), the same scale from which stores are drawn individually and councils outlined.
+- **SH-08** Curated basemap choice (added 23 Oct 2026, scheduled for Stage 4; extended 27 Oct 2026 at John's request), not a full gallery:
+  - **Under any map:**
+    - **Dark grey:** the default.
+    - **Light grey:** for presentations, bright rooms and print.
+    - **Human Geography, light and dark:** quiet maps of places and boundaries, designed to sit under data.
+    - **Imagery with labels:** at every scale (until 27 Oct 2026 only at local scale).
+  - **Where the map draws only lines and points:** roads, rail, ports, stores, outlines and closure circles, not shaded areas. These are Terrain, Topographic, National Geographic and OpenStreetMap.
+    - Where the map shades areas (the trade maps, the Risk Explorer's councils and farming regions, UK Food Access councils below local scale, deep-profile small areas), light grey stands in. The choice stays in the URL and returns where it is offered.
+    - National Geographic is Esri's public web map in ArcGIS Online, not part of the basemap styles service; its terms for this site are to be confirmed (B74).
+
+  Local scale is zoom 12 and closer (about 1:144,000; ADR-0022), the scale from which stores are drawn individually and councils outlined.
 
   Rules:
   - Each style has its own colour set for the data layers (share classes, connections, panels), checked with the dataviz validator against that style's land colour measured on the live site. A style without a checked colour set is not offered.

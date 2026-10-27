@@ -52,7 +52,7 @@ Each source has an ID (`S01`…) used in code (`Indicator.sourceIds`), the manif
 | S22 | Journey time statistics | DfT | 🔴 (England only) | Access context | R2 |
 | S23 | Port freight annual statistics 2025 (PORT0499, PORT0304, port list) | DfT | ✅ (25 Oct 2026) | Risk Explorer (logistics), Scenario B | R1 |
 | S24 | Natural Earth Admin 0 countries (v5.1.2) | Natural Earth | ✅ (1:110m outlines, 1:50m label points, ISO crosswalk) | Map reference layer; Origins map | R1 |
-| S25 | Basemap styles service: dark grey, light grey, imagery | Esri (ArcGIS Location Platform) | ✅ all three styles (live site, 24 Oct 2026) | Map | R1 |
+| S25 | Esri basemaps: dark and light grey, imagery (styles service); Human Geography light and dark, Terrain, Topographic, OpenStreetMap (styles service); National Geographic (public ArcGIS Online web map) | Esri (ArcGIS Location Platform; ArcGIS Online) | ✅ first three on the live site (24 Oct 2026); 🟡 six added 27 Oct 2026, IDs verified in Esri's lists, not yet seen live (B48); National Geographic terms to confirm (B74) | Map | R1 |
 | S26 | ArcGIS Living Atlas items | Esri and contributors | 🔴 per item | Optional reference layers | R2 |
 | S27 | Consumer price inflation — food (CPIH) | ONS (via Defra pocketbook CSV) | 🟡 | National context | R1 |
 | S28 | HMRC port reference and port-level OTS detail | HMRC | 🟡 | Risks, Scenario B | R2 |
@@ -601,6 +601,26 @@ Fields: `ELR_CODE`, `DESCRIPTIO` (line name), `TRACK_ID`, `ROUTE_TYPE`, `INTERME
 ### S25 — Esri basemap styles ✅
 
 ArcGIS dark grey style (`arcgis/dark-gray`) through the Basemap styles service, authorised by a referrer-restricted API key (decision D2) registered as `esriConfig.apiKeys.basemapStyles` (ADR-0011). Verified on the live site on 23 Oct 2026: style and tiles load, post-deploy smoke test requires `data-basemap-status="ready"`. Not reachable from the build sandbox. Attribution is rendered automatically by the map component; do not hide it.
+
+**27 Oct 2026: six more basemaps (SH-08, ADR-0022 amendment; John's request).**
+- **Styles service IDs.** Read from Esri's lists of ArcGIS and open styles on 27 Oct 2026:
+  - `arcgis/human-geography` and `arcgis/human-geography-dark` (vector);
+  - `arcgis/terrain` and `arcgis/topographic` (vector and map tiles);
+  - `open/osm-style` (Esri's style of OpenStreetMap data, vector; Esri's page also names Overture Maps among the open styles' sources).
+
+  They use the same key and privilege (`premium:user:basemaps`, "access the basemap styles service"). Sources: `https://developers.arcgis.com/documentation/mapping-and-location-services/mapping/basemaps/arcgis-styles`, `…/open-styles`.
+- **National Geographic.** It is not in the styles service. The raster "National Geographic World Map" has been in mature support since 30 June 2021 and is replaced by the vector "National Geographic Style".
+  - The app loads Esri's public web map "National Geographic Style Map" (owner `esri`, item `f33a34de3a294590ab48f246e99958c9`, read 27 Oct 2026). Its layers are World Hillshade (`1b243539f4514b6ba35e7d995890db1d`), National Geographic Style Base (`f9a070ff745b4d368b312eb647c53a4e`, `tiles.arcgis.com`) and National Geographic Style (`3d1a30626bbc46c582f148b9252676ce`, owner `esri_vector`, `basemaps.arcgis.com`).
+  - All are public, under the Esri Master License Agreement. The credits read "Esri, TomTom, Garmin, FAO, NOAA, USGS, © OpenStreetMap contributors, and the GIS User Community". Boundaries "do not imply endorsement by Esri, National Geographic, or any governing authority".
+  - Esri publishes "(for Developers)" items of Topographic and OpenStreetMap but none of National Geographic. Whether John's ArcGIS account covers this public use on the site is open (B74). No key is sent to ArcGIS Online.
+- **Colours used to check the data colours.** Read from Esri's published styles (`…/resources/styles/root.json` of each item) on 27 Oct 2026:
+  - **Human Geography:** land `#f7f7f7`, sea white.
+  - **Human Geography Dark:** land `#222426`, sea `#26282a`.
+  - **Topographic:** land `#e1e3d0`–`#f1f2ea`, water `#abe1f6`, urban `#d9d1ba`–`#ebe6d8`.
+  - **OpenStreetMap style:** land `#f2efe9`, water `#aad3df`, forest `#add19e`, park `#c8facc`, residential `#e0dfdf`.
+  - **National Geographic:** land `#e8e7dc`, water `#bfdaf0` and `#8abee6`, urban `#fff34d` (z10) and `#e6e5d5` (z13), parks `#28ad1c`, land tints `#72802d`–`#a3a67d`.
+  - **Terrain:** its relief is a raster, so land and water were estimated (`#ebe6d7`, `#b5b09c`, `#a4c4d6`) and are to be checked live.
+- **Not checked yet.** How each looks, its attribution and its requests on the live site (B48).
 
 **Stage 8: map images in reports (ADR-0027).**
 - **What the PDF and PNG exports capture.** `view.takeScreenshot` captures the visible map. With it they print:
