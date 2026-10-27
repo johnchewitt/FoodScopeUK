@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Date** | 26–27 October 2026 |
-| **Branch** | `stage/8-consulting-insights` (from `main` after PR #23) |
+| **Branch** | `stage/8-consulting-insights` (from `main` after PR #23); merged as PR #24 on 27 Oct 2026 |
 | **Brief** | John's Stage 8 brief (26 Oct 2026): Insights workspace, three assessments, services catalogue, executive PDF, share and export, app-wide UX review, data integrity and security audit, final testing and deliverables |
 | **Requirements** | CI-01 – CI-05, EX-01 – EX-05; brief §8 UX refinements (B60–B62 and two new); brief §9 audit |
 | **ADR** | ADR-0027 (supersedes the proposed ADR-0010) |

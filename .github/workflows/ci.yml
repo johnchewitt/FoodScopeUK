@@ -17,7 +17,9 @@ jobs:
   web:
     name: Web app (typecheck, lint, unit, build, e2e)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # The E2E suite runs in software WebGL with one worker: about 26 min for 78 tests before Stage 8,
+    # longer with its PDF tests, which overran a 30 min limit (PR #24). Sharding is B73.
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v7
 
