@@ -74,7 +74,7 @@ No clients, projects, accreditations, contracts or prices appear. A claim audit 
 
 The PDF is written in the browser with pdfmake 0.3.12 (lazy chunk, about 290 kB gzipped), from the same report model as the screen (ADR-0027). It has:
 - A4 portrait, selectable text, embedded IBM Plex Sans, bookmarks;
-- a cover with the ConsultingWhere text wordmark (D3: no approved logo yet), the FOODSCOPE UK identity, title, subject, key figures with provenance, executive summary and the exploratory note;
+- a cover with ConsultingWhere's logo (D3, supplied by John on 27 Oct 2026; a text wordmark stands in if it cannot load), the workspace and FOODSCOPE UK identity band, title, subject, key figures with provenance, executive summary and the exploratory note;
 - contents and selections;
 - **the map as shown**: the visible area (padding excluded), its extent corners, scale, basemap, credits and, with an Esri basemap, Esri's map-image notice;
 - the sections, with charts (light, 2.5×) and tables;
@@ -120,7 +120,7 @@ The full results are in `docs/security-and-licensing.md`. In short:
 - **Open before publication:**
   - confirm the key's privileges and referrers;
   - GEOLYTIX terms for client-facing PDFs (B68);
-  - ConsultingWhere's approval of copy and branding (D3, D7);
+  - ConsultingWhere's approval of the copy (D7);
   - certifi after 3 Nov (B65);
   - Actions pinned to SHAs (B66);
   - a tested CSP (B67).
@@ -145,10 +145,10 @@ A Python script that uses no app code read the published files in the manifest a
 | Command | Result |
 |---|---|
 | `npm run typecheck`, `npm run lint`, `npm run format`, `npm run check:banned` | Pass |
-| `npm test` | 51 files, 680 tests pass (main before Stage 8: 44 files, 616 tests). The 64 new tests are: 29 model, rule and wording tests (`insights.test.ts`); 11 export tests (`exports.test.ts`); 8 PDF tests (`pdf.test.ts`); 5 component tests; 4 store, 2 URL, 2 search and 2 tooltip-sanitising tests; and the third-party notices check |
-| `VITE_ARCGIS_ASSETS=local npm run build` | Pass. The shell's `index` is 460.9 kB (139.7 kB gzipped); main before Stage 8, built the same way, was 480.3 kB (147.0 kB gzipped). The PDF writer (pdfmake and the fonts) is its own 782.8 kB chunk (293.9 kB gzipped), loaded only when a PDF is made |
+| `npm test` | 51 files, 682 tests pass (main before Stage 8: 44 files, 616 tests). The 66 new tests are: 29 model, rule and wording tests (`insights.test.ts`); 11 export tests (`exports.test.ts`); 10 PDF and logo tests (`pdf.test.ts`); 5 component tests; 4 store, 2 URL, 2 search and 2 tooltip-sanitising tests; and the third-party notices check |
+| `VITE_ARCGIS_ASSETS=local npm run build` | Pass. The shell's `index` is 460.9 kB (139.7 kB gzipped); main before Stage 8, built the same way, was 480.3 kB (147.0 kB gzipped). The PDF writer (pdfmake and the fonts) is its own 783.5 kB chunk (294.1 kB gzipped), loaded only when a PDF is made. The logo is a separate 48 kB image, loaded by About, the full report and the PDF |
 | `npm run build:e2e-basemap` and `npm run e2e` (all specs, SwiftShader) | 81 of 83 passed in 19.4 min. Both failures were older tests whose expectations Stage 8 changed on purpose: (1) the 2026-10-23 review test expected the fourth key figure to slide under the panel at 1366 px, which B62 fixes; it now checks that all four fit, and a new test checks keyboard scrolling with five cards; (2) the Stage 1 smoke test read the cards' hidden full labels ("Residents (mid-2025)"); it now checks that no card shows a figure |
-| Rerun on the final build: `tests/e2e/smoke.spec.ts`, `review.spec.ts`, `insights.spec.ts` | 26 passed (5.6 min). After the page-layout fix below, `insights.spec.ts` again: 5 passed |
+| Rerun on the final build: `tests/e2e/smoke.spec.ts`, `review.spec.ts`, `insights.spec.ts` | 26 passed (5.6 min). After the page-layout fix below, and again after adding the logo, `insights.spec.ts`: 5 passed |
 | `cd pipeline && uv run pytest` (pytest 9.0.3) | 318 passed, 1 skipped (data step) |
 | `npm audit` and `npm audit --omit=dev` (27 Oct 2026) | 0 vulnerabilities |
 | `pip-audit` over the pipeline lock | Reported pytest 8.4.2 (PYSEC-2026-1845) and certifi 2026.7.22 (PYSEC-2026-4320). pytest is now 9.0.3. certifi's fix is newer than the lock's two-week guard, so it waits until after 3 Nov (B65; `docs/security-and-licensing.md`) |
@@ -167,6 +167,10 @@ A Python script that uses no app code read the published files in the manifest a
   - The final review of the sample PDFs found this fault. In the scenario report, the "Map" heading sat at the foot of a page with its map on the next, and two table titles did the same.
   - pdfmake had counted the running header and footer as content after the heading. They are now marked and ignored, and table titles keep to their tables.
   - The test fails on the old rule and passes on the fix.
+- Logo (D3):
+  - one test checks the shipped file: its stated size, and no text or XMP chunks;
+  - another checks that it heads the cover, unstretched, and that a wordmark stands in without it;
+  - the E2E test checks the downloaded PDF's cover carries it, loaded from the build's assets.
 - The claim audit (P14) runs on the services content and on every generated report.
 
 **Accessibility.** axe finds no serious or critical violations in the workspace or the full report dialog (E2E). The phone test checks that nothing scrolls sideways at 390 px and that the report and controls are reachable.
@@ -190,7 +194,7 @@ A Python script that uses no app code read the published files in the manifest a
 ## Open questions for John
 
 1. **D7.** Approve, or edit, the nine services and the About text (`docs/consulting-services.md`). Once approved, `status.approval` becomes `approved` and the "draft" note disappears.
-2. **D3.** Supply ConsultingWhere logo files and confirm the PDF may say "ConsultingWhere Insights". The cover and footer currently use a text wordmark.
+2. **D3: resolved on 27 Oct 2026.** ConsultingWhere's logo heads the PDF cover, the full report and About, always on a white plate. The workspace name "ConsultingWhere Insights" comes from your brief. The top bar keeps "Powered by ConsultingWhere" as text.
 3. **B68.** Are you content to print GEOLYTIX store names and counts in client-facing PDFs under GEOLYTIX's "free and open to use" statement, or should we ask GEOLYTIX?
 4. **Thresholds.** Keep the screening thresholds as drafted (`docs/insights-methodology.md` §5), or set your own?
 5. **The live checks.** Make a PDF on the live site with the basemap on (B48, B64).

@@ -74,5 +74,5 @@ Ideas and follow-ups that are outside the current stage's scope. Move an item in
 | B68 | GEOLYTIX Grocery Retail Points has no named licence ("completely free and open to use"): confirm with GEOLYTIX that client-facing PDF reports printing store names and counts are covered | Stage 8 security review | Ask John |
 | B69 | Tagged (accessible) PDF: pdfmake 0.3 writes no structure tree; consider pdfkit's tagging directly or a later pdfmake | Stage 8 | Release 2 |
 | B70 | PDF map legend drawn as a graphic (it is described in words) and a scale bar for local maps | Stage 8 | Release 2 |
-| B71 | Approved ConsultingWhere logo and brand assets for the PDF cover and the app (decision D3); the PDF uses a text wordmark | Stage 8 | Ask John |
+| B71 | ✅ **Done 27 Oct 2026** (logo supplied by John). ConsultingWhere logo for the PDF cover and the app (decision D3) | Stage 8 | Done (Stage 8) |
 | B72 | Insights assessments for a region or a group of councils (combined), and a council-versus-council assessment that respects the nation rules (LP-07) | Stage 8 | Release 2 |

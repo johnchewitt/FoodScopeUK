@@ -129,7 +129,7 @@ A claim audit (`claimProblems`) runs in tests on the content and on every genera
 ## 7. Exports
 
 **PDF.** The PDF is A4 portrait with selectable text, embedded IBM Plex Sans (OFL-1.1) and bookmarks. It contains:
-- a cover with the ConsultingWhere text wordmark (decision D3: no approved logo yet), the FOODSCOPE UK identity, the key figures, the executive summary and the exploratory note;
+- a cover with ConsultingWhere's logo (decision D3, supplied 27 Oct 2026; a text wordmark if it cannot load), the FOODSCOPE UK identity, the key figures, the executive summary and the exploratory note;
 - contents and selections;
 - the map: the visible map captured at export, with its extent corners, scale, basemap, credits, Esri's map-image notice when an Esri basemap is drawn, and the map's legend in words;
 - the sections, with charts and tables;

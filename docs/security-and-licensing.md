@@ -16,7 +16,7 @@ Review date: 26–27 October 2026, on branch `stage/8-consulting-insights` (John
 | PDF generation | pdfmake's URL access policy refuses every external URL; images are data URLs; fonts are bundled files | — | Not a tagged PDF (pdfmake 0.3 has no structure tree) |
 | Content Security Policy | GitHub Pages cannot send headers; there is no CSP meta tag | — | A CSP meta tag (workers, `blob:`, `wasm-unsafe-eval` for the SDK, Esri CDN and basemap hosts) needs testing against the live Esri services (B67) |
 | Data provenance and accuracy | Every figure an `Indicator`; tests recompute the assessments' figures from the raw files independently (below) | — | Live checks with a real GPU and Esri basemaps (B48, B64) |
-| Licensing and attribution | Data licences below; Esri terms for map images; OFL for IBM Plex; notices for 185 redistributed packages | Esri's map-image notice on exported images; data attributions in the CSV; `licenses/THIRD-PARTY-NOTICES.txt` linked from Help, with a test | **GEOLYTIX licence**: confirm the terms for client-facing reports (B68). **Branding**: no approved ConsultingWhere logo (D3). **Copy**: services and About text await approval (D7) |
+| Licensing and attribution | Data licences below; Esri terms for map images; OFL for IBM Plex; notices for 185 redistributed packages | Esri's map-image notice on exported images; data attributions in the CSV; `licenses/THIRD-PARTY-NOTICES.txt` linked from Help, with a test | **GEOLYTIX licence**: confirm the terms for client-facing reports (B68). **Branding**: ConsultingWhere's logo supplied by John on 27 Oct 2026 (D3); it is ConsultingWhere's trademark, not under the code licence. **Copy**: services and About text await approval (D7) |
 
 ## 1. API keys and environment configuration
 
@@ -39,6 +39,12 @@ Review date: 26–27 October 2026, on branch `stage/8-consulting-insights` (John
 
 - `.env.local`, `dist/`, `dist-basemap/` and test outputs are ignored.
 - Provided files: their embedded metadata was checked when each was committed (S38 is the example; CLAUDE.md rule).
+- ConsultingWhere's logo (`src/assets/brand/consultingwhere-logo.png`, D3), as supplied by John on 27 Oct 2026:
+  - received as a 787 × 213 PNG, SHA-256 `27900218d419a803aff5a4b8df79f690aa0a525580443a3d8c5ba6453e0f317b`;
+  - its Photoshop XMP held only the editor, dates and document IDs, with no paths or personal details;
+  - the stored copy is cropped to the artwork (772 × 168, pixels unchanged) with the metadata left out, SHA-256 `d7669f6bcaae9bd2428041e4db3938eaa1fbf3c6639f3ee3440a7a34e72de5b8`;
+  - a test checks it carries no text or XMP chunks.
+  It is ConsultingWhere's trademark, not covered by the code licence.
 - No personal paths or e-mail addresses are in tracked files. Checked with `git grep -nIE "/Users/|C:\\Users|@geolytical|@gmail\.com"` (27 Oct 2026). The only matches are:
   - this line;
   - six copyright lines of four package authors in `public/licenses/THIRD-PARTY-NOTICES.txt`, which their licences require to be reproduced.
@@ -88,7 +94,7 @@ What the Stage 8 tests recompute from the raw published files, without the asses
 
 1. **ArcGIS key.** Confirm in ArcGIS Location Platform: basemap styles privilege only, referrers `https://johnchewitt.github.io`, `http://localhost:5173` and `http://localhost:4173`, and expiry date.
 2. **GEOLYTIX terms** for client-facing PDF reports that print store names and counts (B68).
-3. **ConsultingWhere approvals.** Services and About copy (D7); logo and branding for the PDF (D3). Until then the PDF uses a text wordmark and the copy is marked "draft for approval".
+3. **ConsultingWhere approvals.** Services and About copy (D7): until then the copy is marked "draft for approval". The logo (D3) was supplied on 27 Oct 2026.
 4. **certifi** in the pipeline lock after 2026-11-03 (B65).
 5. **Recommended hardening for Release 1:**
    - Actions pinned to SHAs (B66);
