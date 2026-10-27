@@ -95,6 +95,7 @@ describe("CSV export (EX-05)", () => {
     expect(csv).toContain("588,300");
     expect(csv).toContain(`Report checksum (SHA-256): ${"a".repeat(64)}`);
     expect(csv).toContain("not a commissioned food security audit");
+    for (const d of r.datasets) expect(csv).toContain(d.attribution.slice(0, 40));
   });
 
   it("names files with ASCII only", () => {

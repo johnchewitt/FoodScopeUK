@@ -50,6 +50,8 @@ export function reportCsv(r: AssessmentReport, checksum: string | null, generate
     );
   lines.push("");
   lines.push(csvField(r.disclaimer));
+  // Attribution the data licences require when figures are passed on (OGL, CC BY, ODbL, GEOLYTIX).
+  for (const a of [...new Set(r.datasets.map((d) => d.attribution))]) lines.push(csvField(`Attribution: ${a}`));
   lines.push(
     csvField(
       `Generated ${generated.toISOString()} by FOODSCOPE UK. Data snapshots: ${r.snapshots.map((s) => `${s.family} ${s.id}`).join(", ")}.${checksum ? ` Report checksum (SHA-256): ${checksum}.` : ""} Link: ${r.link}`,
