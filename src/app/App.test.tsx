@@ -180,15 +180,15 @@ describe("App shell", () => {
     expect(screen.queryByText("No statistics have been published yet")).not.toBeInTheDocument();
   });
 
-  it("marks planned tools as unavailable rather than hiding them", () => {
+  it("offers Search and Export (Stage 8) and keeps the 3D globe marked as planned", async () => {
     renderApp();
-    expect(screen.getByRole("button", { name: /Export \(not available yet/ })).toHaveAttribute(
-      "aria-disabled",
-      "true",
+    await userEvent.click(screen.getByRole("button", { name: /^Search councils, commodities and modules/ }));
+    expect(useAppStore.getState().overlay).toBe("search");
+    await userEvent.click(
+      screen.getByRole("button", { name: /^Export: open the matching ConsultingWhere Insights/ }),
     );
-    expect(screen.getByRole("button", { name: /Search \(not available yet/ })).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
+    expect(useAppStore.getState().module).toBe("insights");
+    expect(useAppStore.getState().insightsKind).toBe("commodity");
+    expect(screen.getByRole("button", { name: "3D" })).toHaveAttribute("aria-disabled", "true");
   });
 });
